@@ -7,9 +7,9 @@ description: "Execution plan for the CS690 project. Subordinate to ARCH-0001 for
 type: plan
 category: process
 status: draft
-version: "0.4.0"
+version: "0.5.0"
 date: "2026-09-16"
-updated: "2026-09-16"
+updated: "2026-09-17"
 authors:
   - role: planner
     id: conversation-claude-opus-5
@@ -34,7 +34,7 @@ agent_notes: >
 
 # Project plan — CS690 Fall 2026
 
-**Owners:** Paul Lambert (sponsor & SR) + two students
+**Org owner:** Paul Lambert (sponsor & SR) · **Students:** `students` team, `maintain` on both repos
 **Plan date:** 2026-09-16 · **Demo:** CS Night, 2026-12-04 · **Weeks remaining:** 11
 **Architecture source of truth:** `ARCH-0001` v0.1.0
 
@@ -124,10 +124,18 @@ else.
 ## 3. Repository structure
 
 ### Organization
-A GitHub **Organization**, three **Owners**. Slug blocked on **DEC-001** — do not
-create the org until DEC-001 is accepted, because renaming an org breaks every
-published URL, including Pages and any citation made in the interim. This is the
-one decision that genuinely blocks D0, so take it first.
+A GitHub **Organization**. DEC-001 is **accepted: `m-of-n`**; the org exists and
+both repos are live.
+
+**Access model.** Paul is the org owner. The two students go in a `students`
+team holding **`maintain`** on both repos — enough to push, review, approve as
+code owners, manage issues and milestones, and edit repo settings, without the
+ability to delete repositories, remove members, or change org billing. Owner is
+a broader grant than a one-semester project needs, and `maintain` satisfies
+everything in `CONTRIBUTING.md`.
+
+A team rather than direct collaborator grants, so adding a third person later is
+one membership change rather than two repo grants that drift apart.
 
 ### Two repos — and the answer on a Pages repo
 
@@ -495,8 +503,8 @@ failed.
   status updated in ARCH-0001 with a pointer. Never marked accepted in a PR
   description or a Zoom note.
 - **One PR per deliverable slice.** Small and reviewable beats big and correct.
-- Students are both Owners and review each other; Paul reviews
-  `project/**` and `spec/vectors/**` via `CODEOWNERS`.
+- Students hold repo `admin` and review each other; Paul reviews
+  `spec/**` and `project/**` via `CODEOWNERS`.
 - **Draft PRs opened on day one of an increment** are the progress signal.
 - The **CS690 weekly progress page is generated from the repo** — merged PRs,
   closed issues, plus a short reflection. A course requirement made a byproduct.
