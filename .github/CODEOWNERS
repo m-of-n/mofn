@@ -1,6 +1,7 @@
-# Normative surfaces. Architecture and published vectors need sponsor review.
-*                          @student1 @student2
-/artifacts/docs/           @paullambert
-/artifacts/vectors/        @paullambert
-/artifacts/schema/         @paullambert
-/.github/                  @paullambert
+# Normative surfaces need sponsor review.
+# Students are added to these lines when they join the org (T-006, T-004).
+*                          @nymble
+/artifacts/docs/           @nymble
+/artifacts/vectors/        @nymble
+/artifacts/schema/         @nymble
+/.github/                  @nymble

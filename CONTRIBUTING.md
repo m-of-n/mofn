@@ -137,7 +137,34 @@ of 3 minutes.
 
 ---
 
-## 8. Sign-off
+## 8. First-time setup
+
+Do this once per clone, before your first commit.
+
+```sh
+git clone --recurse-submodules https://github.com/m-of-n/mofn
+cd mofn && bin/lib-sync --init
+```
+
+**Set your git identity to an address GitHub will accept.** If *Block command
+line pushes that expose my email* is on in your GitHub settings — it is on by
+default — a push is rejected with `email privacy restrictions` when your commit
+email is a private one. The error names the setting, not the fix, and it stops
+your first push rather than your first PR.
+
+```sh
+git config user.email "<id>+<login>@users.noreply.github.com"   # from GitHub → Settings → Emails
+git config user.name  "Your Name"
+```
+
+Use a repo-local setting (no `--global`) so it does not disturb your other work.
+Check it took:
+
+```sh
+git commit --allow-empty -m "probe" && git log -1 --format='%an <%ae>' && git reset --hard HEAD~1
+```
+
+## 9. Sign-off
 
 Contributions are under the **DCO**. One line, and `git commit -s` adds it:
 
