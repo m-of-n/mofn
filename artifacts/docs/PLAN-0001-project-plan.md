@@ -7,9 +7,9 @@ description: "Execution plan for the CS690 project. Subordinate to ARCH-0001 for
 type: plan
 category: process
 status: draft
-version: "0.4.0"
+version: "0.6.0"
 date: "2026-09-16"
-updated: "2026-09-16"
+updated: "2026-09-17"
 authors:
   - role: planner
     id: conversation-claude-opus-5
@@ -34,7 +34,7 @@ agent_notes: >
 
 # Project plan — CS690 Fall 2026
 
-**Owners:** Paul Lambert (sponsor & SR) + two students
+**Org owner:** Paul Lambert (sponsor & SR) · **Students:** repo `admin` on both repos · **Faculty:** Mario Lin
 **Plan date:** 2026-09-16 · **Demo:** CS Night, 2026-12-04 · **Weeks remaining:** 11
 **Architecture source of truth:** `ARCH-0001` v0.1.0
 
@@ -124,10 +124,30 @@ else.
 ## 3. Repository structure
 
 ### Organization
-A GitHub **Organization**, three **Owners**. Slug blocked on **DEC-001** — do not
-create the org until DEC-001 is accepted, because renaming an org breaks every
-published URL, including Pages and any citation made in the interim. This is the
-one decision that genuinely blocks D0, so take it first.
+A GitHub **Organization**. DEC-001 is **accepted: `m-of-n`**; the org exists and
+both repos are live.
+
+**Access model.**
+
+| Who | Grant | Notes |
+|---|---|---|
+| Paul Lambert | org owner | sponsor and SR |
+| David Xiao (`davidhsiaotw`) | **repo `admin`** on `mofn` and `library` | student; active |
+| second student | repo `admin` on both | invitation pending; granted on accept |
+| Mario Lin | tbd | faculty for the project; invitation sent |
+
+Repo `admin` rather than org Owner: admins hold full control of *these two
+repositories* — settings, branch protection, review, merge — without org
+billing, member removal, or the ability to create or delete other repositories.
+Sponsor decision, 2026-09-17.
+
+Granted directly rather than through a team. A team is the better shape once
+membership churns, but direct grants are one API call and work before an
+invitation is accepted; revisit if the group grows past four.
+
+**Consequence worth acting on:** with a second admin, PRs can now actually be
+reviewed. `enforce_admins` was left off only because a single member cannot
+approve their own PR (§12 risk 1). That reason has expired — see T-003.
 
 ### Two repos — and the answer on a Pages repo
 
@@ -495,7 +515,7 @@ failed.
   status updated in ARCH-0001 with a pointer. Never marked accepted in a PR
   description or a Zoom note.
 - **One PR per deliverable slice.** Small and reviewable beats big and correct.
-- Students are both Owners and review each other; Paul reviews
+- Students hold `maintain` via the `students` team and review each other; Paul reviews
   `artifacts/docs/**` and `artifacts/vectors/**` via `CODEOWNERS`.
 - **Draft PRs opened on day one of an increment** are the progress signal.
 - The **CS690 weekly progress page is generated from the repo** — merged PRs,
