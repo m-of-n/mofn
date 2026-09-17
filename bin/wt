@@ -19,7 +19,17 @@ case "${1:-}" in
   list) git worktree list ;;
   rm)
     b="${2:?usage: wt rm <branch>}"; d="$WT/${b//\//-}"
-    git worktree remove "$d" && echo "removed $d"
+    [ -d "$d" ] || { echo "no such worktree: $d"; exit 1; }
+    # Check cleanliness ourselves, ignoring the submodule pointer. git refuses
+    # to remove any worktree containing a submodule, so --force is required
+    # even when the tree is clean - we must not let that hide real changes.
+    dirty="$(git -C "$d" status --porcelain --ignore-submodules=all)"
+    if [ -n "$dirty" ]; then
+      echo "ERROR uncommitted changes in $d:"; echo "$dirty"
+      echo "commit or discard them first, or: git worktree remove --force '$d'"
+      exit 1
+    fi
+    git worktree remove --force "$d" && echo "removed $d"
     ;;
   prune) git worktree prune && echo "pruned" ;;
   *) echo "usage: wt {new|list|rm|prune} [branch]"; exit 1 ;;
