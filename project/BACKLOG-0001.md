@@ -7,9 +7,9 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.2.0"
+version: "0.3.0"
 date: "2026-09-16"
-updated: "2026-09-17"
+updated: "2026-09-21"
 needs_review: true
 reviewed: false
 canonical_path: project/BACKLOG-0001.md
@@ -41,7 +41,9 @@ after is upside.
 | T-004 | `CODEOWNERS` → `/spec/` and `/project/` to PL; both students on the catch-all | D0 | S1 | S | done |
 | T-005 | DCO check in CI | D0 | S1 | S | todo |
 | T-006 | ~~Issue + PR templates; labels; milestones~~ — done | D0 | S2 | M | done |
-| T-006a | `students` team with `maintain` on both repos; add both students on accept | D0 | PL | S | todo |
+| T-006a | Repo `admin` for both students — David done; second on accept | D0 | PL | S | doing |
+| T-006b | Decide faculty access for Mario Lin (read? admin?) | D0 | PL | S | todo |
+| T-006c | Turn on `enforce_admins` now a second reviewer exists | D0 | PL | S | todo |
 | T-007 | `bin/validate-archdoc` in CI — front matter + version/updated coupling | D0 | S1 | M | todo |
 | T-008 | MkDocs Material site deploying to Pages from a merged PR | D0 | S2 | M | todo |
 | T-009 | `library` wired as submodule; `bin/lib-sync` working | D0 | S1 | S | todo |
