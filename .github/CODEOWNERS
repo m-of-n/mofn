@@ -1,6 +1,7 @@
-# Normative surfaces need sponsor review.
-# Students are added to these lines when they join the org (T-006, T-004).
-*                          @nymble
+# Catch-all: any repo admin may review.
+# Normative surfaces stay with the sponsor (CONTRIBUTING.md §5).
+# Second student is added on accept — see #3.
+*                          @nymble @davidhsiaotw
 /artifacts/docs/           @nymble
 /artifacts/vectors/        @nymble
 /artifacts/schema/         @nymble
