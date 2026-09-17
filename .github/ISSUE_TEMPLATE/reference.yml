@@ -1,0 +1,21 @@
+name: Reference to ingest
+description: A document to add to the library
+title: "lib: "
+labels: [library]
+body:
+  - type: dropdown
+    id: type
+    attributes:
+      label: Source type
+      options: [rfc, draft, spec, paper, book, article, repo, dataset, consortium, hierarchy, spreadsheet, web]
+    validations: {required: true}
+  - type: input
+    id: source
+    attributes: {label: Source, placeholder: "9943, or a URL, or a path"}
+    validations: {required: true}
+  - type: input
+    id: topic
+    attributes: {label: Owning topic}
+  - type: input
+    id: bears
+    attributes: {label: Bears on, placeholder: "DEC-002, R-M-12"}

@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# wt — git worktree helper. Two people (or an agent) on parallel branches
+# without stashing or stepping on each other. Worktrees live OUTSIDE the repo.
+set -euo pipefail
+ROOT="$(git rev-parse --show-toplevel)"
+WT="$(dirname "$ROOT")/mofn-wt"
+case "${1:-}" in
+  new)
+    b="${2:?usage: wt new <branch>}"; d="$WT/${b//\//-}"
+    mkdir -p "$WT"
+    if git show-ref --verify --quiet "refs/heads/$b"; then
+      git worktree add "$d" "$b"
+    else
+      git worktree add "$d" -b "$b"
+    fi
+    git -C "$d" submodule update --init --recursive >/dev/null 2>&1 || true
+    echo "worktree ready:  cd $d"
+    ;;
+  list) git worktree list ;;
+  rm)
+    b="${2:?usage: wt rm <branch>}"; d="$WT/${b//\//-}"
+    git worktree remove "$d" && echo "removed $d"
+    ;;
+  prune) git worktree prune && echo "pruned" ;;
+  *) echo "usage: wt {new|list|rm|prune} [branch]"; exit 1 ;;
+esac

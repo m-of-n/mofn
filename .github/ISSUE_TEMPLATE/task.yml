@@ -1,0 +1,20 @@
+name: Task
+description: A backlog task (T-NNN)
+title: "T-NNN: "
+labels: [task]
+body:
+  - type: input
+    id: backlog
+    attributes: {label: Backlog id, placeholder: "T-042"}
+    validations: {required: true}
+  - type: dropdown
+    id: increment
+    attributes: {label: Increment, options: [I0, I1, I2, I3, I4, I5]}
+    validations: {required: true}
+  - type: input
+    id: deliverable
+    attributes: {label: Deliverable, placeholder: "D6"}
+  - type: textarea
+    id: done
+    attributes: {label: Definition of done, description: How we will know it is finished}
+    validations: {required: true}

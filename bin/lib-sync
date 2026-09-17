@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# lib-sync — manage the library/ submodule pin so nobody types submodule syntax.
+# The pin is the point: a report cites library@<commit>, so its bibliography
+# cannot shift underneath it.
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+case "${1:---init}" in
+  --init)   git submodule update --init --recursive && echo "library/ initialised at $(git -C library rev-parse --short HEAD)" ;;
+  --update) git submodule update --remote library
+            echo "library/ pin moved to $(git -C library rev-parse --short HEAD)"
+            echo "commit the pin change: git add library && git commit -s -m 'chore: bump library pin'" ;;
+  --check)
+    if [ -z "$(ls -A library 2>/dev/null)" ]; then echo "ERROR library/ not initialised — run bin/lib-sync --init"; exit 1; fi
+    if ! git diff --quiet -- library; then echo "ERROR library/ pin changed but not staged — intentional? git add library"; exit 1; fi
+    echo "library/ pinned at $(git -C library rev-parse --short HEAD) — clean" ;;
+  *) echo "usage: lib-sync [--init|--update|--check]"; exit 1 ;;
+esac

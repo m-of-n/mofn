@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# build-site — assemble docs/ from the authored artifacts, then build.
+# artifacts/docs/ is the source of truth; docs/ is a staging area.
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+mkdir -p docs/architecture docs/library
+cp artifacts/docs/*.md docs/architecture/
+cp LIMITATIONS.md docs/
+[ -f library/docs/construction.md ] && cp library/docs/construction.md docs/library/
+[ -f library/exports/references.json ] && cp library/exports/references.json docs/library/
+mkdocs build --strict

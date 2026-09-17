@@ -1,0 +1,21 @@
+name: Decision question
+description: Something bearing on an open DEC-* in ARCH-0001
+title: "DEC-00N: "
+labels: [decision]
+body:
+  - type: input
+    id: dec
+    attributes: {label: Which decision, placeholder: "DEC-002"}
+    validations: {required: true}
+  - type: textarea
+    id: evidence
+    attributes: {label: Evidence, description: Library record ids that bear on this}
+  - type: textarea
+    id: test
+    attributes: {label: Acceptance test, description: What would settle it}
+    validations: {required: true}
+  - type: markdown
+    attributes:
+      value: |
+        **This issue cannot accept the decision.** Acceptance is an `ADR-NNNN`
+        plus a changelog line plus a status update in ARCH-0001 (§9.2).

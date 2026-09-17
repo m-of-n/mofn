@@ -1,0 +1,7 @@
+site/
+docs/architecture/
+docs/library/
+docs/LIMITATIONS.md
+__pycache__/
+*.pyc
+.venv/

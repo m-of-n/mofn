@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+"""new-doc <kind> <slug> "<title>" — scaffold correct archdoc/v1 front matter."""
+import datetime, pathlib, sys
+if len(sys.argv) < 4:
+    sys.exit('usage: new-doc <ARCH|ADR|MAP|PLAN|PROC> <slug> "<title>"')
+kind, slug, title = sys.argv[1].upper(), sys.argv[2], sys.argv[3]
+docs = pathlib.Path(__file__).resolve().parent.parent / "artifacts" / "docs"
+n = max([int(p.name.split("-")[1]) for p in docs.glob(f"{kind}-*.md")
+         if p.name.split("-")[1].isdigit()] or [0]) + 1
+p = docs / f"{kind}-{n:04d}-{slug}.md"
+today = datetime.date.today().isoformat()
+p.write_text(f'''---
+schema: "archdoc/v1"
+id: {kind}-{n:04d}
+title: "{title}"
+description: ""
+type: {"architecture" if kind == "ARCH" else "decision" if kind == "ADR" else "process"}
+category: security
+status: draft
+version: "0.1.0"
+version_policy: "semver; PATCH = editorial; MINOR = additive; MAJOR = breaking"
+date: "{today}"
+updated: "{today}"
+decision_makers: []
+reviewers: []
+needs_review: true
+reviewed: false
+canonical_path: artifacts/docs/{p.name}
+defers_to: ARCH-0001
+---
+
+# {kind}-{n:04d} — {title}
+
+**Status: draft. Nothing here is accepted.**
+''')
+print(f"created artifacts/docs/{p.name}")
