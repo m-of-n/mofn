@@ -1,6 +1,8 @@
-# Normative surfaces. Architecture and published vectors need sponsor review.
-*                          @student1 @student2
-/artifacts/docs/           @paullambert
-/artifacts/vectors/        @paullambert
-/artifacts/schema/         @paullambert
-/.github/                  @paullambert
+# Catch-all: any repo admin may review.
+# Normative surfaces stay with the sponsor (CONTRIBUTING.md §5).
+# Second student is added on accept — see #3.
+*                          @nymble @davidhsiaotw
+/artifacts/docs/           @nymble
+/artifacts/vectors/        @nymble
+/artifacts/schema/         @nymble
+/.github/                  @nymble
