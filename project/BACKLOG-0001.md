@@ -12,7 +12,7 @@ date: "2026-09-16"
 updated: "2026-09-16"
 needs_review: true
 reviewed: false
-canonical_path: artifacts/docs/BACKLOG-0001.md
+canonical_path: project/BACKLOG-0001.md
 defers_to: ARCH-0001
 agent_notes: >
   Tasks are the execution unit; topics (PROC-0001 §4) are the assignment unit.
@@ -38,7 +38,7 @@ after is upside.
 | T-001 | Create GitHub org `m-of-n`; three Owners | D0 | PL | S | todo |
 | T-002 | Create `mofn` and `library` repos; push initial branches | D0 | PL | S | todo |
 | T-003 | Branch protection on both: no direct push, 1 review, CI green, linear, signed | D0 | S1 | S | todo |
-| T-004 | `CODEOWNERS` → `artifacts/docs/**` and `artifacts/vectors/**` to PL | D0 | S1 | S | todo |
+| T-004 | `CODEOWNERS` → `project/**` and `spec/vectors/**` to PL | D0 | S1 | S | todo |
 | T-005 | DCO check in CI | D0 | S1 | S | todo |
 | T-006 | Issue + PR templates; labels; milestones I0–I5 | D0 | S2 | M | todo |
 | T-007 | `bin/validate-archdoc` in CI — front matter + version/updated coupling | D0 | S1 | M | todo |
@@ -84,7 +84,7 @@ after is upside.
 | T-043 | *k*-of-*n* threshold subjects, keys only, no nesting | D6 | S2 | L | todo |
 | T-044 | Statement acceptance (§4.3 step 3), kept separate from reduction | D6 | S2 | M | todo |
 | T-045 | Verifier output reports the three separately (R-O-06) | D6 | S2 | M | todo |
-| T-046 | Published test vectors under `artifacts/vectors/` | D6 | S1 | M | todo |
+| T-046 | Published test vectors under `spec/vectors/` | D6 | S1 | M | todo |
 | T-047 | **Demo: chain reduces; break a link; verifier explains which and why** | D6 | all | M | todo |
 
 ## I4 — Mappings & app · Nov 12–25 · D7

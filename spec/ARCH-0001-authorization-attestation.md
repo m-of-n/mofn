@@ -8,10 +8,10 @@ description: "Canonical working architecture for a native model that is not X.50
 type: architecture
 category: security
 status: draft
-version: "0.1.0"
+version: "0.1.1"
 version_policy: "semver; PATCH = editorial; MINOR = additive requirements; MAJOR = breaking model change"
 date: "2026-09-15"
-updated: "2026-09-15"
+updated: "2026-09-21"
 authors:
   - role: architect
     id: conversation-brainpool256
@@ -22,9 +22,9 @@ reviewed: false
 iteration_of: null
 supersedes: []
 superseded_by: null
-canonical_path: artifacts/docs/ARCH-0001-authorization-attestation.md
+canonical_path: spec/ARCH-0001-authorization-attestation.md
 companion:
-  - artifacts/docs/ARCH-0001-CHANGELOG.md
+  - spec/ARCH-0001-CHANGELOG.md
 tags:
   - spki
   - sdsi
@@ -78,9 +78,9 @@ agent_notes: >
 
 # ARCH-0001 — Authorization, local names, and artifact attestation
 
-**Status:** draft · **Version:** 0.1.0 · **Date:** 2026-09-15  
-**Canonical file:** `artifacts/docs/ARCH-0001-authorization-attestation.md`  
-**Changelog:** `artifacts/docs/ARCH-0001-CHANGELOG.md`
+**Status:** draft · **Version:** 0.1.1 · **Date:** 2026-09-15  
+**Canonical file:** `spec/ARCH-0001-authorization-attestation.md`  
+**Changelog:** `spec/ARCH-0001-CHANGELOG.md`
 
 This document is the checkpoint. Later work edits *this* document (or a successor version of it), not a new essay.
 
@@ -385,7 +385,7 @@ Options: DSSE (in-toto world), COSE_Sign1 (SCITT world), both with a single unsi
 ## 9. Agent / iteration protocol
 
 1. Edit this file in place for additive clarification.
-2. Any accepted decision is a new `artifacts/docs/ADR-NNNN-….md` and a line in the changelog; then set `status` on that decision here to `accepted` with a pointer.
+2. Any accepted decision is a new `spec/ADR-NNNN-….md` and a line in the changelog; then set `status` on that decision here to `accepted` with a pointer.
 3. Breaking model changes increment MAJOR and set `superseded_by` on the old file if the file is split.
 4. Do not append parallel “ideas” documents that diverge from §4–§5. Propose a diff against this file.
 5. Front matter `version` and `updated` must change together.

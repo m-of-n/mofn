@@ -24,8 +24,8 @@ reviewed: false
 iteration_of: ARCH-0001
 supersedes: []
 superseded_by: null
-canonical_path: artifacts/docs/ARCH-0001-PROPOSAL-v0.2.0.md
-target: artifacts/docs/ARCH-0001-authorization-attestation.md
+canonical_path: spec/ARCH-0001-PROPOSAL-v0.2.0.md
+target: spec/ARCH-0001-authorization-attestation.md
 tags:
   - proposal
   - dec-002

@@ -78,7 +78,7 @@ template asks for exactly that.
 **Review:**
 - One approving review to merge. The students are both Owners and review each
   other.
-- `CODEOWNERS` routes `artifacts/docs/**` and `artifacts/vectors/**` to Paul —
+- `CODEOWNERS` routes `spec/**` and `spec/vectors/**` to Paul —
   the normative surfaces.
 - Comment on the line, not in Slack or SMS. A line comment survives; a text does
   not.
@@ -94,7 +94,7 @@ Run `bin/wt rm <branch>`.
 
 ## 5. Architecture changes serialize
 
-`artifacts/docs/ARCH-0001-*.md` is the source of truth. Per its §9:
+`spec/ARCH-0001-*.md` is the source of truth. Per its §9:
 
 - Edit **in place** for additive clarification; bump `version` and `updated`
   **together**, and append to the changelog. CI enforces this.
@@ -111,7 +111,7 @@ Run `bin/wt rm <branch>`.
 
 ## 6. Document conventions
 
-Every document under `artifacts/docs/` carries `archdoc/v1` front matter and is
+Every document under `spec/` and `project/` carries `archdoc/v1` front matter and is
 validated by `bin/validate-archdoc` in CI.
 
 ```

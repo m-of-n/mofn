@@ -14,11 +14,11 @@ USF CS690 Master's Project, Fall 2026. Sponsor: Paul Lambert.
 
 | | |
 |---|---|
-| [`ARCH-0001`](artifacts/docs/ARCH-0001-authorization-attestation.md) | **Architecture — the source of truth.** Read first. |
-| [`ARCH-0001-PROPOSAL-v0.2.0`](artifacts/docs/ARCH-0001-PROPOSAL-v0.2.0.md) | Open proposal against it. Nothing accepted. |
-| [`PLAN-0001`](artifacts/docs/PLAN-0001-project-plan.md) | Execution plan, increments, risks |
-| [`BACKLOG-0001`](artifacts/docs/BACKLOG-0001.md) | Tasks |
-| [`PROC-0001`](artifacts/docs/PROC-0001-agents-and-topics.md) | Agents, topics, parallel work |
+| [`ARCH-0001`](spec/ARCH-0001-authorization-attestation.md) | **Architecture — the source of truth.** Read first. |
+| [`ARCH-0001-PROPOSAL-v0.2.0`](spec/ARCH-0001-PROPOSAL-v0.2.0.md) | Open proposal against it. Nothing accepted. |
+| [`PLAN-0001`](project/PLAN-0001-project-plan.md) | Execution plan, increments, risks |
+| [`BACKLOG-0001`](project/BACKLOG-0001.md) | Tasks |
+| [`PROC-0001`](project/PROC-0001-agents-and-topics.md) | Agents, topics, parallel work |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | Branches, worktrees, PRs, review |
 
 ## Status
@@ -30,9 +30,10 @@ infer a decision from code that does not exist yet.
 ## Layout
 
 ```
-artifacts/docs/     architecture, plan, backlog, ADRs, mappings  (archdoc/v1)
-artifacts/schema/   encoding-neutral schema for the logical types (WP1)
-artifacts/vectors/  published test vectors — an artifact, not a fixture
+spec/               ARCH, ADR, MAP — the normative work      (archdoc/v1)
+spec/schema/        encoding-neutral schema for the logical types (WP1)
+spec/vectors/       published test vectors — the interop contract
+project/            PLAN, BACKLOG, PROC — how we run it       (archdoc/v1)
 src/mofn/           reference implementation
 prototype/          throwaway spikes. never ships
 design-log/         AI-assisted design record

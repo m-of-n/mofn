@@ -3,8 +3,9 @@
 # artifacts/docs/ is the source of truth; docs/ is a staging area.
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
-mkdir -p docs/architecture docs/library
-cp artifacts/docs/*.md docs/architecture/
+mkdir -p docs/architecture docs/project docs/library
+cp spec/*.md docs/architecture/
+cp project/*.md docs/project/
 cp LIMITATIONS.md docs/
 [ -f library/docs/construction.md ] && cp library/docs/construction.md docs/library/
 [ -f library/exports/references.json ] && cp library/exports/references.json docs/library/

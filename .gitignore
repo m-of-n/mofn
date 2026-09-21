@@ -1,5 +1,6 @@
 site/
 docs/architecture/
+docs/project/
 docs/library/
 docs/LIMITATIONS.md
 __pycache__/
