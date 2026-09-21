@@ -19,9 +19,9 @@ needs_review: true
 reviewed: false
 supersedes: ["PLAN-v1-superseded", "PLAN-v2-superseded"]
 reflects: "ARCH-0001-PROPOSAL-v0.2.0 rev.2 (sponsor corrections 2026-09-16)"
-canonical_path: artifacts/docs/PLAN-0001-project-plan.md
+canonical_path: project/PLAN-0001-project-plan.md
 companion:
-  - artifacts/docs/ARCH-0001-authorization-attestation.md
+  - spec/ARCH-0001-authorization-attestation.md
 defers_to: ARCH-0001
 constraints:
   architecture_source_of_truth: ARCH-0001
@@ -185,8 +185,8 @@ are not mechanically enforced are not followed by week 6.
   **CC-BY-4.0**; library notes **CC-BY-4.0**. Third-party PDFs never committed.
 - **DCO** (`Signed-off-by`), not a CLA — one line, CI-enforced.
 - `main` protected: no direct pushes, one approving review, CI green, linear
-  history, signed commits. `CODEOWNERS` routes `artifacts/docs/**` and
-  `artifacts/vectors/**` to Paul.
+  history, signed commits. `CODEOWNERS` routes `project/**` and
+  `spec/vectors/**` to Paul.
 - Pages via **MkDocs Material**, Python not Node — matches the project and spares
   a toolchain nobody needs.
 
@@ -496,7 +496,7 @@ failed.
   description or a Zoom note.
 - **One PR per deliverable slice.** Small and reviewable beats big and correct.
 - Students are both Owners and review each other; Paul reviews
-  `artifacts/docs/**` and `artifacts/vectors/**` via `CODEOWNERS`.
+  `project/**` and `spec/vectors/**` via `CODEOWNERS`.
 - **Draft PRs opened on day one of an increment** are the progress signal.
 - The **CS690 weekly progress page is generated from the repo** — merged PRs,
   closed issues, plus a short reflection. A course requirement made a byproduct.

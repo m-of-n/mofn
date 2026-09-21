@@ -12,5 +12,5 @@
 - [ ] `bin/validate-archdoc` passes
 - [ ] `bin/lib-sync --check` passes (submodule pin intentional)
 - [ ] `cd library && bin/validate && bin/export` — exports committed if changed
-- [ ] If this touches `artifacts/docs/`: `version` **and** `updated` both bumped, changelog appended
+- [ ] If this touches `spec/` and `project/`: `version` **and** `updated` both bumped, changelog appended
 - [ ] **No DEC-\* marked accepted here.** Only an `ADR-NNNN` accepts a decision.

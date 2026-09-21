@@ -18,10 +18,10 @@ decision_makers: []
 reviewers: []
 needs_review: true
 reviewed: false
-canonical_path: artifacts/docs/PROC-0001-agents-and-topics.md
+canonical_path: project/PROC-0001-agents-and-topics.md
 companion:
-  - artifacts/docs/ARCH-0001-authorization-attestation.md
-  - artifacts/docs/PLAN-0001-project-plan.md
+  - spec/ARCH-0001-authorization-attestation.md
+  - project/PLAN-0001-project-plan.md
 defers_to: ARCH-0001
 agent_notes: >
   Process only. Decides nothing about architecture. Answers two questions raised

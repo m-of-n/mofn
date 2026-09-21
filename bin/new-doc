@@ -4,7 +4,9 @@ import datetime, pathlib, sys
 if len(sys.argv) < 4:
     sys.exit('usage: new-doc <ARCH|ADR|MAP|PLAN|PROC> <slug> "<title>"')
 kind, slug, title = sys.argv[1].upper(), sys.argv[2], sys.argv[3]
-docs = pathlib.Path(__file__).resolve().parent.parent / "artifacts" / "docs"
+root = pathlib.Path(__file__).resolve().parent.parent
+SPEC = {"ARCH", "ADR", "MAP"}
+docs = root / ("spec" if kind in SPEC else "project")
 n = max([int(p.name.split("-")[1]) for p in docs.glob(f"{kind}-*.md")
          if p.name.split("-")[1].isdigit()] or [0]) + 1
 p = docs / f"{kind}-{n:04d}-{slug}.md"
@@ -25,7 +27,7 @@ decision_makers: []
 reviewers: []
 needs_review: true
 reviewed: false
-canonical_path: artifacts/docs/{p.name}
+canonical_path: {docs.name}/{p.name}
 defers_to: ARCH-0001
 ---
 
@@ -33,4 +35,4 @@ defers_to: ARCH-0001
 
 **Status: draft. Nothing here is accepted.**
 ''')
-print(f"created artifacts/docs/{p.name}")
+print(f"created {docs.name}/{p.name}")
