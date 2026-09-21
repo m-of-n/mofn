@@ -7,9 +7,9 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.1.0"
+version: "0.3.0"
 date: "2026-09-16"
-updated: "2026-09-16"
+updated: "2026-09-21"
 needs_review: true
 reviewed: false
 canonical_path: project/BACKLOG-0001.md
@@ -35,12 +35,15 @@ after is upside.
 
 | id | task | del | own | sz | status |
 |---|---|---|---|---|---|
-| T-001 | Create GitHub org `m-of-n`; three Owners | D0 | PL | S | todo |
-| T-002 | Create `mofn` and `library` repos; push initial branches | D0 | PL | S | todo |
-| T-003 | Branch protection on both: no direct push, 1 review, CI green, linear, signed | D0 | S1 | S | todo |
-| T-004 | `CODEOWNERS` → `project/**` and `spec/vectors/**` to PL | D0 | S1 | S | todo |
+| T-001 | ~~Create GitHub org `m-of-n`~~ — done; DEC-001 accepted | D0 | PL | S | done |
+| T-002 | ~~Create `mofn` and `library` repos~~ — done, both public and pushed | D0 | PL | S | done |
+| T-003 | Branch protection — set on both. **Open:** `enforce_admins` and signed commits, both off until students join | D0 | S1 | S | review |
+| T-004 | `CODEOWNERS` → `/spec/` and `/project/` to PL; both students on the catch-all | D0 | S1 | S | done |
 | T-005 | DCO check in CI | D0 | S1 | S | todo |
-| T-006 | Issue + PR templates; labels; milestones I0–I5 | D0 | S2 | M | todo |
+| T-006 | ~~Issue + PR templates; labels; milestones~~ — done | D0 | S2 | M | done |
+| T-006a | Repo `admin` for both students — David done; second on accept | D0 | PL | S | doing |
+| T-006b | Decide faculty access for Mario Lin (read? admin?) | D0 | PL | S | todo |
+| T-006c | Turn on `enforce_admins` now a second reviewer exists | D0 | PL | S | todo |
 | T-007 | `bin/validate-archdoc` in CI — front matter + version/updated coupling | D0 | S1 | M | todo |
 | T-008 | MkDocs Material site deploying to Pages from a merged PR | D0 | S2 | M | todo |
 | T-009 | `library` wired as submodule; `bin/lib-sync` working | D0 | S1 | S | todo |
