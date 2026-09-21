@@ -39,4 +39,4 @@ This project builds the native model that has both.
 
 - [ARCH-0001](architecture/ARCH-0001-authorization-attestation.md) — architecture, the source of truth
 - [Open proposal v0.2.0](architecture/ARCH-0001-PROPOSAL-v0.2.0.md) — under review
-- [Plan](architecture/PLAN-0001-project-plan.md) · [Backlog](architecture/BACKLOG-0001.md)
+- [Plan](project/PLAN-0001-project-plan.md) · [Backlog](project/BACKLOG-0001.md)
