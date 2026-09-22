@@ -2,7 +2,7 @@
 
 # Publishing manifest
 
-9 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/). Regenerated 2026-09-21.
+9 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
 
 A document is published because it **exists and declares a status** in its
 front matter — not because someone remembered to add it to a nav list. Set
