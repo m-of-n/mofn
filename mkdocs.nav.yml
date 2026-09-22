@@ -8,6 +8,7 @@ nav:
       - "Authorization, local names, and artifact attestation — architecture checkpoint": architecture/ARCH-0001-authorization-attestation.md
   - Planning:
       - "m-of-n backlog": project/BACKLOG-0001.md
+      - "Open decision register — everything waiting on a human": project/DECISIONS-0001.md
       - "Project plan — semester execution, repo, library, and team": project/PLAN-0001-project-plan.md
       - "Agents, topics, and the unit of parallel work": project/PROC-0001-agents-and-topics.md
       - "Multi-agent ingestion — fan-out, gates, and what humans actually review": project/PROC-0002-multi-agent-ingestion.md
