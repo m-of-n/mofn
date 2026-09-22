@@ -6,3 +6,5 @@ docs/LIMITATIONS.md
 __pycache__/
 *.pyc
 .venv/
+docs/research/
+docs/manifest.json

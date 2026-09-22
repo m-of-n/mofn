@@ -43,8 +43,10 @@ def changed_in_head(path):
 
 
 for p in sorted(q for d in DOCS for q in d.glob("*.md")):
-    fm, _ = front(p)
+    fm, raw = front(p)
     rel = p.relative_to(ROOT)
+    if raw.lstrip().startswith("<!-- GENERATED"):
+        continue          # generated views carry no front matter by design
     if fm is None:
         errs.append(f"{rel}: no archdoc/v1 front matter")
         continue
