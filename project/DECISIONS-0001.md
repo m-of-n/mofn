@@ -40,7 +40,7 @@ Ordered by **what it unblocks**, not by importance.
 
 | # | Decision | Where | Why it blocks |
 |---|---|---|---|
-| **1** | **Does R-M-12 stand?** Extension points are `(key, local label)`; no central registry. | proposal §3.2, §7 | Load-bearing. It constrains **DEC-002, DEC-004 and DEC-007 at once**. If it falls, three sections of the proposal need rework — about a week. Cheaper to test before fixtures exist than after. |
+| ~~1~~ | ~~**Does R-M-12 stand?**~~ **DECIDED 2026-09-22 — yes.** `ADR-0001`; now `ARCH-0002` P1. | ADR-0001 | closed |
 | **2** | **DEC-002 — the encoding.** Does R-M-12 make option 2 untenable, or does proposed option 5 (CBOR data model, no IANA tags, COSE as export only) rescue it? | ARCH-0001 §7, proposal §3.3 | Everything downstream. WP1 is encoding-neutral by design so reduction can start first, but D5 needs a target by **Oct 28**. |
 | **3** | **Who drives the agent lanes — students or sponsor?** | PROC-0002 §8.1 | A teaching decision, not a throughput one. If students drive, they learn the material; if you do, it is faster and they learn less. Shapes L-011 through L-014, which are the bulk of I1. |
 | **4** | **Accept the proposal as ARCH-0001 v0.2.0?** DEC-007 filed, DEC-006 withdrawn, R-M-11/12, R-O-05/06, RFC 9943 citation. | proposal | Until accepted, ARCH-0001 still cites a draft that became an RFC in June 2026, and the new requirements have no force. |
@@ -49,7 +49,12 @@ Ordered by **what it unblocks**, not by importance.
 
 | # | Decision | Where |
 |---|---|---|
-| 5 | **Does R-M-12 deserve its own document (ARCH-0002)?** Arguably the most novel claim available — *SDSI localized principal names; nobody localized type names.* | proposal §7 |
+| ~~5~~ | ~~**ARCH-0002?**~~ **DECIDED 2026-09-22 — yes.** | ADR-0001 |
+| **5a** | **ARCH-0002 P2–P5**, all draft: constraints are **speech acts by a signing key** · **a type is a schema** carrying representation, constraints, semantics and multilingual human-review tags · **domains of discourse** are hash-identified *sets* of schemas · validity checked at all three RFC 8949 levels with unknown fields rejected | ARCH-0002 |
+| **5e** | **DEC-009 — what is the contract form?** A third statement function beside attestation and delegation; the sponsor's note is incomplete. Deliberately unspecified rather than guessed. | ARCH-0002 |
+| **5b** | **DEC-008 — can all processing be key-local?** Proposed: yes above a fixed core, never below it. A key that may define its own validity may define itself valid. | ARCH-0002 |
+| **5c** | **Is a domain of discourse itself a statement by a key**, inheriting authorization and revocation — or a bare hashed artifact any key may cite? First composes; second allows vocabularies nobody owns. | ARCH-0002 P4 |
+| **5d** | **Does DEC-007 survive?** P3 and P4 arguably *answer* it rather than constrain it. Re-state in their terms, or close as answered. | ARCH-0002 |
 | 6 | **Does `locator` survive R-M-12?** Proposed as non-authoritative evidence; the strict reading excludes global locators from the native model entirely. | proposal §7 |
 | 7 | **Which records get PROC-0002 stage 8** (generate code from spec)? Proposed: only where a spec defines an algorithm or wire format we intend to implement or map. | PROC-0002 §8.2 |
 | 8 | **Does `versions/` hold a full record per version, or metadata plus a delta note?** | scope §7.1 |
