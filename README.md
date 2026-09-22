@@ -20,6 +20,7 @@ USF CS690 Master's Project, Fall 2026. Sponsor: Paul Lambert.
 | [`BACKLOG-0001`](project/BACKLOG-0001.md) | Tasks |
 | [`PROC-0001`](project/PROC-0001-agents-and-topics.md) | Agents, topics, parallel work |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | Branches, worktrees, PRs, review |
+| [`CLAUDE.md`](CLAUDE.md) | Constraints for agents and humans; `.claude/skills/` |
 
 ## Status
 

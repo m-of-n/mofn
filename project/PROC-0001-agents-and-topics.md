@@ -7,10 +7,10 @@ description: "Whether the project needs multiple agents, how work is decomposed 
 type: process
 category: process
 status: draft
-version: "0.1.0"
+version: "0.2.0"
 version_policy: "semver; MINOR = additive process rules"
 date: "2026-09-16"
-updated: "2026-09-16"
+updated: "2026-09-21"
 authors:
   - role: proposer
     id: conversation-claude-opus-5
@@ -160,6 +160,24 @@ mappings, `PLAN-NNNN` execution, `PROC-NNNN` process. Every one carries
 
 ---
 
+## 5b. The machinery
+
+Until 2026-09-21 this document described agent use while the repos offered
+agents nothing to read — no `CLAUDE.md`, no skills — even though ARCH-0001's
+front matter addresses "other agents" directly. That gap is now closed:
+
+| | |
+|---|---|
+| `CLAUDE.md` (both repos) | the hard constraints: what is source of truth, what must never happen |
+| `ingest-reference` | which type, what `bears_on`, when *not* to ingest |
+| `summarize` | what `summary.md` must contain — the primary reviewed document |
+| `distill` | compacting a long PDF for requirements extraction |
+| `propose-arch` | changing ARCH-0001 without violating §9.4 |
+| `close-topic` | when a topic is answered rather than merely read |
+
+The tools were always mechanical — `bin/ingest` fills a skeleton. The skills
+carry the judgment, which is the part that was only in people's heads.
+
 ## 6. Recommendation
 
 1. **Use agents for fan-out research, fixture generation, and adversarial review.
@@ -168,7 +186,9 @@ mappings, `PLAN-NNNN` execution, `PROC-NNNN` process. Every one carries
 3. **Assign work by topic**, one owner each, so lanes do not collide on files.
 4. **Keep ARCH-0001 single and serialized.** Split only when a decision outgrows
    a section; R-M-12 is the first likely case.
-5. **Humans own `namespace-governance` and `predicate-rendering`.** They are where
+5. **Skills carry judgment; tools carry mechanics.** A new procedure that an
+   agent must follow belongs in `.claude/skills/`, not in a comment.
+6. **Humans own `namespace-governance` and `predicate-rendering`.** They are where
    the contribution is, and they are the two places a confident wrong answer would
    be most expensive.
 

@@ -7,7 +7,7 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.3.0"
+version: "0.4.0"
 date: "2026-09-16"
 updated: "2026-09-21"
 needs_review: true
@@ -112,6 +112,33 @@ after is upside.
 | T-064 | Demo rehearsals ×3 | D10 | all | M | todo |
 
 ---
+
+## Library build-out — from library#1 and sponsor direction 2026-09-21
+
+`L-` tasks run in `m-of-n/library`. Most are I1; they gate #13 and #14.
+
+| id | task | src | own | sz | status |
+|---|---|---|---|---|---|
+| L-001 | ~~`summary.md` primary; `distilled.md` = requirements extraction~~ | #1.1 | — | L | review |
+| L-002 | ~~`status: stub` for references that bear on nothing yet~~ | sponsor | — | S | review |
+| L-003 | ~~Controlled tag vocabulary: subject / body / role~~ | #1.6,10 | — | M | review |
+| L-004 | ~~`maturity` on RFC 2026 levels~~ | sponsor | — | S | review |
+| L-005 | ~~OKF alignment — YAML front matter, documented extensions~~ | #1.11,12 | — | M | review |
+| L-006 | ~~`implementations` field — open source + commercial~~ | #1.3 | — | S | review |
+| L-007 | ~~`research/` for archived method research~~ | sponsor | — | S | review |
+| L-010 | Fill out the 9 existing records: `summary.md` written, not template | #1.2 | S2 | L | todo |
+| L-011 | **NIST cryptographic algorithms** — FIPS 186-5, 180-4, 202, SP 800-57 | #1.4 | S1 | L | todo |
+| L-012 | NIST digital signature specifics | #1.2 | S1 | M | todo |
+| L-013 | Attestation specifications sweep — RATS, EAT, CoRIM, TPM, Confidential Computing | #1.2,7 | S1 | L | todo |
+| L-014 | Trust management publications — deep research gather | #1.7 | S2 | L | todo |
+| L-015 | Implementation search across all records — open source + commercial | #1.3 | S2 | M | todo |
+| L-016 | Organised bibliography for review; confirm the schema supports it | #1.6 | S2 | M | todo |
+| L-017 | Applicability review pass over all records after first summarisation | #1.8 | PL | M | todo |
+| L-018 | Define ingestion **scope**: standards, specs, recommendations, white papers, sites, repos | #1.10 | PL | S | todo |
+| L-019 | Archive the method research behind `docs/construction.md` — sources were discarded | sponsor | S2 | M | todo |
+| L-020 | Multi-agent ingestion plan; humans review `summary.md` only | #1.5 | PL | M | todo |
+| L-021 | `mofn/research/` — D3 reports with `sources.md` and `searches.md` | sponsor | S1 | S | todo |
+| L-022 | Promote recurring free tags into `schema/tags.yaml` (rule of three) | #1.6 | S2 | S | todo |
 
 ## Parked — deliberately out of scope
 
