@@ -20,9 +20,16 @@ jobs:
         run: pip install -q mkdocs-material && bin/build-site
       - name: library derived views are up to date
         run: |
-          cd library && bin/export && bin/reindex
-          git diff --exit-code -- exports/ index/ || {
-            echo "::error::exports/ or index/ is stale — run 'bin/export && bin/reindex' and commit"; exit 1; }
+          cd library
+          # Tolerate submodule version skew: run whichever generators the
+          # PINNED library actually has. A pin predating a tool must not fail
+          # the build for a tool it has never heard of.
+          paths=""
+          [ -x bin/export ]  && { bin/export;  paths="$paths exports/"; }
+          [ -x bin/reindex ] && { bin/reindex; paths="$paths index/"; }
+          [ -n "$paths" ] || { echo "no generators in pinned library — skipping"; exit 0; }
+          git diff --exit-code -- $paths || {
+            echo "::error::stale derived views in library ($paths) — regenerate and commit"; exit 1; }
   dco:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
