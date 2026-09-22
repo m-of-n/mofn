@@ -1,38 +1,42 @@
 ---
-name: Distil a reference
-description: Use when a library record is read and needs its distilled.md written, or when a distilled note reads like a summary instead of an argument.
+name: Distil a reference for requirements extraction
+description: Use when a long document — usually a PDF standard — needs a compacted agent-friendly rendering so requirements can be extracted from it.
 ---
 
 # Distil a reference
 
-A `distilled.md` earns its place by saving the next reader from opening the
-source. A table of contents does not do that.
+**Secondary and optional.** `summary.md` comes first and always; this is for
+documents an agent must work *through* rather than merely know about —
+typically a long PDF standard.
 
-Three sections, in this order:
+Purpose: a compacted rendering that preserves everything needed to extract
+requirements, and discards everything else. Not a summary. Not prose.
 
-1. **What it says** — the *argument*, not the structure. "Registers signed
-   statements with a transparency service so a relying party can check inclusion
-   without trusting the issuer" beats "Section 4 defines the architecture."
-2. **Why it matters here** — name the `DEC-*` or `R-*` and say which way it
-   pushes. A note that does not move a decision is not finished.
-3. **What it does not settle** — the honest limits. This section is the reason
-   the file exists; a distilled note with nothing here has not been read
-   critically.
+1. **Only distil what will be mined.** If nobody is going to extract
+   requirements from it, it does not need a `distilled.md`. Most records never
+   get one.
+2. **Preserve normative language exactly** — MUST, SHALL, SHOULD, MAY, and the
+   negatives. These are the payload. Never paraphrase a normative sentence.
+3. **Keep the locator on every retained statement** — section number, page.
+   An extracted requirement that cannot be traced back is not usable.
+4. **Drop**: motivation, history, acknowledgements, examples that do not carry
+   a constraint, repeated boilerplate.
+5. **Preserve structure** as headings, so section numbering survives
+   compaction.
+6. YAML front matter, like every markdown file in a record.
 
-Rules:
+Requirements extracted from it go in `requirements/` as YAML, one file per set,
+each carrying the source locator and the normative verb.
 
-- **Quotes go in `quotes.md` with a locator** (section or page), never
-  paraphrased into `distilled.md` as if they were ours. We cite precisely or not
-  at all.
-- **Disagree in writing.** If the source is wrong, or contradicts another
-  record, say so and set `contradicts`. Agreement is cheap; a recorded
-  disagreement is what makes the library worth keeping.
-- **Derived material goes in `artifacts/`** — an extracted grammar, generated
-  code, a diagram — each with a header naming what it came from. If an agent
-  generated it, that is a `design-log/` entry too.
-- Set `status: distilled` and an honest `confidence` only when all three
-  sections are written. CI rejects `distilled` with TODOs left in.
+## Hard rules
 
-Length is not the measure. Four honest paragraphs beat two pages of restatement.
-If the document does not bear on an open decision, say that in one line and set
-`confidence: low` rather than manufacturing relevance.
+- **Never invent a requirement.** If the document implies rather than states,
+  record it as an inference and mark it so — an invented MUST is a defect that
+  propagates into our own specification.
+- **Never distil from a summary.** Distil from the source document.
+- Set `status: distilled` only when `summary.md` is already complete. The order
+  is not negotiable: a human reviews the summary, then an agent mines the
+  distillation.
+
+A distillation that is 20% of the source and loses no normative statement is a
+good one. One that is 60% has not been distilled.

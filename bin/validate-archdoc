@@ -12,6 +12,16 @@ REQ = ["schema", "id", "title", "type", "status", "version", "date", "updated"]
 KINDS = {"ARCH", "ADR", "MAP", "PLAN", "PROC", "BACKLOG"}
 errs = []
 
+try:
+    COMMIT_DATE = subprocess.run(["git", "log", "-1", "--format=%cs"], capture_output=True,
+                                 text=True, cwd=ROOT).stdout.strip()
+except Exception:
+    COMMIT_DATE = ""
+STALE_DAYS = 7
+if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", COMMIT_DATE or ""):
+    import datetime
+    COMMIT_DATE = datetime.date.today().isoformat()
+
 
 def front(p):
     t = p.read_text()
@@ -48,14 +58,35 @@ for p in sorted(q for d in DOCS for q in d.glob("*.md")):
             errs.append(f"{rel}: id '{m.group(1)}' must start with one of {sorted(KINDS)}")
     if re.search(r"^status:\s*(accepted|active)", fm, re.M) and re.search(r"^needs_review:\s*true", fm, re.M):
         errs.append(f"{rel}: status is accepted/active but needs_review is still true")
-    # ARCH-0001 §9.5 — version and updated change together
+    # ARCH-0001 §9.5 — version and updated move together.
+    # Checked by VALUE, not by textual diff: two bumps on the same day leave
+    # 'updated' unchanged in the diff while still being correct.
     d = changed_in_head(p)
     if d:
         vc = bool(re.search(r"^\+version:", d, re.M))
         uc = bool(re.search(r"^\+updated:", d, re.M))
-        if vc != uc:
-            errs.append(f"{rel}: ARCH-0001 §9.5 — 'version' and 'updated' must change together "
-                        f"(version changed={vc}, updated changed={uc})")
+        if vc:
+            m = re.search(r"^updated:\s*\"?([0-9]{4}-[0-9]{2}-[0-9]{2})", fm, re.M)
+            if not m:
+                errs.append(f"{rel}: §9.5 — 'version' changed but 'updated' is missing or not a date")
+            else:
+                # Tolerance, deliberately: a PR authored one day and merged the
+                # next, a rebase, or a UTC midnight rollover must not fail a
+                # rule whose point is catching a STALE 'updated'.
+                import datetime as _dt
+                try:
+                    delta = (_dt.date.fromisoformat(COMMIT_DATE)
+                             - _dt.date.fromisoformat(m.group(1))).days
+                except ValueError:
+                    delta = None
+                if delta is None:
+                    errs.append(f"{rel}: §9.5 — 'updated' is not a valid ISO date")
+                elif delta > STALE_DAYS:
+                    errs.append(f"{rel}: §9.5 — 'version' changed but 'updated' is {m.group(1)}, "
+                                f"{delta} days before the commit date {COMMIT_DATE}. "
+                                f"Bump 'updated' with 'version'.")
+        elif uc:
+            errs.append(f"{rel}: §9.5 — 'updated' changed without a 'version' bump")
 
 for e in errs:
     print(f"ERROR {e}")

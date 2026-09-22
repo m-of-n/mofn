@@ -170,7 +170,8 @@ front matter addresses "other agents" directly. That gap is now closed:
 |---|---|
 | `CLAUDE.md` (both repos) | the hard constraints: what is source of truth, what must never happen |
 | `ingest-reference` | which type, what `bears_on`, when *not* to ingest |
-| `distill` | what a `distilled.md` must contain to earn its place |
+| `summarize` | what `summary.md` must contain — the primary reviewed document |
+| `distill` | compacting a long PDF for requirements extraction |
 | `propose-arch` | changing ARCH-0001 without violating §9.4 |
 | `close-topic` | when a topic is answered rather than merely read |
 

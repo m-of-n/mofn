@@ -60,5 +60,5 @@ why**. Write up the rejections — that half is what makes the claim credible.
 
 ## Skills
 
-`.claude/skills/` — `ingest-reference`, `distill`, `propose-arch`,
+`.claude/skills/` — `ingest-reference`, `summarize`, `distill`, `propose-arch`,
 `close-topic`. Use them; they carry judgment the tools do not.
