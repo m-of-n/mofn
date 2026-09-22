@@ -78,6 +78,24 @@ Every one was caught by a reader, late, after the term had propagated.
 term acquires a precise meaning. A collision caught at naming costs a sentence;
 caught at review it cost a rename across 38 lines and 12 files.
 
+**Correction, 2026-09-22.** Two of the four listed above — `Topic` and `Tag` —
+were **not collisions**, and I raised them anyway. Having been caught three
+times on genuine ones, I began treating *any* reused word as defective and
+proposed renaming 28 files to fix nothing. The sponsor asked the obvious
+question — *why do tags in a YAML field collide with the tag in SPKI?* — and
+they do not: different repos, different files, no document where both could be
+meant.
+
+`GLOSSARY-0001` now states the actual test: **two senses collide only when both
+can be live in the same context.** Reuse across separated contexts is a homonym,
+and homonyms are fine.
+
+**The generalisable failure is over-correction after a real finding** — the same
+shape as the CBOR "tension" in DL-0002, where a neutral property was dramatised
+into a problem. Both are *manufacturing significance*. Worth watching for: after
+being right about a pattern, the next few applications of it are the ones to
+doubt.
+
 ## 5. Process mistakes worth not repeating
 
 - **Chained PRs get auto-closed** when their base branch is deleted on merge. It

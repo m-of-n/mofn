@@ -66,8 +66,7 @@ Ordered by **what it unblocks**, not by importance.
 | # | Decision | Where |
 |---|---|---|
 | **6a** | **Five statement *kinds* or one *form* with *functions*?** ARCH-0001 §4.2 lists `NameCert`/`AuthzCert`/`AclEntry`/`ArtifactStatement`/`Endorse`; ARCH-0002 P2 says one form. They likely reconcile — but **`AclEntry` is unsigned, so it has no speaker**, and may be exactly the fixed floor DEC-008 says cannot be key-local. Needs a decision, not a silent edit. | ARCH-0001 §4.2, ARCH-0002 P2 |
-| **6b** | **"Topic" means two unrelated things** — research unit vs delegation scope. Rename one. The architectural sense has the stronger claim. | GLOSSARY-0001 |
-| **6c** | **"Tag" means two unrelated things** — SPKI authorization value vs library classification label. The library sense is cheaper to rename. | GLOSSARY-0001 |
+| ~~6b~~ | ~~"Topic" collides~~ · ~~6c~~ ~~"Tag" collides~~ — **WITHDRAWN 2026-09-22.** Neither survives the collision test now stated in `GLOSSARY-0001`: two senses collide only when both can be live in the same context. Both are homonyms across separated repos and documents. Raising them was over-correction after three genuine collisions. | GLOSSARY-0001 |
 
 ## Tier 3 — process, decide when convenient
 
