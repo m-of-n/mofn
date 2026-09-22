@@ -16,6 +16,7 @@ nav:
       - "Agents, topics, and the unit of parallel work": project/PROC-0001-agents-and-topics.md
       - "Multi-agent ingestion — fan-out, gates, and what humans actually review": project/PROC-0002-multi-agent-ingestion.md
       - "Team coordination across repositories — lanes, skills, and who opens what": project/PROC-0003-team-coordination.md
+      - "Fall 2026 deliverables — definition of done": project/PROC-0004-community-launch.md
       - "Cycle retrospective — what the harness caught, what it missed, what to repeat": project/RETRO-0001.md
   - Research:
       - "README": research/README.md
