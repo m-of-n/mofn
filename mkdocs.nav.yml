@@ -16,4 +16,5 @@ nav:
       - "README": research/README.md
   - Library:
       - Construction method: library/construction.md
+      - Bibliography: library/bibliography.md
   - Download: download.md
