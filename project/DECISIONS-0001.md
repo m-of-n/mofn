@@ -56,6 +56,14 @@ Ordered by **what it unblocks**, not by importance.
 | 9 | **Should `cites` be extracted automatically from converted PDFs, or always reviewed?** Automatic is noisy; manual does not scale. | references §5.1 |
 | 10 | **Requirements extracted for every summarised record, or only where we intend to conform or map?** Extraction is expensive. | requirements §5.1 |
 
+## Tier 2b — arising from ARCH-0002 and the retro
+
+| # | Decision | Where |
+|---|---|---|
+| **6a** | **Five statement *kinds* or one *form* with *functions*?** ARCH-0001 §4.2 lists `NameCert`/`AuthzCert`/`AclEntry`/`ArtifactStatement`/`Endorse`; ARCH-0002 P2 says one form. They likely reconcile — but **`AclEntry` is unsigned, so it has no speaker**, and may be exactly the fixed floor DEC-008 says cannot be key-local. Needs a decision, not a silent edit. | ARCH-0001 §4.2, ARCH-0002 P2 |
+| **6b** | **"Topic" means two unrelated things** — research unit vs delegation scope. Rename one. The architectural sense has the stronger claim. | GLOSSARY-0001 |
+| **6c** | **"Tag" means two unrelated things** — SPKI authorization value vs library classification label. The library sense is cheaper to rename. | GLOSSARY-0001 |
+
 ## Tier 3 — process, decide when convenient
 
 | # | Decision | Where |
