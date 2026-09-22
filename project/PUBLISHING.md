@@ -20,7 +20,7 @@ front matter — not because someone remembered to add it to a nav list. Set
 
 | document | id | status | version | updated | |
 |---|---|---|---|---|---|
-| [m-of-n backlog](https://m-of-n.github.io/mofn/project/BACKLOG-0001/) | `BACKLOG-0001` | draft ⚠️ | 0.4.0 | 2026-09-21 | [source](https://github.com/m-of-n/mofn/blob/main/project/BACKLOG-0001.md) |
+| [m-of-n backlog](https://m-of-n.github.io/mofn/project/BACKLOG-0001/) | `BACKLOG-0001` | draft ⚠️ | 0.5.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/BACKLOG-0001.md) |
 | [Project plan — semester execution, repo, library, and team](https://m-of-n.github.io/mofn/project/PLAN-0001-project-plan/) | `PLAN-0001` | draft ⚠️ | 0.6.0 | 2026-09-21 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0001-project-plan.md) |
 | [Agents, topics, and the unit of parallel work](https://m-of-n.github.io/mofn/project/PROC-0001-agents-and-topics/) | `PROC-0001` | draft ⚠️ | 0.2.0 | 2026-09-21 | [source](https://github.com/m-of-n/mofn/blob/main/project/PROC-0001-agents-and-topics.md) |
 | [Multi-agent ingestion — fan-out, gates, and what humans actually review](https://m-of-n.github.io/mofn/project/PROC-0002-multi-agent-ingestion/) | `PROC-0002` | draft ⚠️ | 0.2.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/PROC-0002-multi-agent-ingestion.md) |
