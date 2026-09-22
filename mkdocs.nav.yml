@@ -3,9 +3,11 @@ nav:
   - Home: index.md
   - Limitations: LIMITATIONS.md
   - Architecture:
+      - "R-M-12 stands: key-relative naming is a core principle": architecture/ADR-0001-key-relative-naming.md
       - "ARCH-0001 changelog": architecture/ARCH-0001-CHANGELOG.md
       - "Proposed ARCH-0001 v0.2.0 — key-relative extension points, predicate rendering, subject identity, citation corrections": architecture/ARCH-0001-PROPOSAL-v0.2.0.md
       - "Authorization, local names, and artifact attestation — architecture checkpoint": architecture/ARCH-0001-authorization-attestation.md
+      - "Key-relative naming, types, and domains of discourse": architecture/ARCH-0002-key-relative-naming.md
   - Planning:
       - "m-of-n backlog": project/BACKLOG-0001.md
       - "Open decision register — everything waiting on a human": project/DECISIONS-0001.md

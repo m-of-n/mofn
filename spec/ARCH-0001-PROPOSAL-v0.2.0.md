@@ -7,10 +7,10 @@ description: "Prose proposal for the next MINOR version of ARCH-0001. Additive o
 type: proposal
 category: security
 status: proposed
-version: "0.2.0-proposed.2"
+version: "0.2.0-proposed.3"
 version_policy: "target is a MINOR bump of ARCH-0001; all changes additive. This proposal's own revisions tracked in §10."
 date: "2026-09-16"
-updated: "2026-09-16"
+updated: "2026-09-22"
 authors:
   - role: proposer
     id: conversation-claude-opus-5
@@ -37,7 +37,8 @@ proposes:
   new_decisions: [DEC-007]
   withdrawn_decisions: [DEC-006]
   amended_decisions: [DEC-002]
-  new_requirements: [R-M-11, R-M-12, R-O-05, R-O-06]
+  new_requirements: [R-M-11, R-O-05, R-O-06]
+  relocated: ["R-M-12 -> ARCH-0002 P1, accepted by ADR-0001"]
   model_changes: ["§4.1 ArtifactId — additive third identification mode"]
   citation_corrections: ["draft-ietf-scitt-architecture → RFC 9943", "RFC 9804 recorded as historical", "C2PA 2.4"]
 agent_checkpoint: false
@@ -445,17 +446,21 @@ and a combined verdict cannot express it.
 
 Ordered by downstream impact.
 
-**Does R-M-12 make DEC-002 option 2 untenable, or does proposed option 5 rescue
+**[ANSWERED 2026-09-22 — R-M-12 stands; see ADR-0001 and ARCH-0002 P1.]**
+It is no longer proposed here. What remains open is the consequence:
+**does R-M-12 make DEC-002 option 2 untenable, or does proposed option 5 rescue
 it?** This is now the central DEC-002 question and it should be settled before
 fixtures are built. If option 5 is accepted, the practical choice narrows to "CBOR
 data model with key-relative types" versus "JSON with JCS and key-relative types,"
 and the decision becomes tractable for two students. If R-M-12 is judged too
 strong, say so explicitly, because much of §3.2, §5.1, and §5.4 depends on it.
 
-**Is R-M-12 v0.2.0 material, or does it deserve its own architecture document?**
-It is a cross-cutting principle affecting three open decisions and arguably the
-most novel claim the project has — SDSI localized principal names, and nobody
-localized type names. It may warrant ARCH-0002 rather than a requirement row.
+**[ANSWERED 2026-09-22 — it deserves its own document.]** R-M-12 is now
+**ARCH-0002 P1**, accepted by ADR-0001. ARCH-0002 additionally drafts three
+principles the sponsor raised at the same time: constrained objects are distinct
+objects (P2), validity is checked at all three RFC 8949 levels and unknown fields
+are rejected (P3), and generic parseability is a transport property rather than a
+validation one (P4). **DEC-P4 — can all processing be key-local — is open there.**
 
 **Does `locator` survive R-M-12?** §6 proposes treating it as non-authoritative
 evidence. The stricter reading is that global locators have no place in the native
@@ -514,6 +519,11 @@ what is actually accepted.
 ---
 
 ## 10. Revision history of this proposal
+
+**0.2.0-proposed.3 — 2026-09-22.** Sponsor accepted R-M-12; it moves to
+ARCH-0002 P1 via ADR-0001 and is no longer proposed here. Two §8 questions
+answered. What remains in this proposal: the RFC 9943 citation, the DEC-002
+amendment and option 5, DEC-007, R-M-11, R-O-05 and R-O-06.
 
 **0.2.0-proposed.2 — 2026-09-16.** Sponsor review of rev.1. Three corrections:
 
