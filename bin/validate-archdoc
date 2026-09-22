@@ -9,7 +9,7 @@ import pathlib, re, subprocess, sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DOCS = [ROOT / "spec", ROOT / "project"]
 REQ = ["schema", "id", "title", "type", "status", "version", "date", "updated"]
-KINDS = {"ARCH", "ADR", "MAP", "PLAN", "PROC", "BACKLOG", "DECISIONS"}
+KINDS = {"ARCH", "ADR", "MAP", "PLAN", "PROC", "BACKLOG", "DECISIONS", "GLOSSARY", "RETRO"}
 errs = []
 
 try:
