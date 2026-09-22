@@ -19,13 +19,31 @@ defers_to: ARCH-0001
 
 # Glossary
 
-**Term collisions are this project's recurring defect.** Three so far:
-`artifacts/` as a directory against **Artifact** the normative term; `DEC-P4`
-against principle **P4**; and the two live ones below. Each was caught late, by a
-reader rather than by a check.
+**Term collisions have been a recurring defect** — `artifacts/` as a directory
+against **Artifact** the normative term, and `DEC-P4` against principle **P4**.
+Both were caught late, by a reader.
 
 This file exists so the next one is caught early. **Before introducing a term,
 check it here.**
+
+## What counts as a collision
+
+> Two senses collide when **both can be live in the same context** — the same
+> document, the same repository, or the same sentence in ordinary use.
+
+Reuse across separated contexts is a **homonym**, and homonyms are fine. A
+codebase uses "key" for a cryptographic key and a map key without confusion,
+because no passage means both.
+
+`artifacts/` collided because the directory sat *inside the repository that
+defines `ArtifactStatement`* — a reader could reasonably ask whether ARCH-0001
+was itself an Artifact. `DEC-P4` collided because it appeared in the same
+document as principle P4.
+
+**Applying this test too eagerly is its own defect.** An earlier revision of
+this file listed `tags` and `topic` as live collisions and proposed renaming
+28 files; neither survives the test above. Recorded below so the over-correction
+is visible rather than repeated.
 
 ---
 
