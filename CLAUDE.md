@@ -58,6 +58,23 @@ text, schema, mappings or vectors writes a `design-log/NNNN-slug/` entry:
 question asked, what was produced, what a human accepted or **rejected and
 why**. Write up the rejections — that half is what makes the claim credible.
 
+## Working agreement — every task, no exceptions
+
+1. **End with clear next steps.** Not observations, not a status report — what
+   happens next, who does it, and what it unblocks. A hand-off that leaves the
+   reader deciding what to do with it is unfinished.
+2. **Open the PR in the browser when it is ready for review.**
+   `gh pr view <n> --web`. Do not describe a diff in chat and wait to be asked.
+3. **Review happens from the architecture document, not from a PR description.**
+   The PR body may summarise; it may never be the only place an argument exists.
+   If a reviewer would have to read the chat to follow the reasoning, the
+   document is incomplete — put it in the document.
+4. **Write the `design-log/` entry in the same change**, not afterwards.
+   `DL-0001` is permanently degraded because it was reconstructed a week late.
+   Record what was **rejected** and why; that half is the evidence.
+5. **Use a worktree.** `bin/wt new <branch>`. Multiple sessions run at once here
+   and a shared checkout will collide.
+
 ## Skills — open the repo you are working in
 
 Claude Code loads skills from the **project root only**, never transitively

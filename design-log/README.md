@@ -27,4 +27,12 @@ vectors, and tooling.
 
 ## Entries
 
-- `0001-arch-0001-genesis/` — how ARCH-0001 v0.1.0 was produced (**T-012**, todo)
+| id | subject | status |
+|---|---|---|
+| `0001-arch-0001-genesis` | ARCH-0001 v0.1.0 | **partial** — reconstructed a week late, and permanently degraded as a result |
+| `0002-arch-0002-cycle` | ARCH-0002, ADR-0001 | complete |
+
+`DL-0001` is the argument for the rule: **write the entry in the same change.**
+The prompts, and what the human rejected, were not recoverable a week later —
+including whether ARCH-0001 §4.2's five statement kinds were proposed or
+directed, which register item 6a now has to decide without that evidence.
