@@ -18,11 +18,11 @@ jobs:
         with: {python-version: '3.12'}
       - name: site builds (strict - catches broken doc links)
         run: pip install -q mkdocs-material && bin/build-site
-      - name: library exports are up to date
+      - name: library derived views are up to date
         run: |
-          cd library && bin/export
-          git diff --exit-code -- exports/ || {
-            echo "::error::exports/ is stale — run 'cd library && bin/export' and commit"; exit 1; }
+          cd library && bin/export && bin/reindex
+          git diff --exit-code -- exports/ index/ || {
+            echo "::error::exports/ or index/ is stale — run 'bin/export && bin/reindex' and commit"; exit 1; }
   dco:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'

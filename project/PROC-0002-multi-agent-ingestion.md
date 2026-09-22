@@ -7,7 +7,7 @@ description: "How agents find and process documents at scale while human review 
 type: process
 category: process
 status: draft
-version: "0.1.0"
+version: "0.2.0"
 version_policy: "semver; MINOR = additive process rules"
 date: "2026-09-22"
 updated: "2026-09-22"
@@ -20,7 +20,7 @@ companion:
   - project/PROC-0001-agents-and-topics.md
 defers_to: ARCH-0001
 backlog: L-020
-source: "library#1 item 5"
+source: "library#1 item 5; sponsor review of mofn#18"
 ---
 
 # PROC-0002 — Multi-agent ingestion
@@ -43,18 +43,60 @@ records to human reading minutes.** Everything below follows from that.
 
 ## 2. The pipeline
 
-Five stages. Agents own 1–4; a human owns 5.
+Eleven stages, each a distinct agent. A human owns one of them, and that is the
+point: everything else exists to make **stage 10** cheap and reliable.
 
 | # | Stage | Who | Output |
 |---|---|---|---|
-| 1 | **Discover** | agent | candidate list: title, locator, why it might matter |
-| 2 | **Triage** | agent | in scope? (`docs/scope.md`) → ingest or discard, with reason |
-| 3 | **Ingest** | agent | `bin/ingest`, `status: stub` or `queued`, digest fetched |
-| 4 | **Draft summary** | agent | `summary.md` filled, `status: read` — **never `summarized`** |
-| 5 | **Review** | **human** | promotes to `summarized`, or sends back |
+| 1 | **Discover** | agent | candidates: title, locator, why it might matter |
+| 2 | **Triage** | agent | in scope (`docs/scope.md`)? ingest, stub, or discard **with a recorded reason** |
+| 3 | **Ingest** | agent | `bin/ingest`, digest fetched, `records/<body>/<id>/` |
+| 4 | **Convert** | agent | PDF → markdown, **minimal information loss**; strip page furniture and boilerplate, keep section numbering |
+| 5 | **Extract references** | agent | the document's own reference list → `cites`; unheld targets land on `index/frontier.md` |
+| 6 | **Tag** | agent | `tags`, `topic`, `maturity`, draft `applicability` |
+| 7 | **Distil** | agent | `distilled.md`, then `requirements/*.yaml` per `docs/requirements.md` |
+| 8 | **Implement** | agent | reference code from the spec — e.g. NIST DSS → Python or C — plus **test vectors collected from the source**, in `artifacts/` |
+| 9 | **Survey implementations** | agent | `implementations.open_source` / `.commercial`, with a `searched` date |
+| 10 | **Adversarial review** | agent | attacks the summary, the applicability rating, and the code: *are the test vectors real, are they used, does it run?* |
+| 11 | **Human review** | **human** | promotes to `summarized`, or sends back |
 
-**Stage 4 → 5 is the gate that matters.** An agent never marks its own work
+**Stage 10 → 11 is the gate that matters.** An agent never marks its own work
 reviewed. `status: summarized` is a human signature.
+
+### Stage 4 — conversion
+Minimal information loss is the requirement, and "fluff" is precisely: running
+heads and feet, page numbers, repeated legal boilerplate, and the table of
+contents. **Section numbering is not fluff** — every extracted requirement
+needs a locator, and page numbers do not survive conversion (`docs/requirements.md`
+§1). Keep tables; they carry normative content more often than prose does.
+
+### Stage 5 — the recursive part
+Extracting a document's own references makes ingestion **self-feeding**: it is
+the backward pass of Wohlin snowballing, mechanised. Unheld citations become
+`index/frontier.md`, which is the queue for the next discovery run.
+
+This is also where it runs away. **Depth is capped at 1 by default** — ingest
+what our records cite, not what *those* cite — and the cap is raised only for a
+named topic.
+
+### Stage 8 — code and test vectors
+Generating an implementation from a specification is the sharpest available
+test of whether the spec was understood. NIST DSS is the worked example.
+
+Three hard rules:
+- **Test vectors come from the source document or its publisher, never
+  generated.** A self-generated vector proves the code agrees with itself.
+- **If the source publishes vectors and we did not find them, that is a stage
+  10 failure**, not an acceptable outcome.
+- **Generated code lives in `artifacts/` and never in `src/`.** It is evidence
+  of comprehension, not project code, and `src/` remains empty until DEC-002.
+
+### Stage 10 — adversarial review
+PROC-0001 §3 argues this is the highest-leverage agent use, because it spends
+agent time on the scarce resource rather than the abundant one. It checks:
+the summary against the source; the applicability rating against the document's
+actual content; whether test vectors exist and are used; and **whether the code
+runs**.
 
 ## 3. Fan-out
 
@@ -81,10 +123,16 @@ context rebuilds and produces less consistent judgement.
 
 Mechanical, in CI, before a human sees anything:
 
-- `bin/validate` — schema, typed relations, no committed third-party bytes
+- `bin/validate` — schema, typed relations, body matches directory, no
+  committed third-party bytes
 - `summary.md` present, YAML front matter, no template text left
 - `bears_on` names a real `DEC-*`/`R-*` **or** `status: stub`
-- `exports/` regenerated
+- **`bin/export && bin/reindex` regenerated and committed.** Ingestion makes
+  `index/` stale — records, folded versions, crosswalk, bibliography, frontier.
+  The human-visible bibliography going out of date after an ingestion run is
+  the normal failure, which is why it is a gate and not a reminder.
+- generated code in `artifacts/` runs, and its test vectors are cited to the
+  source
 
 Judgement rules the tools cannot check, from the skills:
 
@@ -124,18 +172,24 @@ resource rather than the abundant one.
 
 ## 8. Open questions **[?]**
 
-1. **Does stage 4 need a second agent reviewing the first?** §7 argues
-   adversarial review is the best available agent use. It would raise quality
-   before human time is spent — at the cost of drafts that read as
-   committee-written.
-2. **Who runs the lanes — students, or the sponsor?** L-011 through L-014 are
-   large. If students drive agents, they learn the material; if the sponsor
-   does, it is faster and they learn less. This is a teaching decision, not a
-   throughput one.
-3. **Is `status: read` the right agent ceiling**, or should agents stop at
-   `queued` and never draft a summary unprompted?
-4. **Batch size.** 6–10 per sitting is a guess. It should be calibrated after
-   the first real topic and this document revised.
-5. **Does the design-log entry requirement apply per record or per topic?**
-   Per record is unusable at this volume; per topic may be too coarse to be
-   evidence.
+1. **Who runs the lanes — students, or the sponsor?** L-011 through L-014 are
+   large. If students drive agents they learn the material; if the sponsor does
+   it is faster and they learn less. A teaching decision, not a throughput one.
+   **Unchanged from v0.1 and still the sharpest question here.**
+2. **Which records get stage 8?** Generating code from every spec is not
+   affordable. Proposed: only where a specification defines an algorithm or a
+   wire format we intend to implement or map — NIST DSS yes, a market analysis
+   no.
+3. **Does stage 8 code get its own review**, or does adversarial review cover
+   it? "Does it run" is mechanical; "is it a faithful reading of the spec" is
+   not, and that is the part worth catching.
+4. **Reference-extraction depth.** Capped at 1 above. Raising it to 2 for a
+   topic like `trust-management` may be right, but the frontier grows fast and
+   nothing prunes it automatically.
+5. **Batch size.** 6–10 per sitting is a guess; calibrate after the first real
+   topic and revise this document.
+6. **Design-log entries per record or per topic?** Per record is unusable at
+   this volume; per topic may be too coarse to count as evidence.
+7. **Does the adversarial agent see the human's prior corrections?** It would
+   sharpen it considerably, and it risks training the pipeline to produce what
+   this reviewer accepts rather than what is true.
