@@ -58,7 +58,27 @@ text, schema, mappings or vectors writes a `design-log/NNNN-slug/` entry:
 question asked, what was produced, what a human accepted or **rejected and
 why**. Write up the rejections — that half is what makes the claim credible.
 
-## Skills
+## Skills — open the repo you are working in
 
-`.claude/skills/` — `ingest-reference`, `summarize`, `distill`, `propose-arch`,
-`close-topic`. Use them; they carry judgment the tools do not.
+Claude Code loads skills from the **project root only**, never transitively
+through a submodule and never from a parent directory. A session rooted at a
+parent workspace gets **none of these** and nothing warns you.
+
+| Working on | Open as project | Skills |
+|---|---|---|
+| architecture, plan, spec, backlog | **`mofn/`** | `propose-arch`, `close-topic` |
+| library records, ingestion, summaries | **`library/`** | `ingest-reference`, `summarize`, `distill` |
+
+Partitioned by what they act on, never duplicated — duplicates drift, and a
+drifted skill is worse than a missing one. See `project/PROC-0003` §1.
+
+## Regenerate before every PR
+
+```sh
+bin/manifest          # nav, PUBLISHING.md, manifest.json
+bin/validate-archdoc
+```
+
+`docs/`, `mkdocs.nav.yml`, `project/PUBLISHING.md` and `docs/manifest.json` are
+**generated**. Nav is generated on purpose: a hand-maintained one rots, and the
+site went red on `main` the last time it did.
