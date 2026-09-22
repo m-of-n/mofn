@@ -7,9 +7,9 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.4.0"
+version: "0.5.0"
 date: "2026-09-16"
-updated: "2026-09-21"
+updated: "2026-09-22"
 needs_review: true
 reviewed: false
 canonical_path: project/BACKLOG-0001.md
@@ -127,8 +127,8 @@ after is upside.
 | L-006 | ~~`implementations` field — open source + commercial~~ | #1.3 | — | S | review |
 | L-007 | ~~`research/` for archived method research~~ | sponsor | — | S | review |
 | L-010 | Fill out the 9 existing records: `summary.md` written, not template | #1.2 | S2 | L | todo |
-| L-011 | **NIST cryptographic algorithms** — FIPS 186-5, 180-4, 202, SP 800-57 | #1.4 | S1 | L | todo |
-| L-012 | NIST digital signature specifics | #1.2 | S1 | M | todo |
+| L-011 | **NIST cryptographic algorithms — summarised records, not stubs** (sponsor 2026-09-22). Document set and rationale below | #1.4 | S1 | L | todo |
+| L-012 | ~~NIST digital signature specifics~~ — folded into L-011 | #1.2 | S1 | — | done |
 | L-013 | Attestation specifications sweep — RATS, EAT, CoRIM, TPM, Confidential Computing | #1.2,7 | S1 | L | todo |
 | L-014 | Trust management publications — deep research gather | #1.7 | S2 | L | todo |
 | L-015 | Implementation search across all records — open source + commercial | #1.3 | S2 | M | todo |
@@ -139,6 +139,40 @@ after is upside.
 | L-020 | Multi-agent ingestion plan; humans review `summary.md` only | #1.5 | PL | M | todo |
 | L-021 | `mofn/research/` — D3 reports with `sources.md` and `searches.md` | sponsor | S1 | S | todo |
 | L-022 | Promote recurring free tags into `schema/tags.yaml` (rule of three) | #1.6 | S2 | S | todo |
+
+### L-011 — the NIST set
+
+**Sponsor decision 2026-09-22: summarised records, not a stub cluster.** We
+implement cryptography, so these are core even though ARCH-0001 NG3 defers the
+algorithm suite and none of them bears on an open `DEC-*`. This is the worked
+example of scope §1: *the "bears on a decision" test is a prompt for judgement,
+not a gate.*
+
+All `body: nist`. Each gets a full `summary.md` — bibliographic header,
+`maturity`, applicability, implementations searched, limits.
+
+| document | what | maturity |
+|---|---|---|
+| **FIPS 186-5** | Digital Signature Standard — ECDSA, EdDSA, RSA | `standard` |
+| **FIPS 204** | ML-DSA (Module-Lattice) — approved 2024-08-13 | `standard` |
+| **FIPS 205** | SLH-DSA (Stateless Hash-Based) — approved 2024-08-13 | `standard` |
+| **FIPS 180-4** | Secure Hash Standard, SHA-2 | `standard` |
+| **FIPS 202** | SHA-3 and SHAKE — ML-DSA and SLH-DSA depend on it | `standard` |
+| **SP 800-208** | Stateful hash-based signatures, LMS/XMSS | `recommendation` |
+| **SP 800-186** | Elliptic curve domain parameters | `recommendation` |
+| **SP 800-57 Pt 1 Rev 5** | Key management | `recommendation` |
+| NISTIR 8610 | Additional signature schemes, round 2 status | `informational` — stub is fine |
+| FN-DSA (FALCON) | forthcoming FIPS | stub with locator; nothing to summarise yet |
+
+**FIPS 186-5 is the PROC-0002 stage 8 worked example** the sponsor named: generate
+an implementation from the specification, then verify it. Its test vectors have a
+real publisher source — **NIST CAVP/ACVP** — which satisfies the stage 8 rule that
+vectors come from the source or its publisher and are never generated. If the
+student cannot find CAVP vectors for the scheme they implemented, that is a stage
+10 failure, not an acceptable outcome.
+
+Post-quantum signatures are in the set deliberately. A signature-centric project
+in 2026 that has not read FIPS 204 and 205 will be asked why.
 
 ## Parked — deliberately out of scope
 
