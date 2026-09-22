@@ -7,7 +7,7 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.5.0"
+version: "0.8.0"
 date: "2026-09-16"
 updated: "2026-09-22"
 needs_review: true
@@ -37,7 +37,8 @@ after is upside.
 |---|---|---|---|---|---|
 | T-001 | ~~Create GitHub org `m-of-n`~~ — done; DEC-001 accepted | D0 | PL | S | done |
 | T-002 | ~~Create `mofn` and `library` repos~~ — done, both public and pushed | D0 | PL | S | done |
-| T-003 | Branch protection — set on both. **Open:** `enforce_admins` and signed commits, both off until students join | D0 | S1 | S | review |
+| T-003 | **Fall 2026 deliverables — definition of done.** `PROC-0004`, aligned to D0–D10. Parent issue with sub-issues | D0–D10 | all | L | todo |
+| T-003x | ~~Branch protection~~ — done; residual settings are T-006c | D0 | S1 | S | done |
 | T-004 | `CODEOWNERS` → `/spec/` and `/project/` to PL; both students on the catch-all | D0 | S1 | S | done |
 | T-005 | DCO check in CI | D0 | S1 | S | todo |
 | T-006 | ~~Issue + PR templates; labels; milestones~~ — done | D0 | S2 | M | done |
@@ -49,7 +50,8 @@ after is upside.
 | T-009 | `library` wired as submodule; `bin/lib-sync` working | D0 | S1 | S | todo |
 | T-010 | `bin/wt` worktree helper; document in CONTRIBUTING | D0 | S1 | S | todo |
 | T-011 | Publish draft planning docs to Pages — **asap, ahead of the rest of I0** | D0 | S2 | S | todo |
-| T-012 | `design-log/` opened: how ARCH-0001 v0.1.0 was produced | D0 | PL | S | todo |
+| T-012 | **Architecture development** — market research, technology background, bibliography, base design of both protocols and the application. **Scope extends beyond the student project.** Deliverable: the architecture specification. Iterated in-issue | — | PL | XL | todo |
+| T-012x | ~~`design-log/` opened~~ — done; DL-0001 and DL-0002 written | D0 | PL | S | done |
 | T-013 | Agree and commit the cut order (PLAN-0001 §12) | D0 | all | S | todo |
 
 ## I1 — Library & research · Oct 1–14 · D1 D2 D3
