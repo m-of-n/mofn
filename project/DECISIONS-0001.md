@@ -45,6 +45,68 @@ Ordered by **what it unblocks**, not by importance.
 | **3** | **Who drives the agent lanes — students or sponsor?** | PROC-0002 §8.1 | A teaching decision, not a throughput one. If students drive, they learn the material; if you do, it is faster and they learn less. Shapes L-011 through L-014, which are the bulk of I1. |
 | **4** | **Accept the proposal as ARCH-0001 v0.2.0?** DEC-007 filed, DEC-006 withdrawn, R-M-11/12, R-O-05/06, RFC 9943 citation. | proposal | Until accepted, ARCH-0001 still cites a draft that became an RFC in June 2026, and the new requirements have no force. |
 
+## Tier 1 briefs — the two that need framing, not just naming
+
+### T1-A · Which target applications are **in scope for the specification**?
+
+**The distinction.** *In scope* means the specification must be shown to work
+for it: a domain of discourse, worked examples, and a section. *Cited as
+motivation* means it appears in the introduction and the uptake analysis with
+**no normative content**.
+
+**Why it is not free.** Each in-scope target costs a published domain, worked
+examples, and interchange mapping. Each one cited costs a paragraph.
+
+**Why it cannot be zero.** A specification demonstrated against exactly one
+domain **cannot show that the vocabulary mechanism generalises** — and that
+generalisation is the entire P3/P4 claim. One target proves the machinery runs;
+it does not prove the thesis.
+
+| target | case for scoping it | cost |
+|---|---|---|
+| **Software supply chain** | Existing standards to map to (in-toto, SLSA, SCITT), so WP2/WP3 have a real target. A demo pipeline exists | moderate — mapping work already planned |
+| **Archives / library** | **We already run one.** Non-software, so it exercises R-M-11's `description` mode. Corpus exists | near zero |
+| AI agent attestation | Fastest-moving, least served, where the contribution lands hardest | **high — the target moves.** NIST work began Apr 2026; SCITT profile is a draft |
+| AI media provenance | C2PA adopters | high, crowded, standards-led |
+| Scientific data | PROV-O adjacent, weak authz today | moderate, no partner |
+| IoT onboarding | key-centric by nature | high, needs a partner |
+
+**Recommendation: two — software supply chain as primary, archives/library as
+contrast.** Two deliberately unlike domains demonstrate generalisation; a third
+adds cost without adding evidence. **AI agent attestation is cited as
+motivation, not specified against** — specifying against a target that is
+itself in flux would date the specification faster than anything else in it.
+
+### T1-B · Accept ARCH-0002 P2–P7, or hold?
+
+P1 is accepted (`ADR-0001`). P2–P7 are draft, which means **nothing may be built
+on them.** Accepting makes them normative and constrains DEC-002, DEC-004 and
+DEC-007.
+
+| | principle | evidence today | accepting costs | rec |
+|---|---|---|---|---|
+| **P2** | statement form *A says B has C* | prototype: naming and attestation in one form | rewrite ARCH-0001 §4.2 | **accept** |
+| **P3** | a type *is* a schema | prototype renders EN/ES with **no type-specific code** | multilingual becomes a requirement | **accept** |
+| **P4** | domains are hash-identified **sets** | one domain hashed in a spike | **tightens DEC-002** — canonicalisation onto the semantic critical path | **hold** |
+| **P5** | validity checked, unknown rejected | CVE-2025-59420; vCon `critical` shows opt-in is weaker | encoder and verifier must reject | **accept** |
+| **P6** | a name is an attested string | prototype: 91 bytes, same form | resolves 6a; §4.2 rewrite | **accept** |
+| **P7** | authorization is a family by profile | **none — no profile written** | reframes DEC-004 | **hold** |
+
+**Recommendation: accept P2, P3, P5, P6. Hold P4 and P7.**
+
+**Why hold P4** — it carries the largest downstream cost of the six and the
+least testing. One domain was hash-identified in a spike. Nobody has versioned
+a domain, or had two reference each other, and those are exactly where a
+set-hash gets hard. Accepting it tightens DEC-002 before DEC-002 is decided.
+
+**Why hold P7** — no profile exists. Accepting a principle *about* profiles
+before writing one is asserting a shape we have not tested. Write the supply-chain
+profile first (T1-A), then accept P7 or correct it.
+
+**Why accept the other four now** — each is demonstrated rather than argued, and
+P2 and P6 together close register item 6a, which unblocks rewriting ARCH-0001
+§4.2. Leaving them draft means the prototype's findings cannot be built on.
+
 ## Tier 2 — shapes the work now in flight
 
 | # | Decision | Where |
