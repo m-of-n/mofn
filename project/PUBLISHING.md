@@ -14,9 +14,9 @@ front matter — not because someone remembered to add it to a nav list. Set
 |---|---|---|---|---|---|
 | [R-M-12 stands: key-relative naming is a core principle](https://m-of-n.github.io/mofn/architecture/ADR-0001-key-relative-naming/) | `ADR-0001` | accepted | 1.0.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ADR-0001-key-relative-naming.md) |
 | [ARCH-0001 changelog](https://m-of-n.github.io/mofn/architecture/ARCH-0001-CHANGELOG/) | `ARCH-0001-CHANGELOG` | active | 0.1.1 | 2026-09-21 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-CHANGELOG.md) |
-| [Proposed ARCH-0001 v0.2.0 — key-relative extension points, predicate rendering, subject identity, citation corrections](https://m-of-n.github.io/mofn/architecture/ARCH-0001-PROPOSAL-v0.2.0/) | `ARCH-0001-PROPOSAL-v0.2.0` | proposed ⚠️ | 0.2.0-proposed.3 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-PROPOSAL-v0.2.0.md) |
+| [Proposed ARCH-0001 v0.2.0 — key-relative extension points, predicate rendering, subject identity, citation corrections](https://m-of-n.github.io/mofn/architecture/ARCH-0001-PROPOSAL-v0.2.0/) | `ARCH-0001-PROPOSAL-v0.2.0` | proposed ⚠️ | 0.2.0-proposed.4 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-PROPOSAL-v0.2.0.md) |
 | [Authorization, local names, and artifact attestation — architecture checkpoint](https://m-of-n.github.io/mofn/architecture/ARCH-0001-authorization-attestation/) | `ARCH-0001` | draft ⚠️ | 0.1.1 | 2026-09-21 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-authorization-attestation.md) |
-| [Key-relative naming, types, and domains of discourse](https://m-of-n.github.io/mofn/architecture/ARCH-0002-key-relative-naming/) | `ARCH-0002` | draft ⚠️ | 0.3.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0002-key-relative-naming.md) |
+| [Key-relative naming, types, and domains of discourse](https://m-of-n.github.io/mofn/architecture/ARCH-0002-key-relative-naming/) | `ARCH-0002` | draft ⚠️ | 0.4.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0002-key-relative-naming.md) |
 
 ## Planning
 

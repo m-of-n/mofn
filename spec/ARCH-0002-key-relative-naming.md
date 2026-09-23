@@ -7,7 +7,7 @@ description: "Type names, constraints, types-as-schemas, hash-identified domains
 type: architecture
 category: security
 status: draft
-version: "0.3.0"
+version: "0.4.0"
 version_policy: "semver; PATCH = editorial; MINOR = additive principle; MAJOR = breaking"
 date: "2026-09-22"
 updated: "2026-09-22"
@@ -28,14 +28,14 @@ agent_notes: >
   ARCH-0001 remains the source of truth for the information model. This
   document holds the principles that constrain it. Where the two appear to
   conflict, ARCH-0001's §4 model governs and this document is wrong.
-  P1 is accepted (ADR-0001). P2-P5 are drafted from sponsor direction of
+  P1 is accepted (ADR-0001). P2-P7 are drafted from sponsor direction of
   2026-09-22 and are not accepted. The CBOR note is an observation, not a
   principle. DEC-008 and DEC-009 are open.
 ---
 
 # ARCH-0002 — Key-relative naming and processing
 
-**Status: draft.** P1 is accepted via `ADR-0001`. **P2–P5 are drafted from
+**Status: draft.** P1 is accepted via `ADR-0001`. **P2–P7 are drafted from
 sponsor direction of 2026-09-22 and are not accepted.** The CBOR note is an
 observation recorded as context, not a principle.
 
@@ -199,6 +199,84 @@ vocabularies nobody owns.
 
 ---
 
+## P6 — A name is an attested string **[draft]**
+
+Sponsor direction, 2026-09-22: *"a 'name' is just a type of attested string."*
+
+There is no distinct naming object. A name is a **statement whose predicate is a
+name**:
+
+> *A says B has name "fred"*
+
+`NameCert` is therefore not a *kind* of object — it is P2's form with a
+particular predicate type. The same holds for `AuthzCert` (delegation),
+`ArtifactStatement` (attestation) and `Endorse`.
+
+### This resolves register item 6a
+
+ARCH-0001 §4.2 lists five statement **kinds**; P2 says one **form** with
+**functions**. The tension dissolves once a name is an attested string: the five
+are **functions over one form**, distinguished by predicate type, not five
+object types.
+
+**What survives unchanged is §4.3's separation of *procedures*.** Name
+resolution, authorization reduction and statement acceptance remain three
+distinct algorithms and must not collapse into one graph walk. That was always a
+statement about *procedures*, not about *object kinds* — and reading it as the
+latter is what made 6a look like a contradiction.
+
+`AclEntry` remains the outlier, and informatively so: it is **unsigned**, so it
+has no speaker and is not a statement at all. It is local policy — the fixed
+floor **DEC-008** argues cannot be key-local. A model whose floor is key-relative
+has no floor, and `AclEntry` is where that floor lives.
+
+### Consequences
+
+- One encoding, one signing path, one reduction input type. A verifier that can
+  read an attestation can read a name binding.
+- **Predicate type is the discriminator**, and under P1 it is key-relative — so
+  *whose* notion of "name" is explicit rather than global.
+- A name is revocable, delegable and constrainable **by the same machinery as
+  any other claim**, because it is not special.
+
+---
+
+## P7 — Authorization is a family, deployed by profile **[draft]**
+
+Sponsor direction, 2026-09-22: *"authorization is of multiple types and ways to
+deploy, with different use case profiles and usage of predefined tag/label
+types."*
+
+There is no single authorization mechanism to choose. There is a **family**,
+and a deployment selects a **profile**: which predefined tag/label types are in
+use, how they intersect, and what a verifier must do with them.
+
+**This reframes DEC-004.** The question is not *"which tag language?"* but
+*"what does a profile have to specify, and what is the minimum profile?"* A
+profile names:
+
+| | |
+|---|---|
+| tag/label types in use | drawn from a domain of discourse (P4) |
+| intersection semantics | per type — R-M-08 already requires this per profile |
+| required verifier behaviour | what must be understood, per P5 |
+| rendering | the human-readable form, per P3 |
+
+### Where this meets DEC-007
+
+**DEC-004 and DEC-007 share a mechanism without merging.** A "predefined
+tag/label type" is a type in the P3 sense: representation, constraints,
+semantics, and human-readable rendering, published in a domain of discourse.
+Authorization tags and predicate vocabularies are **defined the same way**.
+
+They still do different jobs — §5.4 stands: a tag language needs intersection,
+a rendering vocabulary needs legibility, and asking either for the other is a
+category error. What is now clear is that **both are types**, so one definition
+mechanism serves both. That is an argument for P3 and P4 being load-bearing
+rather than decorative.
+
+---
+
 ## P5 — Validity is checked, never assumed **[draft]**
 
 RFC 8949 gives a three-level hierarchy that this model adopts wholesale:
@@ -342,6 +420,8 @@ as answered by them.
 | DEC-002 encoding | P1 — registry dependence is native-disqualifying; **P4 — the domain-of-discourse hash needs deterministic canonicalization** |
 | DEC-004 tag language | P1, P2, P3 |
 | §4.3 statement acceptance | P5 |
+| §4.2 statement kinds | **P6 — functions over one form, not five object types** |
+| DEC-004 tag language | **P7 — a profile question, not a language choice** |
 
 Where this document and ARCH-0001 §4 appear to conflict, **ARCH-0001 governs**
 and this document is wrong.
