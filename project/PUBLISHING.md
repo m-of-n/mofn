@@ -2,7 +2,7 @@
 
 # Publishing manifest
 
-15 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
+16 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
 
 A document is published because it **exists and declares a status** in its
 front matter — not because someone remembered to add it to a nav list. Set
@@ -22,14 +22,15 @@ front matter — not because someone remembered to add it to a nav list. Set
 
 | document | id | status | version | updated | |
 |---|---|---|---|---|---|
+| [The application — what we are actually building for the demo](https://m-of-n.github.io/mofn/project/APP-0001-application-design/) | `APP-0001` | draft ⚠️ | 0.1.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/APP-0001-application-design.md) |
 | [m-of-n backlog](https://m-of-n.github.io/mofn/project/BACKLOG-0001/) | `BACKLOG-0001` | draft ⚠️ | 0.8.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/BACKLOG-0001.md) |
 | [Open decision register — everything waiting on a human](https://m-of-n.github.io/mofn/project/DECISIONS-0001/) | `DECISIONS-0001` | active | 0.1.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/DECISIONS-0001.md) |
 | [Glossary — terms that mean more than one thing](https://m-of-n.github.io/mofn/project/GLOSSARY-0001/) | `GLOSSARY-0001` | draft ⚠️ | 0.1.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/GLOSSARY-0001.md) |
 | [Project plan — semester execution, repo, library, and team](https://m-of-n.github.io/mofn/project/PLAN-0001-project-plan/) | `PLAN-0001` | draft ⚠️ | 0.6.0 | 2026-09-21 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0001-project-plan.md) |
 | [Agents, topics, and the unit of parallel work](https://m-of-n.github.io/mofn/project/PROC-0001-agents-and-topics/) | `PROC-0001` | draft ⚠️ | 0.2.0 | 2026-09-21 | [source](https://github.com/m-of-n/mofn/blob/main/project/PROC-0001-agents-and-topics.md) |
 | [Multi-agent ingestion — fan-out, gates, and what humans actually review](https://m-of-n.github.io/mofn/project/PROC-0002-multi-agent-ingestion/) | `PROC-0002` | draft ⚠️ | 0.2.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/PROC-0002-multi-agent-ingestion.md) |
-| [Team coordination across repositories — lanes, skills, and who opens what](https://m-of-n.github.io/mofn/project/PROC-0003-team-coordination/) | `PROC-0003` | draft ⚠️ | 0.1.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/PROC-0003-team-coordination.md) |
-| [Fall 2026 deliverables — definition of done](https://m-of-n.github.io/mofn/project/PROC-0004-community-launch/) | `PROC-0004` | draft ⚠️ | 0.2.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/PROC-0004-community-launch.md) |
+| [Team coordination across repositories — lanes, skills, and who opens what](https://m-of-n.github.io/mofn/project/PROC-0003-team-coordination/) | `PROC-0003` | draft ⚠️ | 0.2.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/PROC-0003-team-coordination.md) |
+| [Fall 2026 deliverables — definition of done](https://m-of-n.github.io/mofn/project/PROC-0004-community-launch/) | `PROC-0004` | draft ⚠️ | 0.3.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/PROC-0004-community-launch.md) |
 | [Cycle retrospective — what the harness caught, what it missed, what to repeat](https://m-of-n.github.io/mofn/project/RETRO-0001/) | `RETRO-0001` | draft ⚠️ | 0.1.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/RETRO-0001.md) |
 
 ## Research
@@ -40,7 +41,7 @@ front matter — not because someone remembered to add it to a nav list. Set
 
 ## Status
 
-⚠️ **11 of 15 published documents are draft or proposed.**
+⚠️ **12 of 16 published documents are draft or proposed.**
 They are public and marked as such. Nothing here is accepted; an open
 `DEC-*` is not settled because it appears on a website.
 

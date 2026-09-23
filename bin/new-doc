@@ -2,7 +2,7 @@
 """new-doc <kind> <slug> "<title>" — scaffold correct archdoc/v1 front matter."""
 import datetime, pathlib, sys
 if len(sys.argv) < 4:
-    sys.exit('usage: new-doc <ARCH|ADR|MAP|PLAN|PROC|DECISIONS> <slug> "<title>"')
+    sys.exit('usage: new-doc <ARCH|ADR|MAP|PLAN|PROC|DECISIONS|APP> <slug> "<title>"')
 kind, slug, title = sys.argv[1].upper(), sys.argv[2], sys.argv[3]
 root = pathlib.Path(__file__).resolve().parent.parent
 SPEC = {"ARCH", "ADR", "MAP"}

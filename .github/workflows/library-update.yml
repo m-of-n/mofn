@@ -1,0 +1,56 @@
+name: library-update
+# The submodule pin is the coordination point between the two repos
+# (PROC-0003 §4): a report cites library@<commit>, so the pin must not shift
+# underneath it. That makes a DELIBERATE pin move right and a MANUAL one
+# needless toil. So: library dispatches on merge, we open a PR, a human merges.
+# This never auto-merges, and never bypasses review.
+on:
+  repository_dispatch: {types: [library-updated]}
+  workflow_dispatch:
+  schedule: [{cron: "0 13 * * 1"}]     # Monday backstop if a dispatch is missed
+permissions: {contents: write, pull-requests: write}
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {submodules: recursive}
+      - name: move the pin
+        id: bump
+        run: |
+          git submodule update --remote library
+          if git diff --quiet -- library; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "sha=$(git -C library rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          {
+            echo 'log<<EOFLOG'
+            git -C library log --oneline "$(git rev-parse HEAD:library)"..HEAD 2>/dev/null | head -20
+            echo EOFLOG
+          } >> "$GITHUB_OUTPUT"
+      - name: regenerate published views
+        if: steps.bump.outputs.changed == 'true'
+        run: bin/manifest
+      - uses: peter-evans/create-pull-request@v6
+        if: steps.bump.outputs.changed == 'true'
+        with:
+          branch: chore/lib-pin-auto
+          title: "chore: bump library pin to ${{ steps.bump.outputs.sha }}"
+          commit-message: |
+            chore: bump library pin to ${{ steps.bump.outputs.sha }}
+
+            Opened automatically when the library moved. The pin still moves in
+            its own commit and still needs a human to merge it - PROC-0003 §4.
+          body: |
+            The library moved. This PR does nothing else.
+
+            **Not auto-merged on purpose.** `PROC-0003` §4: a report cites
+            `library@<commit>`, so the bibliography it was written against must
+            not shift underneath it. Automating the *toil* is right; automating
+            the *decision* is not.
+
+            ### Library commits picked up
+            ```
+            ${{ steps.bump.outputs.log }}
+            ```
