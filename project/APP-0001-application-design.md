@@ -7,7 +7,7 @@ description: "What the demo application does, its commands, and what a user sees
 type: design
 category: product
 status: draft
-version: "0.1.0"
+version: "0.2.0"
 version_policy: "semver; MINOR = command or behaviour added"
 date: "2026-09-22"
 updated: "2026-09-22"
@@ -31,30 +31,48 @@ never specified.
 
 ---
 
+## 0. Correction — 2026-09-23
+
+v0.1 said *"a CLI and not a GUI"* and argued that a GUI would obscure whether a
+rendered sentence came from the vocabulary or from the programmer. **The sponsor
+has since specified a graphic UI for two specific applications, in October.**
+That supersedes the argument, and the argument was wrong anyway: the way to show
+a rendering came from the vocabulary is to **render two unrelated domains through
+one UI** — which a GUI demonstrates more convincingly than a terminal does.
+
+v0.2 therefore specifies **a wallet application with a graphic UI**, with the CLI
+retained as the scriptable surface underneath it.
+
 ## 1. What it is
 
-**`mofn` — a command-line tool that makes and checks statements.**
+**A wallet.** It holds keys, trust roots and statements; it makes attestations;
+and it evaluates a set of statements to decide whether to believe a claim.
 
-One binary. No service, no daemon, no account. It reads and writes files and
-prints verdicts. Everything the CS Night demo shows, it does.
-
-**Why a CLI and not a GUI:** the thesis is that legibility is a property of the
-*data*, not of a UI someone hand-wrote. A CLI that renders a claim in English
-from a resolved type proves that. A GUI would obscure it — a reviewer could not
-tell whether the nice sentence came from the vocabulary or from the programmer.
-
-## 2. The five things it does
-
-| verb | what it does |
+| surface | for |
 |---|---|
-| `make` | create a statement — *A says B has C* — and sign it |
-| `check` | verify a statement and emit a **multi-dimensional verdict** |
-| `render` | print what a statement *means*, from its resolved type |
-| `reduce` | compose a delegation chain and say what authority results |
-| `domain` | publish, inspect and hash a domain of discourse |
+| **graphic UI** | the two use-case applications. October |
+| **CLI** | the same operations, scriptable. Already prototyped |
+| **library** | the reduction and encoding underneath both |
 
-Reduction is the one with no prototype behind it yet, and it is the one the
-project is actually about.
+**Why "wallet" rather than "tool":** the noun matters because it names what the
+user actually has — a set of keys and a set of things other people have said,
+which they carry and present. `PROC-0004` and `PLAN-0001` both under-specified
+this, and the sponsor flagged it as missing on 2026-09-22.
+
+## 2. What a wallet does
+
+| | |
+|---|---|
+| **hold** | keys, and **trust roots** — *"I trust Pa for email in `*@foo.com`"* |
+| **collect** | statements others have made, including ones about you |
+| **make** | attestations, and delegations |
+| **present** | the set of statements a relying party needs to believe a claim |
+| **evaluate** | reduce a presented set against your own roots, and say why |
+
+**Trust roots are the part that is easy to miss.** They are unsigned — nobody
+said them *to* you, you decided them. That is the fixed floor: if a key could
+define its own trustworthiness there would be no floor at all, and it is why
+ARCH-0001's `AclEntry` has no speaker.
 
 ## 3. Commands
 
@@ -137,27 +155,35 @@ part that is genuinely later.
 
 ## 7. What exists already
 
-`prototype/statements/` has statement creation, the reduced-CBOR encoding,
-signing shape, subject modes, domain construction, hash-identification, range
-checking and multilingual rendering — **all of it working**.
+`prototype/statements/` — statement creation, reduced-CBOR encoding, signing
+shape, subject modes, domains, hash-identification, range checking, multilingual
+rendering, **and now reduction**.
 
-Missing, and it is the hard part: **reduction.** Delegation is represented and
-not composed. That is SPKI's actual contribution and the thing the project
-claims, and it has no code.
+`demo_email.py` runs the sponsor's Alice/Bob/Carol/Dave example end to end,
+including the three cases that must fail. **Reduction is no longer the gap.**
 
-## 8. Build order
+## 8. The gap now
+
+**The graphic UI, and the two use-case applications it serves.** October work,
+and nothing exists for it.
+
+Also missing: signature checking inside reduction (`reduce.py` takes statements
+as given), revocation, validity windows, thresholds, and a real range language
+in place of globs.
+
+## 9. Build order
 
 | | | why |
 |---|---|---|
-| 1 | **`reduce`** | the only unprototyped piece, and the one the thesis rests on |
-| 2 | `check` | the verdict, over reduction |
-| 3 | `render` | already works in the spike |
-| 4 | `make` | already works in the spike |
-| 5 | `domain` | already works in the spike |
-| 6 | packaging | genuinely last |
+| 1 | ~~reduce~~ | **done** — `reduce.py`, with the email example |
+| 2 | **the two use cases** | they determine what the UI must show |
+| 3 | **graphic UI** | October |
+| 4 | signature checking into reduction | reduction currently trusts its inputs |
+| 5 | packaging | genuinely last |
 
-**Reduction first, not last.** Building the easy parts first would produce
-something demoable that does not demonstrate the claim.
+**The use cases come before the UI**, not after: a UI built before knowing what
+it presents ends up presenting the data model, which is exactly the failure the
+PICS-like layer exists to avoid.
 
 ## 9. Open questions
 

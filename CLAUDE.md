@@ -72,8 +72,15 @@ why**. Write up the rejections — that half is what makes the claim credible.
 4. **Write the `design-log/` entry in the same change**, not afterwards.
    `DL-0001` is permanently degraded because it was reconstructed a week late.
    Record what was **rejected** and why; that half is the evidence.
-5. **Use a worktree.** `bin/wt new <branch>`. Multiple sessions run at once here
-   and a shared checkout will collide.
+5. **Use a worktree — always.** `bin/wt new <branch>`. Multiple Claude sessions
+   run here at once and a shared checkout will collide. If you are about to
+   edit on `main`, stop and make a worktree.
+
+   **Never work inside `library/`** — that is a submodule checkout, so it sits
+   on a **detached HEAD** and commits there belong to no branch. A CBOR sweep
+   of 49 records was found uncommitted there on 2026-09-23, one `git checkout`
+   from gone (library#12). Open the `library` repo directly instead
+   (`PROC-0003` §1).
 
 ## Skills — open the repo you are working in
 
