@@ -17,9 +17,34 @@ from rcbor import encode
 
 
 def label_type(local_label: str, *, repr_: str, values: dict,
-               constraints: dict | None = None, ordered: bool = False) -> dict:
-    """`values` maps each permitted value to its renderings, by language."""
+               name: dict | None = None, short: dict | None = None,
+               long: dict | None = None, attr_type: str = "enum",
+               delegation_type: str = "same", constraints: dict | None = None,
+               ordered: bool = False) -> dict:
+    """A PICS-like bundle. Field set from the sponsor, 2026-09-22:
+
+        encoding of the attributes .. repr_
+        human readable name ........ name   {lang: str}
+        short description .......... short  {lang: str}
+        long description ........... long   {lang: str}
+        attribute type ............. attr_type
+        delegation type ............ delegation_type
+        processing constraints ..... constraints
+
+    `delegation_type` is the sponsor's note made explicit: THE ATTESTATION FOR
+    DELEGATION IS A DIFFERENT TYPE FROM THE BASE TYPE. Without that distinction
+    holding a delegation is indistinguishable from holding a claim, and anyone
+    can promote themselves.
+
+        same      delegating this attribute uses this same type   (rare)
+        scoped    delegation carries a RANGE over this attribute  (the email case)
+        none      this attribute may not be delegated at all
+
+    `values` maps each permitted value to its renderings, by language.
+    """
     return {"l": local_label, "r": repr_, "ord": ordered,
+            "n": name or {}, "sd": short or {}, "ld": long or {},
+            "at": attr_type, "dt": delegation_type,
             "c": constraints or {}, "v": values}
 
 

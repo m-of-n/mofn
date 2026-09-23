@@ -7,7 +7,7 @@ description: "Type names, constraints, types-as-schemas, hash-identified domains
 type: architecture
 category: security
 status: draft
-version: "0.4.0"
+version: "0.5.0"
 version_policy: "semver; PATCH = editorial; MINOR = additive principle; MAJOR = breaking"
 date: "2026-09-22"
 updated: "2026-09-22"
@@ -196,6 +196,38 @@ DEC-007 directly. They are one problem, not two.
 authorization and revocation — or a bare hashed artifact that any key may cite?
 The first composes with everything else; the second is simpler and allows
 vocabularies nobody owns.
+
+---
+
+## Note — reduction is simpler than these documents made it **[correction]**
+
+Sponsor, 2026-09-22:
+
+> *"The key-centric part has been taken up in the current documentation as an
+> overly strict usage of the SDSI/SPKI specifications (and a so-called 5-tuple
+> reduction process). The reduction process is simply taking a set of
+> cryptographically signed statements and then following the chain of inference
+> to determine if you trust the statement."*
+
+**That correction stands and this document was part of the problem.** ARCH-0001
+§4.3 and the surrounding material treat 5-tuple reduction as a ceremony to be
+implemented faithfully. It is not a ceremony. It is:
+
+> a claim you were handed · a set of statements you also hold · a set of trust
+> roots **you chose yourself** — and the question *"does anything connect the
+> claim back to a root I trust, for this kind of statement, within this range?"*
+
+Three checks per step, and they are the whole algorithm: **who said it** and is
+that key reachable from a root · **was the speaker entitled** to speak on this
+topic · **does the range still cover the value** after every narrowing.
+
+`prototype/statements/reduce.py` is ~100 lines and does all of it, including the
+failure cases. Nothing in it needed a 5-tuple.
+
+**What SPKI still contributes** is the *idea* — key-centric principals, local
+names, delegation that narrows, intersection — not a specification to be
+implemented literally. R-M-01's framing was right and got over-applied: SPKI is
+prior art we take ideas from, and fidelity to its formalism is not a goal.
 
 ---
 

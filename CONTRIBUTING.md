@@ -58,6 +58,9 @@ When to use one:
   never collide with yours.
 
 Rules:
+- **Never work inside `library/`.** It is a submodule checkout on a **detached
+  HEAD**; commits there belong to no branch and are trivially lost. Real work
+  was nearly lost this way (library#12). Clone or open the `library` repo.
 - Worktrees live in `../mofn-wt/` — outside the repo, so they never get committed.
 - One branch per worktree; git enforces this.
 - `bin/wt rm` when the branch merges. Stale worktrees hold locks and confuse

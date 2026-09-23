@@ -16,13 +16,13 @@ front matter — not because someone remembered to add it to a nav list. Set
 | [ARCH-0001 changelog](https://m-of-n.github.io/mofn/architecture/ARCH-0001-CHANGELOG/) | `ARCH-0001-CHANGELOG` | active | 0.1.1 | 2026-09-21 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-CHANGELOG.md) |
 | [Proposed ARCH-0001 v0.2.0 — key-relative extension points, predicate rendering, subject identity, citation corrections](https://m-of-n.github.io/mofn/architecture/ARCH-0001-PROPOSAL-v0.2.0/) | `ARCH-0001-PROPOSAL-v0.2.0` | proposed ⚠️ | 0.2.0-proposed.4 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-PROPOSAL-v0.2.0.md) |
 | [Authorization, local names, and artifact attestation — architecture checkpoint](https://m-of-n.github.io/mofn/architecture/ARCH-0001-authorization-attestation/) | `ARCH-0001` | draft ⚠️ | 0.1.1 | 2026-09-21 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-authorization-attestation.md) |
-| [Key-relative naming, types, and domains of discourse](https://m-of-n.github.io/mofn/architecture/ARCH-0002-key-relative-naming/) | `ARCH-0002` | draft ⚠️ | 0.4.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0002-key-relative-naming.md) |
+| [Key-relative naming, types, and domains of discourse](https://m-of-n.github.io/mofn/architecture/ARCH-0002-key-relative-naming/) | `ARCH-0002` | draft ⚠️ | 0.5.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0002-key-relative-naming.md) |
 
 ## Planning
 
 | document | id | status | version | updated | |
 |---|---|---|---|---|---|
-| [The application — what we are actually building for the demo](https://m-of-n.github.io/mofn/project/APP-0001-application-design/) | `APP-0001` | draft ⚠️ | 0.1.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/APP-0001-application-design.md) |
+| [The application — what we are actually building for the demo](https://m-of-n.github.io/mofn/project/APP-0001-application-design/) | `APP-0001` | draft ⚠️ | 0.2.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/APP-0001-application-design.md) |
 | [m-of-n backlog](https://m-of-n.github.io/mofn/project/BACKLOG-0001/) | `BACKLOG-0001` | draft ⚠️ | 0.8.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/BACKLOG-0001.md) |
 | [Open decision register — everything waiting on a human](https://m-of-n.github.io/mofn/project/DECISIONS-0001/) | `DECISIONS-0001` | active | 0.1.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/DECISIONS-0001.md) |
 | [Glossary — terms that mean more than one thing](https://m-of-n.github.io/mofn/project/GLOSSARY-0001/) | `GLOSSARY-0001` | draft ⚠️ | 0.1.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/GLOSSARY-0001.md) |
