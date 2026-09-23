@@ -41,7 +41,7 @@ Ordered by **what it unblocks**, not by importance.
 | # | Decision | Where | Why it blocks |
 |---|---|---|---|
 | ~~1~~ | ~~**Does R-M-12 stand?**~~ **DECIDED 2026-09-22 — yes.** `ADR-0001`; now `ARCH-0002` P1. | ADR-0001 | closed |
-| **2** | **DEC-002 — the encoding.** Does R-M-12 make option 2 untenable, or does proposed option 5 (CBOR data model, no IANA tags, COSE as export only) rescue it? | ARCH-0001 §7, proposal §3.3 | Everything downstream. WP1 is encoding-neutral by design so reduction can start first, but D5 needs a target by **Oct 28**. |
+| **2** | **DEC-002 — the encoding.** *Direction 2026-09-22: determinism is not uniqueness; start with a reduced CBOR profile. Prototyped in `prototype/statements/`.* Does R-M-12 make option 2 untenable, or does proposed option 5 (CBOR data model, no IANA tags, COSE as export only) rescue it? | ARCH-0001 §7, proposal §3.3 | Everything downstream. WP1 is encoding-neutral by design so reduction can start first, but D5 needs a target by **Oct 28**. |
 | **3** | **Who drives the agent lanes — students or sponsor?** | PROC-0002 §8.1 | A teaching decision, not a throughput one. If students drive, they learn the material; if you do, it is faster and they learn less. Shapes L-011 through L-014, which are the bulk of I1. |
 | **4** | **Accept the proposal as ARCH-0001 v0.2.0?** DEC-007 filed, DEC-006 withdrawn, R-M-11/12, R-O-05/06, RFC 9943 citation. | proposal | Until accepted, ARCH-0001 still cites a draft that became an RFC in June 2026, and the new requirements have no force. |
 
@@ -65,7 +65,8 @@ Ordered by **what it unblocks**, not by importance.
 
 | # | Decision | Where |
 |---|---|---|
-| **6a** | **Five statement *kinds* or one *form* with *functions*?** ARCH-0001 §4.2 lists `NameCert`/`AuthzCert`/`AclEntry`/`ArtifactStatement`/`Endorse`; ARCH-0002 P2 says one form. They likely reconcile — but **`AclEntry` is unsigned, so it has no speaker**, and may be exactly the fixed floor DEC-008 says cannot be key-local. Needs a decision, not a silent edit. | ARCH-0001 §4.2, ARCH-0002 P2 |
+| ~~6a~~ | ~~Five *kinds* or one *form*?~~ **ANSWERED 2026-09-22 by ARCH-0002 P6** — a name is an attested string, so the five are functions over one form. §4.3's three *procedures* stay separate; that was never about object kinds. `AclEntry` is the informative outlier: unsigned, so no speaker, so not a statement — it is the fixed floor DEC-008 needs. | ~~ARCH-0001 §4.2~~ |
+| ~~6a-old~~ | ~~**Five statement *kinds* or one *form* with *functions*?**~~ ARCH-0001 §4.2 lists `NameCert`/`AuthzCert`/`AclEntry`/`ArtifactStatement`/`Endorse`; ARCH-0002 P2 says one form. They likely reconcile — but **`AclEntry` is unsigned, so it has no speaker**, and may be exactly the fixed floor DEC-008 says cannot be key-local. Needs a decision, not a silent edit. | ARCH-0001 §4.2, ARCH-0002 P2 |
 | ~~6b~~ | ~~"Topic" collides~~ · ~~6c~~ ~~"Tag" collides~~ — **WITHDRAWN 2026-09-22.** Neither survives the collision test now stated in `GLOSSARY-0001`: two senses collide only when both can be live in the same context. Both are homonyms across separated repos and documents. Raising them was over-correction after three genuine collisions. | GLOSSARY-0001 |
 
 ## Tier 3 — process, decide when convenient

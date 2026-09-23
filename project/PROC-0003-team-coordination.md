@@ -7,7 +7,7 @@ description: "How a small distributed team splits work across two repos without 
 type: process
 category: process
 status: draft
-version: "0.1.0"
+version: "0.2.0"
 version_policy: "semver; MINOR = additive process rules"
 date: "2026-09-22"
 updated: "2026-09-22"
@@ -116,6 +116,26 @@ that `mofn` now calls. CI and `bin/manifest` both run only what the pinned
 library actually provides.
 
 ---
+
+## 4b. Should `mofn` be only a harness? — not yet, and here is the trigger
+
+Asked 2026-09-22. A harness-only `mofn` would hold the site generator, the
+publishing manifest, CI and cross-repo coordination; `spec/`, the application
+and the library would each live elsewhere.
+
+**Not now.** The cost is concrete: the submodule pin is the coordination point
+(§4), and three pins cost three times what one does. The same two people touch
+spec, app and site this semester, so splitting adds review surface without
+separating any audience.
+
+**The trigger to revisit** — any one of these, and the split earns its cost:
+
+- someone wants the **specification without the site**, or cites it independently
+- the **application ships on its own cadence** rather than with the semester
+- a **second implementation** appears and needs the spec and vectors alone
+- the site outlives the project and needs contributors who do not touch the spec
+
+Revisit in January, or when one of those happens.
 
 ## 5. Cadence
 

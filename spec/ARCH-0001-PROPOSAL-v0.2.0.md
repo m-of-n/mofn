@@ -7,7 +7,7 @@ description: "Prose proposal for the next MINOR version of ARCH-0001. Additive o
 type: proposal
 category: security
 status: proposed
-version: "0.2.0-proposed.3"
+version: "0.2.0-proposed.4"
 version_policy: "target is a MINOR bump of ARCH-0001; all changes additive. This proposal's own revisions tracked in §10."
 date: "2026-09-16"
 updated: "2026-09-22"

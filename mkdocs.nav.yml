@@ -9,6 +9,7 @@ nav:
       - "Authorization, local names, and artifact attestation — architecture checkpoint": architecture/ARCH-0001-authorization-attestation.md
       - "Key-relative naming, types, and domains of discourse": architecture/ARCH-0002-key-relative-naming.md
   - Planning:
+      - "The application — what we are actually building for the demo": project/APP-0001-application-design.md
       - "m-of-n backlog": project/BACKLOG-0001.md
       - "Open decision register — everything waiting on a human": project/DECISIONS-0001.md
       - "Glossary — terms that mean more than one thing": project/GLOSSARY-0001.md

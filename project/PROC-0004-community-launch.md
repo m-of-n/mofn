@@ -7,7 +7,7 @@ description: "What ships by 2026-12-04, what done means for each deliverable, an
 type: process
 category: process
 status: draft
-version: "0.2.0"
+version: "0.3.0"
 version_policy: "semver; MINOR = deliverable or criterion added"
 date: "2026-09-22"
 updated: "2026-09-22"
@@ -123,6 +123,20 @@ small and they are not optional.
 ## 8. The site
 
 Cross-cutting, and the most public artifact. Detail in §9.
+
+## 8b. Publication form — decided 2026-09-22
+
+**Standalone, as a series of connected web pages generated from the `mofn`
+repo.** Not an IETF submission first. The architecture and the specification are
+the spine; research, background and explanation pages hang off it.
+
+That settles one of `T-012`'s three questions and makes **the site the primary
+publication**, not a shop window for something published elsewhere. §9 is
+therefore a deliverable specification, not decoration.
+
+**Automation:** the library dispatches on merge; `mofn` opens a **pin-bump PR**
+and never auto-merges. `PROC-0003` §4 keeps the pin a human decision because a
+report cites `library@<commit>`; this removes the toil, not the decision.
 
 ## 9. Site structure — what best-in-class looks like
 
