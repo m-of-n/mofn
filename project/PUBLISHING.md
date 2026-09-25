@@ -2,7 +2,7 @@
 
 # Publishing manifest
 
-16 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
+17 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
 
 A document is published because it **exists and declares a status** in its
 front matter — not because someone remembered to add it to a nav list. Set
@@ -27,6 +27,7 @@ front matter — not because someone remembered to add it to a nav list. Set
 | [Open decision register — everything waiting on a human](https://m-of-n.github.io/mofn/project/DECISIONS-0001/) | `DECISIONS-0001` | active | 0.1.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/DECISIONS-0001.md) |
 | [Glossary — terms that mean more than one thing](https://m-of-n.github.io/mofn/project/GLOSSARY-0001/) | `GLOSSARY-0001` | draft ⚠️ | 0.1.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/GLOSSARY-0001.md) |
 | [Project plan — semester execution, repo, library, and team](https://m-of-n.github.io/mofn/project/PLAN-0001-project-plan/) | `PLAN-0001` | draft ⚠️ | 0.6.0 | 2026-09-21 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0001-project-plan.md) |
+| [Product Specification — how we fill it out](https://m-of-n.github.io/mofn/project/PLAN-0002-product-spec/) | `PLAN-0002` | draft ⚠️ | 0.1.0 | 2026-09-25 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0002-product-spec.md) |
 | [Agents, topics, and the unit of parallel work](https://m-of-n.github.io/mofn/project/PROC-0001-agents-and-topics/) | `PROC-0001` | draft ⚠️ | 0.2.0 | 2026-09-21 | [source](https://github.com/m-of-n/mofn/blob/main/project/PROC-0001-agents-and-topics.md) |
 | [Multi-agent ingestion — fan-out, gates, and what humans actually review](https://m-of-n.github.io/mofn/project/PROC-0002-multi-agent-ingestion/) | `PROC-0002` | draft ⚠️ | 0.2.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/PROC-0002-multi-agent-ingestion.md) |
 | [Team coordination across repositories — lanes, skills, and who opens what](https://m-of-n.github.io/mofn/project/PROC-0003-team-coordination/) | `PROC-0003` | draft ⚠️ | 0.2.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/PROC-0003-team-coordination.md) |
@@ -41,7 +42,7 @@ front matter — not because someone remembered to add it to a nav list. Set
 
 ## Status
 
-⚠️ **12 of 16 published documents are draft or proposed.**
+⚠️ **13 of 17 published documents are draft or proposed.**
 They are public and marked as such. Nothing here is accepted; an open
 `DEC-*` is not settled because it appears on a website.
 
