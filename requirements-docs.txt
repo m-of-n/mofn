@@ -1,0 +1,15 @@
+# Documentation toolchain — PINNED.
+#
+# The PR gate (.github/workflows/ci.yml) and the deploy (pages.yml) MUST
+# install the same versions, and bin/build-site uses this file too. An
+# unpinned `pip install mkdocs-material` makes a REQUIRED check depend on
+# whatever PyPI resolved that minute: an unrelated PR can go red on a release
+# nobody in this repo made, and the gate can validate against a different
+# toolchain than the one that deploys.
+#
+# To upgrade: bump here, run `bin/build-site` locally, and land it as its own
+# PR so the toolchain change is visible rather than incidental.
+mkdocs==1.6.1
+mkdocs-material==9.7.7
+mkdocs-material-extensions==1.3.1
+pymdown-extensions==12.0.1

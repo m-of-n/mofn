@@ -3,6 +3,17 @@
 # artifacts/docs/ is the source of truth; docs/ is a staging area.
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
+
+# Same pinned toolchain as CI and deploy. Warn rather than fail: a contributor
+# reading the site locally should not be forced into a version bump.
+if command -v python3 >/dev/null && [ -f requirements-docs.txt ]; then
+  want=$(grep -m1 '^mkdocs-material==' requirements-docs.txt | cut -d= -f3)
+  have=$(python3 -m pip show mkdocs-material 2>/dev/null | awk '/^Version:/{print $2}')
+  if [ -n "$have" ] && [ "$want" != "$have" ]; then
+    echo "warn: mkdocs-material $have installed, requirements-docs.txt pins $want" >&2
+    echo "warn: CI will build with $want - run: pip install -r requirements-docs.txt" >&2
+  fi
+fi
 bin/manifest                      # regenerate nav + manifest first
 mkdir -p docs/architecture docs/project docs/research docs/library
 cp spec/*.md docs/architecture/
