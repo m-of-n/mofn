@@ -21,3 +21,29 @@ Each lane was instructed to **verify every citation by search** rather than
 recall, and to return an explicit *could not establish* section.
 
 *Per-lane query logs appended as lanes return.*
+
+## Research lane query logs (2026-09-26)
+
+All eight lanes ran to completion. Each was instructed to verify every citation
+by search or direct fetch rather than from memory, and to return an explicit
+"could not establish" section.
+
+| Lane | Tool calls | Notes |
+|---|---|---|
+| A — foundations | 46 | confirmed 17 of 25 refs field-by-field against the Crossref REST API; read Rabin, Lamport and Merkle scans directly |
+| B — X.509 / PKIX | 71 | downloaded RFC text and quoted from local copies; ran an original CCADB measurement |
+| C — decentralised naming | 61 | RFC facts taken from fetched RFC text, not search summaries |
+| D — content labelling | 48 | C2PA 2.4 spec read directly for §6.2.1/§6.2.2 and Chapter 18 |
+| E — device attestation | 28 | TCG site returns HTTP 403 to automated fetch; version claims come from filenames and summaries |
+| F — supply chain | 129 | verified against NVD, Crossref, OpenAlex, the Federal Register API and EU CELLAR |
+| G — capability / delegation | 46 | all three 2026 agentic drafts verified on datatracker |
+| H — post-quantum | 52 | sizes extracted directly from the FIPS 204 and FIPS 205 PDFs |
+
+**Seven of eight lanes exhausted the 200-call web-search budget.** That is
+recorded because it explains the shape of `unverified.md`: a number of the
+open items are gaps in remaining effort rather than gaps in the record, and
+are recoverable with a fresh budget. Each lane says which of its items are
+which.
+
+Two hosts refused automated fetch throughout and account for several open
+items: `trustedcomputinggroup.org` (403) and `iso.org` (403).
