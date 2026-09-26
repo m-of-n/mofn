@@ -17,7 +17,9 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
       - name: site builds (strict - catches broken doc links)
-        run: pip install -q mkdocs-material && bin/build-site
+        run: |
+          pip install -q -r requirements-docs.txt
+          bin/build-site
       - name: library derived views are up to date
         run: |
           cd library
