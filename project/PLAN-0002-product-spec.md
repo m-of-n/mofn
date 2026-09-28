@@ -408,7 +408,17 @@ asynchronously through pull requests.
   statement and a library statement checked, a delegation chain reduced, a
   broken link named, and the result explained in English — using a published
   specification the audience can read.
-- **Metrics:** ▲ **GAP-5**.
+- **Metrics** (all checkable on Dec 4):
+
+  | # | metric | target |
+  |---|---|---|
+  | M1 | Demo cases pass live, including must-fail cases named correctly | all scripted cases; ≥3 failures each explained in English |
+  | M2 | Test vectors: YAML → exact bytes → exact hash, every statement kind | 100% pass in CI |
+  | M3 | Independent reproduction: second student's encoder matches the first's bytes | 100% of vectors |
+  | M4 | Domains render with no type-specific code | 2 domains, EN and ES |
+  | M5 | Real SLSA/in-toto attestations import and round-trip | ≥5 public examples |
+  | M6 | Wallet installs from Pages | macOS + Linux |
+  | M7 | Every survey and report citation resolves to a library record | 100% (CI gate) |
 - **Risks and constraints:** encoding ADR slips past Oct 28; the GUI consumes
   I4–I5; ARCH-0002 P4/P7 still open in November; every merge waits on sponsor
   review (PLAN-0003 §Risks).
@@ -416,7 +426,7 @@ asynchronously through pull requests.
 ### 8.2 Project Milestones
 | date | milestone |
 |---|---|
-| ▲ **GAP-6** | second status review · midterm presentation |
+| ▲ **GAP-6** | second status review · midterm presentation — *dates from Prof. Lin* |
 | Oct 5 | schema scenarios |
 | Oct 14 | **I1** — library v1, research reports (D1–D3) |
 | Oct 21 | encoding-neutral schema (D4) |
