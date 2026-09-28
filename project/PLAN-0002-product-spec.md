@@ -110,7 +110,7 @@ Three user types (proposed):
 | **Domain author** | defines what statements mean: types, allowed values, descriptions | specialist |
 
 ▲ **GAP-1 — personas.** One named persona per type (background, goal,
-frustration). Blocked on the D-1 scenarios due Oct 5.
+frustration). **Owner: David + Ndewedo, due Oct 5**, with the schema scenarios.
 
 ### 2.2 User Goals
 | type | goal |
@@ -211,11 +211,11 @@ distribution.
 |---|---|
 | Development environment | macOS / Linux laptops |
 | Deployment | a downloadable desktop application from the project site (GitHub Pages) |
-| Languages | Python (prototype, reference implementation); Rust possible for the encoder |
+| Languages | Python (prototype, reference implementation); TypeScript/HTML for the GUI; Rust for the Tauri shell |
 | Code frameworks | a vetted CBOR library; `cryptography` for signatures |
-| UI framework | ▲ **GAP-2** |
-| Database | ▲ **GAP-3** |
-| Why this stack | Python because the prototype exists and reduction logic changes weekly; CBOR because DEC-002 selected option 5 (reduced CBOR, no IANA tags) for byte-exact hashing |
+| UI framework | **Tauri** (web frontend, Python sidecar for the library) — *tentative*, confirm by Oct 14 before GUI work starts |
+| Database | **None, by design** — files in `~/.mofn` (§6.4) |
+| Why this stack | Python because the prototype exists and reduction logic changes weekly; Tauri (tentative) for small signed desktop installers with a modern UI; CBOR because DEC-002 selected option 5 (reduced CBOR, no IANA tags) for byte-exact hashing |
 
 ### 5.2 Development Tools
 - **Environment:** VS Code or equivalent, with Claude Code for AI-assisted work.
@@ -283,13 +283,95 @@ commands in §4.1; no network API.
   library (records about references).
 - **Flow:** the §6.2 diagram — YAML → encode → sign → bytes → verify → reduce →
   verdict → render.
-- **Database:** ▲ **GAP-3**.
+- **Database:** **none, by design.** Verification is offline over the set of
+  statements it is handed, so every result is reproducible from files and no
+  server is needed (APP-0001 §5, ARCH-0001 NG4). The wallet keeps its state in
+  a plain directory:
+
+  ```
+  ~/.mofn/
+    keys/         private and public keys (files; no key agent)
+    roots/        trust roots — unsigned local decisions
+    statements/   statements made or collected, as signed bytes
+    domains/      domain files: types, allowed values, descriptions
+  ```
+
+  The bibliographic library is a separate git repository of YAML records, not
+  a database.
 
 ### 6.5 User Interface
 - **Mechanism:** desktop GUI and CLI, same operations; the relying party mostly
   uses the GUI, issuers and domain authors mostly the CLI.
-- **Sketches:** ▲ **GAP-4**. Key views needed: verdict screen (APP-0001 §4),
-  make-a-statement form, delegation view, domain browser.
+- **Sketches** — draft wireframes; *Ndewedo replaces with real sketches by
+  Oct 14.*
+
+**① Verdict** — the product screen. The authorization line is the point.
+```
+┌─ Check statement ───────────────────────────── prov.stmt ─┐
+│  "The artifact sha256:8e1c… was built reproducibly         │
+│   from published sources."                                 │
+│   — asserted by key 9f2a…  (CI build key)                  │
+│                                                            │
+│  ✔ Integrity      subject digest re-derives                │
+│  ✔ Authenticity   signature valid under 9f2a…              │
+│  ✔ Names          no name chain to resolve                 │
+│  ✘ AUTHORIZATION  9f2a… is not entitled to assert          │
+│                   build-provenance about this subject      │
+│  – Acceptance     not evaluated                            │
+│  ✔ Semantics      domain supply-chain, value in range      │
+│                                                            │
+│  Signed, but NOT by a key with standing to say it.         │
+│  This proves origin and integrity. It does not prove truth.│
+│  [ Show chain ]   [ Why? ]   [ Language: EN ▾ ]            │
+└────────────────────────────────────────────────────────────┘
+```
+
+**② Make a statement** — the form is generated from the domain's type, never
+hard-coded.
+```
+┌─ New statement ────────────────────────────────────────────┐
+│  Speak as     [ paul.key ▾ ]                               │
+│  About        ( ) artifact [ dist/app.pyz      ] [Browse]  │
+│               ( ) key      [                   ]           │
+│  Domain       [ supply-chain ▾ ]  Type [ build-provenance ▾]│
+│  Claim        (•) reproducible  built reproducibly from …  │
+│               ( ) attested      built by an attested …     │
+│               ( ) unverified    origin not verified        │
+│  Valid until  [ 2026-12-31 ]                               │
+│  Preview: "Paul says dist/app.pyz was built reproducibly…" │
+│                                     [ Cancel ] [ Sign ]    │
+└────────────────────────────────────────────────────────────┘
+```
+
+**③ Delegation** — who may speak for me, on what, and whether they may pass
+it on.
+```
+┌─ Delegations ──────────────────────────────────────────────┐
+│  Trust roots (mine, unsigned)                              │
+│    Paul  →  supply-chain / *            may delegate ✔     │
+│    Paul  →  library-review / *          may delegate ✘     │
+│  Chain for: "may CI key attest build-provenance?"          │
+│    Paul ──▶ David (build-provenance, delegate ✔)           │
+│         ──▶ CI key (build-provenance)   ✘ link missing     │
+│  [ + Delegate… ]   [ Revoke locally ]   [ Explain ]        │
+└────────────────────────────────────────────────────────────┘
+```
+
+**④ Domain browser** — the PICS-like layer: what statements in a domain can
+mean.
+```
+┌─ Domains ──────────────────────────────────────────────────┐
+│  supply-chain      id 2104d6d4…   defined by paul.key      │
+│    build-provenance  reproducible · attested · unverified  │
+│    reviewed-by       <key>                                 │
+│  library-review    id 7c11e0a2…   defined by ndewedo.key   │
+│    reviewed          yes · partial · no                    │
+│  Selected: build-provenance / reproducible                 │
+│    EN  built reproducibly from published sources           │
+│    ES  compilado de forma reproducible desde fuentes …     │
+│  [ Import domain… ]  [ New type… ]                         │
+└────────────────────────────────────────────────────────────┘
+```
 
 ---
 
