@@ -1938,8 +1938,8 @@ ingestion to regenerate this section.*
   <https://csrc.nist.gov/pubs/fips/186-4/final>
 - **[fips-186-5]** Digital Signature Standard (DSS)  
   <https://csrc.nist.gov/pubs/fips/186-5/final>
-- **[fips-203]** FIPS 203: Module-Lattice-Based Key-Encapsulation Mechanism Standard  
-  <https://doi.org/10.6028/NIST.FIPS.203>
+- **[fips-203]** Module-Lattice-Based Key-Encapsulation Mechanism Standard  
+  <https://csrc.nist.gov/pubs/fips/203/final>
 - **[fips-204]** FIPS 204: Module-Lattice-Based Digital Signature Standard (ML-DSA)  
   <https://doi.org/10.6028/NIST.FIPS.204>
 - **[fips-205]** FIPS 205: Stateless Hash-Based Digital Signature Standard (SLH-DSA)  
@@ -2112,9 +2112,9 @@ ingestion to regenerate this section.*
   <https://slsa.dev/spec/v1.2/>
 - **[slsa-2026-mini-shai-hulud]** Mini Shai-Hulud: Where SLSA's Boundaries Fall  
   <https://slsa.dev/blog/2026/05/mini-shai-hulud-what-slsa-can-and-cannot-do>
-- **[sp-800-208]** SP 800-208: Recommendation for Stateful Hash-Based Signature Schemes  
-  <https://doi.org/10.6028/NIST.SP.800-208>
-- **[spdx-3-0-1]** SPDX Specification v3.0.1  
+- **[sp-800-208]** Recommendation for Stateful Hash-Based Signature Schemes  
+  <https://csrc.nist.gov/pubs/sp/800/208/final>
+- **[spdx-3-0-1]** System Package Data Exchange (SPDX) Specification Version 3.0.1  
   <https://spdx.github.io/spdx-spec/v3.0.1/>
 - **[survey-2026-nameconstraints-measurement]** Name-constraint prevalence among CCADB-disclosed intermediate CA certificates (original measurement, 2026-09-26)  
   <https://ccadb.my.salesforce-sites.com/mozilla/MozillaIntermediateCertsCSVReport>
