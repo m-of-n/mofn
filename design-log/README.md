@@ -31,6 +31,8 @@ vectors, and tooling.
 |---|---|---|
 | `0001-arch-0001-genesis` | ARCH-0001 v0.1.0 | **partial** — reconstructed a week late, and permanently degraded as a result |
 | `0002-arch-0002-cycle` | ARCH-0002, ADR-0001 | complete |
+| `0003-cbor-reference-sweep` | library +51 records, 2 topics; RPT-0001 | complete |
+| `0004-library-body-field` | library `body` — scope §4, record schema v0.6.0 | **open** — human review pending on library#34 |
 
 `DL-0001` is the argument for the rule: **write the entry in the same change.**
 The prompts, and what the human rejected, were not recoverable a week later —
