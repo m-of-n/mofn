@@ -14,19 +14,26 @@ if command -v python3 >/dev/null && [ -f requirements-docs.txt ]; then
     echo "warn: CI will build with $want - run: pip install -r requirements-docs.txt" >&2
   fi
 fi
-bin/manifest                      # regenerate nav + manifest first
-mkdir -p docs/architecture docs/project docs/research docs/library
-cp spec/*.md docs/architecture/
-cp project/*.md docs/project/
-[ -n "$(ls research/*.md 2>/dev/null)" ] && cp research/*.md docs/research/ || true
 # The library's index/ and exports/ are generated and untracked, so the pinned
 # submodule checkout does not contain them - build them from the pinned records
-# before copying. These used to be copied behind `[ -f ]` guards, which would
-# now skip silently and publish a site with no bibliography at all.
+# before anything looks at them. These used to be copied behind `[ -f ]`
+# guards, which would now skip silently and publish a site with no
+# bibliography at all.
+#
+# This MUST run before bin/manifest. The nav generator decides whether to list
+# the bibliography, and it ran first for a while: on any clean checkout the
+# page was staged but left out of the nav, so the deployed site had a
+# bibliography nobody could navigate to and the tracked mkdocs.nav.yml - which
+# still listed it - hid that. Generate, then generate the nav.
 ( cd library && bin/export >/dev/null && bin/reindex >/dev/null )
 for f in library/index/bibliography.md library/exports/references.json; do
   [ -f "$f" ] || { echo "build-site: $f missing after generation - library pin may predate the generated-views change"; exit 1; }
 done
+bin/manifest                      # nav + manifest, now that the library views exist
+mkdir -p docs/architecture docs/project docs/research docs/library
+cp spec/*.md docs/architecture/
+cp project/*.md docs/project/
+[ -n "$(ls research/*.md 2>/dev/null)" ] && cp research/*.md docs/research/ || true
 cp library/index/bibliography.md docs/library/
 cp library/exports/references.json docs/library/
 cp LIMITATIONS.md docs/
