@@ -5,7 +5,7 @@ title: "library `body` — one field doing three jobs, and which two it gives up
 date: "2026-10-01"
 model: "claude-opus-5"
 human: ndewedo-newbury
-outcome: "library#34 (open). docs/scope.md §4 v0.3.0, record schema v0.6.0, tags.yaml v0.2.0. No ADR — no DEC-* touched."
+outcome: "library#34, library#37, mofn#55 (all open). docs/scope.md §4 v0.3.0, record schema v0.6.0, tags.yaml v0.2.0. No ADR — no DEC-* touched."
 status: open
 ---
 
@@ -58,3 +58,13 @@ change into a code change. See `produced.md`.
 `library/CLAUDE.md`: never hand-create a record, never set `content.local`,
 never reuse an id, never commit third-party bytes. None was violated; the
 last two are why one found defect was left unfixed.
+
+## Second instruction, same session
+
+> "fix #36 too"
+
+`library#36` is an issue **the model itself filed** during the first half, for
+instructions left stale by library#31. Two of its four claims turned out to be
+false. That is recorded in `review.md` rather than quietly corrected, because a
+model filing a defective issue and then being asked to act on it is a failure
+mode worth having on the record.

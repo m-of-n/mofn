@@ -7,8 +7,16 @@ date: "2026-10-01"
 
 # DL-0004 — produced
 
-All of it in `library/`, branch `schema/body-storage-key`, PR
-[library#34](https://github.com/m-of-n/library/pull/34). 9 files, +242 −64.
+Three PRs. The first is the decision; the other two are defects the first one
+turned up.
+
+| PR | repo | what |
+|---|---|---|
+| [library#34](https://github.com/m-of-n/library/pull/34) | `library` | the decision — 9 files, +242 −64 |
+| [library#37](https://github.com/m-of-n/library/pull/37) | `library` | library#36, stacked on #34 — 2 files |
+| [mofn#55](https://github.com/m-of-n/mofn/pull/55) | `mofn` | the nav generator bug — 4 files |
+
+## library#34 — the decision
 
 ## The rule, as a document
 
@@ -113,3 +121,49 @@ the diff.
   an authority claim, which makes it evidence for the decision. Not fixed here:
   ids are stable forever and retiring a record is not a reshelving, so it is a
   decision for the owning lane, raised as its own issue.
+
+## library#37 and mofn#55 — what the first PR turned up
+
+`library#36` was filed by the model during the first half, for instructions
+left stale by library#31. Acting on it found **two false claims of its own and
+one live bug** (see `review.md` for the false claims).
+
+**library#37**, stacked on #34 because it edits step 7 of the same skill file
+four lines from step 9:
+
+- `.claude/skills/ingest-reference/SKILL.md` step 9 told agents to commit
+  `index/` and `exports/` and said CI fails if you skip it. Both halves are
+  inverted after library#31 — the paths are gitignored, and CI fails if they
+  *are* tracked. Rewritten to run the generators and not commit them.
+- `docs/gaps.md` §6 cited `docs/scope.md` §4 as describing a signed statement
+  over `MANIFEST.yaml` as the federation integrity mechanism. §4 has never
+  mentioned federation, in **either** revision — a wrong citation, not a stale
+  one, checked against git history rather than current main. Corrected to
+  `docs/construction.md` decision 4, which describes the mechanism as *content
+  hash is identity*: digest-based, so two libraries agree which document they
+  mean and nothing about who said so. Signing is therefore federation's
+  **undesigned** half, which is a sharper gap than the bullet claimed.
+
+**mofn#55** — the one item that was a live bug with a published consequence
+rather than a wording fix:
+
+`bin/manifest` decided whether to list the library bibliography in the nav by
+testing whether `library/index/bibliography.md` exists — generated and
+gitignored since library#31. So it asked *"has somebody run `bin/reindex`
+here"*, not *"does the pinned library provide a bibliography"*. `bin/build-site`
+then ran `bin/manifest` **before** generating the views, so on every clean
+checkout the page was staged into the site and omitted from the nav. The tracked
+`mkdocs.nav.yml` still listed it, so `git status` looked clean, and mkdocs
+reports a not-in-nav page at INFO level, so `--strict` missed it.
+
+**The deployed site has a bibliography nobody can navigate to** — in a repo
+whose `CLAUDE.md` generates the nav on purpose because a hand-kept one rots.
+Fixed by generating the views before the nav, and by testing the *generator*
+rather than its output, with a fallback for a pre-library#31 pin. Verified three
+ways: listed on a clean checkout, byte-identical nav with and without
+`library/index/` present, omitted with a stderr warning when `bin/reindex` is
+removed.
+
+It also carried a second instance of the same class: `PLAN-0003` is a published
+document that appeared in neither the nav nor `project/PUBLISHING.md`, and
+nothing in CI gates either file.

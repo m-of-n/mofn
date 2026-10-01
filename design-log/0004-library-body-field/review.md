@@ -8,7 +8,9 @@ date: "2026-10-01"
 # DL-0004 — what was accepted, rejected, and still open
 
 **Status: human review of the output is PENDING** on
-[library#34](https://github.com/m-of-n/library/pull/34). This file is written in
+[library#34](https://github.com/m-of-n/library/pull/34),
+[library#37](https://github.com/m-of-n/library/pull/37) and
+[mofn#55](https://github.com/m-of-n/mofn/pull/55). This file is written in
 the same change as the work, per the DL-0001 rule, and will be amended when the
 PR is reviewed. What is already settled is recorded as settled; what is not is
 marked open. Nothing here is a prediction of the reviewer's verdict.
@@ -49,6 +51,30 @@ of a change it did not ask for.
 | Wrote the generated `SHELF_NOTE` with an unclosed `**` | a broken bold run at the top of every regenerated index page | reading `index/bibliography.md` after regenerating instead of trusting the write |
 | Was about to render **both** `RFC n` and its DOI | 89 IETF bibliography lines padded with a DOI that only restates the RFC number | sampling the identifier values across all 280 records first |
 
+## The model filed a defective issue, then was asked to act on it
+
+`library#36` was raised by the model in the first half of the session. When the
+human said *"fix #36 too"*, **two of its four claims turned out to be false**:
+
+| #36 claimed | reality |
+|---|---|
+| `CLAUDE.md` "Before any PR" tells you to commit `index/` and `exports/` | already fixed by library#31; main reads *"Do not commit"* |
+| `summarize/SKILL.md` may carry the same instruction | it does not, and never did |
+
+**Both are the stale-branch error above, repeating.** The model had already
+recorded that error as the first of its four and had already moved to a
+worktree cut from `origin/main` for the *code*, but wrote the issue text from
+the still-stale `/library` checkout sitting on `topic/sbom-lane`. Moving the
+work to clean state did not move the *reading* to clean state.
+
+The issue has been corrected in place with the original text preserved in a
+`<details>` block, rather than edited silently. The lesson is narrower than
+"check your sources": **a stale checkout stops being a trap for the files you
+have replaced and keeps being one for every file you have not.**
+
+The remaining two items were real, and the third was worse than filed — a live
+bug that has been publishing a bibliography nobody can navigate to.
+
 ## Open for the reviewer — the two real calls
 
 1. **Deleting `body` from `tags.yaml` instead of adding `regulator` and
@@ -64,6 +90,12 @@ of a change it did not ask for.
    the argument for reopening option 2 sooner.
 
 ## Honest assessment
+
+Four model errors in the first half, one of them repeated in the second. The
+repeat is the one worth keeping: every error in this entry is the same error —
+**acting on state the model had already been told was stale** — and recording it
+once did not prevent it recurring forty minutes later in a different medium.
+That is more useful evidence than four unrelated mistakes would be.
 
 Option 1 is the **cheapest correct** answer, not the best one. It is correct
 because nothing is lost: every fact about CycloneDX 1.7 is recorded and now
