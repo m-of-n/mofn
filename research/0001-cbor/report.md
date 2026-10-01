@@ -7,9 +7,9 @@ description: "Survey of the CBOR specification surface, the determinism problem,
 type: research
 category: encoding
 status: draft
-version: "0.1.0"
+version: "0.1.1"
 date: "2026-09-22"
-updated: "2026-09-22"
+updated: "2026-09-30"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -224,10 +224,26 @@ that matter for how the constraint is applied:
   CBOR's data model without CBOR's naming authority. This is what the
   2026-09-22 direction's "reduced CBOR profile" appears to mean, and the
   research supports that it is coherent.
-- **Tag 24 is the awkward case.** `bstr`-wrapped embedded CBOR is a registry
-  code point, and it is structurally required by COSE's protected header. A
-  profile that bans all tags cannot use COSE as specified. DEC-005 and R-M-12
-  interact here and the interaction is not yet written down anywhere.
+- **Correction (2026-09-30): the tag exposure is the message-type tags, not
+  tag 24.** This report's first revision claimed that `bstr`-wrapped embedded
+  CBOR is tag 24 and that COSE's protected header structurally requires it.
+  That is wrong, and the FX-1 extraction of RFC 9052 caught it: **"tag 24"
+  appears nowhere in RFC 9052**, and §3 defines the protected bucket's value as
+  "obtained by CBOR encoding the protected map and wrapping it in a bstr
+  object" — a bare byte string. The error was conflating the *pattern* of
+  wrapping an encoded data item in a `bstr` with the IANA tag RFC 8949 §3.4.5.1
+  defines for it. The protected header costs no tag at all.
+  The real registry exposure is narrower and still genuine: COSE identifies
+  message types with registry tags — RFC 9052 Table 1 assigns 18 `cose-sign1`,
+  98 `cose-sign`, 96, 16, 97, 17 — and CWT adds tag 61, which RFC 8392 §6
+  requires to sit above a COSE tag. §2 does offer `cose-type` and CoAP
+  Content-Formats as an untagged route, but makes the `cose-type` parameter
+  REQUIRED when it is used, so the dependence moves rather than vanishing.
+  One consequence is sharper than the original claim: because RFC 8949 §7.1
+  lets a decoder process a tag's content alone, "no IANA tags" has to be stated
+  as a **positive decoder rule** ("major type 6 MUST NOT appear"), not merely as
+  an omission — otherwise an imported tagged COSE object silently satisfies our
+  decoder. See `library/records/ietf/rfc-9052/distilled/design-notes.md` §3.
 
 Governance, ranked by actual influence over CBOR: IETF CBOR WG and the IANA
 registries (free, low barrier, a handful of overlapping designated experts);
