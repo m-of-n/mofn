@@ -89,8 +89,22 @@ def main():
     lib = []
     if (ROOT / "library" / "docs" / "construction.md").exists():
         lib.append(("Construction method", "library/construction.md"))
-    if (ROOT / "library" / "index" / "bibliography.md").exists():
+    # Test the GENERATOR, not its output. index/bibliography.md is generated and
+    # gitignored since library#31, so on a clean checkout it does not exist
+    # until bin/build-site runs bin/reindex — and bin/manifest used to run
+    # first. This generator's output then depended on whether somebody happened
+    # to have run reindex locally: on CI and any fresh clone the nav lost the
+    # bibliography, while the tracked mkdocs.nav.yml still listed it and hid
+    # that. If the pinned library can generate the page, build-site does, and
+    # hard-fails if it cannot — so the generator is the honest test. The second
+    # clause keeps a pre-library#31 pin, which tracked the file and has no
+    # bin/reindex, working.
+    if ((ROOT / "library" / "bin" / "reindex").exists()
+            or (ROOT / "library" / "index" / "bibliography.md").exists()):
         lib.append(("Bibliography", "library/bibliography.md"))
+    else:
+        print("manifest: pinned library provides no bibliography — nav omits it",
+              file=sys.stderr)
     if lib:
         lines.append("  - Library:")
         for title, path in lib:
