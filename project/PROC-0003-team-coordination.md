@@ -7,10 +7,10 @@ description: "How a small distributed team splits work across two repos without 
 type: process
 category: process
 status: draft
-version: "0.2.0"
+version: "0.3.0"
 version_policy: "semver; MINOR = additive process rules"
 date: "2026-09-22"
-updated: "2026-09-22"
+updated: "2026-10-01"
 decision_makers: []
 reviewers: []
 needs_review: true
@@ -45,7 +45,7 @@ carry, and nothing warns you.
 
 | Working on | Open as project | Skills you get |
 |---|---|---|
-| library records, ingestion, summaries | **`library/`** | `ingest-reference`, `summarize`, `distill` |
+| library records, ingestion, summaries, extraction | **`library/`** | `ingest-reference`, `summarize`, `extract`, `distill` |
 | architecture, plan, spec, backlog | **`mofn/`** | `propose-arch`, `close-topic` |
 | both at once, or neither | `~/cb` | the workspace skills only — **not these** |
 
@@ -56,6 +56,23 @@ place:
 - Skills that act on **m-of-n documents** live in `mofn/.claude/skills/`.
 - Neither is duplicated. Duplicates drift, and a drifted skill is worse than a
   missing one because it looks authoritative.
+
+### The second reason: the submodule checkout is on a detached HEAD
+
+`mofn/library/` is a **submodule checkout**, and a submodule checkout sits on a
+**detached HEAD** — the pinned commit, on no branch. Commits made there belong
+to no branch. They survive only until the next `git checkout`, `git submodule
+update` or `bin/lib-sync`, which silently moves HEAD and orphans them.
+
+This is not hypothetical. On 2026-09-23 a 49-record CBOR/COSE sweep was found
+uncommitted on a detached HEAD inside `mofn/library/` — one checkout from
+being discarded. It was rescued to a branch and merged as library#13
+(library#12 records the incident).
+
+**Never edit, commit or run ingestion inside `mofn/library/`.** It is
+read-only: the pinned copy that reports cite. Do library work in a clone of the
+`library` repo, opened as its own project — which is also the only way its
+skills load (above). Two reasons, one rule.
 
 **If you are unsure which root you are in, you are in the wrong one.** Check
 before a long ingestion run, not after.
