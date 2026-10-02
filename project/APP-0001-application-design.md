@@ -10,7 +10,7 @@ status: draft
 version: "0.2.0"
 version_policy: "semver; MINOR = command or behaviour added"
 date: "2026-09-22"
-updated: "2026-09-22"
+updated: "2026-10-02"
 decision_makers: []
 reviewers: []
 needs_review: true
@@ -133,6 +133,11 @@ the distinction nothing mainstream surfaces.
 - **No revocation.** Short validity or nothing.
 - **No GUI, no web UI, no server.**
 - **No cryptographic primitives of our own** — a vetted library, always.
+- **No knowledge-graph engine.** Delegation is graph-shaped
+  (speaker, statement, target; chains compose), but the operation is deterministic
+  reduction — match subject to next issuer, intersect tag and validity — not an
+  open graph query. Store statements as files (a simple index is enough) and run
+  `reduce` / `check`. A graph database or RDF stack is out of scope for the wallet.
 
 ## 6. Relationship to the demo floor
 
