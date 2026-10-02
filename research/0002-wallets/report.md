@@ -3,11 +3,11 @@ schema: "archdoc/v1"
 id: R-0002
 title: "Wallet market survey — commercial products, open source, and PGP trust indicators"
 short_title: "Wallet market survey"
-description: "What key-holding and trust-indicator products already show a person, and which of those habits the local m-of-n wallet should copy, change, or refuse. Does not close a decision."
+description: "What key-holding and trust-indicator products already show a person, which of those habits the local m-of-n wallet should copy, change, or refuse, and how a file-based wallet can protect a private key. Does not close a decision."
 type: research
 category: security
 status: draft
-version: "0.1.0"
+version: "0.2.0"
 date: "2026-10-02"
 updated: "2026-10-02"
 needs_review: true
@@ -124,10 +124,11 @@ FIPS level) are not used here.
 Vendor: SignPath. The homepage fetched describes a software-integrity
 platform (pipeline integrity, semantic code signing, software attestation,
 code governance) whose pitch is cryptographic proof that a release is
-authentic, unmodified, and approved by the right people. **Price, key
-custody, and the relying-party screen were not on that page.** The feature
-row is therefore mostly "not verified". It is listed so the gap is visible,
-not as a claim that those features exist.
+authentic, unmodified, and approved by the right people. **Price and the relying-party screen were not on that page.** Key
+custody was not on that page either. A later fetch of SignPath's own
+docs (section 10.8) does say where the private key is kept. The feature
+row stays "not verified" except for the keys cell, which that later fetch
+supports.
 
 ### 2.5 Adobe Content Credentials and Inspect
 
@@ -328,7 +329,7 @@ cell.
 | Artifact Signing | yes | partial | not verified | not verified | no | partial | not verified | partial | not verified | yes | yes | not verified |
 | eSigner for Code | yes | partial | not verified | not verified | no | partial | not verified | no | not verified | yes | yes | not verified |
 | Software Trust Manager | yes | partial | not verified | not verified | no | partial | not verified | no | not verified | yes | yes | yes |
-| SignPath | not verified | not verified | not verified | not verified | not verified | partial | not verified | not verified | not verified | not verified | not verified | not verified |
+| SignPath | yes | not verified | not verified | not verified | not verified | partial | not verified | not verified | not verified | not verified | not verified | not verified |
 | Adobe apps + Inspect | not verified | yes | not verified | no | no | yes | partial | no | not verified | yes | yes | no |
 | Entra + Authenticator | yes | partial | not verified | no | no | partial | yes | not verified | not verified | yes | yes | no |
 | Apple Wallet ID | partial | partial | no | no | no | no | partial | not verified | not verified | not verified | yes | no |
@@ -348,6 +349,9 @@ cell.
 
 Notes on `partial`, only where the word would otherwise hide the mechanism:
 
+- **SignPath, keys.** The crypto-providers page says the private key
+  remains on the HSM during signing. Everything else in that row is still
+  not verified. See section 10.8.
 - **Artifact Signing / eSigner / Software Trust Manager, roots and statement.**
   The thing signed is a digest. The trust root is a CA the platform already
   has, or a private CA the tenant operates. That is not a local unsigned
@@ -592,6 +596,11 @@ accept a stack, an encoding, or a revocation design.
   to a revocation protocol. Show expiry as its own outcome when a validity
   window exists. Do not invent a revocation protocol in this memo.
 
+- **Copy passphrase protection of a key that stays a file**, and the
+  split where the signer asks for the passphrase and the caller gets a
+  signature rather than the key. Section 10 is the survey. Section 10.7
+  is the proposal. It does not pick an algorithm.
+
 ### 7.2 Change
 
 - **Names.** Every product above binds a global string (User ID, email,
@@ -657,6 +666,12 @@ accept a stack, an encoding, or a revocation design.
 - **Refuse to treat OpenPGP's group-key and split-key flags as m-of-n.**
   They are advisory bits. They do not evaluate a share.
 
+- **Refuse a long-lived unlocked agent, a passphrase on the command
+  line, and moving the private key out of a file** into a platform store
+  or a token for the CLI milestone. Section 10 says what each of those
+  protects and what it does not. Hardware-backed keys are a later option,
+  not a change accepted here.
+
 ### 7.4 Delegation chains and key-centric trust, against ownertrust and the web of trust
 
 This is the comparison the rest of the memo is for.
@@ -693,7 +708,10 @@ authorization question at all.
   the prototype encoding may ship, whether thresholds are in the floor) stay
   open.
 - PLAN-0004's proposed stack stays a proposal on PR 57. This memo does not
-  merge it and does not depend on it being merged.
+  merge it and does not depend on it being merged. Section 10.7 is a
+  proposal for that plan. This branch does not edit the plan.
+- No KDF, AEAD mode, or secret-key packet format is selected. DEC-002
+  stays open, so secret-key encryption is not an encoding decision either.
 - No product in section 2 or 3 is nominated as the implementation.
 
 ## 9. Products and facts not verified
@@ -720,3 +738,401 @@ authorization question at all.
   Enterprise price and UI.
 - Section 5.10's implementation-defined trust-packet bytes (intentionally
   unspecified). GnuPG's trustdb format was not read.
+- The KDF inside signify and minisign. Both man pages say the secret key
+  is passphrase-protected and do not name the function.
+- Whether a YubiKey OpenPGP key is non-exportable. The page that was
+  fetched documents touch-to-verify, not export.
+- Whether CNG's on-disk key containers are encrypted. The Learn page
+  documents the directories and process isolation, not the file format.
+- A Python standard-library equivalent of `sodium_memzero`. The
+  `secrets` module page documents generating secrets, not wiping
+  memory. No wipe function is named there. See section 10.7.
+- Whether macOS `ps` shows a passphrase passed in argv. Linux
+  `/proc/pid/cmdline` was fetched. The non-goal does not depend on the
+  macOS case.
+- Where a Developer ID private key sits during Apple notarization. The
+  notarization page does not say. It is not evidence of cloud custody,
+  and it is not evidence against it.
+
+## 10. Private-key protection
+
+Proposals only, same as section 7. This section is how a **local personal
+wallet** keeps a private key that is a file. It does not close DEC-002,
+and it does not pick a cipher.
+
+A technique is in here only if a page fetched on 2026-10-02 says so.
+"Protects" means the thing that page actually claims. A copied wallet
+without its passphrase is the at-rest case. Memory, another local user,
+the calling process, and export are separate, and most of these tools
+cover only the first.
+
+### 10.1 OpenPGP secret-key encryption (RFC 9580)
+
+RFC 9580 §3.7 defines a string-to-key (S2K) specifier: it turns a
+passphrase into a symmetric key. The two uses named there are encrypting
+the secret part of a private key, and symmetrically encrypted messages.
+This section is the first of those.
+
+§3.7.1 lists four specifier types. Simple S2K (id 0) and Salted S2K
+(id 1) are not for new data, except Salted S2K when the implementation
+knows the string is high entropy. Iterated and Salted S2K (id 3) and
+Argon2 (id 4, citing RFC 9106) may be generated. Argon2 takes a 16-octet
+salt, passes, parallelism, and a memory size in kibibytes, and the RFC
+says to invoke Argon2id.
+
+§3.7.2: an implementation MUST NOT generate Simple S2K. It SHOULD NOT
+generate Salted S2K for a low-entropy passphrase. Argon2 is RECOMMENDED.
+Iterated and Salted S2K MAY be used if Argon2 is not available, with a
+high octet count and a strong passphrase, and the RFC says that method
+does not provide memory hardness.
+
+§3.7.2.1 is the secret-key encryption octet, the first octet after the
+public key material in a Secret Key packet (§5.5.3). Zero means the
+secret material is not encrypted. 253 is AEAD and may be generated. 254
+is CFB and may be generated. 255 (MalleableCFB) and the legacy
+cipher-id-in-the-usage-octet form must not be generated. Argon2 is only
+legal with usage octet 253; any other combination MUST be rejected.
+
+§5.5.3: for usage 253 the key-encryption key is HKDF (RFC 5869) with
+SHA-256, no salt, and an info string taken from the packet. The secret
+material is one AEAD plaintext with one authentication tag. The
+additional data includes the public-key fields. Usage 254 appends a
+SHA-1 of the plaintext and encrypts it with CFB. Usage 0 stores the
+secret in the clear (v6 has no trailing checksum).
+
+§13.7: a version 6 secret key SHOULD be protected with AEAD (usage 253)
+unless it must be read by an implementation that has no AEAD. The same
+section says CFB-encrypted secret keys (254 or 255) can leak secret data
+if an attacker who can write the encrypted key corrupts it and the key
+is later used.
+
+What this protects: at rest, against someone who has the file and not
+the passphrase, and only when the usage octet is not zero. AEAD (253)
+also rejects a modified ciphertext instead of releasing a mangled key
+(§13.7). What it does not protect: the key after it has been decrypted,
+another user who can read the process that decrypted it, a caller that
+has been handed the plaintext, or export — the file is the key. A weak
+passphrase is outside the mechanism. It fits a file-based offline
+wallet as a **candidate**, not as a chosen format. Choosing the OpenPGP
+packet would be an encoding decision, and DEC-002 is open.
+
+### 10.2 GnuPG `gpg-agent`
+
+The manual's "Invoking GPG-AGENT" says `gpg-agent` is a daemon that
+manages secret keys independently of any one protocol, and that a
+pinentry program must be installed (or named with `pinentry-program`).
+The agent is what `gpg` starts on demand. The passphrase prompt is that
+separate program, not an argument of `gpg`.
+
+Agent protocol §2.6.2, `PKSIGN`: the client sets a keygrip and a hash.
+The agent checks the key, asks for the passphrase, and returns a
+signature S-expression. The example session in that section says the
+agent asked the user for the passphrase and then returned the signature.
+The client does not receive the secret key on that command.
+`OPTION use-cache-for-signing=0` makes that operation ignore the
+passphrase cache. The command-line form of the same idea is
+`--ignore-cache-for-signing`.
+
+The cache is not "until logout". Agent options: `--default-cache-ttl`
+defaults to 600 seconds and resets on use; `--max-cache-ttl` defaults
+to 7200 seconds and does not reset. The SSH-key variants default to
+1800 and 7200 seconds.
+
+This is not non-exportable storage. §2.6.5, export of a secret key
+through the agent protocol, is documented as "Not implemented."
+§2.6.7, `GET_PASSPHRASE`, can return the passphrase to the client, in
+hex, for a caller that asks. A secret key that lives in a file can
+still be copied as that file. The trust-indicator behaviour in section
+5 is a different question and is not repeated here.
+
+What this protects: the calling process, on the `PKSIGN` path, does not
+hold the secret key, and a cache entry dies. What it does not protect:
+the same user, root, a client that calls `GET_PASSPHRASE`, or anyone
+who copies the secret-key file. A cache of two hours is a long time.
+It fits the **shape** of v1 (the engine holds the unlocked key; the CLI
+does not). It does not fit as a dependency, and a cache with no maximum
+lifetime would not fit at all.
+
+### 10.3 SSH
+
+OpenSSH `PROTOCOL.key` (in the portable tree, `$OpenBSD: PROTOCOL.key,v
+1.4`) describes `openssh-key-v1`. The file holds a cipher name, a KDF
+name, KDF options, the public keys, and an encrypted list of private
+keys. For `kdfname` `bcrypt` the options are a salt and a round count.
+Unencrypted keys use cipher `none` and KDF `none`. A checkint is
+duplicated so decryption can be tested.
+
+`ssh-keygen(1)` asks for a passphrase when it writes a private key. The
+passphrase may be empty. The man page says the default format is
+OpenSSH-specific and is preferred because it protects keys at rest.
+`-a` sets the KDF rounds, "currently `bcrypt_pbkdf(3)`", default 32.
+There is no recovery of a lost passphrase. `ssh(1)` says the same
+passphrase encrypts the sensitive part of the private key file using
+AES-128. `PROTOCOL.key` says the cipher is a field in the file rather
+than one fixed algorithm. Both pages were fetched. They are not the
+same sentence. This memo does not pick which one a given file uses.
+
+`ssh(1)` also says a private key file should be readable by the user
+and not accessible by others, and that `ssh` ignores a private key file
+that is accessible by others. It recommends the same for `~/.ssh`:
+read, write, and execute for the user, not accessible by others. It
+does not print the numbers 0600 or 0700. Those numbers in section 10.7
+are this project's proposal for that rule.
+
+`ssh-agent(1)` holds private keys. The man page says authentication
+passphrases and private keys never go over the network when the agent
+is forwarded: the socket is forwarded, and the agent returns the
+result. The socket "is accessible only to the current user, but is
+easily abused by root or another instance of the same user." Without
+`-t`, the default maximum lifetime of an identity is forever.
+`ssh-add(1)` `-c` marks an identity so use requires confirmation
+through `ssh-askpass(1)`. `-t` sets a lifetime. The private key on disk
+is still a file. The agent holds a copy.
+
+What the passphrase protects: the file at rest. What the mode protects:
+other users reading the file, if the mode is actually that. What
+confirm-before-use protects: an agent-held key being used with no one
+at the keyboard. What none of this protects: root, another process of
+the same user that has the agent socket, a key whose passphrase is
+empty, or export of the file. An agent whose default lifetime is
+forever is the case section 10.9 refuses.
+
+### 10.4 signify, minisign, age
+
+`signify(1)` `-G` writes `keyname.pub` and `keyname.sec`. Unless `-n`
+is given, it prompts for a passphrase to protect the secret key. A
+wrong passphrase is one of the documented failure reasons. The secret
+key is a file. The man page does not name a KDF, an agent, or a KMS.
+That absence is what was fetched, not a claim that the implementation
+has no KDF.
+
+`minisign(1)` `-G` writes a public key and encrypts the secret key to
+a file (`~/.minisign/minisign.key` in the example). `-W` means do not
+encrypt or decrypt the secret key with a password. `-C` changes or
+removes the password. The man page does not name a KDF, an agent, or a
+KMS.
+
+`age(1)` identities are files. A native identity is a line beginning
+`AGE-SECRET-KEY-1` (or `AGE-SECRET-KEY-PQ-1` for the hybrid). The same
+manual says a passphrase-encrypted age file can itself be an identity
+file, and that the passphrase is requested interactively. It also says
+passphrase-protected identity files are not necessary for most use
+cases, "where access to the encrypted identity file implies access to
+the whole system." For SSH keys used as identities, the manual says
+keys held on hardware tokens such as YubiKeys, or accessed via
+`ssh-agent(1)`, are not supported.
+
+The age v1 specification's scrypt recipient encrypts the file key, not
+a long-term signing key by a different name. The stanza carries a
+16-byte salt and a work factor. The wrap key is scrypt (RFC 7914) with
+`r = 8`, `p = 1`, and a domain-separated salt. The body is
+ChaCha20-Poly1305 of the file key, nonce fixed at twelve zero bytes. A
+scrypt stanza MUST be the only stanza in the header. That is a concrete
+KDF-plus-AEAD. It is a candidate next to RFC 9580's Argon2-plus-AEAD.
+It is not a selection.
+
+All three fit a file-based offline wallet: a secret key file, a
+passphrase, no agent required for the common path. age's refusal of
+`ssh-agent` for SSH identities is the same refusal as section 10.9.
+The README notes a YubiKey plugin as an extension. That plugin is the
+hardware case in section 10.6, not the default.
+
+### 10.5 Wrapping by the operating system
+
+Two different operations get called "use the keychain".
+
+**Wrap the passphrase only.** The private key stays a file. A copy of
+the wallet still needs the passphrase, and the passphrase now also
+needs that machine's store. The file remains portable if the user still
+knows the passphrase.
+
+**Move the private key into the OS store.** The wallet no longer has a
+file it can copy onto another machine and unlock. That breaks "keys
+are files". It is not v1.
+
+macOS, two different layers. Apple's "Storing Keys in the Keychain"
+says the keychain is the place to store small secrets, including
+cryptographic keys, and that an application adds and retrieves items.
+"Protecting keys with the Secure Enclave" says a key that is only in
+the keychain is still copied into memory in the clear when it is used.
+A key created in the Secure Enclave is not: the application never
+handles the plaintext, the enclave cannot take a preexisting key, and
+the keys are NIST P-256 only. `kSecAttrTokenIDSecureEnclave` is that
+second path. Apple Platform Security's keychain chapter says items live
+in a SQLite database, `securityd` decides which process may read them,
+and access groups share items across apps from the same developer
+rather than limiting them to one process. Secret values are encrypted
+with AES-256-GCM. A "this device only" class does not survive restore
+onto another device. An ACL can require a biometric or the passcode,
+evaluated in the Secure Enclave.
+
+So the keychain can store a passphrase (the first operation). The
+Secure Enclave is the second operation, and it cannot even import the
+file key this wallet already has.
+
+Windows DPAPI. `CryptProtectData` encrypts a blob the caller still
+holds. Typically only a user with the same logon credential can decrypt
+it, and encryption and decryption usually must happen on the same
+computer. `CRYPTPROTECT_LOCAL_MACHINE` binds the blob to the computer
+instead, and any user on that computer can decrypt it. Optional extra
+entropy, if used, has to be presented again on decrypt. Wrapping the
+passphrase is the first operation. Wrapping the private key makes a
+blob that is not a portable wallet file.
+
+Windows CNG. The key-storage page says long-lived keys must be isolated
+so they are never present in the application process, and that the
+Microsoft software key storage provider runs in the LSA process. The
+same page says CNG also stores private keys as files, for a user key
+under `%APPDATA%\Microsoft\Crypto\Keys`, and in other directories for
+machine and service keys. Those files are OS containers reached through
+the key storage router. They are not a `wallet/keys` file the user
+copies. Whether those files are encrypted at rest was not on the page
+(section 9).
+
+Linux kernel keyrings. `keyrings(7)` is an in-kernel store for keys and
+other security data, with system calls for user space to use it for its
+own purposes. A key has permissions for possessor, user, group, and
+other, and one of the bits is read. It is not a file in the wallet, and
+it is not a non-exportable token: a caller with read permission can
+read the payload.
+
+Secret Service. The freedesktop specification says a client stores a
+secret in a service running in the user's login session, and retrieves
+it with `GetSecret`. Locked collections are not readable until the
+service unlocks them, which may prompt for a master password. The
+secret is returned to the client. That fits a passphrase. It does not
+fit the private key, because the key would no longer be the file.
+
+None of these are v1 requirements. The optional later step in section
+10.7 is the passphrase-only wrap. Putting the private key in any of
+them is out of scope for the same reason a token is.
+
+### 10.6 Hardware tokens
+
+Not v1. The private key would no longer be a file the wallet holds.
+This is a later option. It is not an accepted change.
+
+GnuPG's OpenPGP card howto: `generate` generates the key on the card.
+The prompt asks whether to make an off-card backup of the **encryption**
+key, and says that without that backup encrypted data is unrecoverable
+if the card is lost. The signature key is not given that prompt in the
+text that was fetched. The card has a PIN and an Admin PIN. `forcesig`
+toggles "the signature force PIN flag". `gpg --card-status` in that
+howto prints "Signature PIN ....: forced". A signature, in that setup,
+needs the card and the PIN. It does not need a key file, except for the
+optional encryption-key backup the howto recommends.
+
+YubiKey's OpenPGP notes (the 5.2.3 enhancements page) say the touch
+policy can require a touch on the hardware before an OpenPGP
+cryptographic operation. Firmware 5.2.3 adds a touch cache: one touch
+unlocks OpenPGP operations for up to 15 seconds, or until the session
+ends. The page does not say the private key cannot be exported. That
+part is not verified. A 15-second cache is also not the same thing as
+a touch on every signature.
+
+PKCS #11 v3.0 (the OASIS base specification): if `CKA_EXTRACTABLE` is
+`CK_FALSE`, certain attributes of the private key cannot be revealed
+in plaintext outside the token. `CKA_ALWAYS_AUTHENTICATE` can force the
+user to provide a PIN for each sign or decrypt. The token may still
+allow wrapping when extractable is true. "Non-exportable" is that
+attribute, not a property of every PKCS #11 object.
+
+age's SSH path refusing YubiKeys (section 10.4) is the same boundary
+from the other side: the file tool does not pretend to drive the token.
+
+### 10.7 What fits v1
+
+Proposed. The lines that only restate "keys are files" and "no cloud
+custody" are requirements that follow from constraints already in
+PLAN-0004 and section 7.3. The modes, the prompt, and the wipe are the
+proposal.
+
+- Private keys are files under `wallet/keys`. The directory is mode
+  0700. Each private key file is mode 0600. That is the numeric form of
+  the rule `ssh(1)` states as "not accessible by others".
+- Each private key file is encrypted at rest, so a copied wallet is
+  useless without the passphrase. The mechanism is passphrase-based
+  secret-key encryption. The candidates that were actually read are
+  RFC 9580 S2K with AEAD (usage octet 253, Argon2 recommended) and a
+  single modern KDF plus AEAD (the age specification's scrypt and
+  ChaCha20-Poly1305 is one that was read end to end). No winner.
+  DEC-002 is still open, so this is not an encoding choice either.
+- The engine prompts for the passphrase. It is not a command-line
+  argument. On Linux, `/proc/pid/cmdline` holds the complete command
+  line of a running process (`proc_pid_cmdline(5)`), so an argument is
+  visible to anything that can read that file. The passphrase is not
+  logged.
+- The plaintext key exists only inside the engine, for one signature,
+  and is then wiped. libsodium's `sodium_memzero` exists because a
+  compiler or linker may delete a `memset` of memory that looks
+  unused. `sodium_mlock` asks the kernel not to swap that memory;
+  `sodium_munlock` zeroes it before unlocking. The Python `secrets`
+  module, fetched the same day, generates secrets and does not
+  document a wipe. No standard-library equivalent was on that page
+  (section 9).
+- The CLI asks the engine to sign. The engine holds the unlocked key.
+  Callers do not. That is the `PKSIGN` shape in section 10.2, without
+  a cache that outlives the one operation.
+- Optional, and not this milestone: an OS store from section 10.5 holds
+  the **passphrase**, not the key. The key file stays the file.
+- A hardware-backed non-exportable key is out of scope for the CLI
+  engine milestone, because the private key would no longer be a file
+  (section 10.6).
+
+### 10.8 Commercial signers, custody only
+
+These are the contrast. m-of-n does not take custody of the key in a
+service.
+
+Sections 2.1 through 2.3 already say Artifact Signing, eSigner, and
+Software Trust Manager keep the private key in the vendor's HSM or
+service. The client sends a digest, or signs through the vendor's
+tool. That is cloud custody.
+
+DigiCert KeyLocker's benefits page says KeyLocker generates and stores
+the private key in HSM storage, generates the certificate request, and
+requires multi-factor authentication to sign. The page's argument for
+cloud storage is that a hardware token can be lost and that an
+on-premises HSM is costly. The private key is not a file the user
+holds.
+
+SignPath, which section 2.4 could not settle from the homepage: the
+managing-certificates page says creating the CSR in SignPath creates
+the private key on SignPath's HSM, and that importing a PFX is worse
+because the key may already have been exposed. The crypto-providers
+page says the provider implements KSP, PKCS #11, or CryptoTokenKit so
+that local tools can sign, and that during the operation the private
+key remains on the HSM. Price and the relying-party screen remain not
+verified.
+
+Apple notarization is not this. The notarization page says the notary
+service scans Developer ID-signed software for malicious content and
+code-signing issues and, if it finds none, returns a ticket to staple
+to the software. The page does not say Apple holds the developer's
+private key. Where that key is stored was not on the page.
+
+AWS KMS, as the plain cloud-KMS case: the concepts page says the
+initial HSM backing key is generated on an HSM in the domain and is
+designed never to be exported from the HSM in plaintext. What leaves
+the HSM is that key encrypted under HSM-managed domain keys.
+
+None of these is a local file. Section 7.3 already refuses that shape.
+This section adds KeyLocker and SignPath, which the first pass could
+not verify, and separates notarization from custody so the two are not
+treated as the same product.
+
+### 10.9 Non-goals
+
+- Cloud HSM or KMS custody, including KeyLocker and SignPath's HSM.
+  The key would not be a file the user holds.
+- Keyless OIDC (Fulcio) as the principal. Already refused in section
+  7.3. A short-lived certificate is not a substitute for the key.
+- Putting the private key in a git repository, or in a transparency
+  log. GitHub's public attestations are written to a public log
+  (section 2.8). A private key is not an attestation.
+- A long-lived unlocked agent with no timeout. `ssh-agent(1)`'s
+  default lifetime is forever. That default is not the proposal.
+- The passphrase on the command line, or in shell history because it
+  was on the command line. Section 10.7.
+- The Secure Enclave, a CNG key container, or a PKCS #11 token as the
+  v1 key. Section 10.5 and section 10.6.

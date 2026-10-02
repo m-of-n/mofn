@@ -4,7 +4,7 @@ id: R-0002-sources
 title: "Sources consulted — wallet market survey"
 type: evidence
 status: draft
-version: "0.1.0"
+version: "0.2.0"
 date: "2026-10-02"
 updated: "2026-10-02"
 ---
@@ -71,6 +71,50 @@ alone.
 | policy-controller README | https://raw.githubusercontent.com/sigstore/policy-controller/main/README.md | Admission controller, `ClusterImagePolicy`. |
 | Witness README | https://raw.githubusercontent.com/in-toto/witness/main/README.md | in-toto, Rego, keyless Sigstore, air gap. |
 | SignServer CE README | https://raw.githubusercontent.com/Keyfactor/signserver-ce/main/README.md | LGPL subset, not for production. |
+
+## Private-key protection
+
+All of these were fetched on 2026-10-02.
+
+| Source | URL | What it settled |
+|---|---|---|
+| RFC 9580, S2K and secret keys | https://www.rfc-editor.org/rfc/rfc9580.txt | §3.7 S2K types including Argon2. §3.7.2 generation rules. §3.7.2.1 usage octets 0, 253, 254, 255. §5.5.3 secret-key packet, HKDF, AEAD tag. §13.7 AEAD recommended for v6 secret keys; CFB corruption note. |
+| GnuPG invoking gpg-agent | https://www.gnupg.org/documentation/manuals/gnupg/Invoking-GPG_002dAGENT.html | Daemon manages secret keys. Pinentry is a separate program. |
+| GnuPG agent options | https://www.gnupg.org/documentation/manuals/gnupg/Agent-Options.html | default-cache-ttl 600s, max-cache-ttl 7200s. SSH variants 1800 and 7200. ignore-cache-for-signing. |
+| GnuPG agent protocol | https://www.gnupg.org/documentation/manuals/gnupg/Agent-Protocol.html | Command index: PKSIGN, GET_PASSPHRASE, EXPORT. |
+| GnuPG PKSIGN | https://www.gnupg.org/documentation/manuals/gnupg/Agent-PKSIGN.html | Client sends a hash; agent asks for the passphrase; returns a signature, not the key. use-cache-for-signing. |
+| GnuPG GET_PASSPHRASE | https://www.gnupg.org/documentation/manuals/gnupg/Agent-GET_005fPASSPHRASE.html | Can return the passphrase to the client. |
+| GnuPG agent EXPORT | https://www.gnupg.org/documentation/manuals/gnupg/Agent-EXPORT.html | "Not implemented." |
+| OpenSSH PROTOCOL.key | https://raw.githubusercontent.com/openssh/openssh-portable/master/PROTOCOL.key | openssh-key-v1. ciphername, kdfname bcrypt (salt, rounds), or none/none. |
+| ssh-keygen(1) | https://man.openbsd.org/ssh-keygen | Passphrase prompt. OpenSSH format preferred for keys at rest. bcrypt_pbkdf rounds, default 32. No recovery of a lost passphrase. |
+| ssh(1) | https://man.openbsd.org/ssh | Private key not accessible by others, or ssh ignores it. Passphrase encrypts the sensitive part with AES-128. ~/.ssh recommended owner-only. |
+| ssh-agent(1) | https://man.openbsd.org/ssh-agent | Holds private keys. Forwarding does not send the key. Socket abused by root or the same user. Default lifetime forever. |
+| ssh-add(1) | https://man.openbsd.org/ssh-add | -c confirm via ssh-askpass. -t lifetime. Passphrase from the tty. |
+| signify(1) | https://man.openbsd.org/signify | -G prompts for a passphrase unless -n. Secret key is a file. KDF not named. |
+| minisign(1) | https://raw.githubusercontent.com/jedisct1/minisign/master/share/man/man1/minisign.1 | Secret key encrypted to a file. -W skips the password. -C changes it. KDF not named. |
+| age(1) | https://raw.githubusercontent.com/FiloSottile/age/main/doc/age.1 | Identity files. Passphrase-encrypted file as an identity. SSH keys via ssh-agent or hardware tokens are not supported. |
+| age v1 spec, scrypt | https://raw.githubusercontent.com/C2SP/C2SP/main/age.md | scrypt recipient: salt, work factor, ChaCha20-Poly1305, fixed nonce. Must be the only stanza. |
+| age README | https://raw.githubusercontent.com/FiloSottile/age/main/README.md | Names age-plugin-yubikey as an extension. Behavior of the file tool is from age(1), not from this README. |
+| libsodium secure memory | https://doc.libsodium.org/memory_management | sodium_memzero, sodium_mlock, sodium_munlock. |
+| Python secrets | https://docs.python.org/3/library/secrets.html | Generates secrets. Does not document wiping memory. |
+| Apple Secure Enclave attribute | https://developer.apple.com/documentation/security/ksecattrtokenidsecureenclave.md | kSecAttrTokenIDSecureEnclave. Points at the protecting-keys article. |
+| Protecting keys with the Secure Enclave | https://developer.apple.com/documentation/security/protecting-keys-with-the-secure-enclave.md | Enclave creates the key. Cannot import a preexisting key. P-256 only. Keychain-only keys are copied into memory to be used. |
+| Storing keys in the keychain | https://developer.apple.com/documentation/security/storing-keys-in-the-keychain.md | Keychain stores small secrets, including keys, via the keychain API. |
+| Apple keychain data protection | https://support.apple.com/guide/security/keychain-data-protection-secb0694df1a/web | SQLite, securityd, AES-256-GCM, access groups, this-device-only, ACL in the Secure Enclave. Published date on the page: 2024-12-19. Fetched 2026-10-02. |
+| CryptProtectData | https://learn.microsoft.com/en-us/windows/win32/api/dpapi/nf-dpapi-cryptprotectdata | Same logon, usually same computer. CRYPTPROTECT_LOCAL_MACHINE binds to the computer. |
+| CNG key storage | https://learn.microsoft.com/en-us/windows/win32/seccng/key-storage-and-retrieval | Isolation in the LSA process. Private keys also stored as files under %APPDATA%\Microsoft\Crypto\Keys and other profile directories. |
+| Linux keyrings(7) | https://man7.org/linux/man-pages/man7/keyrings.7.html | In-kernel key store. Permissions include a read bit for possessor, user, group, and other. |
+| Secret Service | https://specifications.freedesktop.org/secret-service-spec/latest/description.html | Secrets in a per-login service. GetSecret returns the secret. Locked collections can prompt. |
+| OpenPGP card howto, generating keys | https://www.gnupg.org/howtos/card-howto/en/ch03s03.html | generate on the card. Optional off-card backup of the encryption key. forcesig. PIN and Admin PIN. |
+| OpenPGP card howto, card status | https://www.gnupg.org/howtos/card-howto/en/ch03.html | Sample card-status line "Signature PIN ....: forced". |
+| YubiKey OpenPGP 5.2.3 notes | https://developers.yubico.com/PGP/YubiKey_5.2.3_Enhancements_to_OpenPGP_3.4.html | Touch-to-verify. Touch cache up to 15 seconds. Export not discussed. |
+| PKCS #11 base v3.0 | https://docs.oasis-open.org/pkcs11/pkcs11-base/v3.0/os/pkcs11-base-v3.0-os.html | CKA_EXTRACTABLE CK_FALSE. CKA_ALWAYS_AUTHENTICATE forces a PIN per use. |
+| proc_pid_cmdline(5) | https://man7.org/linux/man-pages/man5/proc_pid_cmdline.5.html | /proc/pid/cmdline holds the process command line. |
+| DigiCert KeyLocker benefits | https://docs.digicert.com/en/digicert-keylocker/overview/benefits.html | Generates and stores the private key in an HSM. MFA to sign. |
+| SignPath managing certificates | https://docs.signpath.io/managing-certificates | CSR path creates the private key on SignPath's HSM. |
+| SignPath crypto providers | https://docs.signpath.io/crypto-providers | Local tools sign through KSP, PKCS #11, or CryptoTokenKit. Private key remains on the HSM. |
+| Apple notarization | https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution.md | Notary service scans Developer ID-signed software and returns a ticket. Does not say where the private key is. |
+| AWS KMS concepts | https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html | HSM backing key is designed never to leave the HSM in plaintext. |
 
 ## Project documents read, not external evidence
 
