@@ -16,6 +16,7 @@ nav:
       - "Project plan — semester execution, repo, library, and team": project/PLAN-0001-project-plan.md
       - "Product Specification — Key-centric Semantic Attestations": project/PLAN-0002-product-spec.md
       - "Key-centric Semantic Attestations — Fall 2026 plan": project/PLAN-0003-semester-plan.md
+      - "Application plan — local wallet, two domains, verdict first": project/PLAN-0004-application-plan.md
       - "Agents, topics, and the unit of parallel work": project/PROC-0001-agents-and-topics.md
       - "Multi-agent ingestion — fan-out, gates, and what humans actually review": project/PROC-0002-multi-agent-ingestion.md
       - "Team coordination across repositories — lanes, skills, and who opens what": project/PROC-0003-team-coordination.md
@@ -23,7 +24,4 @@ nav:
       - "Cycle retrospective — what the harness caught, what it missed, what to repeat": project/RETRO-0001.md
   - Research:
       - "README": research/README.md
-  - Library:
-      - Construction method: library/construction.md
-      - Bibliography: library/bibliography.md
   - Download: download.md

@@ -7,7 +7,7 @@ description: "What the demo application does, its commands, and what a user sees
 type: design
 category: product
 status: draft
-version: "0.2.0"
+version: "0.2.1"
 version_policy: "semver; MINOR = command or behaviour added"
 date: "2026-09-22"
 updated: "2026-10-02"
@@ -24,7 +24,9 @@ backlog: D8
 
 # The application
 
-**Status: draft.** Written because the honest answer to *"have we planned the
+**Status: draft.** Expanded as a plan in `PLAN-0004`. This file stays the behaviour sketch.
+
+ Written because the honest answer to *"have we planned the
 application?"* was **no**. `PROC-0004` §6 lists packaging, checksums, signing
 and app notes — six checkboxes about shipping a thing whose *behaviour* was
 never specified.
@@ -131,7 +133,7 @@ the distinction nothing mainstream surfaces.
 - **No network.** No fetching domains, no transparency log, no registry. A
   domain is a file you already have.
 - **No revocation.** Short validity or nothing.
-- **No GUI, no web UI, no server.**
+- **No web UI, no server.** A local graphic UI is in scope (PLAN-0004). It is not a site.
 - **No cryptographic primitives of our own** — a vetted library, always.
 - **No knowledge-graph engine.** Delegation is graph-shaped
   (speaker, statement, target; chains compose), but the operation is deterministic
@@ -190,7 +192,7 @@ in place of globs.
 it presents ends up presenting the data model, which is exactly the failure the
 PICS-like layer exists to avoid.
 
-## 9. Open questions
+## 10. Open questions
 
 1. **Is `mofn` the command name?** It matches the repo; it says nothing about
    what the tool does.
