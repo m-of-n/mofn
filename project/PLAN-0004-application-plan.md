@@ -7,7 +7,7 @@ description: "Whether APP-0001 is complete, and the plan that fills the gaps. Dr
 type: plan
 category: product
 status: draft
-version: "0.1.0"
+version: "0.1.1"
 date: "2026-10-02"
 updated: "2026-10-02"
 needs_review: true
@@ -132,6 +132,30 @@ wallet/
 ```
 
 An optional index may map a domain hash to a file. It is not a graph store.
+
+### 6.1 Private keys
+
+**Proposed, except where it restates a constraint this plan already has.**
+Keys are files. There is no keychain product and no cloud custody. Those
+two lines are not a new decision. The rest is a proposal for the CLI
+engine. It does not close DEC-002.
+
+- Private keys are files under `wallet/keys`. The directory is mode `0700`.
+  Each private key file is mode `0600`.
+- Each private key file is encrypted at rest. The mechanism is
+  passphrase-based secret-key encryption. The candidates — OpenPGP S2K
+  with AEAD, or one modern KDF plus AEAD — are surveyed in R-0002
+  (PR 59), the private-key section. This plan does not pick one. The
+  on-disk encoding is still DEC-002.
+- The engine prompts for the passphrase. The passphrase is not a
+  command-line argument and it is not logged. Later, not this
+  milestone: an OS keychain may store the passphrase. It does not store
+  the key.
+- The plaintext key exists only inside the engine, for one signature,
+  and is then wiped. The CLI asks the engine. Callers do not hold the
+  unlocked key.
+- Hardware-backed non-exportable keys are out of scope for the CLI
+  engine milestone. The private key would no longer be a file.
 
 ## 7. Schedule
 
