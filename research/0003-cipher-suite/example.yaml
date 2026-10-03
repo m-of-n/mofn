@@ -1,0 +1,54 @@
+# HPKE_P256_AES_GCM_128, written out as data.
+# Source: class body of /Users/paul/cb/projects/hpke/cipher_suite.py
+# and one generateKeyPair() call on 2026-10-02.
+# This is the existing suite, not a proposal to adopt it for statements.
+# Null means the class does not define it.
+# A second suite, HPKE_Curve25519_ChaCha20Poly1305, changes csi to "0004",
+# dh_group to Curve25519, aead to ChaCha20Poly1305 (key length 32), and
+# the measured public-key length to 32. The hash stays SHA-256.
+
+id:
+  class_name: HPKE_P256_AES_GCM_128
+  csi_hex: "0001"
+  name: P1
+  note: >
+    csi is a private two-byte value on the class. It is not an RFC 9180
+    kem_id. RFC 9180 DHKEM(P-256, HKDF-SHA256) is 0x0010.
+    sci_size on the parent class is 4. len(csi) is 2.
+
+signature:
+  scheme: null
+  size_bytes: null
+  encoding: null
+
+hash:
+  name: SHA-256
+  size_bytes: 32
+
+key_exchange:
+  note: present because this module is an HPKE suite. Not a v1 statement suite.
+  kem: DHKEM
+  kem_implemented: false
+  dh_group: P-256
+  kdf: HKDF-SHA256
+  aead: AES-128-GCM
+  aead_key_bytes: 16
+  aead_nonce_bytes: 12
+
+sizes:
+  hash_bytes: 32
+  public_key_bytes_measured: 64
+  public_key_bytes_rfc9180_npk: 65
+  signature_bytes: null
+  note: >
+    Measured length is marshal() after dropping the SEC1 uncompressed
+    type byte. RFC 9180 Npk for P-256 is 65, type byte included.
+    That difference is observed. It is not a choice of wire format.
+
+encoding:
+  public_key: >
+    ECC_DH_Group.marshal: X9.62 uncompressed point, first byte removed.
+    Not named on the suite.
+  signature: null
+  signed_bytes: null
+  envelope: null
