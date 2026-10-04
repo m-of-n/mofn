@@ -31,8 +31,18 @@ vectors, and tooling.
 |---|---|---|
 | `0001-arch-0001-genesis` | ARCH-0001 v0.1.0 | **partial** — reconstructed a week late, and permanently degraded as a result |
 | `0002-arch-0002-cycle` | ARCH-0002, ADR-0001 | complete |
+| `0003-cbor-reference-sweep` | library CBOR record set, RPT-0001 | complete — queries not archived, `research/README.md` rule 2 unmet |
+| `0004-canonical-encoding-lane-b` | `canonical-encoding` topic, `rfc-8785` FX-1 record | complete — output is `library` `79c543a`; see the cross-repo note below |
 
 `DL-0001` is the argument for the rule: **write the entry in the same change.**
 The prompts, and what the human rejected, were not recoverable a week later —
 including whether ARCH-0001 §4.2's five statement kinds were proposed or
 directed, which register item 6a now has to decide without that evidence.
+
+**`DL-0004` found the rule is not satisfiable as written.** A lane whose output
+lands in `library/` cannot put its design-log entry in the same commit, because
+`design-log/` is in `mofn/`. DL-0004's entry names the library commit it
+describes and was written minutes after it, which is the closest available
+approximation — but the agreement needs amending to either allow a declared
+cross-repo pair or move `design-log/` somewhere that can see both repositories.
+Recorded in `0004-canonical-encoding-lane-b/review.md`.
