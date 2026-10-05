@@ -7,8 +7,11 @@ name: library-update
 on:
   repository_dispatch: {types: [library-updated]}
   workflow_dispatch:
-  schedule: [{cron: "0 13 * * 1"}]     # Monday backstop if a dispatch is missed
-permissions: {contents: write, pull-requests: write}
+  # Hourly poll. The library's notify-mofn dispatch needs MOFN_DISPATCH_TOKEN,
+  # which is not set, so polling is what makes bumps automatic. A run with no
+  # library change exits after the checkout.
+  schedule: [{cron: "17 * * * *"}]
+permissions: {contents: write, pull-requests: write, actions: write}
 jobs:
   bump:
     runs-on: ubuntu-latest
@@ -33,9 +36,12 @@ jobs:
         if: steps.bump.outputs.changed == 'true'
         run: bin/manifest
       - uses: peter-evans/create-pull-request@v6
+        id: cpr
         if: steps.bump.outputs.changed == 'true'
         with:
           branch: chore/lib-pin-auto
+          # The DCO check rejects any commit without Signed-off-by.
+          signoff: true
           title: "chore: bump library pin to ${{ steps.bump.outputs.sha }}"
           commit-message: |
             chore: bump library pin to ${{ steps.bump.outputs.sha }}
@@ -54,3 +60,11 @@ jobs:
             ```
             ${{ steps.bump.outputs.log }}
             ```
+      # GitHub does not run pull_request workflows for a PR opened with
+      # GITHUB_TOKEN, and `docs` is a required check, so without this the bump
+      # PR would wait forever. workflow_dispatch is the documented exception:
+      # it runs ci.yml on the PR branch and reports `docs` on its head commit.
+      - name: run CI on the bump PR
+        if: steps.cpr.outputs.pull-request-operation == 'created' || steps.cpr.outputs.pull-request-operation == 'updated'
+        env: {GH_TOKEN: "${{ github.token }}"}
+        run: gh workflow run ci.yml --ref chore/lib-pin-auto
