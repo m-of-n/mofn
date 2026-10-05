@@ -1262,8 +1262,8 @@ builder are **indistinguishable at the envelope layer**.
 Decisively: **xz's backdoor would appear in no SBOM.** The component list was
 correct; the *bytes of that component* differed from its source.
 
-SPDX 2.2.1 is ISO/IEC 5962:2021 [@iso-iec-5962]; SPDX 3.0.1 [@spdx-3-0-1] is
-current at the project. CycloneDX is standardised as ECMA-424 [@ecma-424].
+SPDX 2.2.1 is ISO/IEC 5962:2021 [@iso-iec-5962-2021]; SPDX 3.0.1 [@spdx-3-0-1] is
+current at the project. CycloneDX is standardised as ECMA-424 [@cyclonedx-1-7].
 NTIA's Minimum Elements [@ntia-2021-sbom-minimum] have been superseded by CISA
 2026 guidance [@cisa-2026-sbom-minimum].
 
@@ -1888,6 +1888,8 @@ ingestion to regenerate this section.*
   <https://access.redhat.com/articles/4264021>
 - **[cve-2024-3094]** CVE-2024-3094 (xz-utils backdoor, CVSS 10.0)  
   <https://nvd.nist.gov/vuln/detail/CVE-2024-3094>
+- **[cyclonedx-1-7]** CycloneDX Bill of Materials Specification  
+  <https://tc54.org/ecma424/>
 - **[dennis-vanhorn-1966]** Programming Semantics for Multiprogrammed Computations  
   <https://doi.org/10.1145/365230.365252>
 - **[did-key-method]** The did:key Method v0.9  
@@ -1904,8 +1906,6 @@ ingestion to regenerate this section.*
   <https://datatracker.ietf.org/doc//>
 - **[draft-niyikiza-oauth-attenuating-agent-tokens]** Attenuating Authorization Tokens for Agentic Delegation Chains  
   <https://datatracker.ietf.org/doc//>
-- **[ecma-424]** ECMA-424 CycloneDX Bill of Materials Specification, 2nd Edition  
-  <https://ecma-international.org/publications-and-standards/standards/ecma-424/>
 - **[eff-2010-ssliverse]** An Observatory for the SSLiverse  
   <https://www.eff.org/files/defconssliverse.pdf>
 - **[elgamal-1985]** A Public Key Cryptosystem and a Signature Scheme Based on Discrete Logarithms  
@@ -1988,7 +1988,7 @@ ingestion to regenerate this section.*
   <https://www.intel.com/content/dam/develop/external/us/en/documents/tdx-whitepaper-final9-17.pdf>
 - **[iso-iec-11889-2015]** ISO/IEC 11889:2015 Trusted Platform Module Library  
   <https://www.iso.org/standard/66510.html>
-- **[iso-iec-5962]** ISO/IEC 5962:2021 SPDX Specification V2.2.1  
+- **[iso-iec-5962-2021]** Information technology — SPDX Specification V2.2.1  
   <https://www.iso.org/standard/81870.html>
 - **[itu-x509-1988]** ITU-T X.509 (1988): The Directory - Authentication framework  
   <https://www.itu.int/rec/T-REC-X.509-198811-S>

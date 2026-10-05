@@ -24,4 +24,7 @@ nav:
       - "Cycle retrospective — what the harness caught, what it missed, what to repeat": project/RETRO-0001.md
   - Research:
       - "README": research/README.md
+  - Library:
+      - Construction method: library/construction.md
+      - Bibliography: library/bibliography.md
   - Download: download.md
