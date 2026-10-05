@@ -7,9 +7,9 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.8.0"
+version: "0.9.0"
 date: "2026-09-16"
-updated: "2026-09-22"
+updated: "2026-10-05"
 needs_review: true
 reviewed: false
 canonical_path: project/BACKLOG-0001.md
@@ -26,8 +26,34 @@ agent_notes: >
 id in the issue title. Status: `todo` · `doing` · `review` · `done` · `parked`.
 Size: `S` <½day · `M` ~1day · `L` ~3days.
 
-Increments are in `PLAN-0001` §9. **The demo floor is I3 (Nov 11)** — everything
-after is upside.
+Increments are in `PLAN-0001` §9 and the one-page `PLAN-0003`. **The demo floor
+is I3 (Nov 11)** — everything after is upside.
+
+## Status at 2026-10-05 — I1 closes Oct 14
+
+This file had not moved since 2026-09-22. Brought up to date from the repos,
+merged PRs and the 2026-09-28 decisions (D-1…D-7, `project/meetings/`).
+
+**At risk for Oct 14 (I1):**
+- **D3 research reports (T-025–T-027) — not started.** No student report exists
+  in `research/`. D-4 says draft them from survey R-001 (§2/§4 mechanism, §5–§8
+  uptake); the material is there, the reports are not.
+- **D1 construction method (T-020)** — `library/docs/construction.md` last
+  edited 2026-09-16.
+- **Library quality (T-024)** — 280 records, but **16 written and 264 unwritten
+  scaffolds** (library#45). The count was reading as progress.
+- **Lane issues mofn#13, #14, #23** — no activity since 2026-09-21/22.
+
+**Overdue sponsor-side and agent actions:** ADR-0002 draft (Claude, was Oct 2);
+DECISIONS-0001 T1-A closure (Claude); Product Spec GAP-6 dates (Paul).
+
+**Process:** every merge needs one approval and `enforce_admins` is off in both
+repos, so the sponsor is the only path to `main`. Neither student has reviewed
+the other's PRs (0 reviews). See T-006c, T-006d.
+
+**Pending sponsor decision:** library#42 narrows FX-1 from "every spec record a
+PR moves past stub" to "every record a PR *extracts*" (summaries held to the
+summary bar). Accept or keep #32's rule — L-035.
 
 ---
 
@@ -37,47 +63,53 @@ after is upside.
 |---|---|---|---|---|---|
 | T-001 | ~~Create GitHub org `m-of-n`~~ — done; DEC-001 accepted | D0 | PL | S | done |
 | T-002 | ~~Create `mofn` and `library` repos~~ — done, both public and pushed | D0 | PL | S | done |
-| T-003 | **Fall 2026 deliverables — definition of done.** `PROC-0004`, aligned to D0–D10. Parent issue with sub-issues | D0–D10 | all | L | todo |
+| T-003 | **Fall 2026 deliverables — definition of done.** `PROC-0004`, aligned to D0–D10. Parent issue mofn#28 with sub-issues | D0–D10 | all | L | doing |
 | T-003x | ~~Branch protection~~ — done; residual settings are T-006c | D0 | S1 | S | done |
 | T-004 | `CODEOWNERS` → `/spec/` and `/project/` to PL; both students on the catch-all | D0 | S1 | S | done |
-| T-005 | DCO check in CI | D0 | S1 | S | todo |
+| T-005 | ~~DCO check in CI~~ — done, both repos | D0 | S1 | S | done |
 | T-006 | ~~Issue + PR templates; labels; milestones~~ — done | D0 | S2 | M | done |
-| T-006a | Repo `admin` for both students — David done; second on accept | D0 | PL | S | doing |
-| T-006b | Decide faculty access for Mario Lin (read? admin?) | D0 | PL | S | todo |
-| T-006c | Turn on `enforce_admins` now a second reviewer exists | D0 | PL | S | todo |
-| T-007 | `bin/validate-archdoc` in CI — front matter + version/updated coupling | D0 | S1 | M | todo |
-| T-008 | MkDocs Material site deploying to Pages from a merged PR | D0 | S2 | M | todo |
-| T-009 | `library` wired as submodule; `bin/lib-sync` working | D0 | S1 | S | todo |
-| T-010 | `bin/wt` worktree helper; document in CONTRIBUTING | D0 | S1 | S | todo |
-| T-011 | Publish draft planning docs to Pages — **asap, ahead of the rest of I0** | D0 | S2 | S | todo |
-| T-012 | **Architecture development** — market research, technology background, bibliography, base design of both protocols and the application. **Scope extends beyond the student project.** Deliverable: the architecture specification. Iterated in-issue | — | PL | XL | todo |
+| T-006a | ~~Repo `admin` for both students~~ — done, both repos and the org | D0 | PL | S | done |
+| T-006b | Decide faculty access for Mario Lin (read? admin?) — not yet a collaborator or invitee | D0 | PL | S | todo |
+| T-006c | Turn on `enforce_admins` now a second reviewer exists — still off in both repos (2026-10-05) | D0 | PL | S | todo |
+| T-006d | **Students review each other's PRs** — 0 cross-reviews to date; every merge currently waits on the sponsor | D0 | S1+S2 | S | todo |
+| T-007 | ~~`bin/validate-archdoc` in CI~~ — done | D0 | S1 | M | done |
+| T-008 | ~~MkDocs Material site deploying to Pages~~ — done; live at m-of-n.github.io/mofn | D0 | S2 | M | done |
+| T-009 | ~~`library` wired as submodule; `bin/lib-sync` working~~ — done | D0 | S1 | S | done |
+| T-010 | ~~`bin/wt` worktree helper; document in CONTRIBUTING~~ — done | D0 | S1 | S | done |
+| T-011 | ~~Publish draft planning docs to Pages~~ — done | D0 | S2 | S | done |
+| T-012 | **Architecture development** — market research, technology background, bibliography, base design of both protocols and the application. **Scope extends beyond the student project.** Deliverable: the architecture specification. Iterated in-issue. Inputs so far: ARCH-0002, survey R-001, wallet survey R-002, cipher suite R-0003 (mofn#60) | — | PL | XL | doing |
 | T-012x | ~~`design-log/` opened~~ — done; DL-0001 and DL-0002 written | D0 | PL | S | done |
-| T-013 | Agree and commit the cut order (PLAN-0001 §12) | D0 | all | S | todo |
+| T-013 | Agree and commit the cut order (PLAN-0001 §12) — mofn#7, no discussion yet | D0 | all | S | todo |
 
 ## I1 — Library & research · Oct 1–14 · D1 D2 D3
 
 | id | task | del | own | sz | status |
 |---|---|---|---|---|---|
-| T-020 | D1 v0.1 — construction best practice (`library/docs/construction.md`) | D1 | S2 | L | doing |
-| T-021 | Seed 10 records by hand to prove the schema before scaling | D2 | S2 | M | doing |
+| T-020 | D1 v0.1 — construction best practice (`library/docs/construction.md`) — **at risk**: last edit 2026-09-16; FX-1 (`docs/extraction.md`) now carries much of it | D1 | S2 | L | doing |
+| T-021 | ~~Seed 10 records by hand to prove the schema~~ — done | D2 | S2 | M | done |
 | T-022 | Ingest adapters verified for each type: pdf, url, ietf, xlsx, md, book, repo, consortium, hierarchy | D2 | S2 | M | doing |
 | T-023 | **Shelfmark: converge requirements, then schema. No data merger.** Write the requirements diff | D2 | PL | M | todo |
-| T-024 | Library to ~40 records across the 7 topics | D2 | S2 | L | todo |
-| T-025 | Report: *context* | D3 | S1 | L | todo |
-| T-026 | Report: *mechanism* — the evidence base for DEC-002 and DEC-004 | D3 | S1 | L | todo |
-| T-027 | Report: *uptake/applications* — incl. SPKI and PICS failure-to-adopt | D3 | S2 | L | todo |
-| T-028 | Topic notes answered for `namespace-governance`, `canonical-encoding` | D3 | PL/S1 | M | todo |
+| T-024 | Library to ~40 records across the topics — **count met (280), quality not**: 16 written, 264 scaffolds. Fill tracked in library#45 | D2 | S2 | L | doing |
+| T-025 | Report: *context* — **not started**; draft from survey R-001 §1–§3 (D-4) | D3 | S1 | L | todo |
+| T-026 | Report: *mechanism* — the evidence base for DEC-002 and DEC-004 — **not started**; R-001 §2/§4, plus the RFC 8785 R-O-05 analysis in library#46 | D3 | S1 | L | todo |
+| T-027 | Report: *uptake/applications* — incl. SPKI and PICS failure-to-adopt — **not started**; R-001 §5–§8 | D3 | S2 | L | todo |
+| T-028 | Topic notes answered for `namespace-governance`, `canonical-encoding` — canonical-encoding in review (library#46); 3 of 17 topics answered overall | D3 | PL/S1 | M | doing |
+| T-029a | Schema scenarios (3–5, incl. email delegation) and Product Spec personas, GAP-1 (D-1) | D3 | S1+S2 | M | todo — was due Oct 5 |
+| T-029b | Product Spec, PLAN-0002 v0.2 — GAP-4 real sketches (Ndewedo, Oct 14), GAP-6 course dates (PL) | — | PL+S2 | M | doing |
+| T-029c | Confirm Tauri for the wallet GUI (D-7) before GUI work starts | D8 | S2 | S | todo — Oct 14 |
+| T-029d | ADR-0002: accept P2, P3, P5, P6 provisionally (D-2) | — | Claude→PL | M | **overdue** (was Oct 2) |
+| T-029e | Close T1-A in DECISIONS-0001 citing D-1 | — | Claude | S | **overdue** |
 
 ## I2 — Schema + DEC-002 · Oct 15–28 · D4 D5
 
 | id | task | del | own | sz | status |
 |---|---|---|---|---|---|
 | T-030 | WP1 — encoding-neutral schema for ARCH-0001 §4 logical types | D4 | S1 | L | todo |
-| T-031 | Fixtures: `NameCert`, `AuthzCert` **with threshold subject**, `ArtifactStatement` | D5 | S1 | L | todo |
-| T-032 | Score the two surviving DEC-002 options incl. namespace governance | D5 | S1 | M | todo |
-| T-033 | `ADR-0001` — DEC-002 accepted; ARCH-0001 status updated + changelog | D5 | PL | M | todo |
+| T-031 | Fixtures: `NameCert`, `AuthzCert` **with threshold subject**, `ArtifactStatement` — in **option 5** (D-3) plus the option-2 comparison | D5 | S1 | L | todo |
+| T-032 | Score option 5 against option 2 incl. namespace governance (D-3 narrowed DEC-002 to these) — needs library#39 Tier 1 extracted first | D5 | S1 | M | todo |
+| T-033 | ADR for DEC-002 (ADR-0001 is taken by key-relative naming) — accepted; ARCH-0001 status updated + changelog | D5 | PL | M | todo |
 | T-034 | Canonicalization idempotence + round-trip tests in CI | D5 | S2 | M | todo |
-| T-035 | Resolve R-M-12: requirement row, or **ARCH-0002**? | — | PL | M | todo |
+| T-035 | ~~Resolve R-M-12: requirement row, or ARCH-0002?~~ — ARCH-0002, accepted as P1 via ADR-0001 | — | PL | M | done |
 
 ## I3 — Reduction · Oct 29–Nov 11 · D6 · **DEMO FLOOR**
 
@@ -128,19 +160,26 @@ after is upside.
 | L-005 | ~~OKF alignment — YAML front matter, documented extensions~~ | #1.11,12 | — | M | review |
 | L-006 | ~~`implementations` field — open source + commercial~~ | #1.3 | — | S | review |
 | L-007 | ~~`research/` for archived method research~~ | sponsor | — | S | review |
-| L-010 | Fill out the 9 existing records: `summary.md` written, not template | #1.2 | S2 | L | todo |
-| L-011 | **NIST cryptographic algorithms — summarised records, not stubs** (sponsor 2026-09-22). Document set and rationale below | #1.4 | S1 | L | todo |
+| L-010 | ~~Fill out the 9 existing records~~ — superseded by library#45 (264 scaffolds) | #1.2 | S2 | L | parked |
+| L-011 | **NIST cryptographic algorithms — summarised records, not stubs** (sponsor 2026-09-22). Document set below; expanded scope in library#8; Ndewedo's library#42 in review | #1.4 | S1 | L | review |
 | L-012 | ~~NIST digital signature specifics~~ — folded into L-011 | #1.2 | S1 | — | done |
-| L-013 | Attestation specifications sweep — RATS, EAT, CoRIM, TPM, Confidential Computing | #1.2,7 | S1 | L | todo |
+| L-013 | Attestation specifications sweep — RATS, EAT, CoRIM, TPM, Confidential Computing — **ingested** by the survey (topic `device-attestation`, 26 records), **not written** (#45) | #1.2,7 | S1 | L | doing |
 | L-014 | Trust management publications — deep research gather | #1.7 | S2 | L | todo |
 | L-015 | Implementation search across all records — open source + commercial | #1.3 | S2 | M | todo |
 | L-016 | Organised bibliography for review; confirm the schema supports it | #1.6 | S2 | M | todo |
 | L-017 | Applicability review pass over all records after first summarisation | #1.8 | PL | M | todo |
 | L-018 | Define ingestion **scope**: standards, specs, recommendations, white papers, sites, repos | #1.10 | PL | S | todo |
 | L-019 | Archive the method research behind `docs/construction.md` — sources were discarded | sponsor | S2 | M | todo |
-| L-020 | Multi-agent ingestion plan; humans review `summary.md` only | #1.5 | PL | M | todo |
+| L-020 | ~~Multi-agent ingestion plan~~ — done: PROC-0002, and FX-1 `docs/extraction.md` for spec records | #1.5 | PL | M | done |
 | L-021 | `mofn/research/` — D3 reports with `sources.md` and `searches.md` | sponsor | S1 | S | todo |
 | L-022 | Promote recurring free tags into `schema/tags.yaml` (rule of three) | #1.6 | S2 | S | todo |
+| L-030 | ~~FX-1 full extraction standard — enforced in CI~~ — library#32 | sponsor | Claude | M | done |
+| L-031 | FX-1 extraction of the CBOR/COSE set, ranked — **Tier 1 needed for D5 by Oct 28** | library#39 | S1 | XL | todo |
+| L-032 | SCITT full extraction (#30 merged as summaries only) | library#40 | S1 | L | todo |
+| L-033 | Fill the 264 unwritten scaffolds, batched by topic | library#45 | S2 | XL | todo |
+| L-034 | YAML reader block scalars, scaffold inventory, duplicate detection | library#43/#35/#45 → #48 | Claude | M | review |
+| L-035 | **Sponsor decision:** accept library#42's FX-1 carve-out (summaries held to the summary bar), or keep #32's rule | library#42 | PL | S | todo |
+| L-036 | First student FX-1 extractions — RFC 9804, RFC 8785; independent review posted, one item open (9804 verify pass not independent) | library#46 | S2 | L | review |
 
 ### L-011 — the NIST set
 
