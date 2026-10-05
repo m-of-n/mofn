@@ -31,6 +31,7 @@ def load():
             "url": scalar(t, "  url") or scalar(t, "url"),
             "body": p.parent.parent.name,
             "type": scalar(t, "type"),
+            "duplicate_of": scalar(t, "duplicate_of"),
         }
     return recs
 
@@ -55,6 +56,11 @@ def main():
     cited = sorted(set(re.findall(r'\[@([a-z0-9][a-z0-9._-]*)', body)))
     recs = load()
 
+    dups = [(c, recs[c]["duplicate_of"]) for c in cited if c in recs and recs[c]["duplicate_of"]]
+    if dups:
+        print("build-references: citing a duplicate record — cite the canonical one:", file=sys.stderr)
+        for c, canon in dups: print(f"  [@{c}] -> [@{canon}]", file=sys.stderr)
+        return 1
     missing = [c for c in cited if c not in recs]
     if missing:
         print("build-references: %d citation(s) with no library record:" % len(missing),

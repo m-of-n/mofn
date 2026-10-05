@@ -21,18 +21,14 @@ jobs:
         run: |
           pip install -q -r requirements-docs.txt
           bin/build-site
-      - name: library derived views are up to date
+      - name: tracked nav and manifest match what the generators produce
+        # build-site regenerates mkdocs.nav.yml and PUBLISHING.md in this
+        # checkout, so a stale tracked copy would otherwise pass unseen. mofn#57
+        # committed a nav with the Library section dropped; the live site was
+        # fine only because Pages regenerates it (mofn#61).
         run: |
-          cd library
-          # Tolerate submodule version skew: run whichever generators the
-          # PINNED library actually has. A pin predating a tool must not fail
-          # the build for a tool it has never heard of.
-          paths=""
-          [ -x bin/export ]  && { bin/export;  paths="$paths exports/"; }
-          [ -x bin/reindex ] && { bin/reindex; paths="$paths index/"; }
-          [ -n "$paths" ] || { echo "no generators in pinned library — skipping"; exit 0; }
-          git diff --exit-code -- $paths || {
-            echo "::error::stale derived views in library ($paths) — regenerate and commit"; exit 1; }
+          git diff --exit-code -- mkdocs.nav.yml project/PUBLISHING.md || {
+            echo "::error::tracked nav/manifest is stale — run bin/build-site (or: library views, then bin/manifest) and commit"; exit 1; }
   dco:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
