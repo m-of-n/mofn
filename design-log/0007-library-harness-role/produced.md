@@ -42,6 +42,32 @@ nothing addresses. FX-1 is being satisfied as a standard rather than consumed
 as a feed. This is not an argument against FX-1; it is the reason FX-1 does not
 yet pay for itself, and it is invisible unless someone greps for it.
 
+## 2b. Follow-on question: does the #45 re-ingest trigger FX-1?
+
+Asked next: will the re-ingest (library#45) add `distilled/` to the records
+missing it?
+
+**No — and that is deliberate.** `bin/check-pr-extraction` fires on three
+triggers only: `status: distilled`, a declared `distillation` block, or a PR
+that changes the record's `distilled/`. Filling a scaffold into a real
+`summary.md` and setting `status: summarized` hits none of them; the gate
+prints those records under *"summary bar — not extracting, FX-1 not
+required"*. The 2026-10-03 amendment exists precisely so that a summarising
+lane does not owe four multi-agent passes.
+
+**But #45's own `Done when` disagrees with its own gate.** Bullet 1 requires
+*"169 unfilled FX-1-eligible records at `distillation.profile: full`"*, while
+the load-bearing check the issue nominates — `bin/validate --scaffolds` must
+report 0 — inspects summary scaffold text and says nothing about `distilled/`.
+A completed re-ingest therefore drives scaffolds to zero, passes every
+mechanical gate, and leaves bullet 1 unmet with nothing reporting it.
+
+That is structurally the same blind spot already recorded on #45 for
+`draft-ietf-vcon-vcon-core-04` — `status: distilled`, no `profile: full`, and
+no mechanism that notices — at 169 times the scale. Raised as a comment on
+#45; not resolved here, because which records genuinely need FX-1 is the scope
+call this entry declines to make.
+
 ## 3. Changes made
 
 | file | change |
