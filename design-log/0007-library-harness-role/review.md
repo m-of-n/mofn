@@ -20,19 +20,35 @@ A reviewer should accept or reject these separately:
    bibliography appended at the end." This was supplied by the sponsor in the
    question and written up, not derived. If it is wrong, both READMEs are wrong
    in the same way.
-2. **"Distillation is deliberately rare."** The model asserts that a stub is a
-   legitimate resting state and that FX-1 is reserved for documents we build
-   against. `library/docs/extraction.md` says FX-1 applies to every in-scope
-   record *a pull request moves past stub*, which is consistent — but the
-   README now makes the rarity sound intended rather than incidental. **If the
-   intent is that all 203 in-scope records eventually reach `profile: full`,
-   this sentence is a misstatement and must come out.**
+2. **"Distillation is deliberately rare."** ✅ **Resolved, and the model had
+   the rule wrong.** The first draft said FX-1 applies to every in-scope record
+   *a pull request moves past stub*. That is the **pre-amendment** rule.
+   `docs/extraction.md` was amended 2026-10-03 (#8, PR #42) and the trigger is
+   now the **intent to extract** — `status: distilled`, a declared
+   `distillation` block, or a PR that changes `distilled/`.
+   `bin/check-pr-extraction` enforces exactly those three and prints which bar
+   each touched record was held to. So the rarity is **designed**, not
+   incidental, and the corrected README says so. Fixed on library#61.
 3. **The corrected shape line.** `distilled.md`, `quotes.md` and `artifacts/`
    appear in no record. Confirm they are abandoned rather than planned, since
    two files now say so in both repos.
 4. **Leaving FX-1's scope untouched** while publishing the figures that
    question it (203 in-scope, 118 stub, ~37% of record bytes in four
    extractions).
+
+## Where the wrong rule came from
+
+`library/CLAUDE.md` **in the `mofn` submodule** still carries the
+pre-amendment sentence — *"Every `rfc` / `draft` / `spec` / `ietf` record a PR
+moves past stub must reach `distillation.profile: full`"*. The copy on library
+`main` was corrected with the amendment. The pin is 11 commits behind, so a
+session rooted at `mofn/` loads the **stale** file as project instructions and
+has no way to know.
+
+This is the same hazard as the miscounted census in `question.md`, with a
+sharper edge: a wrong *count* looks like a number and invites checking, while a
+wrong *rule* reads as authority. Both came from the pinned submodule in one
+sitting.
 
 ## The open item this produced
 
