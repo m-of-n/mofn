@@ -1,6 +1,7 @@
 ---
 schema: "design-log/v1"
-id: DL-0006
+id: DL-0007
+part: produced
 title: "What the library is for — the harness framing, and the one-way bears_on edge"
 date: "2026-10-09"
 model: "claude-opus-5"
@@ -9,7 +10,7 @@ outcome: "README.md in both repos; library CLAUDE.md shape block corrected. No A
 status: open
 ---
 
-# DL-0006 — produced
+# DL-0007 — produced
 
 ## 1. The answer given
 
