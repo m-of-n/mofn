@@ -34,6 +34,10 @@ vectors, and tooling.
 | `0003-cbor-reference-sweep` | library +51 records, 2 topics; RPT-0001 | complete |
 | `0004-library-body-field` | library `body` — scope §4, record schema v0.6.0; the three defects it turned up | **open** — human review pending on library#34, #37, mofn#55 |
 | `0005-cipher-suite` | what a cipher suite is, critique of the external `cipher_suite.py` | **open** — human review pending; no code change; DEC-002 untouched |
+| `0007-library-harness-role` | what the library is for — README in both repos; the one-way `bears_on` edge | **open** — human review pending; no spec change; FX-1 untouched |
+
+**`0006` is reserved** by the canonical-encoding lane B entry on mofn#74, which
+is open and not yet merged. The gap closes when that PR lands.
 
 `DL-0001` is the argument for the rule: **write the entry in the same change.**
 The prompts, and what the human rejected, were not recoverable a week later —
