@@ -1,6 +1,7 @@
 ---
 schema: "design-log/v1"
-id: DL-0006
+id: DL-0007
+part: review
 title: "What the library is for — the harness framing, and the one-way bears_on edge"
 date: "2026-10-09"
 model: "claude-opus-5"
@@ -9,7 +10,7 @@ outcome: "no human review yet"
 status: open
 ---
 
-# DL-0006 — review
+# DL-0007 — review
 
 No human review yet. Nothing here is accepted.
 
