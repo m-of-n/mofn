@@ -15,6 +15,7 @@ them.
 | spike | what it is for |
 |---|---|
 | `statements/` | create statements in a reduced CBOR profile; render a PICS-like label type. Evaluates the *representation*, not the implementation |
+| `statements/csexp.py`, `statements/rcbor_decode.py` | single-pass **rejecting decoders** for DEC-002 options 1 and 5 — the experiment the `canonical-encoding` falsifier named (#73). See `statements/DECODE-FINDINGS.md` |
 
 ## Why this exists now
 
@@ -44,6 +45,10 @@ architecture:
   has none worth the name.
 - **Reduction trusts its inputs.** `reduce.py` never checks a signature. A real
   verifier checks authenticity *before* walking anything.
+- **`rcbor.py` still has no decode path of its own.** `rcbor_decode.py` is a
+  separate reader written to answer one question (#73) and deliberately imports
+  nothing — it is evidence, not a component. Nothing in the spike round-trips
+  through it.
 - **One topic per delegation.** Nothing composes across topics, or across
   domains of discourse — which is where P4's "domains are the unit of authority
   scope" would actually be tested.
