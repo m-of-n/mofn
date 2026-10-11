@@ -45,7 +45,7 @@ What is not solid:
 - **The two use cases are unnamed.** "October" and "two applications" do not
   say which domains, which claims, or which screens. PLAN-0002 already says
   personas, scenarios, and sketches cannot be written until that is settled.
-  PLAN-0003 D-1 records the targets (software supply chain + archives/library).
+  PLAN-0003 MD-1 records the targets (software supply chain + archives/library).
   APP-0001 never uses them. Its only worked example is still email.
 - **No screens, no on-disk layout, no owners, no dates** beyond "October" and
   "packaging last." PLAN-0003 already schedules D8 for Nov 26–Dec 4 under
@@ -73,7 +73,7 @@ are the store.
 
 ## 3. The two applications
 
-Follow PLAN-0003 D-1. Do not add a third.
+Follow PLAN-0003 MD-1. Do not add a third.
 
 **Supply chain (primary).** A key asserts a vocabulary value about a hashed
 artifact (`build-provenance` / `reproducible`). A second key signs a true
@@ -175,7 +175,7 @@ is otherwise green. Packaging is last.
 ## 8. Fixes this plan expects in APP-0001
 
 1. Delete "No GUI" or replace it with "no web UI, no server; graphic UI is in scope."
-2. Name the two D-1 applications; keep email as a scenario.
+2. Name the two MD-1 applications; keep email as a scenario.
 3. Point the build order at PLAN-0003's dates and owners.
 4. Collapse the two sections both numbered 9.
 

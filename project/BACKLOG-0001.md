@@ -7,9 +7,9 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.9.0"
+version: "0.10.0"
 date: "2026-09-16"
-updated: "2026-10-05"
+updated: "2026-10-11"
 needs_review: true
 reviewed: false
 canonical_path: project/BACKLOG-0001.md
@@ -29,14 +29,30 @@ Size: `S` <½day · `M` ~1day · `L` ~3days.
 Increments are in `PLAN-0001` §9 and the one-page `PLAN-0003`. **The demo floor
 is I3 (Nov 11)** — everything after is upside.
 
+## Status at 2026-10-11
+
+**Added since 2026-10-05:** the **`W-*` wallet and demo-slice lane** (issues
+#65–#69, opened 2026-10-05) had no backlog entry at all — five tasks, three
+owners and the whole `PLAN-0004` application plan, tracked only in GitHub.
+A lane that exists only as issues is invisible to the one file that is supposed
+to be the durable index. They are now §*Wallet and demo slice* below.
+
+**Ids:** the 2026-09-28 decisions are now **`MD-1 … MD-7`**, not `D-n`
+(`GLOSSARY-0001`; `DECISIONS-0001` item 27). `D0 … D10` deliverables are
+unchanged, which is the point of the rename.
+
+**In review:** mofn#82 (`DECISIONS-0001` v0.2.0, the MD-1…MD-7 transcription),
+mofn#83 (`ADR-0002` proposed, T-029d), library#65 (the rename + FX-1 mandate),
+library#66 (`gaps.md` refresh). T-029e closes with #82.
+
 ## Status at 2026-10-05 — I1 closes Oct 14
 
 This file had not moved since 2026-09-22. Brought up to date from the repos,
-merged PRs and the 2026-09-28 decisions (D-1…D-7, `project/meetings/`).
+merged PRs and the 2026-09-28 decisions (MD-1…MD-7, `project/meetings/`).
 
 **At risk for Oct 14 (I1):**
 - **D3 research reports (T-025–T-027) — not started.** No student report exists
-  in `research/`. D-4 says draft them from survey R-001 (§2/§4 mechanism, §5–§8
+  in `research/`. MD-4 says draft them from survey R-001 (§2/§4 mechanism, §5–§8
   uptake); the material is there, the reports are not.
 - **D1 construction method (T-020)** — `library/docs/construction.md` last
   edited 2026-09-16.
@@ -90,23 +106,23 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-022 | Ingest adapters verified for each type: pdf, url, ietf, xlsx, md, book, repo, consortium, hierarchy | D2 | S2 | M | doing |
 | T-023 | **Shelfmark: converge requirements, then schema. No data merger.** Write the requirements diff | D2 | PL | M | todo |
 | T-024 | Library to ~40 records across the topics — **count met (280), quality not**: 16 written, 264 scaffolds. Fill tracked in library#45 | D2 | S2 | L | doing |
-| T-025 | Report: *context* — **not started**; draft from survey R-001 §1–§3 (D-4) | D3 | S1 | L | todo |
+| T-025 | Report: *context* — **not started**; draft from survey R-001 §1–§3 (MD-4) | D3 | S1 | L | todo |
 | T-026 | Report: *mechanism* — the evidence base for DEC-002 and DEC-004 — **not started**; R-001 §2/§4, plus the RFC 8785 R-O-05 analysis in library#46 | D3 | S1 | L | todo |
 | T-027 | Report: *uptake/applications* — incl. SPKI and PICS failure-to-adopt — **not started**; R-001 §5–§8 | D3 | S2 | L | todo |
 | T-028 | Topic notes answered for `namespace-governance`, `canonical-encoding` — canonical-encoding in review (library#46); 3 of 17 topics answered overall | D3 | PL/S1 | M | doing |
-| T-029a | Schema scenarios (3–5, incl. email delegation) and Product Spec personas, GAP-1 (D-1) | D3 | S1+S2 | M | todo — was due Oct 5 |
+| T-029a | Schema scenarios (3–5, incl. email delegation) and Product Spec personas, GAP-1 (MD-1) | D3 | S1+S2 | M | todo — was due Oct 5 |
 | T-029b | Product Spec, PLAN-0002 v0.2 — GAP-4 real sketches (Ndewedo, Oct 14), GAP-6 course dates (PL) | — | PL+S2 | M | doing |
-| T-029c | Confirm Tauri for the wallet GUI (D-7) before GUI work starts | D8 | S2 | S | todo — Oct 14 |
-| T-029d | ADR-0002: accept P2, P3, P5, P6 provisionally (D-2) | — | Claude→PL | M | **overdue** (was Oct 2) |
-| T-029e | Close T1-A in DECISIONS-0001 citing D-1 | — | Claude | S | **overdue** |
+| T-029c | Confirm Tauri for the wallet GUI (MD-7) before GUI work starts | D8 | S2 | S | todo — Oct 14 |
+| T-029d | ADR-0002: accept P2, P3, P5, P6 provisionally (MD-2) | — | Claude→PL | M | **overdue** (was Oct 2) |
+| T-029e | Close T1-A in DECISIONS-0001 citing MD-1 | — | Claude | S | **overdue** |
 
 ## I2 — Schema + DEC-002 · Oct 15–28 · D4 D5
 
 | id | task | del | own | sz | status |
 |---|---|---|---|---|---|
 | T-030 | WP1 — encoding-neutral schema for ARCH-0001 §4 logical types | D4 | S1 | L | todo |
-| T-031 | Fixtures: `NameCert`, `AuthzCert` **with threshold subject**, `ArtifactStatement` — in **option 5** (D-3) plus the option-2 comparison | D5 | S1 | L | todo |
-| T-032 | Score option 5 against option 2 incl. namespace governance (D-3 narrowed DEC-002 to these) — needs library#39 Tier 1 extracted first | D5 | S1 | M | todo |
+| T-031 | Fixtures: `NameCert`, `AuthzCert` **with threshold subject**, `ArtifactStatement` — in **option 5** (MD-3) plus the option-2 comparison | D5 | S1 | L | todo |
+| T-032 | Score option 5 against option 2 incl. namespace governance (MD-3 narrowed DEC-002 to these) — needs library#39 Tier 1 extracted first | D5 | S1 | M | todo |
 | T-033 | ADR for DEC-002 (ADR-0001 is taken by key-relative naming) — accepted; ARCH-0001 status updated + changelog | D5 | PL | M | todo |
 | T-034 | Canonicalization idempotence + round-trip tests in CI | D5 | S2 | M | todo |
 | T-035 | ~~Resolve R-M-12: requirement row, or ARCH-0002?~~ — ARCH-0002, accepted as P1 via ADR-0001 | — | PL | M | done |
@@ -146,6 +162,28 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-064 | Demo rehearsals ×3 | D10 | all | M | todo |
 
 ---
+
+## Wallet and demo slice — `W-*` · issues #65–#69
+
+Opened 2026-10-05 against `PLAN-0004` and parent #31 (T-003.5, the demo floor).
+Tracked here from 2026-10-11; before that they existed only as issues.
+`W-1` is the engine everything else calls — **nothing in this lane starts
+before it runs.**
+
+| id | task | issue | del | own | sz | status |
+|---|---|---|---|---|---|---|
+| W-1 | **Wallet engine v0** — `mofn` CLI over a local `wallet/` (`roots/ keys/ domains/ statements/`); `init`, `key gen` (private key `0600`, encrypted at rest, passphrase prompted, **never an argument**), `root add`, `make`, `check` printing the six-line verdict. **Signature checking moves inside reduction** — `reduce` stops trusting its inputs | #65 | D6 | S1 | XL | todo — Oct 28 |
+| W-2 | **Second domain** — one-page scenario per MD-1 target (supply chain, archives/library) incl. the fail-authorization case and three personas; archives domain file v0 (`record-review`, renderings table, `--lang es`); five-view sketches replacing Product Spec §6.5 | #66 | D6/D8 | PL | L | todo — Oct 14, then Nov 25 |
+| W-3 | **Delegation with short expiry** — `may-speak` chains in `reduce`, intersecting topic *and* validity; expired or out-of-topic → `authorization FAIL` naming the broken link. **Short expiry is the revocation mechanism**; there is no revocation list | #67 | D6 | PL | L | todo — Nov 11 |
+| W-4 | **Weekly demo slice owner** — grow and run `demo/slice.sh` every Monday, post the output on the issue. Three cases minimum: green, `authorization FAIL`, `integrity FAIL` | #68 | D6 | S2 | M | doing — weekly |
+| W-5 | **Mac GUI** — local desktop app (not a web server) for signing and verify/validate display with attribute associations; calls the W-1 engine, reimplements no crypto. Sign and Verify screens first | #69 | D8 | S2 | L | todo — Dec |
+
+**Overlap to resolve.** W-1 and W-3 restate T-041/T-044/T-045 (reduction,
+statement acceptance, separated verifier output) as application work, and W-2
+restates T-029a/T-029b. They are the same deliverables seen from the
+application side. **Either the `T-` rows or the `W-` rows should become
+pointers, not both live** — otherwise I3 is double-counted. Flagged, not
+resolved: it is a planning call, not a transcription.
 
 ## Library build-out — from library#1 and sponsor direction 2026-09-21
 

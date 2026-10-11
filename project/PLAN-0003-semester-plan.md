@@ -27,16 +27,16 @@ statements — *A says B has C* — and let a verifier reduce a delegation chain
 and explain the result in English.
 
 This page is the plan. PLAN-0001 holds the detail and rationale; where they
-differ, this page and the dated decisions (D-n) win until PLAN-0001 is updated.
+differ, this page and the dated decisions (MD-n) win until PLAN-0001 is updated.
 
 ## Fixed decisions (2026-09-28)
 
 | | |
 |---|---|
-| **Targets** (D-1) | Software supply chain + archives/library. Short scenarios (email delegation, …) feed schema design only. |
-| **Principles** (D-2) | ARCH-0002 P1 accepted; P2, P3, P5, P6 provisional; P4, P7 held. |
-| **Encoding** (D-3) | Option 5: reduced CBOR, no IANA tags, COSE export only; YAML is the human form. |
-| **Name / due** (D-6) | *Key-centric Semantic Attestations* · instructor Mario Lin · Dec 4 |
+| **Targets** (MD-1) | Software supply chain + archives/library. Short scenarios (email delegation, …) feed schema design only. |
+| **Principles** (MD-2) | ARCH-0002 P1 accepted; P2, P3, P5, P6 provisional; P4, P7 held. |
+| **Encoding** (MD-3) | Option 5: reduced CBOR, no IANA tags, COSE export only; YAML is the human form. |
+| **Name / due** (MD-6) | *Key-centric Semantic Attestations* · instructor Mario Lin · Dec 4 |
 
 ## Schedule
 
