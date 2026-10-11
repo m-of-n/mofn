@@ -7,10 +7,10 @@ description: "Every open decision across both repos, ranked by what it blocks. T
 type: process
 category: process
 status: active
-version: "0.1.0"
+version: "0.2.0"
 version_policy: "semver; MINOR = decisions added or closed"
 date: "2026-09-22"
-updated: "2026-09-22"
+updated: "2026-10-10"
 decision_makers: []
 reviewers: []
 needs_review: false
@@ -20,19 +20,29 @@ review_note: >
   await a decision — that is the document's whole content.
 canonical_path: project/DECISIONS-0001.md
 defers_to: ARCH-0001
+companion:
+  - project/meetings/2026-09-28.md
 agent_notes: >
   A register, not an authority. Accepting any DEC-* still requires an ADR plus
   a changelog line plus a status update in ARCH-0001 (§9.2). Nothing here
-  accepts anything.
+  accepts anything — and in particular D-3 NARROWED DEC-002 without accepting
+  it, so DEC-002 is still open and no code or vector may assume an encoding.
 ---
 
 # Open decision register
 
-**Checkpoint 2026-09-22.** Both repos clean on `main`, no open PRs, submodule
-pin current. Nothing is blocked on work; everything below is blocked on a
-person.
+**Checkpoint 2026-10-10.** Brought up to date with the weekly of **2026-09-28**
+(`project/meetings/2026-09-28.md`), which took seven decisions — **D-1 … D-7** —
+four of which answered items this register was still printing as open. The
+register had not moved since 2026-09-23; the gap is recorded in §*What changed*
+below rather than edited away.
 
 Ordered by **what it unblocks**, not by importance.
+
+> **Two senses of `D-`.** `D-1 … D-7` are the dated decisions of 2026-09-28.
+> `D0 … D10` are semester *deliverables* (`PLAN-0003`). They collide — `D-3`
+> is the encoding decision, `D3` is the research reports — and renaming one
+> sense is open as item 27.
 
 ---
 
@@ -41,13 +51,56 @@ Ordered by **what it unblocks**, not by importance.
 | # | Decision | Where | Why it blocks |
 |---|---|---|---|
 | ~~1~~ | ~~**Does R-M-12 stand?**~~ **DECIDED 2026-09-22 — yes.** `ADR-0001`; now `ARCH-0002` P1. | ADR-0001 | closed |
-| **2** | **DEC-002 — the encoding.** *Direction 2026-09-22: determinism is not uniqueness; start with a reduced CBOR profile. Prototyped in `prototype/statements/`.* Does R-M-12 make option 2 untenable, or does proposed option 5 (CBOR data model, no IANA tags, COSE as export only) rescue it? | ARCH-0001 §7, proposal §3.3 | Everything downstream. WP1 is encoding-neutral by design so reduction can start first, but D5 needs a target by **Oct 28**. |
-| **3** | **Who drives the agent lanes — students or sponsor?** | PROC-0002 §8.1 | A teaching decision, not a throughput one. If students drive, they learn the material; if you do, it is faster and they learn less. Shapes L-011 through L-014, which are the bulk of I1. |
-| **4** | **Accept the proposal as ARCH-0001 v0.2.0?** DEC-007 filed, DEC-006 withdrawn, R-M-11/12, R-O-05/06, RFC 9943 citation. | proposal | Until accepted, ARCH-0001 still cites a draft that became an RFC in June 2026, and the new requirements have no force. |
+| **2** | **DEC-002 — the encoding. NARROWED 2026-09-28 by D-3 to option 5** (CBOR data model, no IANA tags, COSE export only; YAML as the human form). **Still open: a narrowing is not an acceptance, and no ADR exists.** Option 2 is retained only as the comparison fixture. See the standing note below — the library's evidence now cuts against the narrowing. | ARCH-0001 §7, proposal §3.3, mofn#8 | Everything downstream. WP1 is encoding-neutral by design, but D5 needs a target by **Oct 28**. |
+| ~~3~~ | ~~**Who drives the agent lanes — students or sponsor?**~~ **ANSWERED 2026-09-28 by D-4** — students drive, with named lanes: David #13 → option-5 encoder fixtures and #23 → D3 mechanism; Ndewedo #14 → D3 and the archives domain. The teaching reading was taken over the throughput one. | PROC-0002 §8.1 | closed |
+| **4** | **Accept the proposal as ARCH-0001 v0.2.0?** DEC-007 filed, DEC-006 withdrawn, R-M-11, R-O-05, R-O-06, RFC 9943 citation. **Not on any agenda to date.** | proposal | Until accepted, ARCH-0001 still cites a draft that became an RFC in June 2026, and R-M-11/R-O-05/R-O-06 have no force — while roughly thirty library records already name them in `bears_on`. See the standing note below. |
+| **4a** | **Accept `ADR-0002`?** D-2 granted P2, P3, P5, P6 *provisionally* and said each becomes final "only through an ADR after review". `ADR-0002` is proposed in a companion change at `status: proposed`; once it lands, acceptance is a one-line flip. | ADR-0002 | `prototype/`, `APP-0001` and three answered library topics already build on P2 and P3. |
+| **4b** | **The DEC-002 ADR.** Item 2's instrument. Scoring input is in `library/topics/canonical-encoding.yaml` (`status: answered`) and summarised on mofn#8. | mofn#8 | **Oct 28.** Nothing downstream of D5 can freeze until it is accepted. |
 
-## Tier 1 briefs — the two that need framing, not just naming
+### Standing note on item 2 — the evidence moved after the narrowing
 
-### T1-A · Which target applications are **in scope for the specification**?
+D-3 was taken on **2026-09-28**. RFC 9804 reached full FX-1 extraction on
+**2026-10-04**, and the `canonical-encoding` topic closed on **2026-10-08**.
+The narrowing therefore predates the scoring of option 1, and three findings
+bear on it. They are recorded here because a reviewer must be able to see them
+without reading an issue thread.
+
+- **Six conditions, not four.** R-O-05 delivers (3) canonicalise once at
+  authoring and (4) an authenticated type indicator, and *assumes* (1)
+  injectivity and (2) decoder rejection. Two further conditions — (5) a canonical
+  order for set-valued fields carried in arrays, and (6) a declared Unicode
+  normalisation rule — are **reachable by no candidate and stated in no document
+  of ours.** They bite on the *identity* path, where divergence fails silently
+  rather than as a signature mismatch.
+- **Option 3 should be withdrawn rather than out-scored**, on four grounds; the
+  strongest is that RFC 8785 §3.2.3 *prohibits* array reordering where RFC 8949
+  §4.2.1 is *silent*, so what we need is a modification of JCS rather than a
+  subset — and under R-O-03 a modification is a partly invented algorithm.
+- **Option 1 is now on the right side of all four of those grounds**, and also
+  wins namespace governance — the criterion the proposal §3.3 says was never
+  scored, and which had been recorded as option 3's outright win. What stops it
+  being a conclusion is a far poorer data model and library availability, which
+  DEC-002 names as a driver.
+
+**This does not reopen D-3 and nobody should read it as doing so.** It is the
+material the ADR must answer, and the reason the ADR is the decision rather than
+the minute. Condition (2) is owned by mofn#72 as an `ARCH-0002` P5 amendment;
+mofn#73 is the ~50-line experiment that would settle it for option 1.
+
+## Tier 1 briefs — both decided 2026-09-28; the analysis is kept
+
+### T1-A · Which target applications are **in scope for the specification**? — **CLOSED 2026-09-28 by D-1**
+
+**Decision: software supply chain (primary) + archives/library (contrast).**
+Option (a), as recommended below. Archives/library was chosen because it lets us
+make *statements about the library itself* — records, reviews, distillations —
+using a corpus we already run; supply chain keeps the mapping to in-toto, SLSA
+and SCITT. **Very short further scenarios, email delegation among them, are
+written only as use cases that drive schema definition, not as specified
+targets.** This supersedes the "two apps" framing of the September email.
+
+The reasoning is retained because the cost argument governs any future request
+to add a third target.
 
 **The distinction.** *In scope* means the specification must be shown to work
 for it: a domain of discourse, worked examples, and a section. *Cited as
@@ -62,61 +115,67 @@ domain **cannot show that the vocabulary mechanism generalises** — and that
 generalisation is the entire P3/P4 claim. One target proves the machinery runs;
 it does not prove the thesis.
 
-| target | case for scoping it | cost |
-|---|---|---|
-| **Software supply chain** | Existing standards to map to (in-toto, SLSA, SCITT), so WP2/WP3 have a real target. A demo pipeline exists | moderate — mapping work already planned |
-| **Archives / library** | **We already run one.** Non-software, so it exercises R-M-11's `description` mode. Corpus exists | near zero |
-| AI agent attestation | Fastest-moving, least served, where the contribution lands hardest | **high — the target moves.** NIST work began Apr 2026; SCITT profile is a draft |
-| AI media provenance | C2PA adopters | high, crowded, standards-led |
-| Scientific data | PROV-O adjacent, weak authz today | moderate, no partner |
-| IoT onboarding | key-centric by nature | high, needs a partner |
+| target | case for scoping it | cost | outcome |
+|---|---|---|---|
+| **Software supply chain** | Existing standards to map to (in-toto, SLSA, SCITT), so WP2/WP3 have a real target. A demo pipeline exists | moderate — mapping work already planned | **in scope** |
+| **Archives / library** | **We already run one.** Non-software, so it exercises R-M-11's `description` mode. Corpus exists | near zero | **in scope** |
+| AI agent attestation | Fastest-moving, least served, where the contribution lands hardest | **high — the target moves.** NIST work began Apr 2026; SCITT profile is a draft | cited as motivation |
+| AI media provenance | C2PA adopters | high, crowded, standards-led | not scoped |
+| Scientific data | PROV-O adjacent, weak authz today | moderate, no partner | not scoped |
+| IoT onboarding | key-centric by nature | high, needs a partner | not scoped |
 
-**Recommendation: two — software supply chain as primary, archives/library as
-contrast.** Two deliberately unlike domains demonstrate generalisation; a third
-adds cost without adding evidence. **AI agent attestation is cited as
-motivation, not specified against** — specifying against a target that is
-itself in flux would date the specification faster than anything else in it.
+**Why two and not three.** Two deliberately unlike domains demonstrate
+generalisation; a third adds cost without adding evidence. **AI agent
+attestation is cited as motivation, not specified against** — specifying against
+a target that is itself in flux would date the specification faster than
+anything else in it.
 
-### T1-B · Accept ARCH-0002 P2–P7, or hold?
+### T1-B · Accept ARCH-0002 P2–P7, or hold? — **DECIDED 2026-09-28 by D-2**
 
-P1 is accepted (`ADR-0001`). P2–P7 are draft, which means **nothing may be built
-on them.** Accepting makes them normative and constrains DEC-002, DEC-004 and
-DEC-007.
+**Decision: P2, P3, P5, P6 accepted *provisionally*; P4 and P7 held.** Exactly
+as recommended below. "Provisionally" is load-bearing and is D-2's own wording:
+work may build on them now, **but they are not yet normative, and each becomes
+final only through an ADR after review** (`ARCH-0001` §9). That ADR is
+`ADR-0002` — register item 4a.
 
-| | principle | evidence today | accepting costs | rec |
-|---|---|---|---|---|
-| **P2** | statement form *A says B has C* | prototype: naming and attestation in one form | rewrite ARCH-0001 §4.2 | **accept** |
-| **P3** | a type *is* a schema | prototype renders EN/ES with **no type-specific code** | multilingual becomes a requirement | **accept** |
-| **P4** | domains are hash-identified **sets** | one domain hashed in a spike | **tightens DEC-002** — canonicalisation onto the semantic critical path | **hold** |
-| **P5** | validity checked, unknown rejected | CVE-2025-59420; vCon `critical` shows opt-in is weaker | encoder and verifier must reject | **accept** |
-| **P6** | a name is an attested string | prototype: 91 bytes, same form | resolves 6a; §4.2 rewrite | **accept** |
-| **P7** | authorization is a family by profile | **none — no profile written** | reframes DEC-004 | **hold** |
+P1 is accepted (`ADR-0001`). Accepting the rest makes them normative and
+constrains DEC-002, DEC-004 and DEC-007.
 
-**Recommendation: accept P2, P3, P5, P6. Hold P4 and P7.**
+| | principle | evidence today | accepting costs | rec | **outcome** |
+|---|---|---|---|---|---|
+| **P2** | statement form *A says B has C* | prototype: naming and attestation in one form. **Since strengthened:** the library's `artifact-statements` and `sbom` topics both find a live specification with the *A* missing — vCon is signed by whoever assembled it and never distinguishes ASSEMBLED from ASSERTED | rewrite ARCH-0001 §4.2 | accept | **provisional** |
+| **P3** | a type *is* a schema | prototype renders EN/ES with **no type-specific code** | multilingual becomes a requirement | accept | **provisional** |
+| **P4** | domains are hash-identified **sets** | one domain hashed in a spike | **tightens DEC-002** — canonicalisation onto the semantic critical path | hold | **held** |
+| **P5** | validity checked, unknown rejected | CVE-2025-59420; vCon `critical` shows opt-in is weaker | encoder and verifier must reject | accept | **provisional** |
+| **P6** | a name is an attested string | prototype: 91 bytes, same form | resolves 6a; §4.2 rewrite | accept | **provisional** |
+| **P7** | authorization is a family by profile | **none — no profile written** | reframes DEC-004 | hold | **held** |
 
-**Why hold P4** — it carries the largest downstream cost of the six and the
-least testing. One domain was hash-identified in a spike. Nobody has versioned
-a domain, or had two reference each other, and those are exactly where a
-set-hash gets hard. Accepting it tightens DEC-002 before DEC-002 is decided.
+**Why P4 was held** — it carries the largest downstream cost of the six and the
+least testing. One domain was hash-identified in a spike. Nobody has versioned a
+domain, or had two reference each other, and those are exactly where a set-hash
+gets hard. Accepting it tightens DEC-002 before DEC-002 is decided.
 
-**Why hold P7** — no profile exists. Accepting a principle *about* profiles
-before writing one is asserting a shape we have not tested. Write the supply-chain
-profile first (T1-A), then accept P7 or correct it.
+> **Consequence now visible.** The `canonical-encoding` answer records that
+> conditions (5) and (6) are **conditional on P4** and on `Threshold` members
+> being a set rather than a sequence. Holding P4 keeps them live; dropping it
+> would shrink the answer to its original four conditions and restore option 3
+> to contention. **P4 is therefore no longer only a semantic-layer question —
+> it is an input to DEC-002.**
 
-**Why accept the other four now** — each is demonstrated rather than argued, and
-P2 and P6 together close register item 6a, which unblocks rewriting ARCH-0001
-§4.2. Leaving them draft means the prototype's findings cannot be built on.
+**Why P7 was held** — no profile exists. Accepting a principle *about* profiles
+before writing one is asserting a shape we have not tested. Write the
+supply-chain profile first (T1-A), then accept P7 or correct it.
 
 ## Tier 2 — shapes the work now in flight
 
 | # | Decision | Where |
 |---|---|---|
 | ~~5~~ | ~~**ARCH-0002?**~~ **DECIDED 2026-09-22 — yes.** | ADR-0001 |
-| **5a** | **ARCH-0002 P2–P5**, all draft: constraints are **speech acts by a signing key** · **a type is a schema** carrying representation, constraints, semantics and multilingual human-review tags · **domains of discourse** are hash-identified *sets* of schemas · validity checked at all three RFC 8949 levels with unknown fields rejected | ARCH-0002 |
+| ~~5a~~ | ~~**ARCH-0002 P2–P5**, all draft~~ — **superseded by D-2** and by the T1-B outcome column above. P2, P3, P5 are provisional; P6 provisional; P4 and P7 held. | ARCH-0002 |
 | **5e** | **DEC-009 — what is the contract form?** A third statement function beside attestation and delegation; the sponsor's note is incomplete. Deliberately unspecified rather than guessed. | ARCH-0002 |
 | **5b** | **DEC-008 — can all processing be key-local?** Proposed: yes above a fixed core, never below it. A key that may define its own validity may define itself valid. | ARCH-0002 |
-| **5c** | **Is a domain of discourse itself a statement by a key**, inheriting authorization and revocation — or a bare hashed artifact any key may cite? First composes; second allows vocabularies nobody owns. | ARCH-0002 P4 |
-| **5d** | **Does DEC-007 survive?** P3 and P4 arguably *answer* it rather than constrain it. Re-state in their terms, or close as answered. | ARCH-0002 |
+| **5c** | **Is a domain of discourse itself a statement by a key**, inheriting authorization and revocation — or a bare hashed artifact any key may cite? First composes; second allows vocabularies nobody owns. **Held with P4.** | ARCH-0002 P4 |
+| **5d** | **Does DEC-007 survive?** P3 and P4 arguably *answer* it rather than constrain it. Re-state in their terms, or close as answered. **Now partly live:** D-2 made P3 provisional, so DEC-007's premise has moved while DEC-007 has not. The library's `scitt` topic adds that RFC 9943's shape — mandatory `iss`/`sub`, opaque tagged payload — is "worth copying". | ARCH-0002 |
 | 6 | **Does `locator` survive R-M-12?** Proposed as non-authoritative evidence; the strict reading excludes global locators from the native model entirely. | proposal §7 |
 | 7 | **Which records get PROC-0002 stage 8** (generate code from spec)? Proposed: only where a spec defines an algorithm or wire format we intend to implement or map. | PROC-0002 §8.2 |
 | 8 | **Does `versions/` hold a full record per version, or metadata plus a delta note?** | scope §7.1 |
@@ -127,8 +186,7 @@ P2 and P6 together close register item 6a, which unblocks rewriting ARCH-0001
 
 | # | Decision | Where |
 |---|---|---|
-| ~~6a~~ | ~~Five *kinds* or one *form*?~~ **ANSWERED 2026-09-22 by ARCH-0002 P6** — a name is an attested string, so the five are functions over one form. §4.3's three *procedures* stay separate; that was never about object kinds. `AclEntry` is the informative outlier: unsigned, so no speaker, so not a statement — it is the fixed floor DEC-008 needs. | ~~ARCH-0001 §4.2~~ |
-| ~~6a-old~~ | ~~**Five statement *kinds* or one *form* with *functions*?**~~ ARCH-0001 §4.2 lists `NameCert`/`AuthzCert`/`AclEntry`/`ArtifactStatement`/`Endorse`; ARCH-0002 P2 says one form. They likely reconcile — but **`AclEntry` is unsigned, so it has no speaker**, and may be exactly the fixed floor DEC-008 says cannot be key-local. Needs a decision, not a silent edit. | ARCH-0001 §4.2, ARCH-0002 P2 |
+| ~~6a~~ | ~~Five *kinds* or one *form*?~~ **ANSWERED 2026-09-22 by ARCH-0002 P6** — a name is an attested string, so the five are functions over one form. §4.3's three *procedures* stay separate; that was never about object kinds. `AclEntry` is the informative outlier: unsigned, so no speaker, so not a statement — it is the fixed floor DEC-008 needs. **`ARCH-0001` §4.2 still lists five kinds; carrying the answer into it is part of register item 4.** | ~~ARCH-0001 §4.2~~ |
 | ~~6b~~ | ~~"Topic" collides~~ · ~~6c~~ ~~"Tag" collides~~ — **WITHDRAWN 2026-09-22.** Neither survives the collision test now stated in `GLOSSARY-0001`: two senses collide only when both can be live in the same context. Both are homonyms across separated repos and documents. Raising them was over-correction after three genuine collisions. | GLOSSARY-0001 |
 
 ## Tier 3 — process, decide when convenient
@@ -146,26 +204,58 @@ P2 and P6 together close register item 6a, which unblocks rewriting ARCH-0001
 | 19 | Does `cited_by` belong on a record, or only in `index/`? | references §5.2 |
 | 20 | Normalise `verb` SHALL → MUST? Synonymous in RFC 2119; normalising loses the source's wording. | requirements §5.3 |
 | 21 | Track requirement **satisfaction** — ours against theirs? That is a conformance matrix and a much larger commitment. | requirements §5.2 |
+| **27** | **Rename one sense of `D-`.** `D-1 … D-7` (dated decisions) and `D0 … D10` (deliverables) are both live in one table in `PLAN-0003`, which is exactly the collision test `GLOSSARY-0001` states. `D-3` is cited in fifteen library files including its PR template and extract skill, so the cost rises weekly. Suggested: `MD-n` for meeting decisions, leaving `D0 … D10` alone. | PLAN-0003, GLOSSARY-0001 |
 
 ## Tier 4 — administrative, blocking people not work
 
 | # | Item | State |
 |---|---|---|
-| 22 | **Mario Lim repo access.** Invite to `mlim3@usfca.edu` pending since 2026-09-16. `mlim-usfca` is his **organisation**, not a user account — needs his personal GitHub login. | blocked on him |
-| 23 | **`enforce_admins`** is `false` on both repos. Set so a single member could bootstrap; three admins now exist, so the reason has expired. | ready to flip |
+| 22 | **Faculty repo access.** Invite to `mlim3@usfca.edu` pending since 2026-09-16. `mlim-usfca` is an **organisation**, not a user account — the invite needs a personal GitHub login. **Name unresolved: this register and the USF address read "Mario Lim"; D-6 and `BACKLOG-0001` T-006b read "Mario Lin".** One is wrong; confirm before re-sending. | blocked on him |
+| 23 | **`enforce_admins`** is `false` on both repos. Set so a single member could bootstrap; three admins now exist, so the reason has expired. **Still off at 2026-10-05** (`BACKLOG-0001` T-006c). | ready to flip |
 | 24 | **Signed commits** — `CONTRIBUTING.md` asks for them; the requirement is off so students are not blocked on key setup. | deliberate |
 | 25 | **`~/cb/.claude/rules/usf-provenance.md`** written but uncommitted — `~/cb` has your in-flight manifest work. | yours to commit |
 | 26 | **Shelfmark convergence** — requirements first, then schema. No data merger. | T-023, not started |
+| **28** | **Wallet GUI framework — Tauri, tentative (D-7).** Web frontend plus a Python sidecar; PySide6 is the fallback. **Confirm before GUI work begins** (`BACKLOG-0001` T-029c). | due Oct 14 |
+
+---
+
+## What changed in this revision
+
+Recorded rather than edited away, because the gap is the finding: **this
+register sat eighteen days behind a meeting that answered four of its items.**
+D-1's own text instructed that T1-A "be closed with this"; the action was
+assigned for Sep 30 and is carried out here on Oct 10.
+
+| item | was | now | by |
+|---|---|---|---|
+| Tier 1 #2 | open, undirected | **narrowed** to option 5, still open, with the post-narrowing evidence stated | D-3 |
+| Tier 1 #3 | open | **closed** — students drive, named lanes | D-4 |
+| Tier 1 #4a, #4b | absent | **added** — the two ADRs that are now the live gate | D-2, D-3 |
+| T1-A | brief awaiting a decision | **closed** — supply chain + archives; analysis retained | D-1 |
+| T1-B | brief awaiting a decision | **decided** — P2/P3/P5/P6 provisional, P4/P7 held | D-2 |
+| Tier 2 #5a | open restatement of P2–P5 | **superseded** by D-2 | D-2 |
+| Tier 2 #5d | open | open, **premise moved** by D-2 and by the `scitt` topic | — |
+| Tier 3 #27 | absent | **added** — the `D-` collision | this revision |
+| Tier 4 #22 | "Mario Lim" asserted | **unresolved** — register and D-6 disagree | this revision |
+| Tier 4 #28 | absent | **added** — Tauri, tentative | D-7 |
+
+**Nothing here accepts a decision.** D-3 narrowed DEC-002; it did not accept it,
+and `CONTRIBUTING` §5 is explicit that only an ADR can. Items 4a and 4b are the
+ADRs that would.
 
 ---
 
 ## What is *not* waiting on you
 
-Decided and merged: DEC-001 (`m-of-n`) · `summary.md` primary, `distilled.md` for
-requirements extraction · stubs allowed · hierarchical `records/<body>/<id>/` ·
+Decided and merged: DEC-001 (`m-of-n`) · `summary.md` primary, `distilled/` for
+FX-1 extraction · stubs allowed · hierarchical `records/<body>/<id>/` ·
 version folding · `usefulness` verdicts replacing caps · no record caps ·
 NIST summarised not stubbed (L-011) · skills partitioned by what they act on ·
-generated nav, index and crosswalk with CI staleness gates.
+generated nav, index and crosswalk with CI staleness gates · in-scope targets
+(D-1) · lane ownership (D-4) · survey R-001 Q6–Q9 defaults (D-5) · project name,
+instructor and due date (D-6).
 
-Students are unblocked: **#13** (David, namespace-governance), **#14** (Ndewedo,
-canonical-encoding), **#23** (David, NIST set).
+Students are unblocked: **#13** (David, namespace-governance → option-5 encoder
+fixtures), **#14** (Ndewedo, canonical-encoding — **answered**, library#57),
+**#23** (David, NIST set). The live student work is now **#73** (single-pass
+rejecting decoder) and the D5 fixture package for **Oct 28**.
