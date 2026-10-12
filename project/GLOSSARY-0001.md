@@ -7,10 +7,10 @@ description: "Precise senses for the project's overloaded vocabulary. Written be
 type: reference
 category: process
 status: draft
-version: "0.1.0"
+version: "0.2.0"
 version_policy: "semver; MINOR = terms added"
 date: "2026-09-22"
-updated: "2026-09-22"
+updated: "2026-10-11"
 needs_review: true
 reviewed: false
 canonical_path: project/GLOSSARY-0001.md
@@ -49,28 +49,67 @@ is visible rather than repeated.
 
 ## Collisions — currently live
 
-### "Topic" — two senses ⚠️
+### `D-n` — resolved 2026-10-11 by renaming to `MD-n` ✅
+
+The one that passed the test above, and the only one that has.
+
+| sense | where | was | is now |
+|---|---|---|---|
+| **dated decision** | the weekly minutes, `project/meetings/` | `D-1 … D-7` | **`MD-1 … MD-7`** |
+| **deliverable** | `PLAN-0001` §9, `PLAN-0003`, `PROC-0004`, the backlog's `del` column, issue titles | `D0 … D10` | unchanged |
+
+**Why it collided where `tags` and `topic` did not.** Both senses were live in
+*one table on one page* — `PLAN-0003` listed `D-3` (the encoding decision) two
+rows above `D3` (the research reports), and `D-5` (survey defaults) against `D5`
+(the Oct 28 fixture package). That is the test, met exactly.
+
+**Why the decisions were the side that moved.** The deliverables are the
+wider-used of the two: they appear in GitHub issue titles, which cannot be
+rewritten cleanly, and in the backlog's `del` column on every row.
+
+> **Redirect — older text citing `D-n` means `MD-n`.** 129 citations were
+> rewritten across both repositories on 2026-10-11 (75 in `mofn`, 54 in
+> `library`). Anything written before that date, including closed PRs, issue
+> comments and merged design-log entries, uses the old form. **A bare `D-3` in
+> older text is `MD-3`, never `D3`** — which is the hazard that made the rename
+> worth doing, since the deliverable `D3` still exists.
+>
+> Unaffected: `JCS-D-01` and `JCS-D-02` in the RFC 8785 library record are
+> Appendix D test vectors, a different family entirely.
+
+---
+
+## Collisions — raised and withdrawn
+
+**Both were withdrawn on 2026-09-22** as `DECISIONS-0001` register items 6b and
+6c, and neither survives the test in the section above: they are homonyms across
+separated repositories and documents, not senses live in one context. They are
+kept here so the over-correction stays visible rather than being re-raised.
+
+*(An earlier revision of this file listed both under "currently live" with
+"needs resolving — register item", three weeks after the register withdrew them.
+That contradiction is corrected here.)*
+
+### "Topic" — two senses, withdrawn ⊘
 
 | sense | where | means |
 |---|---|---|
 | **research topic** | `library/topics/<id>.yaml`, PROC-0001 §4, PROC-0003 §2 | the unit of parallel work: one bounded question, one owner, one branch |
 | **delegation topic** | ARCH-0002 P2 — *A says B can speak about (Domain, Topic)* | a semantic scope within a domain of discourse |
 
-These are unrelated. One is project management; one is authorization scope.
-**Needs resolving** — register item. Candidates: rename the research unit to
-`lane` or `question`; or rename the delegation scope to `subject-area`. The
-architectural sense is the one with a claim on the word.
+These are unrelated — one is project management, one is authorization scope —
+but no passage means both, so no rename is owed. Should they ever meet in one
+document, the architectural sense has the claim on the word.
 
-### "Tag" — two senses ⚠️
+### "Tag" — two senses, withdrawn ⊘
 
 | sense | where | means |
 |---|---|---|
 | **authorization tag** | ARCH-0001 §4.1 `Tag`, R-M-08, DEC-004 | the SPKI authorization value, with defined **intersection** semantics |
 | **library tag** | `library/schema/tags.yaml` — subject, body, role | a classification label on a bibliographic record |
 
-Also unrelated: one composes under reduction, the other is a filing label.
-**Needs resolving** — register item. The library sense is the cheaper one to
-rename, e.g. to `labels`.
+Also unrelated: one composes under reduction, the other is a filing label. Same
+verdict — a homonym across two repositories, not a collision.
 
 ---
 
@@ -115,8 +154,9 @@ requires). All three are required; failure at any is rejection, never repair.
 architectural term.
 
 **Summary** (`summary.md`) — the primary human- and AI-facing document for a
-record. **Distillation** (`distilled.md`) — an optional compaction for
-requirements extraction. They are not synonyms.
+record. **Distillation** (`distilled/`) — the FX-1 artifact set built when a
+record is extracted against. They are not synonyms. (The directory was
+`distilled.md`, a single file, before FX-1.)
 
 **Requirement** — two senses, deliberately kept apart: an **extracted**
 requirement comes *from a source document* (`library/.../requirements/`,

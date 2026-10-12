@@ -68,7 +68,7 @@ In one semester the project delivers (PLAN-0001 D0–D10):
    names, the encoding (DEC-002 option 5), and the reduction algorithm.
 2. A **wallet application** that makes statements, holds trust roots, and
    checks a set of statements, explaining the verdict in plain language.
-3. **Two worked domains** (D-1): software supply chain, and archives/library —
+3. **Two worked domains** (MD-1): software supply chain, and archives/library —
    statements about the project's own bibliographic library.
 4. A **bibliographic library** and three **research reports**, plus a survey
    paper (R-001) already in draft.
@@ -93,7 +93,7 @@ not assumed.
 
 ### 1.5 External Systems
 No runtime connections. The project **imports and exports** — in-toto/SLSA
-statements (D7), COSE as an export envelope (D-3) — as files. No network,
+statements (D7), COSE as an export envelope (MD-3) — as files. No network,
 registry or transparency log is required (ARCH-0001 NG4; APP-0001 §5).
 
 ---
@@ -128,7 +128,7 @@ frustration). **Owner: David + Ndewedo, due Oct 5**, with the schema scenarios.
 - *Archives / library.* Ndewedo's key asserts `reviewed` about a library record.
   A reader checks it against a trust root naming Ndewedo's key for the
   `library-review` domain; the wallet renders "this record was reviewed by …".
-- *Email delegation (schema scenario only, D-1).* Alice may speak for
+- *Email delegation (schema scenario only, MD-1).* Alice may speak for
   `*@foo.com`; she delegates to Bob; Bob attests Carol's address; Dave's check
   reduces the chain — including the three cases that must fail
   (`prototype/statements/demo_email.py`).
