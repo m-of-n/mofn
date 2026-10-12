@@ -2,7 +2,7 @@
 
 # Publishing manifest
 
-20 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
+21 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
 
 A document is published because it **exists and declares a status** in its
 front matter — not because someone remembered to add it to a nav list. Set
@@ -46,7 +46,7 @@ front matter — not because someone remembered to add it to a nav list. Set
 
 ## Status
 
-⚠️ **16 of 20 published documents are draft or proposed.**
+⚠️ **17 of 21 published documents are draft or proposed.**
 They are public and marked as such. Nothing here is accepted; an open
 `DEC-*` is not settled because it appears on a website.
 
