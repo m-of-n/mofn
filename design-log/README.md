@@ -39,12 +39,13 @@ vectors, and tooling.
 | `0007-rejecting-decoder-spike` | the rejecting-decoder spike — canonicality decidable by parse alone; the falsifier does not fire; mofn#78 | complete |
 | `0008-quotes-md-retirement` | `quotes.md` and the pre-FX-1 companion vocabulary — record schema v0.7.0 | **open** — human review pending; no spec change; library#63 |
 | `0009-adr-0002-draft` | `ADR-0002` at `status: proposed`; the register sync mofn#80 | **open** — human review pending; no DEC-* accepted; ARCH-0001 untouched |
+| `0010-uptake-report` | D3 *uptake & applications* report `R-0004`; two original measurements; the SPKI/PICS failure analysis turned on our own design | **open** — human review pending on mofn#84 |
 
 **Two entries carry `0007`.** `0007-library-harness-role` and
 `0007-rejecting-decoder-spike` were opened in parallel lanes and both took the
 next free number. Both directories are on `main`, so neither is renamed here —
 a design-log id is cited from PRs and must not silently retarget. The next new
-entry takes `0010`.
+entry takes `0011`.
 
 `DL-0001` is the argument for the rule: **write the entry in the same change.**
 The prompts, and what the human rejected, were not recoverable a week later —
