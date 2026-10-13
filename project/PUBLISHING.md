@@ -2,7 +2,7 @@
 
 # Publishing manifest
 
-21 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
+22 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
 
 A document is published because it **exists and declares a status** in its
 front matter — not because someone remembered to add it to a nav list. Set
@@ -32,6 +32,7 @@ front matter — not because someone remembered to add it to a nav list. Set
 | [Key-centric Semantic Attestations — Fall 2026 plan](https://m-of-n.github.io/mofn/project/PLAN-0003-semester-plan/) | `PLAN-0003` | draft ⚠️ | 0.1.0 | 2026-09-28 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0003-semester-plan.md) |
 | [Application plan — local wallet, two domains, verdict first](https://m-of-n.github.io/mofn/project/PLAN-0004-application-plan/) | `PLAN-0004` | draft ⚠️ | 0.1.1 | 2026-10-02 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0004-application-plan.md) |
 | [Draft pitch — the application and the benefit](https://m-of-n.github.io/mofn/project/PLAN-0005-draft-pitch/) | `PLAN-0005` | draft ⚠️ | 0.1.0 | 2026-10-12 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0005-draft-pitch.md) |
+| [Wallet build plan — the decisions it bears on, the work in flight, and the order to build it in](https://m-of-n.github.io/mofn/project/PLAN-0006-wallet/) | `PLAN-0006` | draft ⚠️ | 0.1.0 | 2026-10-12 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0006-wallet.md) |
 | [Agents, topics, and the unit of parallel work](https://m-of-n.github.io/mofn/project/PROC-0001-agents-and-topics/) | `PROC-0001` | draft ⚠️ | 0.2.0 | 2026-09-21 | [source](https://github.com/m-of-n/mofn/blob/main/project/PROC-0001-agents-and-topics.md) |
 | [Multi-agent ingestion — fan-out, gates, and what humans actually review](https://m-of-n.github.io/mofn/project/PROC-0002-multi-agent-ingestion/) | `PROC-0002` | draft ⚠️ | 0.2.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/PROC-0002-multi-agent-ingestion.md) |
 | [Team coordination across repositories — lanes, skills, and who opens what](https://m-of-n.github.io/mofn/project/PROC-0003-team-coordination/) | `PROC-0003` | draft ⚠️ | 0.3.0 | 2026-10-01 | [source](https://github.com/m-of-n/mofn/blob/main/project/PROC-0003-team-coordination.md) |
@@ -46,7 +47,7 @@ front matter — not because someone remembered to add it to a nav list. Set
 
 ## Status
 
-⚠️ **17 of 21 published documents are draft or proposed.**
+⚠️ **18 of 22 published documents are draft or proposed.**
 They are public and marked as such. Nothing here is accepted; an open
 `DEC-*` is not settled because it appears on a website.
 

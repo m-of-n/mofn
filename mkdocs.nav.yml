@@ -19,6 +19,7 @@ nav:
       - "Key-centric Semantic Attestations — Fall 2026 plan": project/PLAN-0003-semester-plan.md
       - "Application plan — local wallet, two domains, verdict first": project/PLAN-0004-application-plan.md
       - "Draft pitch — the application and the benefit": project/PLAN-0005-draft-pitch.md
+      - "Wallet build plan — the decisions it bears on, the work in flight, and the order to build it in": project/PLAN-0006-wallet.md
       - "Agents, topics, and the unit of parallel work": project/PROC-0001-agents-and-topics.md
       - "Multi-agent ingestion — fan-out, gates, and what humans actually review": project/PROC-0002-multi-agent-ingestion.md
       - "Team coordination across repositories — lanes, skills, and who opens what": project/PROC-0003-team-coordination.md
