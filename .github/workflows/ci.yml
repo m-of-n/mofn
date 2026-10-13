@@ -40,8 +40,14 @@ jobs:
           base=${{ github.event.pull_request.base.sha }}
           head=${{ github.event.pull_request.head.sha }}
           fail=0
+          # --no-merges: a merge commit contributes no authored content, so
+          # there is nothing for its author to certify, and every commit it
+          # brings in is still checked individually. GitHub's "Update branch"
+          # button writes the merge server-side, so it never exists locally
+          # and no `git commit -s` can reach it. This is the upstream DCO
+          # app's own default. See design-log/0011-dco-merge-commits/.
           while read -r sha; do
             git log -1 --format=%B "$sha" | grep -qi '^Signed-off-by: .\+ <.\+@.\+>' \
               || { echo "::error::missing Signed-off-by: $(git log -1 --oneline "$sha")"; fail=1; }
-          done < <(git rev-list "$base..$head")
+          done < <(git rev-list --no-merges "$base..$head")
           exit $fail
