@@ -175,4 +175,28 @@ Contributions are under the **DCO**. One line, and `git commit -s` adds it:
 Signed-off-by: Your Name <you@example.com>
 ```
 
+CI checks **every** commit in the PR range, merge commits included, and `dco`
+is a **required** status check on `main` — a red `dco` blocks the merge.
+
+### Update your branch by rebasing, never by merging
+
+`main` requires branches to be up to date before merging, so you will be asked
+to update. **Use the `Update with rebase` option** in the *Update branch*
+dropdown, or do it locally:
+
+```sh
+git fetch origin && git rebase origin/main && git push --force-with-lease
+```
+
+The dropdown's **default** — *Update with merge commit* — writes a
+`Merge branch 'main' into <your-branch>` commit **on GitHub's side**. It never
+exists in your local history, so no `git commit -s` can reach it and `dco`
+fails on it with nothing you can do to fix it short of redoing the update as a
+rebase. `main` requires linear history in any case, so the merge commit buys
+you nothing.
+
+If you have already done it, the recovery is that same rebase — it drops the
+merge commit. This is not hypothetical: it is what failed PRs #83, #82 and #78
+on 2026-10-12, every one of which had signed off every commit it authored.
+
 Code is Apache-2.0. Specifications and documents are CC-BY-4.0.
