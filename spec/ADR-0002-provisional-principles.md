@@ -1,16 +1,16 @@
 ---
 schema: "archdoc/v1"
 id: ADR-0002
-title: "ARCH-0002 P2, P3, P5 and P6 — the instrument D-2 deferred"
+title: "ARCH-0002 P2, P3, P5 and P6 — the instrument MD-2 deferred"
 short_title: "ADR-0002 provisional principles"
-description: "Records D-2's provisional grant over P2, P3, P5 and P6, and proposes the finalisation it deferred. P4 and P7 stay held."
+description: "Records MD-2's provisional grant over P2, P3, P5 and P6, and proposes the finalisation it deferred. P4 and P7 stay held."
 type: decision
 category: security
 status: proposed
-version: "0.1.0"
+version: "0.1.2"
 version_policy: "semver; on acceptance this becomes 1.0.0 and thereafter changes only by superseding"
 date: "2026-10-10"
-updated: "2026-10-10"
+updated: "2026-10-15"
 decision_makers: []
 reviewers: []
 needs_review: true
@@ -19,10 +19,11 @@ canonical_path: spec/ADR-0002-provisional-principles.md
 defers_to: ARCH-0001
 companion:
   - spec/ARCH-0002-key-relative-naming.md
+  - spec/ARCH-0002-CHANGELOG.md
   - project/meetings/2026-09-28.md
 supersedes: []
 agent_notes: >
-  STATUS IS PROPOSED. `decision_makers` is deliberately EMPTY. D-2 granted
+  STATUS IS PROPOSED. `decision_makers` is deliberately EMPTY. MD-2 granted
   P2/P3/P5/P6 provisional standing and said each becomes final "only through
   an ADR after review"; that review has not happened — ARCH-0002 still carries
   `reviewed: false` and zero reviewers. Writing a decision maker into this file
@@ -42,11 +43,11 @@ ADR closes.
 
 ---
 
-## 1. What D-2 decided, and what it deferred
+## 1. What MD-2 decided, and what it deferred
 
-Weekly of **2026-09-28**, decision **D-2**, verbatim:
+Weekly of **2026-09-28**, decision **MD-2**, verbatim:
 
-> **D-2 · T1-B — accept P2, P3, P5, P6 provisionally; hold P4, P7.**
+> **MD-2 · T1-B — accept P2, P3, P5, P6 provisionally; hold P4, P7.**
 > Accepted *for review and initial progress*: work may build on them now, but
 > they are not yet normative — each becomes final only through an ADR after
 > review (ARCH-0001 §9). P4 and P7 stay draft.
@@ -54,13 +55,13 @@ Weekly of **2026-09-28**, decision **D-2**, verbatim:
 Two separate things, and conflating them is the error this file is written to
 avoid:
 
-| | what D-2 did | standing today |
+| | what MD-2 did | standing today |
 |---|---|---|
 | **granted** | permission to build on P2, P3, P5, P6 | **in force** since 2026-09-28, and recorded nowhere normative until this file |
 | **deferred** | making them normative | **not done.** Requires an ADR *after review*; the review has not happened |
 
 `ARCH-0002` carries `needs_review: true`, `reviewed: false`, and an empty
-`reviewers` list. So the condition D-2 attached is unmet, and this ADR is
+`reviewers` list. So the condition MD-2 attached is unmet, and this ADR is
 **proposed** rather than accepted.
 
 ---
@@ -83,8 +84,8 @@ specification.
 ## 3. Why each of the four
 
 **P2 — the statement form, *A says B has C*.** Demonstrated in the prototype:
-naming and attestation take one form. **Strengthened materially since D-2** by
-two library topics that neither the sponsor nor the model had when D-2 was
+naming and attestation take one form. **Strengthened materially since MD-2** by
+two library topics that neither the sponsor nor the model had when MD-2 was
 taken. `artifact-statements` finds that a vCon **has no speaker** — it is signed
 by whoever assembled it, that signer appears nowhere in the data model, and the
 `analysis[]` object records vendor, product and schema and *not who vouches for
@@ -120,11 +121,11 @@ contradiction.
 
 **P7 — unchanged.** No profile has been written. Accepting a principle *about*
 profiles before writing one asserts a shape nobody has tested. Write the
-supply-chain profile (T1-A, now D-1) first.
+supply-chain profile (T1-A, now MD-1) first.
 
 **P4 — held, and holding it now costs something it did not cost on 2026-09-28.**
 
-D-2 held P4 because it carries the largest downstream cost of the six and the
+MD-2 held P4 because it carries the largest downstream cost of the six and the
 least testing: one domain hash-identified in a spike, nobody has versioned a
 domain or had two reference each other, and those are where a set-hash gets
 hard. That reasoning stands.
@@ -156,6 +157,8 @@ they say so.
 | R-M-08 generalises from tags to every constrained object | P2 | ARCH-0001 v0.2.0 |
 | Multilingual description becomes a requirement | P3 | WP1 schema |
 | Encoder *and* verifier must reject unknown fields | P5 | WP1, T-034 |
+| Decoder must reject non-canonical serialisations, in one pass | **P5.1** | WP1, T-034 |
+| `R-I-01` mapping table gains a DSSE envelope-exterior row | **P5.2** | WP3, R-I-03 |
 
 None of these is done by accepting this ADR. They are the work it creates, and
 they belong in the ARCH-0001 v0.2.0 change, not here. ARCH-0002's own rule
@@ -164,38 +167,94 @@ governs and ARCH-0002 is wrong.**
 
 ---
 
-## 6. What acceptance requires — two conditions, one of them sequencing
+## 6. What acceptance requires — two conditions, one now met
 
-**(a) The review D-2 named.** ARCH-0002 is `reviewed: false` with no reviewers.
-D-2 said "final only through an ADR **after review**." A second person must read
-ARCH-0002 and say so. Accepting without it would make D-2's own condition
+**(a) The review MD-2 named.** ARCH-0002 is `reviewed: false` with no reviewers.
+MD-2 said "final only through an ADR **after review**." A second person must read
+ARCH-0002 and say so. Accepting without it would make MD-2's own condition
 decorative.
 
-**(b) P5's scope is about to change, and accepting it first would churn it.**
+**(b) P5's scope had to change first — and that condition is now MET.**
 
-`mofn#72` proposes extending P5 to cover **non-canonical serialisation of known
+`mofn#72` proposed extending P5 to cover **non-canonical serialisation of known
 content** — condition (2) from `canonical-encoding`. P5 as drafted speaks to
 unknown *content*; condition (2) speaks to a non-canonical *serialisation* of
 content that is perfectly well known. The library's answer judged that extending
 P5 by a clause is cheaper and truer than minting an `R-O-07`, and explicitly
 left the amendment to this repository.
 
-If P5 is finalised at today's wording and #72 lands afterwards, a principle
-accepted one week is amended the next — which is exactly the churn an ADR
-exists to prevent, and the reason `version_policy` says an accepted ADR changes
-only by superseding it.
+**That amendment has landed. `ARCH-0002` v0.7.0 adds P5.1 and P5.2** (#72
+closed). This ADR therefore proposes P5 **as amended**, not as drafted on
+2026-09-22, and the churn the note below was written to prevent does not arise.
 
-> **Recommended sequencing: land #72's P5 clause first, then accept this ADR
-> over the amended P5.** The alternative — accept P2, P3, P6 now and hold P5
-> for #72 — is available and is worse, because P5 is the principle the
-> prototype's reject-don't-repair behaviour already depends on, and splitting
-> the four leaves it the only one still unwritable-against.
+> **Original sequencing note, retained because the reasoning governs any future
+> amendment:** land #72's P5 clause first, then accept this ADR over the amended
+> P5. The alternative — accept P2, P3, P6 now and hold P5 for #72 — was
+> available and was worse, because P5 is the principle the prototype's
+> reject-don't-repair behaviour already depends on, and splitting the four
+> leaves it the only one still unwritable-against.
+
+**What the amendment changes about what is being accepted.** P5.1 and P5.2 are
+additive; neither weakens the original clause, and the four principles proposed
+here are unchanged in number and in kind. Two consequences in §5 grow, and are
+recorded there: the decoder obligation now covers non-canonical *serialisations*
+and not only unknown fields, and P5.2 owes the `R-I-01` mapping table a DSSE
+envelope-exterior row that did not previously exist. One point is worth stating
+plainly for the reviewer: **P5.1 strengthened materially between MD-2 and
+today.** `mofn#73` wrote the falsifier the `canonical-encoding` answer named,
+and it **did not fire** — rejection is decidable in a single pass with no
+re-encoding, for both surviving DEC-002 candidates, across 60 fixtures of which
+36 are negative (DL-0007). P5 was accepted provisionally on an argument; it is
+now proposed on a measurement.
+
+**Condition (a) is still open, and it is the only thing left.** The review MD-2
+named has not happened. `ARCH-0002` v0.7.0 still carries `reviewed: false` and
+an empty `reviewers` list; amending the document did not and could not change
+that. **This ADR stays `proposed`, and `decision_makers` stays empty.**
+
+---
+
+## 6a. What changed on 2026-10-14, and why it strengthens this ADR
+
+`ADR-0003` was **accepted** on 2026-10-14 and `SPEC-0001`…`SPEC-0005` landed as
+normative specifications. Three consequences for this file, and the first is
+the one a reviewer should weigh.
+
+**(1) An accepted specification now rests on a draft principle.**
+`SPEC-0002` §13.5 reads: *"an unknown kind or field is invalid. A verifier MUST
+NOT skip what it does not understand (**ARCH-0002 P5**)."* That is a normative
+MUST in an accepted document, citing by name a principle whose own status is
+`[draft]` and whose granting decision, MD-2, was explicitly provisional.
+
+The gap this ADR was written to close has therefore widened rather than
+narrowed. §2 opened by observing that `prototype/`, `APP-0001` and three library
+topics already built on P2 and P3 with no normative basis. **`SPEC-0002` is a
+stronger instance of the same problem**, because unlike a prototype it is
+normative, and unlike a topic answer it is cited by conformance classes.
+
+**(2) P5 is the principle this most affects, and its content has moved.**
+`SPEC-0002` §4.3 states P5.1's rule normatively for KSA-CBOR; §5 states the
+verification ordering; §4.1 closes the Unicode question by explicit refusal.
+This ADR therefore proposes P5 **as amended to v0.7.0**, and the amended text
+points at the SPEC as the instance rather than proposing a rule nobody has
+written.
+
+**(3) It does not change what is being accepted.** `ADR-0003` accepts five
+decisions about the KSA core and keeps `ADR-0001` (P1). It does **not** accept
+P2, P3, P5 or P6, and it does not accept DEC-002. The four principles proposed
+here are unchanged in number and in kind.
+
+> **Sequencing note.** `ADR-0003`'s consequences say that where a SPEC and an
+> ARCH document differ, **the SPEC governs and the ARCH document is corrected.**
+> P5.1 and P5.2 do not differ from `SPEC-0002`; they agree with it and state the
+> principle it instantiates. If a reviewer reads any divergence, the SPEC wins
+> and this ADR should be amended before acceptance, not after.
 
 ---
 
 ## 7. Alternatives rejected
 
-**Accept all six.** Rejected: P4 and P7 have the evidence D-2 found wanting, and
+**Accept all six.** Rejected: P4 and P7 have the evidence MD-2 found wanting, and
 nothing since has improved it. §4 records that P4's *cost* has changed, which is
 not the same as its evidence changing.
 
@@ -206,12 +265,12 @@ P2 and P3 with no normative basis — `prototype/statements/`, `APP-0001`,
 Leaving them unbacked does not make them not depend on the principles; it only
 makes the dependency undocumented.
 
-**Mark this ADR `accepted` now, citing D-2 as the authority.** Rejected, and
-this is the central judgement in the file. D-2 is a minute. `CONTRIBUTING` §5:
+**Mark this ADR `accepted` now, citing MD-2 as the authority.** Rejected, and
+this is the central judgement in the file. MD-2 is a minute. `CONTRIBUTING` §5:
 *"Never mark a DEC-\* accepted in a PR description, a Zoom note, or a commit
-message. Only an ADR accepts a decision."* More pointedly, D-2 *itself* said
-these become final only through an ADR after review — so citing D-2 to skip the
-ADR inverts the thing D-2 said. An ADR carries `decision_makers`; filling that
+message. Only an ADR accepts a decision."* More pointedly, MD-2 *itself* said
+these become final only through an ADR after review — so citing MD-2 to skip the
+ADR inverts the thing MD-2 said. An ADR carries `decision_makers`; filling that
 field with a name whose owner has not acted would be **a forged provenance
 record in a project whose subject is provenance.** The field is left empty.
 
@@ -224,7 +283,7 @@ cell, and ARCH-0002 is the home the project chose for exactly this.
 
 ## 8. Evidence
 
-- `project/meetings/2026-09-28.md` — D-2, verbatim in §1.
+- `project/meetings/2026-09-28.md` — MD-2, verbatim in §1.
 - `spec/ARCH-0002-key-relative-naming.md` v0.5.0 — the six principles as drafted.
 - `design-log/0002-arch-0002-cycle/review.md` — P2 and P4 were both **model
   proposals the human overruled**; P2 as drafted is the human's correction, not
@@ -233,5 +292,11 @@ cell, and ARCH-0002 is the home the project chose for exactly this.
   independent instances of the missing *A* (§3).
 - `library/topics/canonical-encoding.yaml` — conditions (5) and (6), and their
   dependence on P4 (§4).
-- `mofn#72` — the P5 amendment (§6).
+- `spec/ARCH-0002-CHANGELOG.md` 0.7.0 and `ARCH-0002` P5.1/P5.2 — the P5
+  amendment this ADR proposes P5 *as amended* by (§6b). `mofn#72`, closed.
+- `spec/ADR-0003-fksa-convergence.md` (**accepted**), `SPEC-0002` §4.3, §5,
+  §4.1 and §13.5 — the normative instance of P5.1, and §13.5's citation of P5
+  by name (§6a).
+- `design-log/0007-rejecting-decoder-spike/` and `prototype/statements/` —
+  `mofn#73`, the falsifier that did not fire. The measurement behind P5.1.
 - CVE-2025-59420 — Authlib `crit` handling (§3).
