@@ -3,11 +3,11 @@ schema: "archdoc/v1"
 id: ARCH-0003
 title: "Wallet, persona, key and definition — the object model above the statement"
 short_title: "Wallet object model"
-description: "What a wallet holds and does: personas as key-identified principals (owned or known; human, service, agent or device), keys under cipher suites, contexts and trust, definitions identified by the hash of their canonical encoding, templated statements, the key discovery and trust dataflow, and the transport beneath it."
+description: "The PICS-like vocabulary — human-readable semantics and constraints — extended to process and dataflow, all in structures referenced by hash and authored by key. What a wallet holds and does: personas as key-identified principals (owned or known; human, service, agent or device), keys under cipher suites, contexts and trust, definitions identified by the hash of their canonical encoding, templated statements, the key discovery and trust dataflow, and the transport beneath it."
 type: architecture
 category: security
 status: draft
-version: "0.2.0"
+version: "0.3.0"
 version_policy: "semver; PATCH = editorial; MINOR = additive; MAJOR = breaking"
 date: "2026-10-14"
 updated: "2026-10-14"
@@ -80,6 +80,29 @@ known personas, with Paul's decisions about what each is trusted for.
 > **Terminology** (`GLOSSARY-0001`): the CS690 template's *user persona* is
 > written **archetype** in PLAN-0002 — a representative user, who will own
 > several personas.
+
+---
+
+## 1b. Where the design weight sits
+
+**The key design area is the vocabulary**: PICS-like definitions that carry
+**human-readable semantics** — a description of every type, every field, every
+value and every constraint, in more than one language — together with the
+**constraints** a conforming use must meet. That is what lets a person read a
+verdict instead of a data structure, and it is the part every modern stack
+omits (ARCH-0002 P3).
+
+**v0.3.0 extends the same structure to process and dataflow.** A definition can
+now declare not only *what a statement means* but *what is done with it*: which
+keys may review an object, how their reviews are aggregated, what criteria the
+aggregate must meet, what statement it produces, and which downstream processes
+and vocabularies consume that. All of it **securely referenced** — identified
+by the hash of its canonical encoding and authored by a signed statement — so a
+process is as citable, verifiable and immutable as a vocabulary.
+
+> **The model in one line:** statements are objects in a dataflow; personas
+> holding keys act on them; definitions — signed and hash-identified — declare
+> both what the objects mean and how they flow.
 
 ---
 
@@ -282,7 +305,7 @@ DefinitionBody = {
   entries:      [Entry]
 }
 
-Entry = TypeDef | TemplateDef | MessageDef | StateMachineDef | ProfileDef
+Entry = TypeDef | TemplateDef | ProcessDef | PanelDef | MessageDef | StateMachineDef | ProfileDef
 ```
 
 | | gives | so a verifier can |
@@ -295,8 +318,42 @@ This answers ARCH-0002 P4's open question — *signed statement, or bare hashed
 artifact?* — with **both, for different jobs**. A definition nobody signed can be
 cited, and renders as *unattributed vocabulary*.
 
-`TypeDef` is ARCH-0002 P3 (representation, permitted values, constraints,
-delegation type, multilingual names and descriptions, review tags).
+`TypeDef` is ARCH-0002 P3, and **its human-readable semantics are mandatory,
+not decoration** (W-25):
+
+```
+TypeDef = {
+  label:        Label
+  names:        { Lang => Text }            ; what a person calls it
+  short:        { Lang => Text }            ; one line, shown on the card
+  long:         { Lang => Text }            ; what it means and when to use it
+  fields:       [ FieldDef ]                ; for structured types
+  values:       ? { Value => { label: {Lang=>Text}, meaning: {Lang=>Text} } }   ; PICS rating values
+  constraints:  [ ConstraintRule ]
+  delegation:   same | scoped | none
+  review_tags:  [ { tag: Label, ask: {Lang=>Text} } ]   ; what a reviewer must check
+  examples:     [ Value ]
+}
+
+FieldDef = {
+  name:         Label
+  type:         TypeRef | Primitive
+  required:     Bool
+  unit:         ? Text
+  names:        { Lang => Text }
+  description:  { Lang => Text }            ; every field explains itself
+}
+
+ConstraintRule = {
+  rule:         Expression                  ; declarative — DEC-008 boundary
+  explain:      { Lang => Text }            ; rendered when the rule fails
+}
+```
+
+**Every constraint explains itself.** A rule carries the sentence a verifier
+shows when it fails — *"validity may not exceed 30 days"* — so a rejection is as
+legible as an acceptance. A constraint without an explanation is a
+non-conforming definition.
 `MessageDef`, `StateMachineDef` and `ProfileDef` let a definer publish a
 **protocol** — message formats, a lifecycle, an authorization profile — under
 the same hash and signature. That is what *distributed definition of schemas and
@@ -385,6 +442,146 @@ Presentation = {
 `accepted`, kept with **why**: the verdict and the anchors it was accepted under,
 so trust can be re-examined when an anchor changes.
 
+### 3.9 Process and dataflow — securely referenced
+
+Statements are **objects in a dataflow**. A process consumes statements, applies
+a published rule, and its result is a new statement. The structures that
+describe this are definition entries, so they are hash-identified and signed
+exactly like a vocabulary.
+
+**A panel: one key delegates to a set of keys.**
+
+```
+PanelDef = {
+  label:        Label                       ; "release-reviewers"
+  names, short, long:  { Lang => Text }
+  members:      [ KeyId ] | DelegationRef   ; a listed set, or "whoever K delegates `review` to"
+  topic:        Label                       ; what the members may speak about
+}
+```
+
+At run time a panel is a delegation whose subject is a **set** — *K says
+{K1 … Kn} can speak about (definition, review)* — which is ARCH-0001's threshold
+subject (G4). Each member reviews **the hashed object**: a review statement with
+`target: digest(…)` or `statement(hash)`.
+
+**A process: inputs, a rule, an output, and what comes next.**
+
+```
+ProcessDef = {
+  label:        Label                       ; "release-approval"
+  names, short, long:  { Lang => Text }     ; what the process is for, in words
+  inputs:       [ { name: Label,
+                    accepts: TemplateRef,   ; e.g. this definition's `review`
+                    from: PanelRef,         ; only statements from panel members count
+                    about: TargetBinding } ]; all inputs concern the same object hash
+  rule:         Criteria
+  explain:      { Lang => Text }            ; how the outcome is described, met or not
+  output:       { template: TemplateRef, emitted_by: Role | DelegationRef }
+  downstream:   [ { process: ProcessRef, definition: DefinitionId } ]
+}
+
+Criteria =                                  ; declarative, total, bounded — DEC-008
+    threshold(k, of: input, distinct: speaker)       ; k-of-n
+  | all([Criteria]) | any([Criteria]) | not(Criteria)
+  | attr(input, Label) op Value                       ; e.g. outcome == approve
+  | none(input where attr(outcome) == reject)
+  | within(Duration)                                  ; inputs issued within a window
+
+ProcessRef = { definition: DefinitionId, label: Label }
+```
+
+**An aggregate is reproducible, and that is what makes it trustworthy.** The
+output statement cites the `ProcessRef` and the **hashes of every input it
+consumed**:
+
+```
+K_agg says object H satisfies release-approval
+      { process: ProcessRef, inputs: [S1, S2, S3], result: met }
+```
+
+Because the rule is declarative and the inputs are cited by hash, **any observer
+can recompute it** from the same inputs and must get the same answer (W-21).
+So aggregation can be done by a designated aggregator, by several independent
+observers, or by the relying party itself — and a signed aggregate is only ever a
+convenience over a computation anyone can repeat. An aggregate that does not
+recompute is rejected, whoever signed it.
+
+**Downstream makes the flow a graph.** A process names the processes and
+vocabularies that consume its output — *release-approval → publish → deploy* —
+so a definition can describe a pipeline across organisations, each step owned by
+a different persona and each output citing its inputs. The graph must be
+**acyclic** (W-23): that, with bounded criteria, is what guarantees every
+evaluation terminates.
+
+```mermaid
+flowchart LR
+  O[(object H<br/>by hash)] --> R1[review S1<br/>K1] & R2[review S2<br/>K2] & R3[review S3<br/>K3]
+  R1 & R2 & R3 --> P{{release-approval<br/>2 of 3, no reject, 48h}}
+  P -->|emits, citing S1..S3| A[approved H<br/>K_agg or any observer]
+  A --> D{{publish}} --> E{{deploy}}
+```
+
+**It is the in-toto layout, generalised.** An in-toto layout is a signed
+document in which one key names the functionary keys for each step, a threshold
+per step, and how artifacts flow between steps (survey R-001 §8.2). It fixes the
+vocabulary to *materials and products* and the domain to software builds. A
+`ProcessDef` keeps the shape and lifts both limits: any vocabulary, any process,
+human-readable at every step, identified by hash and authored by key.
+
+### 3.10 Example — a review vocabulary with its process
+
+YAML authoring form; canonicalised into DEC-002's encoding before hashing.
+
+```yaml
+definition:
+  definer: k:9f2a…                       # the m-of-n maintainer persona
+  name: release-review
+  version: "1"
+  entries:
+    - type:
+        label: outcome
+        names: { en: Review outcome, es: Resultado de la revisión }
+        short: { en: "What the reviewer concluded about the release." }
+        values:
+          approve: { label: { en: Approve }, meaning: { en: "Ready to publish as built." } }
+          changes: { label: { en: Request changes }, meaning: { en: "Not ready; specific changes needed." } }
+          reject:  { label: { en: Reject }, meaning: { en: "Must not be published." } }
+        review_tags:
+          - { tag: provenance, ask: { en: "Does the build provenance name the expected builder?" } }
+          - { tag: diff,       ask: { en: "Have you read the changes since the last release?" } }
+    - panel:
+        label: release-reviewers
+        names: { en: Release reviewers }
+        members: { delegated_by: k:9f2a…, topic: review }
+    - template:
+        label: review
+        function: review
+        target: { kind: digest, rules: [ { rule: "alg == sha-256", explain: { en: "Releases are identified by SHA-256." } } ] }
+        attributes: [ { type: outcome, required: true } ]
+        constraints: { max_validity: P14D }
+        sentence: { en: "{issuer} reviewed release {target}: {outcome}." }
+    - process:
+        label: release-approval
+        names: { en: Release approval }
+        long: { en: "A release is approved when two different reviewers approve it and nobody rejects it, within 48 hours." }
+        inputs: [ { name: reviews, accepts: review, from: release-reviewers, about: same-target } ]
+        rule:
+          all:
+            - threshold: { k: 2, of: reviews, where: "outcome == approve", distinct: speaker }
+            - none: { of: reviews, where: "outcome == reject" }
+            - within: PT48H
+        explain:
+          en: "Needs 2 approvals from release reviewers and no rejection within 48 hours."
+        output: { template: release-approved, emitted_by: any-observer }
+        downstream: [ { process: publish, definition: h:… } ]
+```
+
+Every element a person sees — the type, each value, each reviewer question, each
+constraint, the process and its outcome — carries its own words. The verdict for
+an unmet process reads from `explain`: *"Not approved: 1 of 2 approvals; needs 2
+from release reviewers and no rejection within 48 hours."*
+
 ---
 
 ## 4. Roles
@@ -397,6 +594,7 @@ so trust can be re-examined when an anchor changes.
 | **review** | *K says S reviewed (outcome, comment)* | a statement | `review` |
 | **approve** | *K says S approved* | a statement | `approve` |
 | **introduce** | *K says K′ has name / controller / context* (ARCH-0002 P6) | a persona | `claim` |
+| **aggregate** | *K says H satisfies P {inputs, result}* — reproducible by anyone | an object hash | `claim`, or none: an observer may compute without signing |
 | **present** | a presentation | — | `present` |
 | **rely** | none — a local acceptance record | — | none: anchors are unsigned |
 
@@ -499,7 +697,7 @@ Two definitions, one engine, one set of screens. Each step names what it proves.
 | 5 | the second wallet, anchoring only the maintainer, **discovers** the build-bot through the introduction, and the verdict is **✔** with the chain shown | discovery → trust by reduction, not by directory |
 | 6 | the build-bot issues for a **different project** → **authorization ✘** *"no standing: delegation covers m-of-n only"* | the product moment: signed, but not entitled |
 | 7 | a statement with a **required attribute removed** → **expected ✘** *"does not conform to release-attestation"* | template conformance is checked |
-| 8 | the template requires **one approval**: a reviewer persona **reviews**, which does not satisfy it; an approver persona **approves**, which does | review ≠ approval |
+| 8 | the maintainer delegates review to a **panel of three**; two approve, the third requests changes; **two independent observer wallets** run `release-approval` from the published definition and both emit *met*, citing the same three review hashes. A forged aggregate citing only one review fails to recompute | k-of-n by published process; aggregation reproducible, not trusted |
 | 9 | the same steps on the archives definition (`record-reviewed`) — same screens | the vocabulary claim generalises |
 | 10 | Wi-Fi off throughout steps 1–9 except 4-by-mailbox | no CA, no registry, no network in the verdict |
 
@@ -547,6 +745,12 @@ Two definitions, one engine, one set of screens. Each step names what it proves.
 | **W-17** | A statement citing a template MUST conform to it — P5's *expected* level — or be rejected, whatever its signature and authorization. |
 | **W-18** | Each key belongs to exactly one cipher suite; a statement cites its suite; sign and verify refuse a mismatch (R-0003). |
 | **W-19** | The verdict is independent of transport. Channel encryption provides confidentiality only, never trust. |
+| **W-20** | Panels and processes are definition entries: hash-identified and authored like any vocabulary. A process is cited by `ProcessRef`, never by name alone. |
+| **W-21** | An aggregate statement MUST cite its `ProcessRef` and the hash of every input. A verifier MUST recompute it from those inputs and reject it if the result differs, whoever signed it. |
+| **W-22** | Process criteria are declarative and within DEC-008's boundary: total, bounded, side-effect-free, unprivileged. No issuer-supplied code is executed. |
+| **W-23** | The graph formed by `downstream` references is acyclic. |
+| **W-24** | Only statements from a panel's members, concerning the bound target, count as process inputs; `distinct: speaker` counts keys, and keys delegated from the same identity key count once. |
+| **W-25** | Every type, field, value, constraint, template and process carries human-readable names and descriptions, in at least one language. A definition missing them does not conform. A failed constraint or unmet process is rendered from its `explain` text. |
 
 ---
 
@@ -578,3 +782,12 @@ Two definitions, one engine, one set of screens. Each step names what it proves.
    thresholds cover part of it.
 6. **Making external-syntax objects** (a Bitcoin transaction) from the wallet,
    rather than importing them — a product decision, not an architecture one.
+7. **The criteria language's exact grammar.** §3.9 sketches it; DEC-008's
+   "settle it" steps apply — write one rule, reduce it by hand, show the case
+   where a key tries to define itself valid and which fixed rule stops it.
+8. **Can a process name personas downstream**, or only processes and
+   vocabularies? Naming a downstream persona is a delegation in disguise, and
+   should probably be one.
+9. **Sybil resistance of a panel** is only as good as its delegation: W-24 counts
+   keys under one identity once, but a panel member who controls two identity
+   keys is two members unless the panel's delegator prevents it.

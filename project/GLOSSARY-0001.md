@@ -137,6 +137,19 @@ implementation or a device. A wallet **owns** some personas (it holds their
 private keys) and **knows** others (ARCH-0003 §1, §3.2, W-01). Not the
 template's *archetype*.
 
+**Panel** — a definition entry naming a set of keys that may speak on one
+topic — usually *review* — about a hashed object; at run time, a delegation whose
+subject is a set (ARCH-0003 §3.9).
+
+**Process** — a definition entry declaring inputs (statements of a template,
+from a panel, about one object), a declarative criteria rule (e.g. 2-of-3
+approve, none reject, within 48h), the statement its result produces, and what
+consumes it downstream. Cited by `ProcessRef`, by hash (ARCH-0003 §3.9).
+
+**Aggregate** — the statement a process produces, citing the process and the
+hash of every input. Trusted only because any observer can recompute it
+(ARCH-0003 W-21).
+
 **Template** — a definition entry a statement is issued from: target rules,
 required and fixed attributes, constraints, who may issue, and the sentence it
 renders as. A statement citing a template must conform to it (ARCH-0003 §3.6,

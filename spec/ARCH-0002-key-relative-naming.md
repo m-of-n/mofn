@@ -408,6 +408,13 @@ together**: a key delegates the right to make a claim *and* the definition of
 what that claim means, in one chain, reducible by one algorithm. That is a
 genuinely new position, and it is the strongest form of the project's thesis.
 
+**First concrete case, 2026-10-14.** ARCH-0003 §3.9 drafts **published
+processes**: a definition declares a review panel, a k-of-n criteria rule, the
+statement the result produces, and the processes downstream. The criteria are
+declarative and the aggregate must be recomputable by any observer from inputs
+cited by hash (ARCH-0003 W-21, W-22) — key-local processing exactly inside the
+boundary above, and the obvious place to run the three steps below.
+
 ### To settle it
 
 1. Write one constraint in the candidate declarative form and reduce it by hand.
