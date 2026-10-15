@@ -7,9 +7,9 @@ description: "The CS690 Fall 2026 Product Specification, in the course template'
 type: plan
 category: process
 status: draft
-version: "0.2.0"
+version: "0.3.0"
 date: "2026-09-25"
-updated: "2026-09-28"
+updated: "2026-10-14"
 needs_review: true
 reviewed: false
 canonical_path: project/PLAN-0002-product-spec.md
@@ -101,16 +101,38 @@ registry or transparency log is required (ARCH-0001 NG4; APP-0001 §5).
 ## 2. Users
 
 ### 2.1 Intended Users
-Three user types (proposed):
 
-| type | who | technical? |
+**Corrected 2026-10-14.** The earlier draft listed three *personas* — domain
+author, issuer, relying party. Those are **roles**: what one key does in one
+statement. The model (ARCH-0003 §1) separates three things:
+
+| term | is | example |
 |---|---|---|
-| **Relying party** | decides whether to believe a claim — a release engineer checking an artifact, a librarian checking a record | technical to semi-technical |
-| **Issuer** | makes and signs statements — a build system, a maintainer, a reviewer | technical |
-| **Domain author** | defines what statements mean: types, allowed values, descriptions | specialist |
+| **role** | what a key does in one statement | define · claim · delegate · review · approve · present · rely |
+| **persona** (wallet object) | a **key-identified principal** — its keys, the contexts it acts in and trusts; controlled by a person, organisation, service, AI agent or device. A wallet owns some and knows others | Paul's maintainer key; the m-of-n build-bot; an AI release agent |
+| **archetype** (this template's *user persona*) | a representative user of the product | Maya, a release engineer |
 
-▲ **GAP-1 — personas.** One named persona per type (background, goal,
-frustration). **Owner: David + Ndewedo, due Oct 5**, with the schema scenarios.
+One person owns several personas; each persona plays every role, in different
+contexts; and every wallet also holds the personas of the people, services,
+agents and devices it deals with. The template's word *persona* is therefore written **archetype** in
+this document, to keep it apart from the wallet object (`GLOSSARY-0001`).
+
+**Who uses it** — by role, in our two domains (MD-1):
+
+| role | supply chain | archives / library |
+|---|---|---|
+| define | a security team or standards group publishing what `reproducible` means | a librarian publishing a review vocabulary |
+| claim | a CI build system, a maintainer | a student who read and summarised a record |
+| delegate | a maintainer granting a release engineer scoped authority | a lead granting a reviewer authority for one topic |
+| review / approve | the second maintainer who must sign off a release | the reviewer whose approval marks a record *reviewed* |
+| rely | the engineer or pipeline deciding whether to deploy | a reader deciding whether to trust a record |
+
+▲ **GAP-1 — archetypes.** Two or three named archetypes, **each shown holding
+personas** — the personas, their contexts, and which roles each plays where.
+Example shape: *Maya, release engineer — persona "Acme releases" (contexts: build
+pipeline, release review; roles: claim, review, rely) and persona "OSS
+maintainer of libfoo" (roles: define, delegate, approve).* **Owner: David +
+Ndewedo**; was due Oct 5, re-dated at the next weekly.
 
 ### 2.2 User Goals
 | type | goal |

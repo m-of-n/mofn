@@ -5,15 +5,21 @@ title: "ARCH-0001 changelog"
 type: changelog
 parent: ARCH-0001
 status: active
-version: "0.1.1"
+version: "0.1.2"
 date: "2026-09-15"
-updated: "2026-09-21"
+updated: "2026-10-14"
 canonical_path: spec/ARCH-0001-CHANGELOG.md
 ---
 
 # ARCH-0001 changelog
 
 Format: newest first. Versions match the architecture document.
+
+## 0.1.2 — 2026-10-14
+
+- Additive only (§9.1). New §4.4: a pointer to **ARCH-0003**, the wallet, persona,
+  key and definition object model drafted from sponsor direction of 2026-10-14.
+- No model, requirement or decision change in this document.
 
 ## 0.1.1 — 2026-09-21
 
