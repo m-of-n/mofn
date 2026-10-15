@@ -7,10 +7,10 @@ description: "What the demo application does, its commands, and what a user sees
 type: design
 category: product
 status: draft
-version: "0.2.1"
+version: "0.3.0"
 version_policy: "semver; MINOR = command or behaviour added"
 date: "2026-09-22"
-updated: "2026-10-02"
+updated: "2026-10-14"
 decision_makers: []
 reviewers: []
 needs_review: true
@@ -126,6 +126,39 @@ statement  prov.stmt
 **The `authorization` line is the product.** Everything else is available
 elsewhere; a valid signature from a key with no standing to make the claim is
 the distinction nothing mainstream surfaces.
+
+## 4b. The UI, phase by phase
+
+**Added 2026-10-14 from sponsor direction.** The object model behind these
+screens is `ARCH-0003`: a **wallet** holds **personas**; a persona acts through
+**keys** in **contexts**; every card is a **held statement** rendered by a
+**definition** identified by its hash. The three "personas" earlier drafts named
+— domain author, issuer, relying party — are **roles**, and one persona plays
+all of them.
+
+Think Apple Wallet at the surface: a stack of cards you carry and present. The
+difference underneath is that **anyone can publish the card format** (a
+definition, by hash), and **whether to believe a card is your decision**, made
+by reduction from your own trust anchors — not the platform's.
+
+| phase | role | where it starts | the screen | the one thing it must make unmistakable |
+|---|---|---|---|---|
+| **0. Set up** | — | first run; *+ Persona* | **Persona card**: label, keys as chips with capability badges (`define` `claim` `delegate` `review` `approve`), contexts as tabs | which keys exist, what each may sign, and that keys never leave the device |
+| **1. Define** | define | *Definitions → New* | **Definition editor**: types, permitted values, names and descriptions per language, review tags — with a **live preview** of the sentence a claim will render as | the **hash**: *Publish* computes `DefinitionId`, shows it as a fingerprint, and signs it with a `define`-capable key. After that it is immutable; edits make a new version |
+| **2. Claim** | claim | a context → *Make* | **Claim form generated from the definition** — no type-specific UI code (PLAN-0004 §3's test) — then constraints (valid until, scope), then the rendered sentence | **who is speaking**: persona, context and key, auto-selected by capability, shown above *Sign* |
+| **3. Delegate** | delegate | a persona or context → *Allow…* | an iOS-style permission sheet: **who** · may speak about **(definition, topics)** · **until when** · **may re-delegate?** | the **scope and the expiry**, in words: *"David may attest build-provenance for m-of-n until Friday 17:00, and may not pass this on"* |
+| **4. Review & approve** | review, approve | **Inbox** of requests | the claim rendered, its chain, its verdict so far, the definition's review tags as a checklist; actions *Approve* · *Request changes* · *Decline* with comment; threshold progress (*2 of 3 approved*) | **review ≠ approval**: the *Approve* button appears only when this key holds an `approve` delegation for that definition (ARCH-0003 W-08) |
+| **5. Present** | present | a card → *Share* | choose the statements to send (the claim and its chain), the audience, and the channel — file, QR, link | **exactly what is disclosed**, listed before sending |
+| **6. Check & accept** | rely | drop or scan a presentation | **the verdict** (§4): six lines, the sentence, the chain, the limit line; then *Accept into context…* or *Reject* | **authorization** as its own line — and that accepting records *why*, under which anchors, so it can be re-examined |
+| **Trust settings** | — | a context → *Trust* | the context's **anchors**, styled differently from every card | anchors are **your decisions, unsigned** — nobody said them to you |
+
+**What the CS Night demo walks through** is phases 3 → 2 → 5 → 6, twice: once
+in-scope (✔) and once out of scope or expired (authorization ✘), then phase 6
+again on an archives claim to show the same screens rendering a second domain.
+
+PLAN-0004 §5's five views are a subset of this table: Wallet ≈ phase 0 and the
+card stack, Domain ≈ phase 1, Make ≈ phase 2, Present ≈ phase 5, Verdict ≈
+phase 6. Phases 3 and 4 are new.
 
 ## 5. What it deliberately does not do
 

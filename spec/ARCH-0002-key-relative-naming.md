@@ -7,10 +7,10 @@ description: "Type names, constraints, types-as-schemas, hash-identified domains
 type: architecture
 category: security
 status: draft
-version: "0.5.0"
+version: "0.6.0"
 version_policy: "semver; PATCH = editorial; MINOR = additive principle; MAJOR = breaking"
 date: "2026-09-22"
-updated: "2026-09-22"
+updated: "2026-10-14"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -97,6 +97,8 @@ The form is fixed; what a statement *does* varies.
 | **Attestation** | *A says B has C* | the basic case. Example: attesting that B is associated with a defined schema of tag values |
 | **Delegation** | *A says B **can speak about** (Domain, Topic)* | authority is scoped **semantically**, not only by tag |
 | **Constraint** | *A says* … a narrowing over a schema of tag values | a function, not a separate kind of object |
+| **Review** | *A says statement S **reviewed** (outcome, comment)* | the subject is a **statement**, by hash. An opinion any key may give. Added 2026-10-14; ARCH-0003 §4 |
+| **Approval** | *A says statement S **approved*** | an **authorization**, not an opinion: counts only if A reduces to a delegation for `approve` (ARCH-0003 W-08). A review never satisfies it |
 | **Contract** | — | **open.** The sponsor indicated a further form; not yet specified. See DEC-009 |
 
 ### Delegation is scoped by domain and topic
@@ -196,6 +198,14 @@ DEC-007 directly. They are one problem, not two.
 authorization and revocation — or a bare hashed artifact that any key may cite?
 The first composes with everything else; the second is simpler and allows
 vocabularies nobody owns.
+
+> **Sponsor direction, 2026-10-14 — proposed answer: both, for different jobs.**
+> A definition is identified by the **hash of its canonical encoding** — *"in the
+> manner of PICS, but not a URL reference alone"* — which gives identity and
+> integrity. It is published by a **signed statement from its definer**, which
+> gives authorship and authority. Locators are retrieval hints only. A
+> definition nobody signed may still be cited by hash, and renders as
+> unattributed. Drafted in **ARCH-0003 §3.5** (W-04, W-06, W-12); not accepted.
 
 ---
 

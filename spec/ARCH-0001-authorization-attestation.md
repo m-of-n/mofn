@@ -8,10 +8,10 @@ description: "Canonical working architecture for a native model that is not X.50
 type: architecture
 category: security
 status: draft
-version: "0.1.1"
+version: "0.1.2"
 version_policy: "semver; PATCH = editorial; MINOR = additive requirements; MAJOR = breaking model change"
 date: "2026-09-15"
-updated: "2026-09-21"
+updated: "2026-10-14"
 authors:
   - role: architect
     id: conversation-brainpool256
@@ -247,6 +247,16 @@ Two procedures, kept separate:
 3. **Statement acceptance** — signature valid ∧ issuer authorized for that `PredicateType` ∧ subject digest matches the artifact under consideration.
 
 (3) may call (2). They must not be collapsed into one graph walk in v0.1.
+
+---
+
+### 4.4 The layer above — wallet, persona, definition
+
+Additive pointer, 2026-10-14. The objects above are what a **statement** is. What
+a person **holds and does** — a wallet of personas, each acting through keys in
+contexts with their own trust anchors, and definitions identified by the hash of
+their canonical encoding — is drafted in **ARCH-0003**. Nothing in §4.1–§4.3
+changes; ARCH-0003 defers to this section.
 
 ---
 

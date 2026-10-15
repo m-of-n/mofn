@@ -7,10 +7,10 @@ description: "Precise senses for the project's overloaded vocabulary. Written be
 type: reference
 category: process
 status: draft
-version: "0.2.0"
+version: "0.3.0"
 version_policy: "semver; MINOR = terms added"
 date: "2026-09-22"
-updated: "2026-10-11"
+updated: "2026-10-14"
 needs_review: true
 reviewed: false
 canonical_path: project/GLOSSARY-0001.md
@@ -48,6 +48,21 @@ is visible rather than repeated.
 ---
 
 ## Collisions — currently live
+
+### `persona` — resolved 2026-10-14 by writing *archetype* for the template sense ✅
+
+Passes the test: both senses were live on one page, PLAN-0002 §2.1, where the
+CS690 template's *user persona* and the wallet's *persona* would sit in the same
+table.
+
+| sense | where | is now written |
+|---|---|---|
+| **wallet persona** — an identity a person acts *as*, with its own keys, contexts and trust anchors | ARCH-0003, APP-0001 §4b | **persona** |
+| **template persona** — a representative user, for product design | the CS690 Product Spec template; PLAN-0002 §2.1 | **archetype** |
+
+And a third thing that had been mislabelled as both: **domain author, issuer,
+relying party** are **roles** — what one key does in one statement — not
+personas of either kind (ARCH-0003 §1).
 
 ### `D-n` — resolved 2026-10-11 by renaming to `MD-n` ✅
 
@@ -114,6 +129,27 @@ verdict — a homonym across two repositories, not a collision.
 ---
 
 ## Settled terms
+
+**Persona** — an identity a person acts *as* inside a wallet: its own keys,
+contexts and trust anchors. Never a principal on the wire; outside the wallet it
+is visible only as keys and whatever linkage statements its holder publishes
+(ARCH-0003 §3.2, W-01). Not the template's *archetype*.
+
+**Role** — what a key does in one statement: define, claim, delegate, review,
+approve, present, rely. A property of the statement, not of the person
+(ARCH-0003 §4).
+
+**Context** — where, with whom and about what a persona acts. Holds the keys
+enabled there, the definitions in use, and the **trust anchors** for that
+context only (ARCH-0003 §3.4).
+
+**Definition** — a vocabulary, schema or protocol, published by a definer key.
+Identified by **`DefinitionId`**, the hash of its canonical encoding; a URL is a
+retrieval hint, never its identity (ARCH-0003 §3.5). Generalises *domain of
+discourse* (ARCH-0002 P4).
+
+**Capability** — what the wallet will let a key sign: a role, a signing profile
+(with its domain-separation tag), and an optional scope (ARCH-0003 §3.3).
 
 **Artifact** — RFC 9943 sense: a physical or non-physical item moving along a
 supply chain; the thing a statement is *about*. `ArtifactId`,
