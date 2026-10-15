@@ -25,11 +25,17 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SITE = "https://m-of-n.github.io/mofn"
 REPO = "https://github.com/m-of-n/mofn/blob/main"
 
-# authored tree -> (site section, nav title, staged subdir)
+# authored tree -> (site section, nav title, staged subdir, globs)
+#
+# `research/` keeps a report at NNNN-slug/report.md, not at the tree root, so a
+# bare "*.md" glob saw none of them: R-0001..R-0004 were authored, merged and
+# never reached the site, while research/README.md alone sat in the nav. The
+# per-tree glob list is the fix. Anything added here must also be staged by
+# bin/build-site, or `mkdocs build --strict` fails on a nav entry with no page.
 TREES = [
-    ("spec",     "Architecture", "architecture"),
-    ("project",  "Planning",     "project"),
-    ("research", "Research",     "research"),
+    ("spec",     "Architecture", "architecture", ["*.md"]),
+    ("project",  "Planning",     "project",      ["*.md"]),
+    ("research", "Research",     "research",     ["*.md", "*/report.md"]),
 ]
 
 
@@ -50,12 +56,14 @@ def front(p):
 
 def main():
     docs, nav = [], []
-    for tree, section, staged in TREES:
+    for tree, section, staged, globs in TREES:
         d = ROOT / tree
         if not d.is_dir():
             continue
         entries = []
-        for p in sorted(d.glob("*.md")):
+        found = {q for g in globs for q in d.glob(g)}
+        for p in sorted(found):
+            rel = p.relative_to(d).as_posix()
             if p.read_text(errors="ignore").lstrip().startswith("<!-- GENERATED"):
                 continue          # never list a generated view as a document
             fm = front(p)
@@ -68,11 +76,11 @@ def main():
                 "status": fm.get("status", "unknown"),
                 "version": fm.get("version", ""),
                 "updated": fm.get("updated", ""),
-                "source": f"{tree}/{p.name}",
-                "url": f"{SITE}/{staged}/{p.name[:-3]}/",
+                "source": f"{tree}/{rel}",
+                "url": f"{SITE}/{staged}/{rel[:-3]}/",
                 "reviewed": fm.get("reviewed", ""),
             })
-            entries.append((fm.get("title", p.stem), f"{staged}/{p.name}"))
+            entries.append((fm.get("title", p.stem), f"{staged}/{rel}"))
         if entries:
             nav.append((section, entries))
 
@@ -124,7 +132,7 @@ def main():
            "A document is published because it **exists and declares a status** in its",
            "front matter — not because someone remembered to add it to a nav list. Set",
            "`publish: false` to withhold one.", ""]
-    for tree, section, _ in TREES:
+    for tree, section, _, _globs in TREES:
         rows = [d for d in docs if d["source"].startswith(tree + "/")]
         if not rows:
             continue

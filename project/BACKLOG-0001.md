@@ -7,9 +7,9 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.10.0"
+version: "0.11.0"
 date: "2026-09-16"
-updated: "2026-10-11"
+updated: "2026-10-14"
 needs_review: true
 reviewed: false
 canonical_path: project/BACKLOG-0001.md
@@ -106,8 +106,8 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-022 | Ingest adapters verified for each type: pdf, url, ietf, xlsx, md, book, repo, consortium, hierarchy | D2 | S2 | M | doing |
 | T-023 | **Shelfmark: converge requirements, then schema. No data merger.** Write the requirements diff | D2 | PL | M | todo |
 | T-024 | Library to ~40 records across the topics — **count met (280), quality not**: 16 written, 264 scaffolds. Fill tracked in library#45 | D2 | S2 | L | doing |
-| T-025 | Report: *context* — **not started**; draft from survey R-001 §1–§3 (MD-4) | D3 | S1 | L | todo |
-| T-026 | Report: *mechanism* — the evidence base for DEC-002 and DEC-004 — **not started**; R-001 §2/§4, plus the RFC 8785 R-O-05 analysis in library#46 | D3 | S1 | L | todo |
+| T-025 | Report: *context* — **drafted** as `R-0005` (research/0005-context). Synthesis pass over R-001 §1–§6/§11/§12 and R-0004 §8; **no retrieval pass**, stated as a limitation in its `searches.md` | D3 | S1 | L | review |
+| T-026 | Report: *mechanism* — **drafted** as `R-0006` (research/0006-mechanism). The six conditions, all four DEC-002 candidates scored, DEC-004's meet-vs-accumulation evidence. Decides nothing; §3.9 states where the evidence sits relative to MD-3 | D3 | S1 | L | review |
 | T-027 | Report: *uptake/applications* — incl. SPKI and PICS failure-to-adopt — **not started**; R-001 §5–§8 | D3 | S2 | L | todo |
 | T-028 | Topic notes answered for `namespace-governance`, `canonical-encoding` — canonical-encoding in review (library#46); 3 of 17 topics answered overall | D3 | PL/S1 | M | doing |
 | T-029a | Schema scenarios (3–5, incl. email delegation) and Product Spec personas, GAP-1 (MD-1) | D3 | S1+S2 | M | todo — was due Oct 5 |
