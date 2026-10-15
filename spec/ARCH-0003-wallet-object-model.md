@@ -7,7 +7,7 @@ description: "The PICS-like vocabulary — human-readable semantics and constrai
 type: architecture
 category: security
 status: draft
-version: "0.3.0"
+version: "0.3.1"
 version_policy: "semver; PATCH = editorial; MINOR = additive; MAJOR = breaking"
 date: "2026-10-14"
 updated: "2026-10-14"
@@ -38,6 +38,10 @@ agent_notes: >
 ---
 
 # ARCH-0003 — Wallet, persona, key and definition
+
+> **Normative specifications now exist.** SPEC-0001 to SPEC-0005 and UC-0001
+> (2026-10-14) specify this design as protocol, under ADR-0003. Where they differ
+> from this document, they govern; this document remains the design rationale.
 
 **Status: draft.** From sponsor direction of **2026-10-14**. Nothing here is
 accepted. Requirements are numbered `W-NN` so an ADR can accept them one at a
@@ -732,7 +736,7 @@ Two definitions, one engine, one set of screens. Each step names what it proves.
 | **W-04** | A definition is identified by `H(canonical(body))`. A locator MUST NOT identify a definition; a fetched definition whose hash does not match MUST be rejected. |
 | **W-05** | Every `TypeRef` and `TemplateRef` carries a `DefinitionId`. |
 | **W-06** | A definition's author is the key that signed its publication statement, and MUST equal `body.definer`. |
-| **W-07** | Trust anchors are unsigned, scoped to one context, and never exported. |
+| **W-07** | *Amended by ADR-0003 D3:* trust anchors are scoped to one context and local by default. An anchor may be an unsigned local decision, the owner's own trust statement, or a third party's signed trust statement **accepted** by a persona whose controller is a person or organisation. A signature never makes an anchor. Normative form: SPEC-0004 §4. |
 | **W-08** | An approval counts only if its speaker reduces to a delegation for `approve` on the definition concerned. A review never satisfies an approval requirement. |
 | **W-09** | A statement made in a context is signed only with a key enabled for it; a presentation discloses only statements held in that context. |
 | **W-10** | An unresolvable `DefinitionId` fails the semantics line of the verdict. It is never skipped (P5). |

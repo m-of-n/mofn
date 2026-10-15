@@ -130,6 +130,15 @@ verdict — a homonym across two repositories, not a collision.
 
 ## Settled terms
 
+**KSA** — Key-centric Semantic Attestations: the protocol specified by SPEC-0001
+to SPEC-0005, whose core is based on the sponsor's FKSA v0.2.1 (ADR-0003). Not
+wire-compatible with FKSA by design.
+
+**Anchor** — an entry in a context's anchor list from which trust flows. May be
+an unsigned local decision, the owner's own trust statement, or a third party's
+signed trust statement **accepted** by a human- or organisation-controlled
+persona; a signature alone never makes an anchor (ADR-0003 D3, SPEC-0004 §4).
+
 **Persona** — a **key-identified principal**: the key or keys that speak as it,
 the contexts it acts in, and the contexts it trusts. Its controller may be a
 person, an organisation, a service or script, an AI agent, a software
