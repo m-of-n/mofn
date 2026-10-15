@@ -18,7 +18,7 @@ front matter — not because someone remembered to add it to a nav list. Set
 | [Proposed ARCH-0001 v0.2.0 — key-relative extension points, predicate rendering, subject identity, citation corrections](https://m-of-n.github.io/mofn/architecture/ARCH-0001-PROPOSAL-v0.2.0/) | `ARCH-0001-PROPOSAL-v0.2.0` | proposed ⚠️ | 0.2.0-proposed.4 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-PROPOSAL-v0.2.0.md) |
 | [Authorization, local names, and artifact attestation — architecture checkpoint](https://m-of-n.github.io/mofn/architecture/ARCH-0001-authorization-attestation/) | `ARCH-0001` | draft ⚠️ | 0.1.2 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-authorization-attestation.md) |
 | [Key-relative naming, types, and domains of discourse](https://m-of-n.github.io/mofn/architecture/ARCH-0002-key-relative-naming/) | `ARCH-0002` | draft ⚠️ | 0.6.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0002-key-relative-naming.md) |
-| [Wallet, persona, key and definition — the object model above the statement](https://m-of-n.github.io/mofn/architecture/ARCH-0003-wallet-object-model/) | `ARCH-0003` | draft ⚠️ | 0.1.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0003-wallet-object-model.md) |
+| [Wallet, persona, key and definition — the object model above the statement](https://m-of-n.github.io/mofn/architecture/ARCH-0003-wallet-object-model/) | `ARCH-0003` | draft ⚠️ | 0.2.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0003-wallet-object-model.md) |
 
 ## Planning
 

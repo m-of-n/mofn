@@ -57,7 +57,7 @@ table.
 
 | sense | where | is now written |
 |---|---|---|
-| **wallet persona** — an identity a person acts *as*, with its own keys, contexts and trust anchors | ARCH-0003, APP-0001 §4b | **persona** |
+| **wallet persona** — a key-identified principal: its keys, the contexts it acts in and the contexts it trusts; controlled by a person, organisation, service, AI agent or device | ARCH-0003, APP-0001 §4b | **persona** |
 | **template persona** — a representative user, for product design | the CS690 Product Spec template; PLAN-0002 §2.1 | **archetype** |
 
 And a third thing that had been mislabelled as both: **domain author, issuer,
@@ -130,10 +130,17 @@ verdict — a homonym across two repositories, not a collision.
 
 ## Settled terms
 
-**Persona** — an identity a person acts *as* inside a wallet: its own keys,
-contexts and trust anchors. Never a principal on the wire; outside the wallet it
-is visible only as keys and whatever linkage statements its holder publishes
-(ARCH-0003 §3.2, W-01). Not the template's *archetype*.
+**Persona** — a **key-identified principal**: the key or keys that speak as it,
+the contexts it acts in, and the contexts it trusts. Its controller may be a
+person, an organisation, a service or script, an AI agent, a software
+implementation or a device. A wallet **owns** some personas (it holds their
+private keys) and **knows** others (ARCH-0003 §1, §3.2, W-01). Not the
+template's *archetype*.
+
+**Template** — a definition entry a statement is issued from: target rules,
+required and fixed attributes, constraints, who may issue, and the sentence it
+renders as. A statement citing a template must conform to it (ARCH-0003 §3.6,
+W-17).
 
 **Role** — what a key does in one statement: define, claim, delegate, review,
 approve, present, rely. A property of the statement, not of the person

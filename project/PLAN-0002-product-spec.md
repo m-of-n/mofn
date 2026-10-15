@@ -109,11 +109,12 @@ statement. The model (ARCH-0003 §1) separates three things:
 | term | is | example |
 |---|---|---|
 | **role** | what a key does in one statement | define · claim · delegate · review · approve · present · rely |
-| **persona** (wallet object) | an identity a person acts *as*, with its own keys, contexts and trust decisions | "maintainer of m-of-n"; "anonymous reviewer" |
+| **persona** (wallet object) | a **key-identified principal** — its keys, the contexts it acts in and trusts; controlled by a person, organisation, service, AI agent or device. A wallet owns some and knows others | Paul's maintainer key; the m-of-n build-bot; an AI release agent |
 | **archetype** (this template's *user persona*) | a representative user of the product | Maya, a release engineer |
 
-One person holds several personas; each persona plays every role, in different
-contexts. The template's word *persona* is therefore written **archetype** in
+One person owns several personas; each persona plays every role, in different
+contexts; and every wallet also holds the personas of the people, services,
+agents and devices it deals with. The template's word *persona* is therefore written **archetype** in
 this document, to keep it apart from the wallet object (`GLOSSARY-0001`).
 
 **Who uses it** — by role, in our two domains (MD-1):
