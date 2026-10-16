@@ -5,11 +5,18 @@ nav:
   - Architecture:
       - "R-M-12 stands: key-relative naming is a core principle": architecture/ADR-0001-key-relative-naming.md
       - "ARCH-0002 P2, P3, P5 and P6 — the instrument D-2 deferred": architecture/ADR-0002-provisional-principles.md
+      - "KSA adopts the FKSA core, with five decisions on where they differ": architecture/ADR-0003-fksa-convergence.md
       - "ARCH-0001 changelog": architecture/ARCH-0001-CHANGELOG.md
       - "Proposed ARCH-0001 v0.2.0 — key-relative extension points, predicate rendering, subject identity, citation corrections": architecture/ARCH-0001-PROPOSAL-v0.2.0.md
       - "Authorization, local names, and artifact attestation — architecture checkpoint": architecture/ARCH-0001-authorization-attestation.md
       - "Key-relative naming, types, and domains of discourse": architecture/ARCH-0002-key-relative-naming.md
       - "Wallet, persona, key and definition — the object model above the statement": architecture/ARCH-0003-wallet-object-model.md
+      - "KSA Architecture — principals, wallets, contexts, presentations and discovery": architecture/SPEC-0001-ksa-architecture.md
+      - "KSA Core — statements, data model, canonical encoding and cipher suites": architecture/SPEC-0002-ksa-core.md
+      - "KSA Definitions — vocabularies, types, human-readable semantics, constraints and templates": architecture/SPEC-0003-ksa-definitions.md
+      - "KSA Trust Evaluation — contexts, anchors, delegation, revocation, rotation, and the verdict": architecture/SPEC-0004-ksa-trust-evaluation.md
+      - "KSA Processes — panels, criteria and reproducible aggregates": architecture/SPEC-0005-ksa-processes.md
+      - "KSA Use Cases — scenarios traced to the specifications": architecture/UC-0001-ksa-use-cases.md
   - Planning:
       - "The application — what we are actually building for the demo": project/APP-0001-application-design.md
       - "m-of-n backlog": project/BACKLOG-0001.md

@@ -2,7 +2,7 @@
 
 # Publishing manifest
 
-22 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
+29 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
 
 A document is published because it **exists and declares a status** in its
 front matter — not because someone remembered to add it to a nav list. Set
@@ -14,11 +14,18 @@ front matter — not because someone remembered to add it to a nav list. Set
 |---|---|---|---|---|---|
 | [R-M-12 stands: key-relative naming is a core principle](https://m-of-n.github.io/mofn/architecture/ADR-0001-key-relative-naming/) | `ADR-0001` | accepted | 1.0.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ADR-0001-key-relative-naming.md) |
 | [ARCH-0002 P2, P3, P5 and P6 — the instrument D-2 deferred](https://m-of-n.github.io/mofn/architecture/ADR-0002-provisional-principles/) | `ADR-0002` | proposed ⚠️ | 0.1.0 | 2026-10-10 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ADR-0002-provisional-principles.md) |
+| [KSA adopts the FKSA core, with five decisions on where they differ](https://m-of-n.github.io/mofn/architecture/ADR-0003-fksa-convergence/) | `ADR-0003` | accepted | 1.0.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ADR-0003-fksa-convergence.md) |
 | [ARCH-0001 changelog](https://m-of-n.github.io/mofn/architecture/ARCH-0001-CHANGELOG/) | `ARCH-0001-CHANGELOG` | active | 0.1.2 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-CHANGELOG.md) |
 | [Proposed ARCH-0001 v0.2.0 — key-relative extension points, predicate rendering, subject identity, citation corrections](https://m-of-n.github.io/mofn/architecture/ARCH-0001-PROPOSAL-v0.2.0/) | `ARCH-0001-PROPOSAL-v0.2.0` | proposed ⚠️ | 0.2.0-proposed.4 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-PROPOSAL-v0.2.0.md) |
 | [Authorization, local names, and artifact attestation — architecture checkpoint](https://m-of-n.github.io/mofn/architecture/ARCH-0001-authorization-attestation/) | `ARCH-0001` | draft ⚠️ | 0.1.2 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-authorization-attestation.md) |
 | [Key-relative naming, types, and domains of discourse](https://m-of-n.github.io/mofn/architecture/ARCH-0002-key-relative-naming/) | `ARCH-0002` | draft ⚠️ | 0.6.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0002-key-relative-naming.md) |
-| [Wallet, persona, key and definition — the object model above the statement](https://m-of-n.github.io/mofn/architecture/ARCH-0003-wallet-object-model/) | `ARCH-0003` | draft ⚠️ | 0.3.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0003-wallet-object-model.md) |
+| [Wallet, persona, key and definition — the object model above the statement](https://m-of-n.github.io/mofn/architecture/ARCH-0003-wallet-object-model/) | `ARCH-0003` | draft ⚠️ | 0.3.1 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0003-wallet-object-model.md) |
+| [KSA Architecture — principals, wallets, contexts, presentations and discovery](https://m-of-n.github.io/mofn/architecture/SPEC-0001-ksa-architecture/) | `SPEC-0001` | draft ⚠️ | 0.1.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/SPEC-0001-ksa-architecture.md) |
+| [KSA Core — statements, data model, canonical encoding and cipher suites](https://m-of-n.github.io/mofn/architecture/SPEC-0002-ksa-core/) | `SPEC-0002` | draft ⚠️ | 0.1.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/SPEC-0002-ksa-core.md) |
+| [KSA Definitions — vocabularies, types, human-readable semantics, constraints and templates](https://m-of-n.github.io/mofn/architecture/SPEC-0003-ksa-definitions/) | `SPEC-0003` | draft ⚠️ | 0.1.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/SPEC-0003-ksa-definitions.md) |
+| [KSA Trust Evaluation — contexts, anchors, delegation, revocation, rotation, and the verdict](https://m-of-n.github.io/mofn/architecture/SPEC-0004-ksa-trust-evaluation/) | `SPEC-0004` | draft ⚠️ | 0.1.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/SPEC-0004-ksa-trust-evaluation.md) |
+| [KSA Processes — panels, criteria and reproducible aggregates](https://m-of-n.github.io/mofn/architecture/SPEC-0005-ksa-processes/) | `SPEC-0005` | draft ⚠️ | 0.1.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/SPEC-0005-ksa-processes.md) |
+| [KSA Use Cases — scenarios traced to the specifications](https://m-of-n.github.io/mofn/architecture/UC-0001-ksa-use-cases/) | `UC-0001` | draft ⚠️ | 0.1.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/UC-0001-ksa-use-cases.md) |
 
 ## Planning
 
@@ -47,7 +54,7 @@ front matter — not because someone remembered to add it to a nav list. Set
 
 ## Status
 
-⚠️ **18 of 22 published documents are draft or proposed.**
+⚠️ **24 of 29 published documents are draft or proposed.**
 They are public and marked as such. Nothing here is accepted; an open
 `DEC-*` is not settled because it appears on a website.
 
