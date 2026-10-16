@@ -4,14 +4,14 @@ id: R-0006-sources
 title: "Sources consulted — mechanism"
 type: evidence
 status: draft
-version: "0.1.0"
+version: "0.1.1"
 date: "2026-10-14"
-updated: "2026-10-14"
+updated: "2026-10-16"
 ---
 
 # Sources
 
-Bibliography pinned at **`library@f57dcbc`**. Every `[@key]` in `report.md`
+Bibliography pinned at **`library@60b3284`**. Every `[@key]` in `report.md`
 resolves at that commit; checked mechanically, **15 distinct keys, zero
 unresolved.**
 

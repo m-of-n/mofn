@@ -57,10 +57,17 @@ is itself the finding: its bibliography is not reproducible as
 
 Three possible causes and the model established none of them: the records were
 renamed, they were dropped in the Threat-Radar fold-back (`c95f204`), or R-001
-cited keys that never existed. **Not filed as a register item or an issue** —
-that is not an agent's call — and proposed here for whoever next edits
-`DECISIONS-0001` or touches R-001. A `library_pin` on R-001 plus the same
-mechanical key check would settle it in minutes.
+cited keys that never existed.
+
+> **Resolved on the rebase, 2026-10-16.** The pin moved to `60b3284` and **all
+> four resolve there**; a full re-check finds all **175** of R-001's distinct
+> keys resolving, zero unresolved. So it was none of the three guesses: the
+> records existed and the pin was behind them. `produced.md` §7.1.
+>
+> **The half that is still true** is the one that mattered: R-001 carries no
+> `library_pin`, so "resolves today" is not the same as "reproducible", and the
+> next pin move can break it again silently. Still **not filed** — not an
+> agent's call — and still proposed for whoever next touches R-001.
 
 **Also raised:** `DECISIONS-0001` Tier 3 item 11 is answered in practice by
 this change (`produced.md` §1) and is still printed as open.
@@ -75,6 +82,11 @@ this change (`produced.md` §1) and is still printed as open.
 | **Reading RDF Canon 1.0** | Prior art for condition (5), deliberately unread; `library#56` owns it, and it is in `library/`, where this session must not work |
 | **Updating R-001** to carry a `library_pin` | It is a merged report with its own owner. Raised in §3 instead |
 | **Filing the two register items above** | Not an agent's call |
+| **Writing the `SPEC-0002` §8.6 fix that §3.13 implies** | The fix looks obvious and short — invoke `SPEC-0003` kind 7's *"distinct … sorted"* on `trusts`, state an order for `about` — which is exactly when an agent should not edit a normative specification. `SPEC-0002` is governed by an accepted ADR; `ARCH-0001` §9.4 and `CLAUDE.md` route it through a proposal against the document. Stated as a finding, filed in R-0006 §8 |
+| **Reading `ADR-0003` D2 as accepting DEC-002** | D2 refused it in terms. The encoding is fixed and the decision is open, and R-0006 §3.9 keeps them apart rather than collapsing them into the convenient reading |
+| **Reading `SPEC-0002` §5 as settling DEC-005** | Tempting by symmetry — the core now has an envelope — but `ADR-0003` is *silent* on DEC-005 where it was explicit on DEC-002, and the difference between *decided* and *not written down* is not an agent's to infer. Raised in R-0006 §5.2 and §8 |
+| **Updating `DECISIONS-0001` Tier 1 item 2 for D2** | It is the right place to record that an accepted ADR fixed the encoding, and **mofn#97 already edits that file**. Doing it here would manufacture a conflict between two open PRs for no gain. Routed as a next step instead |
+| **Reopening D2, or answering mofn#8** | R-0006 §3.9 notes only that the bar moved — the request now means superseding an accepted ADR — and explicitly does not recommend it |
 
 ## 5. What a reviewer should push on hardest
 
@@ -92,3 +104,45 @@ is the right place for it or whether it belongs only in R-0004.
 fact — the scoring postdates both decisions — without asserting a conclusion.
 Whether it succeeds at that is a judgement the model cannot make about its own
 prose.
+
+---
+
+## 6. The second pass, and what a reviewer should check first
+
+Added 2026-10-16 with the `ADR-0003` reconciliation (`produced.md` §7).
+
+**Decided by the human:** that #103 should be completed and that §§3.9 and 6 of
+R-0006 were describing a world that moved. The §3.13 finding was not asked for
+and was not anticipated; it came out of reading `SPEC-0002` §8.6 against the
+report's own condition (5). Whether it belongs in a research report at all —
+rather than as an issue against `SPEC-0002` — is a human judgement and the
+model has taken the conservative option of stating it and not acting on it.
+
+**The thing to check first, because everything else rests on it.** §3.13's
+central claim is checkable in four lookups and a reviewer should do them rather
+than trust the report:
+
+1. `SPEC-0002` §8.6 — `trusts: [2* kid]`. No `distinct`, no sort rule.
+2. `SPEC-0002` §4.1 — array: *"ordered; order is significant and signed"*.
+3. `SPEC-0002` §4.5 — statement digest = SHA-256 of the TBS.
+4. `SPEC-0004` §6.4 — *"trusts a set `M` of keys"*, *"Distinctness is by kid."*
+
+If those four read as quoted, one semantic trust statement has many digests and
+the rest of §3.13 follows. If any is misquoted, **§3.13 should be struck** and
+the model got it wrong; it is a claim about four documents, not an argument, and
+it should be treated as falsifiable in exactly that way.
+
+**Where the model may have overreached.** §3.13's closing paragraph says the
+specifications are not wrong and that `SPEC-0003` §6 is the best treatment
+condition (5) has had in this project. That is a judgement, it is favourable to
+documents the sponsor authored last week, and a reviewer entitled to be
+suspicious of a model complimenting the thing it just audited should read it as
+such. The underlying observation — eleven base kinds, eight with set-valued
+array ranges, all eight given an order — is countable and does not depend on the
+compliment. (The first draft of §3.13 said *seven*; `SPEC-0003` §6's email kind
+was miscounted and the figure was corrected before this change was committed.)
+
+**What is still owed and is not in this change.** `DECISIONS-0001` Tier 1 item
+2 still reads as though MD-3's narrowing were the latest word on the encoding;
+it is not, and `ADR-0003` D2 belongs in that row. It was left out on purpose
+because mofn#97 edits the same file (§4).

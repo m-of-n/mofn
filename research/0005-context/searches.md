@@ -4,9 +4,9 @@ id: R-0005-searches
 title: "Searches — context"
 type: evidence
 status: draft
-version: "0.1.0"
+version: "0.1.1"
 date: "2026-10-14"
-updated: "2026-10-14"
+updated: "2026-10-16"
 ---
 
 # Searches
@@ -28,7 +28,7 @@ already retrieved, extracted and recorded by three prior passes.
 |---|---|
 | R-001 (survey), §§1–6, §11, §12 | `research/0001-signatures-and-attestation/searches.md` |
 | R-0004 (uptake), §3, §4, §8 | `research/0004-uptake-and-applications/searches.md` |
-| `library@f57dcbc` — 72 cited records | each record's own `record.yaml` provenance |
+| `library@60b3284` — 101 cited records | each record's own `record.yaml` provenance |
 | `ARCH-0001`, `ARCH-0002`, `PLAN-0001` §13, `DECISIONS-0001` | authored in-repo; no retrieval |
 
 ## Why this is a limitation and not merely a note

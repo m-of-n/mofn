@@ -4,17 +4,24 @@ id: R-0005-sources
 title: "Sources consulted — context"
 type: evidence
 status: draft
-version: "0.1.0"
+version: "0.1.1"
 date: "2026-10-14"
-updated: "2026-10-14"
+updated: "2026-10-16"
 ---
 
 # Sources
 
-Bibliography pinned at **`library@f57dcbc`**. Every `[@key]` in `report.md`
+Bibliography pinned at **`library@60b3284`**. Every `[@key]` in `report.md`
 resolves to a record directory at that commit; the mapping was checked
-mechanically before this file was written, and **72 distinct keys resolve with
-zero unresolved.**
+mechanically, and **101 distinct keys resolve with zero unresolved.**
+
+> **Corrected 2026-10-16.** This file previously said *72 distinct keys*. The
+> count was wrong, not the resolution: the counting pass missed multi-key
+> citations of the form `[@a; @b]`, of which `report.md` has several. Re-counted
+> at the current pin by parsing every bracketed group containing `@` and
+> splitting on `;` — 80 bracket groups, 109 citations, 101 distinct keys, zero
+> unresolved. The pin itself moved `f57dcbc` → `60b3284` when this branch was
+> rebased onto the KSA specifications.
 
 ## 1. The sourcing situation, stated plainly
 

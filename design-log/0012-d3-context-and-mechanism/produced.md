@@ -10,16 +10,20 @@ date: "2026-10-14"
 | file | lines | what it is |
 |---|---|---|
 | `research/0005-context/report.md` | 632 | **R-0005** — why provenance, why now; the historic gap |
-| `research/0005-context/sources.md` | — | 72 keys, zero unresolved; where each claim's evidence was retrieved |
+| `research/0005-context/sources.md` | — | **101** keys, zero unresolved; where each claim's evidence was retrieved. The "72" first recorded here was a miscount — §7 |
 | `research/0005-context/searches.md` | — | **no searches were run** — the method limitation, stated |
 | `research/0006-mechanism/report.md` | 809 | **R-0006** — comparative anatomy; the DEC-002/DEC-004 evidence |
 | `research/0006-mechanism/sources.md` | — | the four load-bearing records and what each supplies |
 | `research/0006-mechanism/searches.md` | — | as above, plus why staleness bites less here |
-| `project/BACKLOG-0001.md` | 0.10.0 → **0.11.0** | T-025, T-026 → `review` |
-| `library` submodule pin | `31aabab` → **`f57dcbc`** | §1 |
+| `project/BACKLOG-0001.md` | 0.10.0 → **0.11.1** | T-025, T-026 → `review`; T-027 corrected; T-031 narrowed — §7 |
+| `library` submodule pin | `31aabab` → **`f57dcbc`** → **`60b3284`** | §1, §7 |
 
 Nothing in `spec/`. Nothing in `src/`. **No `DEC-*` decided, narrowed, or
 recommended.**
+
+**§7 is a second pass, dated 2026-10-16**, reconciling both reports with
+`ADR-0003` and the KSA specifications, which landed after the first pass and
+are the reason this change needed more than a rebase.
 
 ---
 
@@ -168,3 +172,90 @@ entry. The three that do not — `LIMITATIONS.md`, `library/construction.md`,
 touch and were not staged by the simulation. CI's `docs` job is the real gate.
 
 Document count went **21 → 28**.
+
+---
+
+## 7. Second pass, 2026-10-16 — reconciling with ADR-0003
+
+The first pass was written on 2026-10-14. That same day, `ARCH-0003` (mofn#102)
+and then `ADR-0003` with `SPEC-0001`…`SPEC-0005`, `UC-0001` and
+`spec/vectors/ksa-core/` (mofn#104) merged to `main`. The branch went stale in
+three files and **wrong in four claims**, which is the part a rebase does not
+fix.
+
+### 7.1 What the conflicts actually were
+
+`library` (the submodule pin, `f57dcbc` versus `main`'s `60b3284`) and
+`project/PUBLISHING.md` (generated). `mkdocs.nav.yml` auto-merged. All three
+are generated or pin files: `main`'s side was taken and the generators re-run.
+**No authored content conflicted**, which is the one thing the publishing fix
+in §6 is responsible for — the nav is generated, so a nav conflict is never a
+content decision.
+
+The pin move to `60b3284` had an unlooked-for effect. §3 of `review.md` raised
+that **four keys R-001 cites did not resolve at `f57dcbc`**. All four —
+`zooko-2001-names`, `w3c-did-core`, `zcap-ld`, `wang-2006-reducing-spki` —
+**resolve at `60b3284`**, and a full re-check finds all 175 of R-001's distinct
+keys resolving. So the cause was the third of the three the model could not
+choose between: the records existed and the pin was behind them. The finding is
+**resolved, not merely stale**, and `review.md` §3 now says so. R-001 still
+carries no `library_pin`, which was the other half of that finding and is still
+true.
+
+### 7.2 The four claims that were wrong, and are retracted in place
+
+| claim in v0.1.0 | status | where |
+|---|---|---|
+| P5.1 "landed in `ARCH-0002` v0.6.0 (mofn#72)" | **wrong twice.** mofn#97 is open and carries it as v0.7.0; `ARCH-0002` v0.6.0 on `main` is an unrelated revision | R-0006 §3.2 |
+| P5.2 "Resolved … in `ARCH-0002` v0.6.0" | **wrong, same cause** | R-0006 §5.2 |
+| condition (5) supplied by no candidate, and "no decoder can supply (5)" | **true of encodings, and the wrong place to look.** `SPEC-0003` §6 supplies it for ranges, per base kind | R-0006 §3.2, §3.12, §3.13 |
+| "The round-trip fixtures do not exist … none has been built, under any option" | **overtaken.** `spec/vectors/ksa-core/` exists; the threshold subject is the gap | R-0006 §3.12, §6 |
+
+All four are **retracted in the text with the reason**, not edited out. The
+first two were forward references to a sibling branch written as though it had
+merged — the specific failure mode of running several lanes at once, and the
+third instance in this design log after `DL-0009` §4 and `DL-0011`'s rename
+collision.
+
+### 7.3 §3.13 is the new material, and it is a finding about our own documents
+
+The reconciliation was expected to be bookkeeping. It was not: reading
+`SPEC-0002` §8.6 against the report's own condition (5) turned up that the
+threshold member list `trusts` is specified as `[2* kid]` — an array — while
+`SPEC-0004` §6.4 calls it a set — *"trusts a set `M` of keys"* — and that
+`SPEC-0002` §4.1 makes array order *"significant and signed"*. `SPEC-0003` kind 7 has exactly the rule
+required, *"an array of distinct kids, sorted"*, one document away and not
+invoked.
+
+That makes one semantic trust statement have as many statement digests as its
+member list has permutations, on the **identity** path, which is the precise
+asymmetry R-0006 §3.1 predicted in the abstract. Two further instances —
+`about` and the `may-delegate` key lists — and one undefined comparison,
+`SPEC-0004` §6.4's *"identical `about` and `may-delegate`"*, came out of the
+same read.
+
+**This is the most consequential thing in the change and it is the thing the
+model is least entitled to act on.** It is written as a finding with every
+section cited inline so a reviewer can check it without trusting the report,
+and the fix is not proposed. See `review.md` §4 and §6.
+
+### 7.4 The miscount, found by re-counting
+
+`sources.md` claimed **72 distinct keys** for R-0005. The real figure is
+**101**. The first pass's counting pass missed multi-key citations of the form
+`[@a; @b]`, of which `report.md` has several, so the count was wrong while the
+*resolution* claim — zero unresolved — was right then and is right now. Fixed in
+`sources.md` with the cause stated, and in `searches.md`.
+
+§4 of this file says citation keys *"were checked mechanically, and it
+mattered."* It did matter, and it was also checked with a pattern that could not
+see half the syntax it was checking. Both halves of that belong on the record.
+
+### 7.5 Two stale backlog rows, fixed while in the file
+
+**T-027 said "not started."** R-0004 merged in mofn#87 on 2026-10-12. The row
+was stale, not the work — the same shape as T-029e in mofn#97, and the second
+time in two weeks that a merged report left its own backlog row behind.
+
+**T-031 is narrowed, not done.** It now names the threshold-subject vector as
+the remaining gap and cites R-0006 §3.12 and §3.13 for why.

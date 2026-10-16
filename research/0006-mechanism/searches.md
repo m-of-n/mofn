@@ -4,9 +4,9 @@ id: R-0006-searches
 title: "Searches — mechanism"
 type: evidence
 status: draft
-version: "0.1.0"
+version: "0.1.1"
 date: "2026-10-14"
-updated: "2026-10-14"
+updated: "2026-10-16"
 ---
 
 # Searches
@@ -17,6 +17,16 @@ updated: "2026-10-14"
 analysis in library#46"* — a synthesis of material already extracted. No new
 retrieval was performed, and `research/README.md` requires this file to say so
 rather than leave the absence implied.
+
+**Nor for the v0.2.0 reconciliation pass.** §3.13 and the revisions to §3.2,
+§3.9, §3.10, §3.12, §5.2, §6 and §8 were written from documents that landed on
+`main` on 2026-10-14 — `ADR-0003`, `SPEC-0001`…`SPEC-0005`, `UC-0001`,
+`ARCH-0003` and `spec/vectors/ksa-core/` — read in-repo at
+`643fba2`. No external source was consulted and no published specification was
+re-read, so every external claim in this report still rests on the extractions
+below. §3.13's findings are claims about **our own documents** and are checkable
+by reading them; the exact sections are cited inline so a reviewer can do that
+without taking the report's word for any of it.
 
 ## Why that is less of a limitation here than in R-0005
 
@@ -41,11 +51,12 @@ The two places where staleness could still bite are named in `report.md`:
 
 | material | search record |
 |---|---|
-| RFC 8949, RFC 8785, RFC 9804 extractions | each record's `distilled/` plus `record.yaml` provenance, `library@f57dcbc` |
+| RFC 8949, RFC 8785, RFC 9804 extractions | each record's `distilled/` plus `record.yaml` provenance, `library@60b3284` |
 | DSSE full read (2026-10-08) | `library/topics/canonical-encoding.yaml`; archive digest re-verified at the pinned commit |
 | The `canonical-encoding` topic close | library#14, library#57; `design-log/0006-canonical-encoding-close/` |
 | The decoder spike | mofn#73, mofn#78; `design-log/0007-rejecting-decoder-spike/` — including its own fixture list |
 | R-001 §9, §11, §12 | `research/0001-signatures-and-attestation/searches.md` |
+| `ADR-0003` D2, `SPEC-0002` §4/§5/§8.6, `SPEC-0003` §6/§13.4, `SPEC-0004` §6.3/§6.4, `spec/vectors/ksa-core/` — the §3.13 material | authored in-repo at `643fba2`; no retrieval |
 
 ## The one experiment this pass did not re-run
 

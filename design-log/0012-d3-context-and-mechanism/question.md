@@ -69,3 +69,31 @@ MD-3's narrowing and the sponsor's 2026-09-16 retirement of option 1. A
 mechanism report that scored only option 5 would be useless; one that
 recommended option 1 would be taking a decision. §3.9 of the report is the
 resolution and is the most carefully worded section in either file.
+
+---
+
+## The second question, 2026-10-16
+
+> *"complete #103 … #103 is the open item. It needs more than conflict
+> resolution: R-0006 is the DEC-002 evidence base, and ADR-0003 D2 landed an
+> accepted decision fixing one canonical encoding while explicitly not accepting
+> DEC-002. Sections 3.9 and 6 of that report are now describing a world that
+> moved."*
+
+**What it supplied:** the diagnosis. That D2 is accepted, that it fixes one
+canonical encoding, that it declines DEC-002, and that §§3.9 and 6 are the two
+sections affected.
+
+**What it did not settle, and the model decided:**
+
+- whether anything *else* in the two reports had moved — §§3.2, 3.10, 3.12, 5.2,
+  7 and 8 had, and three claims in them were outright wrong (`produced.md` §7.2);
+- whether to look past the two named sections at all. Doing so is what turned up
+  §3.13, which was not asked for and is the most consequential thing in the
+  change;
+- what to do about a defect found in an accepted specification. The model chose
+  to state it, cite it line by line, and not propose the diff (`review.md` §4).
+
+**Still not settled, by anyone:** whether a research report is the right vehicle
+for §3.13's finding, or whether it should be an issue against `SPEC-0002` with
+only a pointer in the report. `review.md` §6 puts that to the reviewer.

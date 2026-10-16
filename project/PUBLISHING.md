@@ -2,7 +2,7 @@
 
 # Publishing manifest
 
-29 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
+36 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
 
 A document is published because it **exists and declares a status** in its
 front matter — not because someone remembered to add it to a nav list. Set
@@ -32,7 +32,7 @@ front matter — not because someone remembered to add it to a nav list. Set
 | document | id | status | version | updated | |
 |---|---|---|---|---|---|
 | [The application — what we are actually building for the demo](https://m-of-n.github.io/mofn/project/APP-0001-application-design/) | `APP-0001` | draft ⚠️ | 0.3.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/project/APP-0001-application-design.md) |
-| [m-of-n backlog](https://m-of-n.github.io/mofn/project/BACKLOG-0001/) | `BACKLOG-0001` | draft ⚠️ | 0.10.0 | 2026-10-11 | [source](https://github.com/m-of-n/mofn/blob/main/project/BACKLOG-0001.md) |
+| [m-of-n backlog](https://m-of-n.github.io/mofn/project/BACKLOG-0001/) | `BACKLOG-0001` | draft ⚠️ | 0.11.1 | 2026-10-16 | [source](https://github.com/m-of-n/mofn/blob/main/project/BACKLOG-0001.md) |
 | [Open decision register — everything waiting on a human](https://m-of-n.github.io/mofn/project/DECISIONS-0001/) | `DECISIONS-0001` | active | 0.3.0 | 2026-10-11 | [source](https://github.com/m-of-n/mofn/blob/main/project/DECISIONS-0001.md) |
 | [Glossary — terms that mean more than one thing](https://m-of-n.github.io/mofn/project/GLOSSARY-0001/) | `GLOSSARY-0001` | draft ⚠️ | 0.3.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/project/GLOSSARY-0001.md) |
 | [Project plan — semester execution, repo, library, and team](https://m-of-n.github.io/mofn/project/PLAN-0001-project-plan/) | `PLAN-0001` | draft ⚠️ | 0.6.0 | 2026-09-21 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0001-project-plan.md) |
@@ -50,11 +50,18 @@ front matter — not because someone remembered to add it to a nav list. Set
 
 | document | id | status | version | updated | |
 |---|---|---|---|---|---|
+| [CBOR: what a complete implementation requires, and the ecosystem around it](https://m-of-n.github.io/mofn/research/0001-cbor/report/) | `RPT-0001` | draft ⚠️ | 0.1.1 | 2026-09-30 | [source](https://github.com/m-of-n/mofn/blob/main/research/0001-cbor/report.md) |
+| [What a Signature Proves: A Survey of Digital Signatures and Attestation](https://m-of-n.github.io/mofn/research/0001-signatures-and-attestation/report/) | `R-0001` | draft ⚠️ | 0.2.0 | 2026-09-26 | [source](https://github.com/m-of-n/mofn/blob/main/research/0001-signatures-and-attestation/report.md) |
+| [Wallet market survey — commercial products, open source, and PGP trust indicators](https://m-of-n.github.io/mofn/research/0002-wallets/report/) | `R-0002` | draft ⚠️ | 0.2.0 | 2026-10-02 | [source](https://github.com/m-of-n/mofn/blob/main/research/0002-wallets/report.md) |
+| [Cipher suite — definition, the existing implementation, and what a statement must be able to cite](https://m-of-n.github.io/mofn/research/0003-cipher-suite/report/) | `R-0003` | draft ⚠️ | 0.1.0 | 2026-10-02 | [source](https://github.com/m-of-n/mofn/blob/main/research/0003-cipher-suite/report.md) |
+| [Who Adopts Provenance, and Why the Ancestors Did Not](https://m-of-n.github.io/mofn/research/0004-uptake-and-applications/report/) | `R-0004` | draft ⚠️ | 0.1.0 | 2026-10-10 | [source](https://github.com/m-of-n/mofn/blob/main/research/0004-uptake-and-applications/report.md) |
+| [Why Provenance, Why Now, and the Gap the Ancestors Left](https://m-of-n.github.io/mofn/research/0005-context/report/) | `R-0005` | draft ⚠️ | 0.1.1 | 2026-10-16 | [source](https://github.com/m-of-n/mofn/blob/main/research/0005-context/report.md) |
+| [Comparative Anatomy of the Mechanisms: the Evidence Base for DEC-002 and DEC-004](https://m-of-n.github.io/mofn/research/0006-mechanism/report/) | `R-0006` | draft ⚠️ | 0.2.0 | 2026-10-16 | [source](https://github.com/m-of-n/mofn/blob/main/research/0006-mechanism/report.md) |
 | [README](https://m-of-n.github.io/mofn/research/README/) | `README` | unknown |  |  | [source](https://github.com/m-of-n/mofn/blob/main/research/README.md) |
 
 ## Status
 
-⚠️ **24 of 29 published documents are draft or proposed.**
+⚠️ **31 of 36 published documents are draft or proposed.**
 They are public and marked as such. Nothing here is accepted; an open
 `DEC-*` is not settled because it appears on a website.
 

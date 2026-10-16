@@ -7,9 +7,9 @@ description: "The D3 context report: the narrow guarantee a signature gives, the
 type: research
 category: security
 status: draft
-version: "0.1.0"
+version: "0.1.1"
 date: "2026-10-14"
-updated: "2026-10-14"
+updated: "2026-10-16"
 needs_review: true
 reviewed: false
 canonical_path: research/0005-context/report.md
@@ -19,7 +19,7 @@ companion:
 informs: [PLAN-0001, PLAN-0002, PROC-0004]
 open_decisions: [DEC-002, DEC-004, DEC-007]
 backlog: T-025
-library_pin: "library@f57dcbc"
+library_pin: "library@60b3284"
 ---
 
 # Why Provenance, Why Now, and the Gap the Ancestors Left
@@ -28,7 +28,7 @@ library_pin: "library@f57dcbc"
 recommended here. Where this report touches an open decision it says which, and
 says that the decision is open.
 
-Bibliography pinned at **`library@f57dcbc`**. Citation keys of the form
+Bibliography pinned at **`library@60b3284`**. Citation keys of the form
 `[@record-id]` resolve to records at that commit.
 
 **This is a synthesis pass, not a retrieval pass** — and that is a limitation,
@@ -105,7 +105,10 @@ that. It is not an adoption measurement — R-0004 owns that, and this report
 cites its numbers rather than re-deriving them. It is not a comparative anatomy
 of mechanisms — R-0006 owns that. And it takes no position on encoding, tag
 language, or envelope: DEC-002, DEC-004 and DEC-005 are open, and §8 is written
-so that nothing in it can be read as narrowing them.
+so that nothing in it can be read as narrowing them. **`ADR-0003` D2 has since
+fixed the KSA core's encoding without accepting DEC-002** (2026-10-14); that
+changes nothing in this report, which argues from the thirty years before it,
+and R-0006 §3.9 is where it is read.
 
 ---
 
@@ -452,7 +455,9 @@ did; the authorization theory did not.
 > R-0006 §3.5 scores it as such. Nothing in this paragraph bears on that
 > scoring; *historical as a revival* and *viable as an encoding* are different
 > claims about different things, and conflating them is an error this project
-> has already made once (`PLAN-0001` §13).
+> has already made once (`PLAN-0001` §13). `ADR-0003` D2 has since selected a
+> CBOR profile for the KSA core — on the ground that it adopted an implemented
+> core protocol, not on any reading of this paragraph (R-0006 §3.9).
 
 ### 5.4 PICS — the vocabulary layer, and a political death
 
@@ -601,7 +606,7 @@ Stated so the omissions read as decisions rather than oversights.
 | open | owner |
 |---|---|
 | Whether the key-relative vocabulary of §7 is expressible at all | **DEC-007**, open; `ARCH-0002` P3/P4, both draft and P4 held |
-| What the statements are encoded in | **DEC-002**, open — R-0006 §3 is the evidence, not the answer |
+| What the statements are encoded in | **DEC-002**, open — R-0006 §3 is the evidence, not the answer. `ADR-0003` D2 fixed the KSA core's encoding and declined to accept DEC-002; R-0006 §3.9 separates the two |
 | What the authorization language is | **DEC-004**, open — R-0006 §4 |
 | Whether adoption is plausible | R-0004 §7–§8; this report does not re-argue it |
 | Market and applications | D9, `PLAN-0001` §11 |
