@@ -7,9 +7,9 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.10.0"
+version: "0.12.1"
 date: "2026-09-16"
-updated: "2026-10-11"
+updated: "2026-10-16"
 needs_review: true
 reviewed: false
 canonical_path: project/BACKLOG-0001.md
@@ -113,8 +113,8 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-029a | Schema scenarios (3–5, incl. email delegation) and Product Spec personas, GAP-1 (MD-1) | D3 | S1+S2 | M | todo — was due Oct 5 |
 | T-029b | Product Spec, PLAN-0002 v0.2 — GAP-4 real sketches (Ndewedo, Oct 14), GAP-6 course dates (PL) | — | PL+S2 | M | doing |
 | T-029c | Confirm Tauri for the wallet GUI (MD-7) before GUI work starts | D8 | S2 | S | todo — Oct 14 |
-| T-029d | ADR-0002: accept P2, P3, P5, P6 provisionally (MD-2) | — | Claude→PL | M | **overdue** (was Oct 2) |
-| T-029e | Close T1-A in DECISIONS-0001 citing MD-1 | — | Claude | S | **overdue** |
+| T-029d | ADR-0002: accept P2, P3, P5, P6 provisionally (MD-2) — **drafted** (#83, `proposed`); condition 6(b) **met** by ARCH-0002 v0.7.0, condition 6(a) **met** 2026-10-16 (v0.7.1 carries a reviewer, `reviewed: true`). **`SPEC-0003` §7.1 cites P5 by name inside the Definition Publisher conformance class** (ADR-0002 §6a), so a governing spec rests on a draft principle. What is left is the sponsor's call: accept P5 **as amended**, or accept P2/P3/P6 and P5 **as drafted**, holding P5.1/P5.2 for a reader who did not write them | — | ~~Claude~~→**PL** | M | **review** — waiting on the sponsor |
+| T-029e | ~~Close T1-A in DECISIONS-0001 citing MD-1~~ — done 2026-10-10 in DECISIONS-0001 v0.2.0; PLAN-0002 §2 carries MD-1. The row, not the work, was stale | — | Claude | S | done |
 
 ## I2 — Schema + DEC-002 · Oct 15–28 · D4 D5
 
@@ -124,7 +124,7 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-031 | Fixtures: `NameCert`, `AuthzCert` **with threshold subject**, `ArtifactStatement` — in **option 5** (MD-3) plus the option-2 comparison | D5 | S1 | L | todo |
 | T-032 | Score option 5 against option 2 incl. namespace governance (MD-3 narrowed DEC-002 to these) — needs library#39 Tier 1 extracted first | D5 | S1 | M | todo |
 | T-033 | ADR for DEC-002 (ADR-0001 is taken by key-relative naming) — accepted; ARCH-0001 status updated + changelog | D5 | PL | M | todo |
-| T-034 | Canonicalization idempotence + round-trip tests in CI | D5 | S2 | M | todo |
+| T-034 | Canonicalization idempotence + round-trip tests in CI — **now also carries P5.1's acceptance test**: reject every RFC 8949 FX-1 negative fixture in one pass, no re-encoding (ARCH-0002 v0.7.0). `spec/vectors/ksa-core/` N-1 and N-6 are a partial start | D5 | S2 | M | todo |
 | T-035 | ~~Resolve R-M-12: requirement row, or ARCH-0002?~~ — ARCH-0002, accepted as P1 via ADR-0001 | — | PL | M | done |
 
 ## I3 — Reduction · Oct 29–Nov 11 · D6 · **DEMO FLOOR**

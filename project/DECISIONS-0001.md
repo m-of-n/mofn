@@ -7,10 +7,10 @@ description: "Every open decision across both repos, ranked by what it blocks. T
 type: process
 category: process
 status: active
-version: "0.3.0"
+version: "0.3.3"
 version_policy: "semver; MINOR = decisions added or closed"
 date: "2026-09-22"
-updated: "2026-10-11"
+updated: "2026-10-16"
 decision_makers: []
 reviewers: []
 needs_review: false
@@ -55,8 +55,26 @@ Ordered by **what it unblocks**, not by importance.
 | **2** | **DEC-002 — the encoding. NARROWED 2026-09-28 by MD-3 to option 5** (CBOR data model, no IANA tags, COSE export only; YAML as the human form). **Still open: a narrowing is not an acceptance, and no ADR exists.** Option 2 is retained only as the comparison fixture. See the standing note below — the library's evidence now cuts against the narrowing. | ARCH-0001 §7, proposal §3.3, mofn#8 | Everything downstream. WP1 is encoding-neutral by design, but D5 needs a target by **Oct 28**. |
 | ~~3~~ | ~~**Who drives the agent lanes — students or sponsor?**~~ **ANSWERED 2026-09-28 by MD-4** — students drive, with named lanes: David #13 → option-5 encoder fixtures and #23 → D3 mechanism; Ndewedo #14 → D3 and the archives domain. The teaching reading was taken over the throughput one. | PROC-0002 §8.1 | closed |
 | **4** | **Accept the proposal as ARCH-0001 v0.2.0?** DEC-007 filed, DEC-006 withdrawn, R-M-11, R-O-05, R-O-06, RFC 9943 citation. **Not on any agenda to date.** | proposal | Until accepted, ARCH-0001 still cites a draft that became an RFC in June 2026, and R-M-11/R-O-05/R-O-06 have no force — while roughly thirty library records already name them in `bears_on`. See the standing note below. |
-| **4a** | **Accept `ADR-0002`?** MD-2 granted P2, P3, P5, P6 *provisionally* and said each becomes final "only through an ADR after review". `ADR-0002` is proposed in a companion change at `status: proposed`; once it lands, acceptance is a one-line flip. | ADR-0002 | `prototype/`, `APP-0001` and three answered library topics already build on P2 and P3. |
+| **4a** | **Accept `ADR-0002`?** MD-2 granted P2, P3, P5, P6 *provisionally* and said each becomes final "only through an ADR after review". `ADR-0002` has landed at `status: proposed` (#83). **Both acceptance conditions are now met:** §6(b) by `ARCH-0002` v0.7.0 carrying the amended P5 (#72), and §6(a) by the review of **2026-10-16** — v0.7.1 carries a reviewer and `reviewed: true`. **Sharpened 2026-10-14, corrected 2026-10-16:** the citation that binds is `SPEC-0003` §7.1, which cites `ARCH-0002` P5 by name *inside the Definition Publisher conformance class*; `SPEC-0002` §13.5 is the louder quote but sits in Security Considerations, which no conformance class requires. The SPECs are themselves `draft` — what is accepted is `ADR-0003`, whose consequences make them govern (ADR-0002 §6a). **What is left is a judgement, not a condition:** the reviewer wrote P5.1 and P5.2, so the sponsor accepts either P5 **as amended**, or P2/P3/P6 plus P5 **as drafted** with the two clauses held for a second reader. Then acceptance is a status flip plus a name. | ADR-0002 | `prototype/`, `APP-0001` and three answered library topics already build on P2 and P3. |
 | **4b** | **The DEC-002 ADR.** Item 2's instrument. Scoring input is in `library/topics/canonical-encoding.yaml` (`status: answered`) and summarised on mofn#8. | mofn#8 | **Oct 28.** Nothing downstream of D5 can freeze until it is accepted. |
+
+### Standing note on item 2 — `ADR-0003` D2, and what it did not do
+
+**Added 2026-10-15.** `ADR-0003` was accepted on 2026-10-14 and its **D2** fixes
+*one canonical encoding for every hashed or signed object* — the deterministic
+CBOR profile of FKSA suite 1, which is MD-3's option 5. `SPEC-0002` §4 specifies
+it and `spec/vectors/ksa-core/` ships vectors for it.
+
+**D2 says in its own text that it does not accept DEC-002**, and that the
+DEC-002 ADR and its fixtures still decide it. Both halves of that should be read
+literally. The specifications now have an encoding and can be implemented
+against; DEC-002 remains open, item 4b is still the instrument, and the evidence
+below — including the post-narrowing findings that favour option 1 — is still
+what that ADR must answer. What has changed is the **cost of reopening**: there
+are now five SPEC documents and a vector set written against option 5's profile.
+
+That is a fact about cost, not an argument about correctness, and it is recorded
+here so a reviewer weighs it deliberately rather than discovering it later.
 
 ### Standing note on item 2 — the evidence moved after the narrowing
 
@@ -85,8 +103,20 @@ without reading an issue thread.
 
 **This does not reopen MD-3 and nobody should read it as doing so.** It is the
 material the ADR must answer, and the reason the ADR is the decision rather than
-the minute. Condition (2) is owned by mofn#72 as an `ARCH-0002` P5 amendment;
-mofn#73 is the ~50-line experiment that would settle it for option 1.
+the minute.
+
+**Both condition-(2) hand-offs are now closed, and one of them moved the
+evidence again.** mofn#73 ran the experiment and **the falsifier did not fire**:
+canonicality is decidable by parsing alone, single pass, no re-encoding, for
+*both* surviving candidates — 60 fixtures, 36 negative (DL-0007). mofn#72 then
+landed the rule as `ARCH-0002` P5.1. The consequence for item 2 is narrow and
+should not be overstated: condition (2) is no longer a discriminator between
+options 1 and 5, because both reach it. What it does expose is a difference in
+**kind** — under RFC 9804 smallest-form is in the grammar, so a conforming
+reader cannot omit the check; under reduced CBOR it is a rule an implementation
+must state, and one that omits it still parses every valid document. That is an
+input the ADR must answer. **Conditions (5) and (6) remain open and remain the
+gap**; neither is reachable by a decoder, and (5) still depends on P4.
 
 ## Tier 1 briefs — both decided 2026-09-28; the analysis is kept
 
@@ -219,6 +249,32 @@ supply-chain profile first (T1-A), then accept P7 or correct it.
 | **28** | **Wallet GUI framework — Tauri, tentative (MD-7).** Web frontend plus a Python sidecar; PySide6 is the fallback. **Confirm before GUI work begins** (`BACKLOG-0001` T-029c). | due Oct 14 |
 
 ---
+
+## What changed in v0.3.3 — 2026-10-16
+
+Editorial. **No decision added, closed, or narrowed.** Item 4a records that
+`ADR-0002`'s **first** acceptance condition — MD-2's review — is now met, and
+corrects the §6a citation from `SPEC-0002` §13.5 to `SPEC-0003` §7.1, which is
+the one inside a conformance class. The item also records the residue the
+review leaves: the reviewer authored P5.1 and P5.2, so what remains is the
+sponsor's choice between accepting P5 as amended and accepting it as drafted.
+**`ADR-0002` is still `proposed`** and `decision_makers` is still empty.
+
+## What changed in v0.3.2 — 2026-10-15
+
+Editorial. **No decision added, closed, or narrowed.** Written up on 2026-10-16:
+the 0.3.2 bump landed on a rebase and its entry was missed, which is the defect
+this section exists to prevent. Two changes: the standing note on item 2
+recording `ADR-0003` D2 — what it fixed, that it declines DEC-002 in terms, and
+that reopening now has a cost it did not have before — and the sharpening of
+item 4a against `SPEC-0002` §13.5, since corrected in v0.3.3.
+
+## What changed in v0.3.1 — 2026-10-13
+
+Editorial. **No decision added, closed, or narrowed.** Item 4a records that
+`ADR-0002`'s second acceptance condition is met and that only MD-2's review
+remains; the standing note on item 2 records that mofn#73 and mofn#72 are both
+closed, and what their outcome does and does not do to the DEC-002 scoring.
 
 ## What changed in v0.3.0 — 2026-10-11
 
