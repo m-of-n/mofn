@@ -7,10 +7,10 @@ description: "Records MD-2's provisional grant over P2, P3, P5 and P6, and propo
 type: decision
 category: security
 status: proposed
-version: "0.1.2"
+version: "0.1.3"
 version_policy: "semver; on acceptance this becomes 1.0.0 and thereafter changes only by superseding"
 date: "2026-10-10"
-updated: "2026-10-15"
+updated: "2026-10-16"
 decision_makers: []
 reviewers: []
 needs_review: true
@@ -25,9 +25,12 @@ supersedes: []
 agent_notes: >
   STATUS IS PROPOSED. `decision_makers` is deliberately EMPTY. MD-2 granted
   P2/P3/P5/P6 provisional standing and said each becomes final "only through
-  an ADR after review"; that review has not happened — ARCH-0002 still carries
-  `reviewed: false` and zero reviewers. Writing a decision maker into this file
-  before that person acts would be a false provenance record in a provenance
+  an ADR after review". As of 2026-10-16 that review has HAPPENED for the
+  document as its author drafted it: ARCH-0002 v0.7.1 carries a reviewer and
+  `reviewed: true`. One residue remains and §6(a) states it — the reviewer
+  wrote P5.1 and P5.2, so the amendment half of P5 has not been read by anyone
+  who did not write it. Writing a decision maker into this file before the
+  sponsor acts would still be a false provenance record in a provenance
   project. Accepting this ADR is a status flip plus a name, by the sponsor.
 ---
 
@@ -58,11 +61,13 @@ avoid:
 | | what MD-2 did | standing today |
 |---|---|---|
 | **granted** | permission to build on P2, P3, P5, P6 | **in force** since 2026-09-28, and recorded nowhere normative until this file |
-| **deferred** | making them normative | **not done.** Requires an ADR *after review*; the review has not happened |
+| **deferred** | making them normative | **not done.** Requires an ADR *after review*; the review happened on 2026-10-16 (§6(a)), the ADR has not been accepted |
 
-`ARCH-0002` carries `needs_review: true`, `reviewed: false`, and an empty
-`reviewers` list. So the condition MD-2 attached is unmet, and this ADR is
-**proposed** rather than accepted.
+As of `ARCH-0002` v0.7.1 the document carries a reviewer and `reviewed: true`,
+so MD-2's condition is met for the principles as their author drafted them.
+`needs_review` stays `true` for the one residue §6(a) records. This ADR is
+still **proposed** rather than accepted, because acceptance is the sponsor's
+act and not a consequence of the review.
 
 ---
 
@@ -167,12 +172,37 @@ governs and ARCH-0002 is wrong.**
 
 ---
 
-## 6. What acceptance requires — two conditions, one now met
+## 6. What acceptance requires — two conditions, both now met, one with a residue
 
-**(a) The review MD-2 named.** ARCH-0002 is `reviewed: false` with no reviewers.
-MD-2 said "final only through an ADR **after review**." A second person must read
-ARCH-0002 and say so. Accepting without it would make MD-2's own condition
-decorative.
+**(a) The review MD-2 named — DONE 2026-10-16, with one thing it does not
+cover.**
+
+MD-2 said "final only through an ADR **after review**." A second person had to
+read ARCH-0002 and say so; accepting without it would have made MD-2's own
+condition decorative.
+
+**`ARCH-0002` v0.7.1 now carries a reviewer and `reviewed: true`.** The review
+is a second person's in the sense MD-2 meant: **ARCH-0002 was authored by the
+sponsor** — mofn#25, #41 and #44 are the three commits that wrote P1–P7 and the
+CBOR note — and the reviewer is not that author.
+
+> **The residue, recorded rather than glossed.** The reviewer is the author of
+> **P5.1 and P5.2** (this PR). §6(b) means this ADR proposes P5 **as amended**,
+> so two of the clauses being accepted have not been read by anyone who did not
+> write them. That is not what MD-2 was guarding against — MD-2 was guarding
+> against a principle becoming final with no reader at all — but it is a gap of
+> the same kind, and the honest thing is to let the sponsor see it rather than
+> record condition (a) as flatly discharged.
+>
+> **Two ways to close it, and the choice is the sponsor's, not an agent's:**
+> accept P2, P3, P6 and **P5 as drafted on 2026-09-22**, holding P5.1 and P5.2
+> for a second reader; or read the two clauses — they are two sections of one
+> document — and accept P5 as amended. `ARCH-0002` keeps `needs_review: true`
+> until one of those happens.
+
+Nothing else is outstanding. `decision_makers` stays empty and this ADR stays
+`proposed`: acceptance is a status flip plus a name, and it is the sponsor's
+act.
 
 **(b) P5's scope had to change first — and that condition is now MET.**
 
@@ -207,10 +237,14 @@ re-encoding, for both surviving DEC-002 candidates, across 60 fixtures of which
 36 are negative (DL-0007). P5 was accepted provisionally on an argument; it is
 now proposed on a measurement.
 
-**Condition (a) is still open, and it is the only thing left.** The review MD-2
-named has not happened. `ARCH-0002` v0.7.0 still carries `reviewed: false` and
-an empty `reviewers` list; amending the document did not and could not change
-that. **This ADR stays `proposed`, and `decision_makers` stays empty.**
+**Condition (a) was the only thing left, and it is now met — see §6(a).**
+`ARCH-0002` v0.7.1 carries a reviewer and `reviewed: true`. Amending the
+document did not and could not achieve that; a person reading it did, on
+2026-10-16. What remains is not a condition this ADR sets but a judgement for
+whoever accepts it: the reviewer wrote P5.1 and P5.2, so the sponsor decides
+whether to accept P5 as amended or to accept the other three principles and P5
+as drafted, holding the two clauses for a second reader. **This ADR stays
+`proposed`, and `decision_makers` stays empty, until that person acts.**
 
 ---
 
@@ -220,17 +254,43 @@ that. **This ADR stays `proposed`, and `decision_makers` stays empty.**
 normative specifications. Three consequences for this file, and the first is
 the one a reviewer should weigh.
 
-**(1) An accepted specification now rests on a draft principle.**
-`SPEC-0002` §13.5 reads: *"an unknown kind or field is invalid. A verifier MUST
-NOT skip what it does not understand (**ARCH-0002 P5**)."* That is a normative
-MUST in an accepted document, citing by name a principle whose own status is
-`[draft]` and whose granting decision, MD-2, was explicitly provisional.
+**(1) A governing specification now rests on a draft principle — and the
+instance that matters is inside a conformance class.**
+
+Stated precisely, because the loose version invites a deflection. `SPEC-0001`
+…`SPEC-0005` are themselves `status: draft` with `reviewed: false`; what is
+**accepted** is `ADR-0003`, whose Consequences provide that *"where a SPEC and
+an ARCH document differ, the SPEC governs once this ADR is accepted, and the
+ARCH document is corrected."* So the specifications govern by an accepted
+decision while carrying a draft status of their own, and the asymmetry below is
+about that, not about a document labelled `accepted`.
+
+Two citations of P5 by name, and they are not equally load-bearing:
+
+| where | what it says | inside a conformance class? |
+|---|---|---|
+| `SPEC-0002` §13.5 | *"A verifier MUST NOT skip what it does not understand (ARCH-0002 P5)."* | **No.** §13 is Security Considerations; `SPEC-0001` §4.2 lists §4, §5, §6, §9, §10 for a Verifier and §4–§8, §11 for a Producer |
+| **`SPEC-0003` §7.1** | template non-conformance is *"a rejection at the **expected** level of ARCH-0002 P5, whatever the statement's signature or authorization"* | **Yes.** §7 falls inside `SPEC-0003` §4–§9, which a **Definition Publisher** MUST implement |
+
+**`SPEC-0003` §7.1 is the instance to argue from.** §13.5 is the louder quote
+and the weaker location: a normative `MUST NOT`, but in a section no
+conformance class requires. §7.1 is quieter and binding — an implementation
+claiming Definition Publisher MUST meet it, and meeting it requires knowing what
+*"the expected level of ARCH-0002 P5"* is, which is a principle marked
+`[draft]` and granted provisionally by MD-2.
+
+A third instance is adjacent and worth naming, because it shows the direction of
+travel: `SPEC-0002` §4.3 and §4.1 state **P5.1's rule and condition (6)'s
+refusal normatively**, inside both the Producer and Verifier classes, and cite
+**no principle at all**. The specification did not wait for the principle; it
+restated it and dropped the attribution.
 
 The gap this ADR was written to close has therefore widened rather than
 narrowed. §2 opened by observing that `prototype/`, `APP-0001` and three library
-topics already built on P2 and P3 with no normative basis. **`SPEC-0002` is a
-stronger instance of the same problem**, because unlike a prototype it is
-normative, and unlike a topic answer it is cited by conformance classes.
+topics already built on P2 and P3 with no normative basis. **The SPEC set is a
+stronger instance of the same problem**, because unlike a prototype it governs
+by an accepted ADR, and unlike a topic answer one of its citations sits inside a
+conformance class an implementer is asked to claim.
 
 **(2) P5 is the principle this most affects, and its content has moved.**
 `SPEC-0002` §4.3 states P5.1's rule normatively for KSA-CBOR; §5 states the

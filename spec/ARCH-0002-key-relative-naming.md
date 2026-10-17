@@ -7,16 +7,24 @@ description: "Type names, constraints, types-as-schemas, hash-identified domains
 type: architecture
 category: security
 status: draft
-version: "0.7.0"
+version: "0.7.1"
 version_policy: "semver; PATCH = editorial; MINOR = additive principle; MAJOR = breaking"
 date: "2026-09-22"
-updated: "2026-10-15"
+updated: "2026-10-16"
 decision_makers:
   - role: sponsor
     id: paul-lambert
-reviewers: []
+reviewers:
+  - role: student
+    id: ndewedo-newbury
+    pass: >
+      v0.7.1 read 2026-10-16 — the review MD-2 named and ADR-0002 §6(a)
+      requires. Covers P1–P7 and the CBOR note as drafted by the document's
+      author. Scope limit, recorded rather than glossed: this reviewer wrote
+      P5.1 and P5.2 (mofn#97), so the amendment half of P5 has not been read
+      by anyone who did not write it. ADR-0002 §6(a) states the residue.
 needs_review: true
-reviewed: false
+reviewed: true
 canonical_path: spec/ARCH-0002-key-relative-naming.md
 companion:
   - spec/ADR-0001-key-relative-naming.md

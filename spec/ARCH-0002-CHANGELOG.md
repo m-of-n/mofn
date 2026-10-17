@@ -5,9 +5,9 @@ title: "ARCH-0002 changelog"
 type: changelog
 parent: ARCH-0002
 status: active
-version: "0.7.0"
+version: "0.7.1"
 date: "2026-10-15"
-updated: "2026-10-15"
+updated: "2026-10-16"
 canonical_path: spec/ARCH-0002-CHANGELOG.md
 ---
 
@@ -23,6 +23,20 @@ Format: newest first. Versions match the principle document.
 >
 > The 0.6.0 entry below is written **from its own merge commit and PR (#102)**,
 > not reconstructed from the diff, and says so for the same reason.
+
+## 0.7.1 — 2026-10-16
+
+**The review MD-2 named, recorded.** No principle text changed; this is a
+front-matter and provenance change only, which is why it is a PATCH.
+
+- `reviewers` populated and `reviewed` set to `true`: P1–P7 and the CBOR note
+  read on 2026-10-16 by a second person relative to the document's author —
+  `ARCH-0002` was authored by the sponsor across mofn#25, #41 and #44 — which
+  is what MD-2 required and what `ADR-0002` §6(a) was waiting on.
+- `needs_review` stays `true`, deliberately. The reviewer authored P5.1 and
+  P5.2, so the two clauses added in 0.7.0 have not been read by anyone who did
+  not write them. `ADR-0002` §6(a) states that residue; whether it blocks
+  acceptance is a human judgement and not a bookkeeping step.
 
 ## 0.7.0 — 2026-10-15
 

@@ -146,3 +146,78 @@ the ARCH document is corrected.** This change was written to agree with
 `SPEC-0002` §4.3, §5, §4.1 and §13.5 — but that is the model's reading of a
 1,110-line normative document it did not write, and the reading is the thing to
 check. If there is divergence, the SPEC wins and these clauses are wrong.
+
+---
+
+## 7. The review happened — 2026-10-16
+
+Added on the second rebase, with the §6a correction.
+
+### 7.1 Decided by the human
+
+**That ARCH-0002 had been read, and that the §6a correction should be applied.**
+Both were instructions; neither is the model's judgement.
+
+What the model did **not** do, and was not asked to: flip `ADR-0002` to
+`accepted` or write a name into `decision_makers`. The file's own `agent_notes`
+calls that "a false provenance record in a provenance project" if done before
+the sponsor acts, and the review being done does not make the acceptance done.
+`ADR-0002` stays `proposed`.
+
+### 7.2 The scope limit the model recorded without being asked to
+
+`ADR-0002` §6(a) asks for **a second person**. The reviewer is one: `ARCH-0002`
+was authored by the sponsor across mofn#25, #41 and #44, and the reviewer is
+not that author. Checked against the commit history rather than assumed, because
+the whole condition turns on it.
+
+**But the reviewer wrote P5.1 and P5.2**, and §6(b) means this ADR proposes P5
+*as amended*. So two of the clauses up for acceptance have been read only by
+their author. That is not the failure MD-2 was guarding against — MD-2 was
+guarding against no reader at all — but it is a gap of the same kind.
+
+Three ways to handle it were available:
+
+| | |
+|---|---|
+| record condition (a) as flatly discharged | **rejected.** True as far as it goes and silent about the part that matters. §6(a) exists so the condition is not decorative; discharging it with an unmentioned self-review is how it becomes decorative |
+| withhold the review record until someone else reads the clauses | **rejected.** The review of P1–P7 genuinely happened and suppressing it loses real information. It also blocks on a person who may not be needed, if the sponsor accepts P5 as drafted |
+| **record the review, state the residue, leave the choice** | **taken.** `reviewers` populated and `reviewed: true`; `needs_review` stays `true`; §6(a) names the two ways to close it and says the choice is the sponsor's |
+
+The residue is written in three places on purpose — the `pass:` note in
+`ARCH-0002`'s front matter, the `0.7.1` changelog entry, and `ADR-0002` §6(a) —
+because a reader arriving at any one of them should not have to find the other
+two.
+
+### 7.3 The §6a correction, and why §13.5 was the wrong citation
+
+§6a argued that an accepted specification rests on a draft principle, and cited
+`SPEC-0002` §13.5. **The quote is right and the location is weak.** §13 is
+Security Considerations, and `SPEC-0001` §4.2 lists §4, §5, §6, §9, §10 for a
+Statement Verifier and §4–§8, §11 for a Producer. **No conformance class
+requires §13.**
+
+The citation that lands is **`SPEC-0003` §7.1** — template non-conformance is
+*"a rejection at the expected level of ARCH-0002 P5"* — and §7 is inside
+`SPEC-0003` §4–§9, which a **Definition Publisher** MUST implement. An
+implementer claiming that class has to know what the expected level of a
+`[draft]` principle is.
+
+Two further corrections in the same pass:
+
+- **"an accepted specification" was loose.** `SPEC-0001`…`SPEC-0005` are
+  themselves `status: draft`, `reviewed: false`. What is accepted is `ADR-0003`,
+  whose consequences make the SPEC govern. The argument survives the precision
+  and the loose version invited a one-line deflection.
+- **`SPEC-0002` §4.3 and §4.1 state P5.1's rule and condition (6)'s refusal
+  normatively, inside both Producer and Verifier classes, and cite no principle
+  at all.** The specification did not wait for the principle; it restated it and
+  dropped the attribution. That is the strongest evidence for this ADR in the
+  whole document set and §6a was not using it.
+
+### 7.4 What a reviewer should still check
+
+**That the conformance-class reading is right**, because the corrected §6a now
+rests on it: `SPEC-0001` §4.2's table, and whether §7 of `SPEC-0003` is inside
+`§4–§9` as that row states. Two lookups. If a conformance class does cite
+`SPEC-0002` §13, the original §6a was fine and this correction is noise.
