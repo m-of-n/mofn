@@ -2,7 +2,7 @@
 
 # Publishing manifest
 
-29 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
+34 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
 
 A document is published because it **exists and declares a status** in its
 front matter — not because someone remembered to add it to a nav list. Set
@@ -50,11 +50,16 @@ front matter — not because someone remembered to add it to a nav list. Set
 
 | document | id | status | version | updated | |
 |---|---|---|---|---|---|
+| [CBOR: what a complete implementation requires, and the ecosystem around it](https://m-of-n.github.io/mofn/research/0001-cbor/) | `RPT-0001` | draft ⚠️ | 0.1.1 | 2026-09-30 | [source](https://github.com/m-of-n/mofn/blob/main/research/0001-cbor/report.md) |
+| [What a Signature Proves: A Survey of Digital Signatures and Attestation](https://m-of-n.github.io/mofn/research/0001-signatures-and-attestation/) | `R-0001` | draft ⚠️ | 0.2.0 | 2026-09-26 | [source](https://github.com/m-of-n/mofn/blob/main/research/0001-signatures-and-attestation/report.md) |
+| [Wallet market survey — commercial products, open source, and PGP trust indicators](https://m-of-n.github.io/mofn/research/0002-wallets/) | `R-0002` | draft ⚠️ | 0.2.0 | 2026-10-02 | [source](https://github.com/m-of-n/mofn/blob/main/research/0002-wallets/report.md) |
+| [Cipher suite — definition, the existing implementation, and what a statement must be able to cite](https://m-of-n.github.io/mofn/research/0003-cipher-suite/) | `R-0003` | draft ⚠️ | 0.1.0 | 2026-10-02 | [source](https://github.com/m-of-n/mofn/blob/main/research/0003-cipher-suite/report.md) |
+| [Who Adopts Provenance, and Why the Ancestors Did Not](https://m-of-n.github.io/mofn/research/0004-uptake-and-applications/) | `R-0004` | draft ⚠️ | 0.1.0 | 2026-10-10 | [source](https://github.com/m-of-n/mofn/blob/main/research/0004-uptake-and-applications/report.md) |
 | [README](https://m-of-n.github.io/mofn/research/README/) | `README` | unknown |  |  | [source](https://github.com/m-of-n/mofn/blob/main/research/README.md) |
 
 ## Status
 
-⚠️ **24 of 29 published documents are draft or proposed.**
+⚠️ **29 of 34 published documents are draft or proposed.**
 They are public and marked as such. Nothing here is accepted; an open
 `DEC-*` is not settled because it appears on a website.
 

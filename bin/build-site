@@ -34,6 +34,12 @@ mkdir -p docs/architecture docs/project docs/research docs/library
 cp spec/*.md docs/architecture/
 cp project/*.md docs/project/
 [ -n "$(ls research/*.md 2>/dev/null)" ] && cp research/*.md docs/research/ || true
+# Reports live at research/NNNN-slug/report.md and stage as <slug>.md. Only the
+# report: evidence files and raw agent outputs stay in the repo (mofn#88,
+# research/README.md). bin/manifest lists the same set - keep them in step.
+for r in research/*/report.md; do
+  if [ -f "$r" ]; then cp "$r" "docs/research/$(basename "$(dirname "$r")").md"; fi
+done
 cp library/index/bibliography.md docs/library/
 cp library/exports/references.json docs/library/
 cp LIMITATIONS.md docs/

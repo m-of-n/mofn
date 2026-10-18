@@ -33,6 +33,22 @@ TREES = [
 ]
 
 
+def sources(d):
+    """(path, staged name) for every authored page in a tree.
+
+    research/ is laid out NNNN-slug/report.md (research/README.md), and only
+    globbing *.md here meant no report ever reached the site (mofn#88). The
+    report publishes, staged as <slug>.md; its sources/searches/unverified
+    files are evidence, and dimensions/ and mini-reports/ are raw agent output
+    marked "do not cite" — none of those publish. bin/build-site stages the
+    same set; keep the two in step.
+    """
+    out = [(p, p.name) for p in d.glob("*.md")]
+    if d.name == "research":
+        out += [(p, f"{p.parent.name}.md") for p in d.glob("*/report.md")]
+    return sorted(out, key=lambda e: e[1])
+
+
 def front(p):
     t = p.read_text()
     if not t.startswith("---"):
@@ -55,7 +71,7 @@ def main():
         if not d.is_dir():
             continue
         entries = []
-        for p in sorted(d.glob("*.md")):
+        for p, name in sources(d):
             if p.read_text(errors="ignore").lstrip().startswith("<!-- GENERATED"):
                 continue          # never list a generated view as a document
             fm = front(p)
@@ -68,11 +84,11 @@ def main():
                 "status": fm.get("status", "unknown"),
                 "version": fm.get("version", ""),
                 "updated": fm.get("updated", ""),
-                "source": f"{tree}/{p.name}",
-                "url": f"{SITE}/{staged}/{p.name[:-3]}/",
+                "source": p.relative_to(ROOT).as_posix(),
+                "url": f"{SITE}/{staged}/{name[:-3]}/",
                 "reviewed": fm.get("reviewed", ""),
             })
-            entries.append((fm.get("title", p.stem), f"{staged}/{p.name}"))
+            entries.append((fm.get("title", p.stem), f"{staged}/{name}"))
         if entries:
             nav.append((section, entries))
 

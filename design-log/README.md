@@ -41,12 +41,13 @@ vectors, and tooling.
 | `0009-adr-0002-draft` | `ADR-0002` at `status: proposed`; the register sync mofn#80 | **open** — human review pending; no DEC-* accepted; ARCH-0001 untouched |
 | `0010-uptake-report` | D3 *uptake & applications* report `R-0004`; two original measurements; the SPKI/PICS failure analysis turned on our own design | **open** — human review pending on mofn#84 |
 | `0011-dco-merge-commits` | exempting merge commits from the `dco` check | **rejected** — mofn#92 closed unmerged; check stays strict, contributors rebase, `dco` now required |
+| `0012-publish-research-reports` | research reports reach the site and the validator — mofn#88 | **open** — human review pending; publishes all five draft reports on merge |
 
 **Two entries carry `0007`.** `0007-library-harness-role` and
 `0007-rejecting-decoder-spike` were opened in parallel lanes and both took the
 next free number. Both directories are on `main`, so neither is renamed here —
 a design-log id is cited from PRs and must not silently retarget. The next new
-entry takes `0012`.
+entry takes `0013`.
 
 `DL-0001` is the argument for the rule: **write the entry in the same change.**
 The prompts, and what the human rejected, were not recoverable a week later —
