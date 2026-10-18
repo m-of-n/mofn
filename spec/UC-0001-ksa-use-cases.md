@@ -211,9 +211,9 @@ attestation *of* a `mailbox`, and holding one never implies the other.
 
 ---
 
-## UC-6 — IP address delegation (the FKSA lifecycle, in KSA)
+## UC-6 — IP address delegation
 
-**Goal.** FKSA Lifecycle v0.1 phases 4–7, unchanged in meaning.
+**Goal.** A relying party learns whether an address assignment is covered by a chain of narrowing delegations.
 
 **Flow.** Carol's context anchors Alice about `ip ∈ [10.0.0.0/8]`, may delegate
 depth 1 within `[10.1.0.0/16]`. *Alice says trust Dave about ip ∈ [10.1.0.0/16].*
@@ -222,7 +222,7 @@ depth 1 within `[10.1.0.0/16]`. *Alice says trust Dave about ip ∈ [10.1.0.0/16
 **Ask.** Does Bob have `10.1.2.3` at 2026-10-07T12:00:00Z?
 
 **Expected.** **yes**, with the path Carol → Alice (10/8) → Dave (10.1/16) and the
-narrowed ranges in the reasons — FKSA's Phase 7 output.
+narrowed ranges at each hop in the reasons.
 
 **Must fail.** Alice delegating `10.2.0.0/16` → `widening` (outside the
 allow-list). After Alice revokes Dave's delegation → `revoked`.
