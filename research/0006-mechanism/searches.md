@@ -4,14 +4,14 @@ id: R-0006-searches
 title: "Searches — mechanism"
 type: evidence
 status: draft
-version: "0.1.1"
+version: "0.2.0"
 date: "2026-10-14"
-updated: "2026-10-16"
+updated: "2026-10-17"
 ---
 
 # Searches
 
-## No searches were run for this report
+## No web searches were run for this report
 
 `BACKLOG-0001` T-026 scopes the task as *"R-001 §2/§4, plus the RFC 8785 R-O-05
 analysis in library#46"* — a synthesis of material already extracted. No new
@@ -27,6 +27,33 @@ re-read, so every external claim in this report still rests on the extractions
 below. §3.13's findings are claims about **our own documents** and are checkable
 by reading them; the exact sections are cited inline so a reviewer can do that
 without taking the report's word for any of it.
+
+## v0.3.0 — library queries, not web searches
+
+The comparative anatomy (§2.2–§2.5) was built by **querying the library at
+`library@60b3284`**, not the web. No external retrieval was performed, so the
+rule above still holds. These are the queries, verbatim, with their yield, run
+2026-10-17 from `library/`. **The misses are the result.**
+
+| # | query | yield | what it settled |
+|---|---|---|---|
+| 1 | `ls records/*/ \| grep -ciE 'pics\|dsig\|did\|vc\|verifiable\|scitt\|in-toto\|dsse\|merkle\|cose\|rdf\|spki\|sdsi'` | 31 record ids | the candidate set. A record existing is not the same as its being written up — see 7 |
+| 2 | `grep -ril -- 'verifiable credential' records topics` | **0** | no VC record |
+| 3 | `grep -ril -- 'vc-data-model' records topics` | **0** | no VC Data Model record |
+| 4 | `grep -ril -- 'vc-jose' records topics` | **0** | no VC-JOSE-COSE record |
+| 5 | `grep -ril -- 'data integrity' records topics` | 14 | **miss**: all generic security guidance (OWASP ASVS, NIST SP 800-218, ETSI, CISA, FDA); none is VC Data Integrity |
+| 6 | `grep -rli 'md5' records/w3c` | **0** | no record states how a PICS label binds content |
+| 7 | read `summary.md`, `record.yaml` `status`, and presence of `distilled/` for each record named in the T-026 brief §6 under SPKI, PICS, VC/DID, envelopes, Merkle | 23 stubs | which cells of §2.2 can be filled. Itemised in `sources.md` §2a and `unverified.md` |
+| 8 | `grep -rl -- '#46' records topics`; `grep -ril -- 'library#46' records topics` | **0**; **0** | the RFC 8785 design notes do not cite the PR that produced them (`report.md` §3.4) |
+| 9 | `grep -ril -- 'R-O-05' records topics` | 29 files | R-O-05 is analysed widely in the library, including `rfc-8785/distilled/design-notes.md`, which marks it *proposed* |
+
+Query 7 was run by a delegated read-only pass over the records. Queries 1–6, 8
+and 9 were re-run by hand afterwards so that the counts above are the ones
+recorded.
+
+**In-repo reads for §4.6–§4.7**, no retrieval: `SPEC-0003` §5.4 and §6;
+`SPEC-0004` §6; `ADR-0003`; `ARCH-0001` §4–§7; `BACKLOG-0001` I3; and
+`DECISIONS-0001` item 4. All read at `c0c93c3`.
 
 ## Why that is less of a limitation here than in R-0005
 

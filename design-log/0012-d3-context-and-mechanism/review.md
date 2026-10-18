@@ -173,3 +173,35 @@ Done:
   Whether that is enough is the reviewer's call; quietly adding retrievals
   would answer that question on the reviewer's behalf.
 - **Rewriting the snapshot line in place** — see above.
+
+## 8. Fourth pass — closing #100's checklist (2026-10-17)
+
+**Decided by the human:** that #100 should be completed. Nothing else. The
+choices in `produced.md` §8 are the model's, and open to being overruled.
+
+**Declined, and why.**
+
+| not done | why |
+|---|---|
+| **Filling the ∅ cells from general knowledge** | The strongest temptation in the pass. DSig 1.0's signing construction, VC Data Integrity's canonicalisation and SPKI's signed structure are all things a model can write fluently. A fluent cell with no record behind it cannot be told apart from a sourced one, and `research/README.md` exists because that has already happened here once. The cost is a visibly uneven table. That cost is the evidence |
+| **Dropping PICS and VC/DID from the frame** because the library cannot evidence them | The subagent's report offered this. It would have made a tidier table that answers a smaller question than #100 asked, and it would hide the gap instead of registering it |
+| **Ingesting the seven missing sources** | #100 §6: *approve the inventory before `bin/ingest` runs*, in the `library` repo opened directly. This session is rooted in `mofn/`, where the library skills do not load and the submodule must not be edited |
+| **Writing the `ARCH-0001` §6 diff** that §2.5 tabulates | `ARCH-0001` §9.4 and the `propose-arch` skill. Stated in §2.5, handed on in §8 |
+| **Deciding whether T-042 is subsumed** | A planning call, owned by T-042's owner. It also rests on reading `ADR-0003`'s silence on DEC-004, which is a human's (§4.6) |
+| **Reading `ADR-0003`'s range model as answering DEC-004** | Third instance of the same refusal, after DEC-002 (§3.9) and DEC-005 (§5.2) |
+| **Resolving `ADR-0003`'s *"accepted R-O-05"*** against `ARCH-0001` and `DECISIONS-0001`, which both say R-O-05 has no force | An accepted ADR changes only by superseding it, and the register is not an agent's to correct. Recorded in §8 |
+| **Editing `records/ietf/rfc-8785` to cite library#46** | Same reason as ingestion. `report.md` §3.4 carries the link |
+| **Choosing the T-026 owner** | As for T-025 in §7. #100's assignment note names David in `PLAN-0003`; the issue is assigned to Ndewedo |
+| **Publishing to Pages** | #100's last box. This branch carries the #88 fix (`produced.md` §6), and R-0006 is in the generated nav. It reaches the site when #103 merges, and not before |
+
+**What a reviewer should push on hardest.** §4.6's sentence *"on every path
+`SPEC-0004` accepts, the final scope equals what SPKI's reduction would
+compute"*. It is a short argument: when A₂ is within A₁, the greatest lower
+bound of the two is A₂, in any partial order, applied per hop. What it assumes
+is that *within* **is** a partial order for every kind — transitive in
+particular, or a chain of individually valid hops could end outside its root.
+For the set and interval kinds that is immediate. For `dns-name`, `ip-prefix`
+and `email`, `SPEC-0003` §6 defines *within* by a pattern-containment rule
+(§6.1–§6.3), and the model did not prove that rule transitive. Check it. If it
+fails for one kind, §4.6 should say *for the set and interval kinds* and stop
+there — and the failure would be a `SPEC-0003` finding of its own.

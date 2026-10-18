@@ -97,3 +97,22 @@ sections affected.
 **Still not settled, by anyone:** whether a research report is the right vehicle
 for §3.13's finding, or whether it should be an issue against `SPEC-0002` with
 only a pointer in the report. `review.md` §6 puts that to the reviewer.
+
+## The third question, 2026-10-17
+
+*"Complete issue #100."* Asked with nothing else. #100 is T-026's issue, and
+its definition of done has eleven boxes. PR #103's body had already said #100
+would stay open after merge, because R-0006 lacked the first box: the
+comparative anatomy.
+
+**What the question did not settle, and the model decided:**
+
+- **What to do with cells the library cannot fill.** The model chose to print
+  them as ∅ and register them. Filling them from general knowledge was the
+  alternative. `review.md` §8 gives the reasons.
+- **Whether to number the new material so as to keep v0.2.x's sections.** It
+  did: the anatomy went into §2 as subsections, and §3–§8 keep their numbers.
+  R-0005, this design log and PR #103 all cite them.
+- **Whether the accepted core belonged in the DEC-004 evidence at all.** #100
+  does not mention `SPEC-0003` or `SPEC-0004`. Reading them is what produced
+  §4.6.

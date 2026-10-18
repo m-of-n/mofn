@@ -3,11 +3,11 @@ schema: "archdoc/v1"
 id: R-0006
 title: "Comparative Anatomy of the Mechanisms: the Evidence Base for DEC-002 and DEC-004"
 short_title: "Mechanism"
-description: "The D3 mechanism report: four layers the field fuses, the six conditions a signed encoding must meet, the DEC-002 candidates scored against them, and the authorization algebra that distinguishes DEC-004's options. Evidence only — it decides nothing. v0.2.0 reads the scoring against ADR-0003 D2, which fixed one canonical encoding without accepting DEC-002."
+description: "The D3 mechanism report: five systems in one comparable frame — what each hashes, canonicalises, signs and carries, where each places trust and what each leaves undefined — then the six conditions a signed encoding must meet, the DEC-002 candidates scored against them, and the authorization algebra that distinguishes DEC-004's options. Evidence only — it decides nothing. v0.2.0 reads the scoring against ADR-0003 D2, which fixed one canonical encoding without accepting DEC-002; v0.3.0 adds the comparative anatomy (§2.2–§2.5), the accepted core's own authorization algebra (§4.6) and what the bytes-equal floor buys (§4.7)."
 type: research
 category: security
 status: draft
-version: "0.2.1"
+version: "0.3.0"
 date: "2026-10-14"
 updated: "2026-10-17"
 needs_review: true
@@ -16,7 +16,7 @@ canonical_path: research/0006-mechanism/report.md
 companion:
   - research/0001-signatures-and-attestation/report.md
   - research/0005-context/report.md
-informs: [PLAN-0001, PROC-0004]
+informs: [ARCH-0001, PLAN-0001, PROC-0004]
 open_decisions: [DEC-002, DEC-003, DEC-004, DEC-005]
 backlog: T-026
 library_pin: "library@60b3284"
@@ -25,8 +25,9 @@ library_pin: "library@60b3284"
 # Comparative Anatomy of the Mechanisms
 ## The evidence base for DEC-002 and DEC-004
 
-**Status: second draft. It decides nothing, and that is not a disclaimer.**
-DEC-002 and DEC-004 are open. `CONTRIBUTING` §5 and `ARCH-0001` §9.2 are
+**Status: third draft. It informs DEC-002 and DEC-004 and closes neither, it
+does not reopen MD-3, and that is not a disclaimer.** DEC-002 and DEC-004 are
+open. `CONTRIBUTING` §5 and `ARCH-0001` §9.2 are
 explicit that only an `ADR-NNNN` accepts a decision; MD-3 **narrowed** DEC-002
 without accepting it, and `ADR-0003` **D2** has since fixed one canonical
 encoding for the KSA core while saying in terms that it **does not accept
@@ -42,8 +43,22 @@ score in §3.4–§3.8 changed: the scoring was against specification text that 
 not moved, and D2 did not select by scoring. `design-log/0012-…/review.md` §4
 records what that reconciliation refused to do.
 
+**What changed in v0.3.0** (2026-10-17, closing mofn#100). §2 gains the
+half the brief asked for first and v0.2.x did not have: a comparative anatomy
+of in-toto/DSSE, SCITT/COSE, SPKI, PICS and VC/DID in one frame (§2.2), what
+the frame shows (§2.3), Merkle structures and receipts (§2.4), and what it
+changes in `ARCH-0001` §6 (§2.5). §4 gains §4.6, on the authorization algebra
+the accepted core already carries, and §4.7, on what the `bytes-equal` floor
+buys the I3 demo and what it does not. **The frame is uneven, on purpose.** Three
+of the five systems are evidenced by written library records; PICS, DID and the
+VC data model are not — their records are unfilled stubs at the pin, or absent
+— and their cells say so rather than being filled from memory.
+`unverified.md` lists every such cell. No section number from v0.2.x moved.
+
 Bibliography pinned at **`library@60b3284`**. Citation keys `[@record-id]`
-resolve at that commit; all 62 were re-checked against it for this revision.
+resolve at that commit. For v0.3.0 all were re-checked mechanically: 20
+distinct keys and 51 citations, none unresolved. The v0.2.0 line said "all
+62", which no recount reproduces, so it is corrected here.
 
 **This is a synthesis pass, not a retrieval pass.** No new web retrieval was
 performed. The evidence is survey R-001, the library's FX-1 extractions of
@@ -114,6 +129,22 @@ authority forms a meet-semilattice and a chain of N certificates reduces to one
 tuple. **No system in R-001's survey does this.** The 2026 agentic drafts have
 independently reinvented most of SPKI's tag vocabulary while exposing only a
 `subsumes` decision procedure — they are, in R-001's phrase, one `⊓` away.
+**So is the accepted KSA core** (§4.6): `SPEC-0004` §6.3 follows a delegation
+by checking that each hop's ranges lie *within* the last and rejecting any that
+widen — on every path it accepts, the result equals SPKI's reduction, and it
+rejects the paths SPKI would narrow. `ADR-0003` adopted that model and says
+nothing about DEC-004. The `bytes-equal` floor (§4.7) buys the I3 reducer
+everything that does not depend on the tag language, fails closed, and buys
+**no** attenuation, nothing to render, and no evidence for choosing among
+DEC-004's options.
+
+The comparative anatomy (§2.2) reads five systems against one set of columns.
+Two results carry into the decisions. **Canonicalisation timing splits the
+field**: DSSE and COSE canonicalise nothing and sign bytes, while SPKI — the
+system our model is closest to — signs a canonical form, and RFC 2692 had asked
+for the opposite. And **every system but SPKI places the decision about which
+signer is acceptable outside its format**; SPKI's local ACL is the position
+`ADR-0003` D3/D4 now take.
 
 ---
 
@@ -138,7 +169,9 @@ reviewer in decision order, with the disagreements intact.
 
 ---
 
-## 2. Four layers the field fuses
+## 2. Comparative anatomy
+
+### 2.1 Four layers the field fuses
 
 Before any candidate can be compared, the thing being compared has to be
 separated from three neighbours it is routinely confused with. R-001 §11.3
@@ -171,6 +204,149 @@ The separation is not pedantry. `ARCH-0001` §4.3 keeps name resolution,
 authorization reduction and statement acceptance as three procedures and
 forbids collapsing them into one graph walk; the layer table is the same
 discipline applied to the wire.
+
+### 2.2 Five systems in one frame
+
+The brief (`PLAN-0001` §6) asks for in-toto/DSSE, SCITT/COSE, SPKI, PICS and
+VC/DID side by side. `ARCH-0001` §3.1–§3.2 already describe them in two tables
+by *role*, and §6 maps each to a native kind; R-001 §11.1 populates a taxonomy
+by *subject, predicate and authority*. Neither says what the bytes do. The frame
+below does, in seven columns, and its rows are the `ARCH-0001` §6 rows they
+evidence, so it extends that matrix rather than standing beside it (§2.5).
+
+**How to read the cells.** A citation key is a library record at the pin whose
+summary or extraction was written up; R-001 § is R-001's own sourced prose. **∅**
+means *the library at the pin cannot answer this*: the record is an unfilled
+stub, or no record exists. Every ∅ is listed in `unverified.md` with what would
+fill it. Not one was filled from general knowledge, which is the reason the
+table is uneven.
+
+**Mechanism — what the bytes do.**
+
+| system (§6 row) | what is hashed | canonicalised — and **when** | what is signed | what the envelope carries |
+|---|---|---|---|---|
+| **in-toto Statement + DSSE** | Statement `subject`: a name plus a digest **map**, algorithm → hex, e.g. `sha256`, `gitCommit`; SLSA notes *"in-toto attestations allow non-cryptographic digest types"* [@slsa-1-2]. DSSE hashes nothing itself | **nothing.** *"SERIALIZED_BODY: Arbitrary byte sequence to be signed"*; avoiding canonicalisation is a SHOULD [@secure-systems-lab-dsse] | `PAE(UTF8(payloadType), body)` — length-prefixed, so injective by framing (§2.1) | `payload`, `payloadType`, `signatures[{keyid, sig}]`. Body and type authenticated; **`keyid` not** |
+| **SCITT signed statement, COSE_Sign1 + CWT** | payload opaque to the TS; may be a hash of the payload rather than the payload [@rfc-9943]. The log commits to a Merkle tree hash (§2.4) [@rfc-9942] | **only the to-be-signed structure**, under COSE §9's encoding rules. The protected header travels as a byte string, which *"avoids the problem of all parties needing to be able to do a common canonical encoding of the map"* [@rfc-9052] | `Sig_structure = ["Signature1", protected, external_aad, payload]` [@rfc-9052] | protected: CWT claims with `iss` and `sub` **mandatory**, optional `alg`, `kid`, `x5chain`; unprotected, **unauthenticated**: `x5chain`, `receipts` [@rfc-9943] |
+| **SPKI/SDSI S-expression cert** | keys and objects may be named by hash; *"a collision-free hash of the public key is also a globally unique identifier"* [@rfc-2693] | **yes — and the canonical form is what is signed.** *"This canonical representation is used for digital signature purposes"* [@rfc-9804] §6.2. No parse-then-verify procedure is stated | the certificate; the exact to-be-signed construction lived in `draft-ietf-spki-cert-structure`, which never published — **∅** | the 5-tuple ⟨Issuer, Subject, Delegation, Tag, Validity⟩ and the name 4-tuple [@rfc-2693]. Authenticated/unauthenticated split **∅**; RFC 9804 has *"no authenticated type indicator"* |
+| **PICS label + DSig 1.0** | **∅** — whether and how a label binds content | **∅** | **∅** — DSig 1.0 added signatures in 1998 (R-001 §6.1); its construction is not in the library | a label citing its rating system **by URL**, a target URL, validity, and rating tuples (R-001 §6.1) |
+| **W3C VC / DID** | **∅** for VC — no VC Data Model, Data Integrity or VC-JOSE-COSE record exists. RDF Canon 1.0, a canonicaliser used beneath one VC securing route, hashes *inside* blank-node labelling, *"not an output commitment"* [@w3c-rdf-canon-1-0] | RDF Canon canonicalises and **defines no signature**; nothing obliges a consumer to reject non-canonical input [@w3c-rdf-canon-1-0]. How VC Data Integrity applies it, and when: **∅** | **∅** | DID documents carry verification relationships whose semantics are left to methods (R-001 §5.6) |
+
+**Trust — where each puts the decision, and what each declines to say.**
+
+| system | what the verifier does | where trust is placed | what it leaves undefined |
+|---|---|---|---|
+| **in-toto + DSSE** | decode; verify the signature over PAE; *"Reject if PAYLOAD_TYPE is not a supported type"*; only then parse, and hand the application **the same bytes** that were verified [@secure-systems-lab-dsse]. SLSA adds: subject digest matches the artifact, predicate type, builder [@slsa-1-2] | **out of band.** Signature format *"agreed upon out-of-band"*; the threshold `t` is *"application-specific"* [@secure-systems-lab-dsse]. in-toto's layout is signed by the project owner and the owner's key is *assumed* known (R-001 §8.5) | the signature algorithm; `t`; any encoding but JSON; which attester may speak about which predicate type (R-001 §8.5) |
+| **SCITT / COSE** | the TS verifies the signature and required headers, then applies its Registration Policy; a relying party verifies the Receipt (§2.4) [@rfc-9943; @rfc-9942] | **the Transparency Service.** It *"MUST maintain a list of trust anchors"*; relying parties must know its key; and its policies *"MUST be made Transparent … by Registering them as Signed Statements"* [@rfc-9943] | *"Authentication and authorization are implementation specific and out of scope"*; key discovery; revocation; receipt validity and status; interoperability across verifiable data structures [@rfc-9943; @rfc-9942] |
+| **SPKI/SDSI** | verify signatures, map to tuples, rewrite names, **reduce** — ⟨I₁,S₁,D₁,A₁,V₁⟩ + ⟨I₂,S₂,D₂,A₂,V₂⟩ ⇒ ⟨I₁,S₂,D₂,A₁∩A₂,V₁∩V₂⟩ when S₁ = I₂ and D₁ is true. §6 calls itself *"an example"* [@rfc-2693] | **the verifier's own ACL**: *"the ACL is the source of that power"*, an unsigned entry with no issuer [@rfc-2693]. No global namespace, no root | the vocabulary — *"up to the author of code which uses the certificate"* [@rfc-2692]; byte-level tag equality; threshold selection, sketched only; revocation [@rfc-2693] |
+| **PICS** | **∅** for DSig verification. The client dereferences the rating-system URL to interpret the label (R-001 §6.1) | **the client**, which chooses which rating services and label bureaus to consult (R-001 §6.1, §11.1) | any principal or delegation model (`ARCH-0001` §3.3); no authorization at all (R-001 §11.1) |
+| **VC / DID** | **∅** | DID Core *"does not presuppose any particular technology or cryptography"* and pushes resolution into 100+ methods (R-001 §5.6) | `capabilityDelegation`'s semantics, left to methods; update and deactivation for `did:key`, which *"cannot be updated or deactivated"* (R-001 §5.6) |
+
+### 2.3 What the frame shows
+
+**First — canonicalisation timing splits the field, and our closest relative is
+on the other side.** The two envelopes `ARCH-0001` R-I-03 names as export
+targets both satisfy condition (3) of §3.2 the cheap way: they canonicalise
+nothing that is verified. DSSE signs a byte string through PAE; COSE
+deterministically encodes only the `Sig_structure` it builds, and carries the
+protected header as bytes precisely so nobody has to re-encode a map. SPKI, the
+system `ARCH-0001` §6 calls the *"closest peer"*, signs a canonical form. That
+is a reversal inside SPKI's own lineage: RFC 2692 asked that *"a certificate
+should be signed exactly as it is transmitted. There should be no
+reformatting"* [@rfc-2692], and RFC 9804 resolved the tension by signing the
+canonical form instead [@rfc-9804]. **R-O-05 — proposed, not accepted — is RFC
+2692's requirement returned**: under it, option 1 works only through a profile
+that transmits the canonical form itself and rejects the other transports RFC
+9804 §6 obliges an implementation to accept (§3.5, condition (2)). Where VC sits on this axis
+cannot be said from the library. RDF Canon's own text shows the risk — a
+canonicaliser with no rejection rule — but not whether VC Data Integrity runs it
+during verification.
+
+**Second — every system but SPKI places the acceptability decision outside its
+format.** DSSE leaves `t` and the key set to the application, in-toto assumes
+the owner's key, SCITT delegates to the Transparency Service's anchors, PICS to
+the client's choice of bureau, DID to its methods. R-001 §11.2 reaches the same
+result from the taxonomy; the frame adds that it holds at the **byte** level:
+none of the four carries, in its signed bytes, anything a verifier could reduce
+to *"this signer may say this"*. SPKI does, and its root is the verifier's own
+unsigned ACL. **`ADR-0003` D3 and D4 put the KSA core close to that
+position** — anchors per context, local and possibly unsigned, accepted by a
+persona — and further from SCITT's, where the anchors belong to the log
+operator. That is an observation about where the core landed, not an argument
+that it should have.
+
+**Third — what each leaves undefined is what the layer above must supply, and
+three of those gaps are ours.** The threshold `k`: DSSE carries `n` signatures
+and no `t` (§5.1); SPKI sketched threshold subjects and did not specify them;
+`SPEC-0002` §8.6 specifies them, and it is where §3.13 found the ordering gap.
+Revocation: SCITT and SPKI both leave it out; `ADR-0003` D5 adopts it.
+Vocabulary: SPKI leaves it to code; PICS publishes it as a dereferenceable
+document; `SPEC-0003` publishes it as a signed, hash-identified definition —
+PICS's move, with SPKI's principal. The frame does not show that our answers are
+right. It shows that each is an answer to a question one of these systems
+declined.
+
+**Fourth — "binds a content digest" is not one property.** R-M-07 requires an
+`ArtifactStatement` to bind at least one content digest. An in-toto subject's
+digest map may carry **non-cryptographic** digest types [@slsa-1-2]; a SCITT
+statement may sign a hash of a payload, or the payload; SPKI may name an object
+by hash. An import under R-I-01 that maps any of these to `ArtifactId.digest`
+must say which digest algorithms it accepts, or a `gitCommit` entry satisfies
+R-M-07 in form and not in substance. §2.5 carries this to the matrix.
+
+### 2.4 Merkle structures and receipts
+
+The brief lists Merkle structures and receipts with hashing and signatures. The
+library's evidence for them is thinner than for anything else in this report:
+RFC 9942 and RFC 9943 are written up, while RFC 6962, RFC 9162 and the three
+Merkle papers are stubs at the pin. **Every claim about what a proof guarantees
+is therefore inherited from RFC 9162 and not checked here**, which is the
+`scitt` topic's own caveat. And the RFC 9942 extraction's `reviewed_by` is
+empty, so nothing below meets the library's bar for building on.
+
+What can be said:
+
+- **An inclusion receipt** is a COSE_Sign1 whose payload is a Merkle root, with
+  `[tree-size, leaf-index, inclusion-path]` in the unprotected header. The
+  verifier applies the path to the candidate entry's bytes, takes the resulting
+  root as the payload, then checks the signature [@rfc-9942]. It proves **one
+  thing**: *"the entry's inclusion in the VDS."*
+- **A consistency proof** shows the log is append-only between two sizes, and
+  RFC 9942 recommends a single boolean result *"to reduce the chance of
+  accepting a valid signature over an invalid consistency proof"* — the same
+  verified-bytes-are-the-used-bytes discipline as DSSE's P10, arrived at
+  independently [@rfc-9942].
+- **What a receipt does not prove**: that the statement is true — *"registering
+  a Statement only proves it was produced by an Issuer"*; that it is fresh or
+  unrevoked; or that the log is honest, since a TS whose receipt key is
+  compromised can roll its sequence back [@rfc-9943; @rfc-9942]. The `scitt`
+  topic's reading is that transparency buys detection of a dishonest *issuer*,
+  not of a dishonest *log*.
+
+**For our model**, this evidences what `ARCH-0001` §6 already asserts — a
+receipt *"does not change meaning of statement"* — and sharpens it. A receipt is
+**evidence about a statement's publication**, never about its authority, so
+statement acceptance (`ARCH-0001` §4.3 step 3) must not treat *"has a receipt"*
+as standing in for *"issuer authorized for this predicate type"*. That is R-001
+§11.3's provenance-versus-entitlement distinction, showing up at the receipt.
+R-O-04 keeps transparency a *Could*, and nothing here argues for raising it.
+
+### 2.5 What this changes in `ARCH-0001` §6
+
+Not edited here: `ARCH-0001` changes by a proposal against the file
+(`ARCH-0001` §9.4, the `propose-arch` skill). These are the rows the evidence
+bears on, and what a proposal would put in their *Loss / notes* cells:
+
+| §6 row | today | the evidence says add |
+|---|---|---|
+| in-toto Statement | *"predicate_type preserved"* | the digest map may hold non-cryptographic types; import must name the algorithms it accepts under R-M-07 (§2.3) |
+| DSSE envelope | *"Not an information-model type"* | carries `n` and never `k`; `keyid` is unauthenticated, so the principal travels in the payload (§5.1, §5.2) |
+| COSE_Sign1 + CWT | *"Align `iss`/`sub` with KeyId profile (DEC-003)"* | in the SCITT profile both are mandatory and protected [@rfc-9943]; `x5chain` may sit unprotected |
+| SCITT receipt | *"Does not change meaning of statement"* | proves inclusion only — not truth, freshness, or log honesty; never substitutes for issuer authorization (§2.4) |
+| W3C VC | *"Context must be pinned"* | the securing mechanism is **unsourced** in the library; the row's mapping cannot be evidenced until it is |
+| PICS label | *"Historic; import profile only if needed"* | content binding and DSig construction unsourced; the row's import profile cannot be written from the library |
+| *(none)* | — | **no row exists for the KSA core's own envelope**, `SPEC-0002` §5, which is neither DSSE nor COSE_Sign1 (§5.2) |
+
+§8 hands these on as one proposal.
 
 ---
 
@@ -264,6 +440,16 @@ ancestor in a literal sense.
 
 JSON with RFC 8785 JCS [@rfc-8785], DSSE for the signed form. Four grounds, in
 descending force.
+
+**Where this analysis lives.** It is the RFC 8785 / R-O-05 analysis
+`BACKLOG-0001` T-026 names as a required input. It landed as RFC 8785's third
+FX-1 pass in **library#46**, Lane B of library#14, alongside RFC 9804's
+extraction. The text is `records/ietf/rfc-8785/distilled/design-notes.md` at the
+pin, summarised in the `canonical-encoding` topic. The record does not cite the
+PR that produced it — a grep for `#46` under `records/` finds nothing — so this
+pointer is the link. **R-O-05 is proposed**, in `ARCH-0001-PROPOSAL-v0.2.0`
+§3.4, and not accepted. Every ground below measures a candidate against a rule
+with no force yet.
 
 **(i) Condition (5): prohibited versus absent.** RFC 8949 §4.2.1 is **silent**
 on array order, so a profile may add a bytewise rule without contradicting it.
@@ -908,6 +1094,118 @@ to one and is rediscovering the need under the banner of provenance.
 authorization bindings SHALL be distinct object kinds — and it is why DEC-004
 cannot be settled as a pure capability-token question.
 
+### 4.6 The accepted core already carries an authorization algebra
+
+§4.1–§4.5 were written as though DEC-004 had nothing to compare against but the
+literature. Since 2026-10-14 it does. `ADR-0003` took FKSA's *"attribute
+assignment/range model"* and *"delegation constraints"*, and `SPEC-0003` and
+`SPEC-0004` specify them. Read against §4.1's table, they are a tag language in
+everything but name.
+
+**The values.** `SPEC-0003` §6 fixes eleven base kinds, and for each one fixes
+*"what a **range** is, when a value is **in** a range, when one range is
+**within** another, and what the **unbounded** range is."* A definition chooses
+a kind and may constrain it, *"but cannot change its algebra."* Ranges are
+canonical, *"so that equal ranges have equal bytes."* Each type also declares
+`delegation: 0 / 1 / 2` — never; *"only with the same range (no narrowing is
+possible)"*; or narrowing under the kind's subset rule (`SPEC-0003` §5.4).
+
+**The composition.** `SPEC-0004` §6.3 follows a trust statement `s` from key
+`K` only if every range in `s.about` is **within** some range of the same type
+in the current scope, and equal to it if the type's `delegation` is 1. The new
+scope is then `s.about` itself. Key lists are intersected (`allow`) and united
+(`exclude`), and the expiry cap takes the earlier time. And: *"**Widening fails
+the path.** … no partial or repaired version of it is"* followed.
+
+**Where that sits in §4.1's table.**
+
+| system | attenuation operation | verification |
+|---|---|---|
+| **KSA core** (`SPEC-0004` §6.3) | restate a narrower `about` | per hop: each range **within** the last, or the path fails |
+
+That is UCAN's restate-or-attenuate shape, a containment check — a `subsumes`,
+not a `⊓`. But the two are closer here than anywhere else in the table, and
+the difference can be stated exactly. When `A₂` is within `A₁`, the meet
+`A₁ ⊓ A₂` is `A₂`. So **on every path `SPEC-0004` accepts, the final scope
+equals what SPKI's reduction would compute** over the same ranges. That holds
+wherever *within* is a partial order, and it needs transitivity most of all. For
+the set and interval kinds this is immediate. For the pattern kinds it rests on
+`SPEC-0003` §6.1–§6.3's containment rules, which this report has not proved
+transitive, so a reviewer should check them. The paths
+that differ are those with a hop that widens: SPKI intersects and continues
+with the narrower result, and `SPEC-0004` rejects the path. The core chose to
+**fail closed** where SPKI repairs. That matches the reject-never-repair rule of
+`SPEC-0002` §4.3 and §13.1, and it is a choice, not an omission.
+
+Whether the meet is *computable* over all eleven kinds is a separate question.
+For the set-valued kinds and the intervals it plainly is — set intersection,
+interval intersection. For the pattern kinds (`dns-name`, `ip-prefix`, `email`)
+`SPEC-0003` defines *within* and not intersection, and **this report does not
+claim the meet exists there**. If it does, R-001 §12 problem 2's hybrid has its
+tag fragment already written.
+
+**And `ADR-0003` says nothing about DEC-004.** This is the third time this
+report has met the same silence. D2 fixed the encoding and said in terms that
+it was not accepting DEC-002 (§3.9). The envelope was taken with no word on
+DEC-005 (§5.2). The range model and delegation constraints were taken with no
+word on DEC-004. Two readings are available, as before. Either the core's
+algebra *is* the minimum profile P7 asks for, and the register has not caught
+up. Or DEC-004 governs `ARCH-0001`'s `AuthzCert` tag, a separate object the
+core does not have, and is untouched. This report cannot choose between them,
+because the difference is what a human meant. It does note what the first
+reading would make true. §4.4's four rows — types from a domain of discourse,
+intersection semantics per type, verifier behaviour, rendering — are each
+answered by a section of `SPEC-0003` (§4 and §5.1, §6, §6 with `SPEC-0004` §6,
+and §10).
+
+### 4.7 What the `bytes-equal` floor buys I3, and what it does not
+
+`ARCH-0001` DEC-004 offers v0.1 an escape: **tag as opaque byte string**, plus
+one profile, `bytes-equal`, so that reduction can be built before the language
+is rich. `BACKLOG-0001` T-042 is that profile, and I3 (Oct 29–Nov 11) is the
+demo floor. Read as a profile, `bytes-equal` defines `A ⊓ B = A` when the two
+byte strings are equal, and *empty* otherwise. That is the whole algebra.
+
+**What it buys.**
+
+- **R-M-08, honestly.** Intersection is defined for the one profile claimed.
+- **Every part of the reducer that does not depend on the language** —
+  composing 5-tuples, the delegation bit, validity intersection (R-M-09),
+  threshold subjects (T-043), and determinism (R-M-05). T-041 can be built and
+  vectored against it, and the vectors cannot disagree across implementations.
+- **It fails closed.** Two tags meant to be the same, but encoded differently,
+  intersect to empty, and the answer is *no*. Under §3.1's asymmetry, a
+  divergence here is **loud**, a refusal, never a wrongful grant — provided
+  condition (1) holds, so that two different tags cannot share bytes.
+
+**What it does not buy.**
+
+- **Any attenuation.** Authority can be passed on unchanged or not at all, so
+  the floor cannot show a delegate receiving *less* than the delegator held —
+  which §4.1 names as the property that sets SPKI apart. Every chain the demo
+  can show reduces to one tuple, but trivially.
+- **Evidence for DEC-004.** Every one of the three options and the hybrid
+  question of §4.4 are equally consistent with a floor that uses none of them.
+- **Anything to render.** An opaque tag degrades to what R-001 §6.5 calls
+  *"signed opaque blob"*. The verdict can say *the tag matched* and nothing
+  about what was authorised. P3 and DEC-007 are untouched.
+- **Immunity from §3.13.** If a tag's bytes encode a set with no fixed order,
+  byte equality refuses its permutations. That is a denial, not a misgrant, but
+  it would break a demo.
+
+**What changes once §4.6 is read alongside it.** The floor already exists
+inside the accepted core, per type. A type with `delegation: 1` delegates only
+the *same* range, and because ranges are canonical, *same* means *equal bytes*.
+`SPEC-0003` §6 has already solved the set-ordering hazard of the last bullet,
+for ranges. So T-042 may be **subsumed** rather than owed. It could be built as
+specified in `ARCH-0001` over an `AuthzCert` tag the core does not carry, or I3
+could exercise `SPEC-0004` §6, where the floor is `delegation: 1` and
+`delegation: 2` comes at little extra cost. Which one I3 builds is the T-041/
+T-042 owner's call, made against `BACKLOG-0001`'s own note that W-1 and W-3
+restate T-041. It also depends on the reading of `ADR-0003` above. **This report
+does not make it.** It records that, under one reading, the demo floor is
+richer than `bytes-equal` and already specified.
+
 ---
 
 ## 5. Where the two decisions touch
@@ -1024,7 +1322,15 @@ satisfies depend on a principle that is held (§3.12). A recommendation drawn
 from that material would be a preference wearing a table.
 
 **It does not pick a DEC-004 option**, because §4.4's reframing is the live
-question and P7 is held. The useful output is the list of what a profile must
+question and P7 is held. Nor does it say whether T-042 is subsumed by
+`SPEC-0003`'s `delegation: 1` (§4.7). That is a planning call, and it rests on
+a reading of `ADR-0003` that is a human's to make.
+
+**It does not fill the empty cells of §2.2.** PICS's content binding, DSig's
+construction, VC's securing mechanism and SPKI's signed structure are all
+knowable, and they would be easy to write from memory. They are not written,
+because a cell with no record behind it would be the thing `research/README.md`
+exists to prevent: a conclusion whose basis cannot be reproduced. The useful output is the list of what a profile must
 specify, not a choice among three languages.
 
 **It does not treat the D5 fixtures as a formality.** Every claim in §3 is
@@ -1039,8 +1345,9 @@ a normative specification: `ARCH-0001` §9.4 and `CLAUDE.md` route a change to a
 document through a proposal against that document, and `SPEC-0002` is now
 governed by an accepted ADR. §3.13 states the defect and §8 files the item.
 
-**It does not read `ADR-0003` D2 as settling DEC-002**, and it does not read
-`SPEC-0002` §5 as settling DEC-005. D2 refused the first in terms; nobody has
+**It does not read `ADR-0003` D2 as settling DEC-002**, it does not read
+`SPEC-0002` §5 as settling DEC-005, and it does not read `ADR-0003`'s adoption of
+the range model as settling DEC-004 (§4.6). D2 refused the first in terms; nobody has
 said anything about the second, and the difference between *decided* and
 *not yet written down* is not an agent's to infer.
 
@@ -1068,4 +1375,9 @@ rather than edited out.
 | P5.1 and P5.2 land in the principle they already govern in the specification | **mofn#97** — both `ADR-0002` acceptance conditions met as of 2026-10-16; now on the sponsor, who chooses between accepting P5 **as amended** and accepting it **as drafted** with the two clauses held for a reader who did not write them (§3.2) |
 | P5.2 redone against COSE `crit` if DEC-005 goes that way | DEC-005 |
 | Canonical key bytes before hashing — unsatisfied in the only code that exists | **DEC-003** (§3.6) |
-| Whether a meet-plus-residue hybrid is constructible | **DEC-004**, R-001 §12 problem 2 |
+| Whether a meet-plus-residue hybrid is constructible | **DEC-004**, R-001 §12 problem 2 — and whether `SPEC-0003`'s pattern kinds admit a meet (§4.6) |
+| **Does `ADR-0003`'s range model answer DEC-004, or does DEC-004 govern only `ARCH-0001`'s `AuthzCert` tag?** (§4.6) — the third silence, after DEC-002 (explicit) and DEC-005 (§5.2) | **new** — register / sponsor |
+| **Is T-042 subsumed by `SPEC-0003` `delegation: 1`, and does I3 build `SPEC-0004` §6 or the `ARCH-0001` 5-tuple?** (§4.7) | **new** — T-041/T-042 owner, with the W-1/W-3 overlap `BACKLOG-0001` already flags |
+| **`ARCH-0001` §6 *Loss / notes* updates for seven rows, including a missing row for the KSA envelope** (§2.5) | **new** — one `propose-arch` diff |
+| **`ADR-0003` calls R-O-05 *"accepted"*; `ARCH-0001` §5.3 stops at R-O-04, and `DECISIONS-0001` item 4 lists R-O-05 as proposed** | **new** — register. Recorded, not resolved: an accepted ADR changes only by superseding it |
+| **Ingest the sources behind §2.2's ∅ cells** — PICS 1.1 labels and DSig 1.0 (write up the stubs); VC Data Model 2.0, VC Data Integrity and VC-JOSE-COSE (no records exist); in-toto Attestation v1 (stub); RFC 9162 (stub, and it holds every proof guarantee §2.4 inherits); `draft-ietf-spki-cert-structure` (stub). `unverified.md` | **library** — inventory approved by a human before `bin/ingest` runs |

@@ -7,7 +7,7 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.11.2"
+version: "0.11.3"
 date: "2026-09-16"
 updated: "2026-10-17"
 needs_review: true
@@ -109,7 +109,7 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-023 | **Shelfmark: converge requirements, then schema. No data merger.** Write the requirements diff | D2 | PL | M | todo |
 | T-024 | Library to ~40 records across the topics — **count met (280), quality not**: 16 written, 264 scaffolds. Fill tracked in library#45 | D2 | S2 | L | doing |
 | T-025 | Report: *context* — **drafted** as `R-0005` (research/0005-context). Synthesis pass over R-001 §1–§6/§11/§12 and R-0004 §8; **no retrieval pass**, stated as a limitation in its `searches.md` | D3 | S1 | L | review |
-| T-026 | Report: *mechanism* — **drafted** as `R-0006` (research/0006-mechanism), v0.2.0. The six conditions, all four DEC-002 candidates scored, DEC-004's meet-vs-accumulation evidence. Decides nothing; §3.9 states where the evidence sits relative to MD-3 **and `ADR-0003` D2**, and §3.13 reads conditions (5) and (6) against `SPEC-0002`/`SPEC-0003` | D3 | S1 | L | review |
+| T-026 | Report: *mechanism* — **drafted** as `R-0006` (research/0006-mechanism), v0.3.0. The comparative anatomy of in-toto/DSSE, SCITT/COSE, SPKI, PICS and VC/DID in one frame (§2.2–§2.5; PICS and VC cells marked unsourced, `unverified.md`), the six conditions, all four DEC-002 candidates scored, DEC-004's meet-vs-accumulation evidence. Decides nothing; §3.9 states where the evidence sits relative to MD-3 **and `ADR-0003` D2**, and §3.13 reads conditions (5) and (6) against `SPEC-0002`/`SPEC-0003`. §4.6–§4.7: the accepted core's range algebra, and whether T-042 is subsumed by it — **raised for T-042's owner, not decided** | D3 | S1 | L | review |
 | T-027 | Report: *uptake/applications* — incl. SPKI and PICS failure-to-adopt — **drafted** as `R-0004` (research/0004-uptake-and-applications), merged in mofn#87 on 2026-10-12. **The row was stale, not the work** | D3 | S2 | L | review |
 | T-028 | Topic notes answered for `namespace-governance`, `canonical-encoding` — canonical-encoding in review (library#46); 3 of 17 topics answered overall | D3 | PL/S1 | M | doing |
 | T-029a | Schema scenarios (3–5, incl. email delegation) and Product Spec personas, GAP-1 (MD-1) | D3 | S1+S2 | M | todo — was due Oct 5 |
@@ -135,7 +135,7 @@ summary bar). Accept or keep #32's rule — L-035.
 |---|---|---|---|---|---|
 | T-040 | Name resolution: `Name` → `KeyId` via `NameCert` chains (§4.3 step 1) | D6 | S1 | L | todo |
 | T-041 | 5-tuple reduction: tag ∩, validity ∩, delegation (§4.3 step 2) | D6 | S1 | L | todo |
-| T-042 | Minimal tag profile — opaque bytes + `bytes-equal` (DEC-004 minimum) | D6 | S1 | M | todo |
+| T-042 | Minimal tag profile — opaque bytes + `bytes-equal` (DEC-004 minimum). *Possibly subsumed by `SPEC-0003` `delegation: 1` — `R-0006` §4.7; owner's call* | D6 | S1 | M | todo |
 | T-043 | *k*-of-*n* threshold subjects, keys only, no nesting | D6 | S2 | L | todo |
 | T-044 | Statement acceptance (§4.3 step 3), kept separate from reduction | D6 | S2 | M | todo |
 | T-045 | Verifier output reports the three separately (R-O-06) | D6 | S2 | M | todo |

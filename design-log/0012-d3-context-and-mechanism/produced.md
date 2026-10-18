@@ -276,3 +276,52 @@ enough to name: **a report that states another lane's status states something it
 does not control.** The §3.2 blockquote does not have this problem, because it
 says what is true of `main` — the clause has not landed — rather than what is
 true of a branch.
+
+## 8. Third pass, 2026-10-17 — closing #100 (R-0006 v0.3.0)
+
+### 8.1 What was produced
+
+| | |
+|---|---|
+| `report.md` §2.2 | the five-system frame in two tables: **mechanism** (what is hashed, canonicalised and when, signed, carried) and **trust** (what the verifier does, where trust is placed, what is left undefined) |
+| §2.3 | four results. Canonicalisation timing splits the field; every system but SPKI places the acceptability decision outside its format; the undefined gaps are where our answers sit; *binds a digest* is not one property |
+| §2.4 | Merkle structures and receipts: what an inclusion receipt proves, and the four things it does not |
+| §2.5 | seven `ARCH-0001` §6 rows the evidence bears on, including a **missing row** for the KSA envelope. Handed on as one `propose-arch` diff, not made |
+| §4.6 | the accepted core's range algebra read as a tag language: containment, not meet; **equal to SPKI's reduction on every accepted path**; fail-closed where SPKI repairs; `ADR-0003`'s silence on DEC-004 |
+| §4.7 | what the `bytes-equal` floor buys I3 (the language-independent reducer; fails closed) and what it does not (attenuation, DEC-004 evidence, rendering, immunity from §3.13); T-042 possibly subsumed |
+| §3.4 | the library#46 pointer; R-O-05 marked proposed at the point the analysis uses it |
+| status line | *closes neither*, *does not reopen MD-3* — now in the first sentence, as #100 §4 asked |
+| `unverified.md` | **new**. Every ∅ cell and what would fill it; checked against R-001's register |
+| `sources.md` §2a, §5 | the anatomy records with retrieval dates and profile; seven ingestion candidates |
+| `searches.md` | nine library queries, verbatim, with yields — six of them misses |
+| `BACKLOG-0001` | T-026 row to v0.3.0; a pointer on T-042. 0.11.2 → 0.11.3 |
+
+### 8.2 The finding that was not asked for
+
+#100 asks for DEC-004 evidence from the literature: intersection versus
+accumulation, and the `bytes-equal` floor. It does not mention that
+`SPEC-0003` and `SPEC-0004`, accepted under `ADR-0003` three days before, carry
+eleven typed range kinds with a fixed *within* relation, per-type delegation
+levels, and a path-following rule. That is a tag language. Reading it against
+R-001 §9.3's table placed it exactly. It is a containment check, like UCAN's,
+and because each hop must lie *within* the last, it computes SPKI's meet on
+every path it accepts.
+
+This mirrors §7.3. The most consequential material in both passes came from
+reading our own accepted specifications against the report's frame, not from
+the literature the brief listed.
+
+### 8.3 Two claims caught before commit
+
+- **"Option 1 can meet [R-O-05] only by transmitting the canonical form
+  verbatim (§3.5)."** First draft of §2.3. §3.5 says nothing of the kind in
+  those words. It says RFC 9804 §6 obliges acceptance of other transports, so
+  a profile must reject them. Reworded to cite what §3.5 says.
+- **"Twenty-two records … are stubs."** First draft of `sources.md` §2a. The
+  recount was twenty-three plus three absent. The same failure as §7.4: a
+  count written before it was counted.
+
+Also corrected: v0.2.0's *"all 62 [keys] were re-checked"*. The recount gives 20
+distinct keys and 51 citations; `sources.md` had said 15 keys. The 62 is
+reproducible by no method tried, so the line is corrected in place rather than
+explained.
