@@ -259,3 +259,20 @@ time in two weeks that a merged report left its own backlog row behind.
 
 **T-031 is narrowed, not done.** It now names the threshold-subject vector as
 the remaining gap and cites R-0006 §3.12 and §3.13 for why.
+
+### 7.6 One line went stale within a day, 2026-10-17
+
+§8's hand-off row said mofn#97 was *"blocked on a non-author review."* That was
+true when written on 2026-10-16 and false by the end of the same day:
+`ARCH-0002` v0.7.1 recorded the review, so both of `ADR-0002`'s acceptance
+conditions are met and the PR now waits on a sponsor's judgement — accept P5 as
+amended, or accept it as drafted and hold P5.1/P5.2 for a reader who did not
+write them.
+
+Corrected in place. Worth the entry because it is the **fourth** instance in
+this design log of a cross-branch status claim going stale, after the two P5
+forward references in §7.2 and `DL-0013` §6.2. The pattern is now specific
+enough to name: **a report that states another lane's status states something it
+does not control.** The §3.2 blockquote does not have this problem, because it
+says what is true of `main` — the clause has not landed — rather than what is
+true of a branch.

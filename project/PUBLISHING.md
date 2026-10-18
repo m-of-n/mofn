@@ -56,7 +56,7 @@ front matter — not because someone remembered to add it to a nav list. Set
 | [Cipher suite — definition, the existing implementation, and what a statement must be able to cite](https://m-of-n.github.io/mofn/research/0003-cipher-suite/report/) | `R-0003` | draft ⚠️ | 0.1.0 | 2026-10-02 | [source](https://github.com/m-of-n/mofn/blob/main/research/0003-cipher-suite/report.md) |
 | [Who Adopts Provenance, and Why the Ancestors Did Not](https://m-of-n.github.io/mofn/research/0004-uptake-and-applications/report/) | `R-0004` | draft ⚠️ | 0.1.0 | 2026-10-10 | [source](https://github.com/m-of-n/mofn/blob/main/research/0004-uptake-and-applications/report.md) |
 | [Why Provenance, Why Now, and the Gap the Ancestors Left](https://m-of-n.github.io/mofn/research/0005-context/report/) | `R-0005` | draft ⚠️ | 0.1.1 | 2026-10-16 | [source](https://github.com/m-of-n/mofn/blob/main/research/0005-context/report.md) |
-| [Comparative Anatomy of the Mechanisms: the Evidence Base for DEC-002 and DEC-004](https://m-of-n.github.io/mofn/research/0006-mechanism/report/) | `R-0006` | draft ⚠️ | 0.2.0 | 2026-10-16 | [source](https://github.com/m-of-n/mofn/blob/main/research/0006-mechanism/report.md) |
+| [Comparative Anatomy of the Mechanisms: the Evidence Base for DEC-002 and DEC-004](https://m-of-n.github.io/mofn/research/0006-mechanism/report/) | `R-0006` | draft ⚠️ | 0.2.1 | 2026-10-17 | [source](https://github.com/m-of-n/mofn/blob/main/research/0006-mechanism/report.md) |
 | [README](https://m-of-n.github.io/mofn/research/README/) | `README` | unknown |  |  | [source](https://github.com/m-of-n/mofn/blob/main/research/README.md) |
 
 ## Status

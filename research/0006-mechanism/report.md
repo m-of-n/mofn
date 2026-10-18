@@ -7,9 +7,9 @@ description: "The D3 mechanism report: four layers the field fuses, the six cond
 type: research
 category: security
 status: draft
-version: "0.2.0"
+version: "0.2.1"
 date: "2026-10-14"
-updated: "2026-10-16"
+updated: "2026-10-17"
 needs_review: true
 reviewed: false
 canonical_path: research/0006-mechanism/report.md
@@ -1065,7 +1065,7 @@ rather than edited out.
 | Round-trip and idempotence tests in CI — still `todo`, and the vectors are produce-and-verify only | T-034 |
 | Score the surviving options against §3.2's six conditions in the ADR | T-032, T-033 |
 | Whether to widen the scoring set to three — **and that the bar moved on 2026-10-14**, since the request now means superseding an accepted ADR | **mofn#8** — sponsor, not a lane (§3.9) |
-| P5.1 and P5.2 land in the principle they already govern in the specification | **mofn#97**, blocked on a non-author review (§3.2) |
+| P5.1 and P5.2 land in the principle they already govern in the specification | **mofn#97** — both `ADR-0002` acceptance conditions met as of 2026-10-16; now on the sponsor, who chooses between accepting P5 **as amended** and accepting it **as drafted** with the two clauses held for a reader who did not write them (§3.2) |
 | P5.2 redone against COSE `crit` if DEC-005 goes that way | DEC-005 |
 | Canonical key bytes before hashing — unsatisfied in the only code that exists | **DEC-003** (§3.6) |
 | Whether a meet-plus-residue hybrid is constructible | **DEC-004**, R-001 §12 problem 2 |
