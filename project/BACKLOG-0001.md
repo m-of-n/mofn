@@ -7,9 +7,9 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.11.1"
+version: "0.11.2"
 date: "2026-09-16"
-updated: "2026-10-16"
+updated: "2026-10-17"
 needs_review: true
 reviewed: false
 canonical_path: project/BACKLOG-0001.md
@@ -54,6 +54,8 @@ merged PRs and the 2026-09-28 decisions (MD-1…MD-7, `project/meetings/`).
 - **D3 research reports (T-025–T-027) — not started.** No student report exists
   in `research/`. MD-4 says draft them from survey R-001 (§2/§4 mechanism, §5–§8
   uptake); the material is there, the reports are not.
+  *Superseded 2026-10-17: all three are drafted — T-025 `R-0005`, T-026
+  `R-0006`, T-027 `R-0004` — and in `review`; see their rows below.*
 - **D1 construction method (T-020)** — `library/docs/construction.md` last
   edited 2026-09-16.
 - **Library quality (T-024)** — 280 records, but **16 written and 264 unwritten

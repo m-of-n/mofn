@@ -146,3 +146,30 @@ was miscounted and the figure was corrected before this change was committed.)
 2 still reads as though MD-3's narrowing were the latest word on the encoding;
 it is not, and `ADR-0003` D2 belongs in that row. It was left out on purpose
 because mofn#97 edits the same file (§4).
+
+## 7. Third pass — closing #99's checklist (2026-10-17)
+
+Asked: *what is required to complete #99*, then *complete the next steps*.
+Done:
+
+- **`PLAN-0001` §6** "Regulatory forcing functions (§9)" → "(§11; seed
+  sources §15)". §9 is *Increments*; the regulation material is in §11 and the
+  seed list in §15. `PLAN-0001` 0.6.0 → 0.6.1.
+- **`sources.md` §5** states why there is no `unverified.md`, and records a
+  check that no item in R-001's or R-0004's register is stated as fact in
+  `report.md`. Five near-miss passages were read; all stay inside their caveats.
+- **`BACKLOG-0001`** — the 2026-10-05 snapshot's "D3 … not started" line gets a
+  dated supersession note rather than an edit, because the snapshot is a record
+  of what was true on that date.
+
+**Declined, and why.**
+
+- **Choosing the T-025 owner.** #99's assignment note says `PLAN-0003` names
+  David, while the issue is assigned to Ndewedo and the backlog owner column
+  reads `S1`. Who owns a report is a team decision, and the model does not
+  make it.
+- **Doing a retrieval pass to fill in retrieval dates.** #99 §7 asks for
+  "every source, with retrieval dates". R-0005 is a synthesis pass and says so.
+  Whether that is enough is the reviewer's call; quietly adding retrievals
+  would answer that question on the reviewer's behalf.
+- **Rewriting the snapshot line in place** — see above.

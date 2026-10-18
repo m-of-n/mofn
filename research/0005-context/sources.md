@@ -4,9 +4,9 @@ id: R-0005-sources
 title: "Sources consulted — context"
 type: evidence
 status: draft
-version: "0.1.1"
+version: "0.1.2"
 date: "2026-10-14"
-updated: "2026-10-16"
+updated: "2026-10-17"
 ---
 
 # Sources
@@ -72,3 +72,22 @@ because the primary source was not re-checked in this pass:
 **None.** This pass retrieved nothing, so it generated no un-recorded source.
 That is the one advantage of a synthesis pass: it cannot create bibliographic
 debt.
+
+## 5. Unverified register
+
+**None, and the absence is deliberate rather than overlooked** (#99 §7 asks for
+`unverified.md` *if anything could not be sourced primarily*).
+
+- This pass retrieved nothing (§1), so it produced no claim of its own whose
+  primary source went unchecked. Every claim routes to an upstream pass (§2),
+  and those passes keep the registers:
+  `research/0001-signatures-and-attestation/unverified.md` and
+  `research/0004-uptake-and-applications/unverified.md`.
+- The three claims this report *would* have needed a register for are
+  withheld, not stated (§3).
+- Checked 2026-10-17: no item in either upstream register is stated as fact in
+  `report.md`. The nearest passages stay inside the caveats — the SPKI working
+  group is "recorded as concluded" with no date (R-001 register §C); Rabin is
+  cited without pagination (§A); OpenPGP trust signatures are described from
+  the specification with no adoption figure (§C); RFC 9162 is cited beside
+  RFC 6962, not as the deployed CT standard (§B).
