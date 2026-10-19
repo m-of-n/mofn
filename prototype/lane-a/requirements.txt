@@ -1,3 +1,4 @@
 pycose==1.1.0
 cbor2>=5.6,<6
 cryptography>=42
+in-toto-attestation==0.9.3

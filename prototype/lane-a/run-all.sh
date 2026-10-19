@@ -8,7 +8,7 @@ cd "$(dirname "$0")"
 .venv/bin/pip install -q -r requirements.txt
 
 rm -rf out && mkdir -p out
-for s in 01_cose_sign1.py 02_dsse_intoto.py; do
+for s in 01_cose_sign1.py 02_dsse_intoto.py 04_key_relative.py; do
   .venv/bin/python "$s"
   echo
 done
