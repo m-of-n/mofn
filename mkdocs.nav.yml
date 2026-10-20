@@ -33,6 +33,13 @@ nav:
       - "Fall 2026 deliverables — definition of done": project/PROC-0004-community-launch.md
       - "Cycle retrospective — what the harness caught, what it missed, what to repeat": project/RETRO-0001.md
   - Research:
+      - "CBOR: what a complete implementation requires, and the ecosystem around it": research/0001-cbor/report.md
+      - "What a Signature Proves: A Survey of Digital Signatures and Attestation": research/0001-signatures-and-attestation/report.md
+      - "Wallet market survey — commercial products, open source, and PGP trust indicators": research/0002-wallets/report.md
+      - "Cipher suite — definition, the existing implementation, and what a statement must be able to cite": research/0003-cipher-suite/report.md
+      - "Who Adopts Provenance, and Why the Ancestors Did Not": research/0004-uptake-and-applications/report.md
+      - "Why Provenance, Why Now, and the Gap the Ancestors Left": research/0005-context/report.md
+      - "Comparative Anatomy of the Mechanisms: the Evidence Base for DEC-002 and DEC-004": research/0006-mechanism/report.md
       - "README": research/README.md
   - Library:
       - Construction method: library/construction.md
