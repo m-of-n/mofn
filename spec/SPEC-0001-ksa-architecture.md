@@ -24,7 +24,7 @@ companion:
   - spec/SPEC-0004-ksa-trust-evaluation.md
   - spec/SPEC-0005-ksa-processes.md
   - spec/UC-0001-ksa-use-cases.md
-  - spec/ADR-0003-fksa-convergence.md
+  - spec/ADR-0003-ksa-core-decisions.md
 defers_to: ARCH-0001
 related_rfcs: [RFC2119, RFC8174, RFC9180, RFC9334]
 ---
@@ -47,8 +47,8 @@ decides whether to trust it, and maintains that decision.
 
 ## Status of this document
 
-Draft for review in the m-of-n project. The KSA core is based on FKSA v0.2.1
-(ADR-0003). The design record is ARCH-0001, ARCH-0002 and ARCH-0003; where a
+Draft for review in the m-of-n project. Design decisions are recorded in
+ADR-0003; the design record is ARCH-0001, ARCH-0002 and ARCH-0003. Where a
 specification and an architecture document differ, the specification governs.
 
 ---
@@ -88,7 +88,7 @@ protocol.
 
 In scope: statements, definitions, trust evaluation, processes, wallets,
 presentations, discovery. Out of scope for this version: the binary transport
-codec and fragmentation (FKSA's binary/transport specification), revocation
+codec and fragmentation for constrained links, revocation
 distribution, selective disclosure, and multi-speaker contracts (ARCH-0002
 DEC-009).
 
@@ -341,7 +341,7 @@ provides delivery, confidentiality where needed, and request–response exchange
 | email | OPTIONAL | a presentation carried as an attachment of media type `application/ksa-presentation` |
 
 A transport that encrypts requires the recipient's suite to define key exchange,
-which KSA's suites do not yet do (FKSA and R-0003 leave it empty until a session
+which KSA's suites do not yet do (R-0003 leaves it empty until a session
 protocol exists). The mailbox is therefore provisional, and its messages — offer,
 possession challenge and proof, review request and response, approval request,
 introduction — will be published as a KSA definition (SPEC-0005) when it is
@@ -440,23 +440,14 @@ speaker's own claim and is not such evidence.
 ### 13.2 Informative
 - [RFC9180] Barnes, R. et al., "Hybrid Public Key Encryption", RFC 9180, February 2022.
 - [RFC9334] Birkholz, H. et al., "Remote ATtestation procedureS (RATS) Architecture", RFC 9334, January 2023.
-- [FKSA] Lambert, P., "FKSA Core Specification v0.2.1", "FKSA Lifecycle v0.1", "Related Work: Matrix and FKSA v0.1", sponsor drafts, October 2026.
 - [ARCH-0001], [ARCH-0002], [ARCH-0003] — design record.
 - [R-001] "What a Signature Proves: A Survey of Digital Signatures and Attestation", m-of-n, 2026.
 
 ---
 
-## Appendix A. Relationship to FKSA and to the design record
-
-| | FKSA v0.2.1 | KSA |
-|---|---|---|
-| core statement, data model, suites, time, delegation, revocation, rotation, ask/answer | specified | adopted, with the changes listed in SPEC-0002 Appendix C |
-| subjects | keys only | keys, artifacts, statements, definitions, locators, descriptions |
-| vocabularies | schemas by URN or JCS hash, unsigned, no human-readable semantics | definitions by KSA-CBOR hash, signed, mandatory multilingual semantics (SPEC-0003) |
-| trust roots | the relying party's signed trust statements | per-context anchors: local, own, or accepted third-party (SPEC-0004 §4) |
-| processes | none | panels, criteria, aggregates (SPEC-0005) |
-| lifecycle | phases 0–9 for four people | §9, generalised to any controller |
+## Appendix A. Relationship to the design record
 
 ARCH-0001 records the original information model and requirements; ARCH-0002 the
 principles (P1 accepted by ADR-0001); ARCH-0003 the wallet and process design.
-ARCH-0003 W-07 is amended by ADR-0003 D3.
+ADR-0003 records the decisions the specifications rest on, and amends ARCH-0003
+W-07 (D3).

@@ -15,7 +15,7 @@ D3 lives here: **context**, **mechanism**, **uptake & applications**.
 
 ## What publishes
 
-**`report.md` only**, staged to the site as `research/<NNNN-slug>/` and listed
+**`report.md` only**, staged to the site as `research/<NNNN-slug>/report/` and listed
 in the nav under its front-matter `title`. `bin/manifest` and `bin/build-site`
 select it; nobody adds it to a list.
 

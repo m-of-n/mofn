@@ -15,6 +15,8 @@ prescribe.
 | `research/README.md` | new §*What publishes* — the rule, written down |
 | `mkdocs.nav.yml`, `project/PUBLISHING.md` | regenerated: 29 → 34 documents |
 
+**The first two rows did not ship — see *Superseded by mofn#103* below.**
+
 Answers to #88's four questions, as built:
 
 1. **`report.md` only.** Evidence (`sources.md`, `searches.md`,
@@ -58,3 +60,30 @@ Answers to #88's four questions, as built:
   a research-only bug. Both scripts carry a "keep in step" comment instead.
 - **Validate the evidence files.** They are not `archdoc/v1` documents; adding
   front matter to them would be churn across reports this change does not own.
+
+## Superseded by mofn#103 (2026-10-20)
+
+mofn#103 (the D3 reports, `design-log/0012-d3-context-and-mechanism`) merged
+its **own** fix for the publishing half of #88 first, to get `R-0005` and
+`R-0006` onto Pages. The two fixes were written in parallel and disagree on
+one thing: where a report lands.
+
+| | this entry, as first built | mofn#103, on `main` |
+|---|---|---|
+| staged to | `docs/research/<slug>.md` | `docs/research/<slug>/report.md` |
+| URL | `research/<slug>/` | `research/<slug>/report/` |
+| `bin/manifest` | a `sources(d)` helper | a per-tree glob list in `TREES` |
+
+Merging `main` into this branch took **mofn#103's `bin/manifest` and
+`bin/build-site` whole** and dropped this branch's. Reason: #103's URLs are
+already live and linked from #100, and changing them in a fix would break
+links for no gain. Neither shape is wrong. `research/README.md` now names the
+`report/` URL.
+
+What this change still carries, and #103 did not: **validation**
+(`bin/validate-archdoc` on `research/*/report.md`, kinds `R`/`RPT`, so
+ARCH-0001 §9.5 is enforced on reports) and the **written rule**
+(`research/README.md` §*What publishes*). Both answer #88 as filed.
+
+Also renumbered `0012` → `0013`: `main` already held two `0012` entries
+(mofn#103, mofn#109). See `design-log/README.md`.

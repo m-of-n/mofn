@@ -4,7 +4,7 @@
 
 Points the reviewer is asked to decide, not just approve:
 
-1. **Publishing drafts.** Merging this publishes all five reports — `R-0001`
+1. **Publishing drafts.** *Moot since mofn#103, which already publishes them; kept for the record.* Merging this publishes all five reports — `R-0001`
    to `R-0004` and `RPT-0001`, all `status: draft` — as a side effect.
    #88 named this as the team's decision. Any author who wants theirs withheld
    sets `publish: false` before merge.

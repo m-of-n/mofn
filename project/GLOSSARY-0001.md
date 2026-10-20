@@ -131,8 +131,7 @@ verdict — a homonym across two repositories, not a collision.
 ## Settled terms
 
 **KSA** — Key-centric Semantic Attestations: the protocol specified by SPEC-0001
-to SPEC-0005, whose core is based on the sponsor's FKSA v0.2.1 (ADR-0003). Not
-wire-compatible with FKSA by design.
+to SPEC-0005, with its design decisions in ADR-0003.
 
 **Anchor** — an entry in a context's anchor list from which trust flows. May be
 an unsigned local decision, the owner's own trust statement, or a third party's
