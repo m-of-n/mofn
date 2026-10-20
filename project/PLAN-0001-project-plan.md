@@ -7,9 +7,9 @@ description: "Execution plan for the CS690 project. Subordinate to ARCH-0001 for
 type: plan
 category: process
 status: draft
-version: "0.6.0"
+version: "0.6.1"
 date: "2026-09-16"
-updated: "2026-09-21"
+updated: "2026-10-17"
 authors:
   - role: planner
     id: conversation-claude-opus-5
@@ -308,7 +308,7 @@ Three, each ~6–10 pages, markdown, published to Pages, citing `library@<commit
 **Context** — why provenance, why now. Artifact trust collapse. What the field
 converged on and where it stops. The historic gap ARCH-0001 §3.3 names: SPKI/SDSI
 never standardised a first-class artifact statement; PICS did, without a
-principal or delegation model. Regulatory forcing functions (§9).
+principal or delegation model. Regulatory forcing functions (§11; seed sources §15).
 
 **Mechanism** — how these systems actually work: hashing, canonicalization,
 signatures, reduction, Merkle structures, receipts. Comparative anatomy of
