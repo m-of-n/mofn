@@ -1,0 +1,7 @@
+.venv
+__pycache__
+
+out/*
+!out/SHA256SUMS
+!out/ENVIRONMENT.txt
+
