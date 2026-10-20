@@ -22,7 +22,7 @@ companion:
   - spec/SPEC-0002-ksa-core.md
   - spec/SPEC-0003-ksa-definitions.md
   - spec/SPEC-0005-ksa-processes.md
-  - spec/ADR-0003-fksa-convergence.md
+  - spec/ADR-0003-ksa-core-decisions.md
 defers_to: ARCH-0001
 related_rfcs: [RFC2119, RFC8174, RFC2693]
 ---
@@ -46,8 +46,8 @@ six-line verdict a person can read.
 
 ## Status of this document
 
-Draft for review in the m-of-n project. Delegation semantics are FKSA core v0.2.1
-§10, adopted by ADR-0003; anchors, contexts and revocation are ADR-0003 D3–D5.
+Draft for review in the m-of-n project. Anchors, contexts and revocation
+are ADR-0003 D3–D5.
 
 ---
 
@@ -435,8 +435,8 @@ revocation. The time is an explicit input and is reported.
 
 ## 12. Privacy considerations
 
-Anchors reveal whom a relying party trusts and are kept local by default (FKSA
-related-work lesson RW-11). A persona that publishes its trust statements reveals
+Anchors reveal whom a relying party trusts and are kept local by default — as
+Matrix keeps its user-signing edges private. A persona that publishes its trust statements reveals
 its relationships. An ask is local and reveals nothing unless the evaluator is
 remote, in which case the evaluator learns the subject and what was asked.
 
@@ -448,7 +448,7 @@ remote, in which case the evaluator learns the subject and what was asked.
 
 ### 13.2 Informative
 - [RFC2693] Ellison, C. et al., "SPKI Certificate Theory", RFC 2693, September 1999.
-- [FKSA] — §10 trust, delegation, revocation, thresholds; §12 ask and answer; related work (Matrix) §4–§5.
+- [Matrix] The Matrix.org Foundation, "Matrix Specification", v1.19 — for cross-signing and private trust edges.
 - [ADR-0003], [ARCH-0003].
 
 ## 14. Registries

@@ -251,7 +251,7 @@ digits and hyphens, labels of 1–63 octets separated by `.`, no leading or
 trailing `.`, total length at most 253 octets. A pattern is either a name — which
 matches only that name — or `*.` followed by a name — which matches every name
 with **one or more** further labels below it (`*.foo.com` matches `a.foo.com` and
-`x.a.foo.com`, not `foo.com`). This is FKSA's decision for multi-label wildcards.
+`x.a.foo.com`, not `foo.com`). Wildcards are multi-label by design.
 A name or pattern not in this form MUST be rejected, not normalised: `Foo.com`
 and `foo.com.` are invalid, not equal to `foo.com`.
 
@@ -505,7 +505,6 @@ reveals which definitions a key uses. Neither reveals who relies on them.
 
 ### 15.2 Informative
 - [PICS] Miller, J., Resnick, P. and D. Singer, "PICS 1.1 Rating Services and Rating Systems — and Their Machine Readable Descriptions", W3C Recommendation, October 1996.
-- [FKSA] — §8–§9, schema federation and attributes.
 - [ARCH-0002], [ARCH-0003].
 
 ---

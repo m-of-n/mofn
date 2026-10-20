@@ -3,7 +3,7 @@ schema: "archdoc/v1"
 id: SPEC-0002
 title: "KSA Core — statements, data model, canonical encoding and cipher suites"
 short_title: "KSA Core"
-description: "The KSA statement: its data model, deterministic encoding, signed envelope, cipher suites, statement kinds, and the procedure for verifying one statement. Based on FKSA core v0.2.1 (ADR-0003)."
+description: "The KSA statement: its data model, deterministic encoding, signed envelope, cipher suites, statement kinds, and the procedure for verifying one statement."
 type: specification
 category: security
 status: draft
@@ -22,7 +22,7 @@ companion:
   - spec/SPEC-0001-ksa-architecture.md
   - spec/SPEC-0003-ksa-definitions.md
   - spec/SPEC-0004-ksa-trust-evaluation.md
-  - spec/ADR-0003-fksa-convergence.md
+  - spec/ADR-0003-ksa-core-decisions.md
 defers_to: ARCH-0001
 related_rfcs: [RFC2119, RFC8174, RFC8032, RFC8610, RFC8949]
 ---
@@ -44,9 +44,8 @@ statement should be *believed* is out of scope here; that is trust evaluation
 
 ## Status of this document
 
-Draft for review in the m-of-n project. The base of this specification is the
-sponsor's FKSA core v0.2.1, adopted by ADR-0003; Appendix C lists every
-difference. Nothing in this draft is final until its version leaves `0.x`.
+Draft for review in the m-of-n project. Design decisions are recorded in
+ADR-0003. Nothing in this draft is final until its version leaves `0.x`.
 
 ---
 
@@ -57,7 +56,7 @@ and canonical encoding · 5. The signed statement envelope · 6. Cipher suites �
 7. Statement structure · 8. Statement kinds · 9. Verifying one statement ·
 10. Key store · 11. Human-review form · 12. Registries · 13. Security
 considerations · 14. Privacy considerations · 15. References ·
-Appendix A. Test vectors · Appendix B. CDDL · Appendix C. Changes from FKSA v0.2.1
+Appendix A. Test vectors · Appendix B. CDDL
 
 ---
 
@@ -127,9 +126,9 @@ Three properties follow:
 1. **No canonicalisation during verification.** The verifier never re-encodes.
    It checks that the received bytes are already canonical (§4.3); if they are
    not, the statement is rejected — never repaired.
-2. **Domain separation.** Every signature covers a suite-specific label (§6.4),
-   so a KSA signature cannot be replayed as a signature in another protocol, or
-   in FKSA, and vice versa.
+2. **Domain separation.** Every signature covers a label naming what is being
+   signed (§6.4), so a signature over a statement cannot be presented as a
+   signature over anything else.
 3. **Content addressing.** A statement is referred to by the SHA-256 of its TBS;
    a definition by the SHA-256 of its body. Both are stable across transports.
 
@@ -244,9 +243,9 @@ A producer MUST place the canonical TBS in `tbs` and MUST set `suite` and `says`
 to the values inside it. An envelope is not itself hashed or signed; the
 statement digest is computed over `tbs` only.
 
-> **Why not sign the statement "minus its signature field", as FKSA does?**
-> Because a verifier would have to decode, remove a field, and re-encode before
-> it could check the signature — canonicalising during verification, exposing
+> **Why carry the signed bytes, rather than signing a re-encoded statement?**
+> Because otherwise a verifier would have to decode, remove the signature, and
+> re-encode before it could check it — canonicalising during verification, exposing
 > its decoder to unauthenticated input, and creating a second encoder whose
 > output must match the producer's byte for byte. Carrying the signed bytes
 > intact removes all three (ARCH-0001 R-O-05).
@@ -319,9 +318,6 @@ to the bytes being signed and is never transmitted.
 | `KSA-POP-SIG-v1\0` | a proof of possession over a presentation (SPEC-0001 §8) |
 | `KSA-<OBJECT>-SIG-v<n>\0` | any future signed object; each MUST register its own label, and reusing another's is forbidden |
 
-The labels differ from FKSA's (`FKSA-STMT-SIG-v0\0`) on purpose: a statement in
-one protocol cannot verify as a statement in the other.
-
 For suites whose algorithm has a context parameter (ML-DSA), the label without
 its zero octet is passed as that context, and is not prepended (§6.5).
 
@@ -376,8 +372,8 @@ a target type.
 | 5 locator | `[5, text]` | a resource identified by a URI; weaker than a digest, and SHOULD be used only where no digest exists |
 | 6 description | `[6, type-ref, value]` | something identified by a typed description — the description's canonical encoding is its identity |
 
-FKSA permits only keys as subjects. KSA permits any of the above, which is what
-lets a statement concern a release, a record, or another statement.
+Subjects are not limited to keys: a statement can concern a release, a record,
+a definition, or another statement.
 
 ### 7.3 Validity
 
@@ -615,11 +611,33 @@ evaluation, per context (SPEC-0004).
 
 ## 11. Human-review form
 
-Statements and definitions have a YAML form for people to read and review. It is
-never signed or hashed: the signed object is always the KSA-CBOR encoding.
-A conforming tool converts between the two one-to-one.
+### 11.1 One statement, two forms
 
-This is test vector TV-4 (Appendix A) in human-review form:
+A statement has exactly one **binary form** — its KSA-CBOR TBS, which is what is
+signed, hashed and transmitted — and one **human-review form**, written in YAML,
+which is what people read, write and review. The human form represents the
+binary form exactly: every field, every value, and the signature. A conforming
+tool converts between the two **one-to-one**:
+
+- **human → binary, for signing:** a producer writes or edits the human form; the
+  tool encodes it into the TBS (§4.2); the TBS is signed; the signature is added
+  to the human form as `signed`.
+- **binary → human, for review:** a reader receives an envelope (§5); the tool
+  verifies it (§9) and decodes the TBS into the human form, with the signature as
+  `signed`.
+
+Converting the human form of a signed statement back to binary MUST reproduce
+**exactly** the TBS that was signed, and converting that TBS to human form MUST
+reproduce the same human form, apart from annotations (§11.3). A human form that does not convert to bytes whose
+signature verifies is rejected; a tool MUST NOT adjust either form to make them
+agree. The human form is never itself signed or hashed — the bytes are the
+statement, and the YAML is an exact view of them.
+
+### 11.2 A signed statement in human form
+
+The human form of a signed statement is the statement's fields (§7) followed by
+`signed`, which carries the signature and, optionally, the public-key hint of
+the envelope (§5):
 
 ```yaml
 kind: attestation
@@ -634,11 +652,24 @@ body:
   has:
     - type: {definition: '0x517007656a617b3b5ab7cc376275a46ad88d14594f6846df88a34f2c8b3a7175', label: build-provenance}
       value: reproducible
+signed:
+  value: '0x8f30ee4ef039d81813703a2b629bb60e5abfc5b82a07432594a2add6fb77d24ccb9a41d744022af89e5ce0ead553131929e2f66fbd1c2ec1869b2c4c91319c0f'
 ```
 
-Rules (adopted from FKSA §2.1):
+This is test vector TV-4 (Appendix A). Encoding everything above `signed`
+yields TV-4's TBS byte for byte; `signed.value` is its signature over `DS ‖ TBS`;
+and the envelope is `[suite, says, TBS, signed.value]` — with `signed.pub`
+appended as the fifth element when present.
+
+Fields SHOULD appear in the order `kind`, `suite`, `says`, `this`, `valid`,
+`body`, `signed`. Order in the human form does not affect the binary form, whose
+map keys are always sorted (§4.2).
+
+### 11.3 Lexical rules
 
 - Field names are the names of §7–§8, with `-` written as a space.
+- Codes are written by name: `suite: ksa-ed25519-sha256`, `kind: attestation`,
+  `alg: sha-256`. A tool maps each name to its registered code (§12).
 - Byte strings are quoted text: `'0x'` followed by lowercase hexadecimal.
 - Times are quoted text in the exact form of §4.4. A YAML loader MUST NOT resolve
   YAML timestamps.
@@ -647,8 +678,10 @@ Rules (adopted from FKSA §2.1):
   `-0`, `_` separators and sexagesimal forms MUST be rejected, whether implicit
   or tagged.
 - Floats, `null` and YAML-only types MUST be rejected.
-- The human form MAY carry annotations whose keys begin with `_`; they are
-  discarded before encoding and never signed.
+- Text is taken byte-exact (§4.1); a tool MUST NOT fold, trim or normalise it.
+- The human form MAY carry annotations whose keys begin with `_`. They are not
+  part of the statement: they are discarded before encoding, never signed, and
+  absent when the binary form is converted back.
 
 ## 12. Registries
 
@@ -794,8 +827,7 @@ their owner chooses to publish them.
 
 - [RFC8610] Birkholz, H., Vigano, C. and C. Bormann, "Concise Data Definition Language (CDDL)", RFC 8610, June 2019.
 - [RFC8785] Rundgren, A., Jordan, B. and S. Erdtman, "JSON Canonicalization Scheme (JCS)", RFC 8785, June 2020.
-- [FKSA] Lambert, P., "FKSA Core Specification v0.2.1", sponsor draft, October 2026.
-- [ADR-0003] "KSA adopts the FKSA core", m-of-n, October 2026.
+- [ADR-0003] "KSA core design decisions", m-of-n, October 2026.
 - [ARCH-0001], [ARCH-0002], [ARCH-0003] — the design record for this specification.
 
 ---
@@ -1091,20 +1123,3 @@ aggregate-body   = { 1 => process-ref, 2 => [+ digest], 3 => bool }
 The CDDL describes structure. The kind-specific constraints of §8 and the
 encoding rules of §4 are additional and normative.
 
-## Appendix C. Changes from FKSA v0.2.1
-
-| FKSA v0.2.1 | KSA Core 0.1 | why |
-|---|---|---|
-| signature over the statement minus `signed`, re-encoded | envelope carries TBS as signed; verify before decode (§5) | ARCH-0001 R-O-05 |
-| `this` is always a kid | targets: key, digest, statement, definition, locator, description (§7.2) | attestations about artifacts and statements |
-| `ns:name` extension fields; open/closed contexts | closed maps; extensibility only through definition-typed attributes (§7.1) | ADR-0003 D1 |
-| schema id: URN or SHA-256 of JCS | `DefinitionId` = SHA-256 of KSA-CBOR; no URNs (SPEC-0003) | ADR-0003 D1, D2 |
-| schema documents unsigned (open Q12) | definitions published by a signed `define` statement | SPEC-0003 §8 |
-| DS label `FKSA-STMT-SIG-v0\0` | `KSA-STMT-SIG-v1\0` | the two protocols cannot replay each other |
-| `valid.issued` reserved | `issued` registered; REQUIRED for rotate and revoke | rotation ordering (FKSA RW-3) |
-| `ask` is a statement kind | ask is an evaluation query (SPEC-0004 §10), not a statement | it is never signed |
-| kinds: key-publish, self, speaks, attestation, trust, revoke, rotate | adds define, review, approve, aggregate | definitions, review and processes |
-| `self.uses` text tokens | usage codes (§12.7); `self.controller` added (§12.8) | controller kinds |
-| suite 1 `ed25519-cbor-sha256`, suite 16 JCS legacy | suite 1 `ksa-ed25519-sha256`; no legacy JCS suite; suite 8 ML-DSA-65 provisional | one encoding; post-quantum path |
-| `speaks` handles (wire-only) | not adopted in the core | a transport optimisation, not a protocol element |
-| unchanged | data model, time encoding, strict Ed25519 rules, kid rule, key-store rule, delegation constraints, revocation by issuer and digest, decimal-only human-review integers | the best of FKSA |
