@@ -1,0 +1,191 @@
+#!/usr/bin/env python3
+"""mofn — the wallet engine's command line (#65, v0).
+
+This file parses arguments, calls the engine, prints, and sets the exit
+code. It does no cryptography, no encoding and no evaluation of its own.
+
+    mofn [--wallet DIR] [--codec ksa-cbor|review-yaml] COMMAND ...
+
+    init
+    key gen LABEL [--controller KIND] [--passphrase-stdin] [-o OUT]
+    key import FILE [--label NAME]
+    root add KEY --as LABEL --def FILE --type TYPE [--values V1,V2] [--context NAME] [--note TEXT]
+    make --as LABEL --subject FILE --def FILE --type TYPE --value VALUE [--valid-days N] [-o OUT]
+         [--passphrase-stdin]
+    check STMT [STMT ...] --artifact FILE --def FILE [--context NAME] [--format text|json] [--at TIME]
+
+Exit codes: 0 yes or done, 1 answer no, 2 usage or wallet error, 3 a handed
+statement was invalid.
+"""
+
+import argparse
+import os
+import sys
+from pathlib import Path
+
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+
+from engine import check as checking, definition as defs, ksatime, render, signer, statement, suite, unlock
+from engine.codecs import CODECS, DEFAULT
+from engine.errors import DefinitionError, EncodingError, Rejected, WalletError
+from engine.reduce import Anchor
+from engine.store import CONTROLLERS, Wallet, locate
+from engine.verifier import verify
+
+
+def short(kid: bytes) -> str:
+    return kid.hex()[:8] + "…"
+
+
+def cmd_init(a):
+    root = locate(a.wallet)
+    Wallet.init(root)
+    print(f"initialized wallet at {root}")
+
+
+def cmd_key_gen(a):
+    w = Wallet.open(locate(a.wallet))
+    codec = CODECS[a.codec]
+    passphrase = unlock.passphrase(a.passphrase_stdin, confirm=True)
+    seed, pub = suite.generate()
+    p = w.add_owned(a.label, a.controller, seed, pub, passphrase)
+    envelope = signer.sign(seed, statement.key_publish(pub, ksatime.now()), carry_pub=True)
+    v = verify(envelope, {})
+    w.put_statement(v.digest, envelope)
+    out = Path(a.out or f"{a.label}.pub{codec.suffix}")
+    out.write_bytes(codec.dump(envelope))
+    print(f"persona {p.label}  kid {short(p.kid)}  controller {p.controller} (self-claimed)")
+    print(f"wrote {out} — the key-publish statement to hand to others")
+
+
+def cmd_key_import(a):
+    w = Wallet.open(locate(a.wallet))
+    envelope = CODECS[a.codec].load(Path(a.file).read_bytes())
+    v = verify(envelope, {})
+    if v.kind == 1 or (v.kind == 2 and 1 in v.body):
+        pub = v.body[1][2]
+    else:
+        raise WalletError(f"{a.file} is not a key-publish statement")
+    p = w.add_known(a.label, pub, {"how": "imported", "from": str(a.file), "when": ksatime.to_text(ksatime.now()),
+                                   "statement": v.digest.hex()})
+    name = f" ({p.label})" if p.label else ""
+    print(f"known: {short(p.kid)}{name} — not trusted for anything")
+
+
+def cmd_root_add(a):
+    w = Wallet.open(locate(a.wallet))
+    key, acceptor = w.find(a.key), w.find(a.as_)
+    d = defs.load(Path(a.def_).read_bytes())
+    tref = d.type_ref(a.type)
+    values = [v for v in (a.values or "").split(",") if v]
+    about = {1: tref, 3: d.canonical_range(a.type, values)} if values else {1: tref}
+    w.add_anchor(Anchor(a.context, key.kid, [about], acceptor.kid, ksatime.now(), note=a.note))
+    w.put_definition(d.id, d.data)
+    scope = " ∈ {" + ", ".join(about[3]) + "}" if values else " (any value)"
+    print(f"anchor: {short(key.kid)} ({render.key_name(key.kid, w.labels())}) trusted in {a.context} "
+          f"about {a.type}{scope} — accepted by {acceptor.label}")
+
+
+def cmd_make(a):
+    w = Wallet.open(locate(a.wallet))
+    codec = CODECS[a.codec]
+    p = w.find(a.as_)
+    if not p.owned:
+        raise WalletError(f"{a.as_} is not a persona this wallet owns")
+    d = defs.load(Path(a.def_).read_bytes())
+    if not d.valid_assignment(a.type, a.value):
+        allowed = ", ".join(v[1] for v in d.type(a.type).get(6, []))
+        raise WalletError(f"{a.value!r} is not a value of {a.type}; allowed: {allowed}")
+    now = ksatime.now()
+    s = statement.attestation(p.kid, statement.digest_target(Path(a.subject).read_bytes()),
+                              [{1: d.type_ref(a.type), 2: a.value}], now, ksatime.add_days(now, a.valid_days), now)
+    seed = w.unlock(p, unlock.passphrase(a.passphrase_stdin))
+    envelope = signer.sign(seed, s)
+    v = verify(envelope, w.keystore())
+    w.put_statement(v.digest, envelope)
+    out = Path(a.out) if a.out else w.root / "statements" / f"{v.digest.hex()}{codec.suffix}"
+    out.write_bytes(codec.dump(envelope))
+    print(f"wrote {out}")
+    print(render.sentence(d, v.statement, w.labels()))
+
+
+def cmd_check(a):
+    w = Wallet.open(locate(a.wallet))
+    codec, keystore = CODECS[a.codec], w.keystore()
+    items = []
+    for f in a.stmt:
+        try:
+            items.append(checking.handed(f, codec.load(Path(f).read_bytes()), keystore))
+        except EncodingError as e:
+            items.append(checking.handed(f, None, keystore, str(e)))
+    at = ksatime.from_text(a.at) if a.at else ksatime.now()
+    answer = checking.run(items, Path(a.artifact).read_bytes(), Path(a.def_).read_bytes(), w.labels(),
+                          w.anchors(a.context), a.context, at)
+    sys.stdout.write(render.verdict_json(answer) if a.format == "json" else render.verdict_text(answer))
+    return answer.exit_code
+
+
+def parser() -> argparse.ArgumentParser:
+    top = argparse.ArgumentParser(prog="mofn", description="mofn wallet engine v0 (#65)")
+    top.add_argument("--wallet", metavar="DIR", help="wallet directory (default: $MOFN_WALLET, else ./wallet)")
+    top.add_argument("--codec", choices=sorted(CODECS), default=DEFAULT, help="statement file form")
+    sub = top.add_subparsers(dest="command", required=True)
+
+    sub.add_parser("init", help="create an empty wallet").set_defaults(run=cmd_init)
+
+    key = sub.add_parser("key", help="personas and keys").add_subparsers(dest="key_command", required=True)
+    gen = key.add_parser("gen", help="create an owned persona with one key")
+    gen.add_argument("label")
+    gen.add_argument("--controller", choices=CONTROLLERS, default="person")
+    gen.add_argument("--passphrase-stdin", action="store_true")
+    gen.add_argument("-o", dest="out", metavar="OUT")
+    gen.set_defaults(run=cmd_key_gen)
+    imp = key.add_parser("import", help="know a key, without trusting it")
+    imp.add_argument("file")
+    imp.add_argument("--label")
+    imp.set_defaults(run=cmd_key_import)
+
+    root = sub.add_parser("root", help="anchors").add_subparsers(dest="root_command", required=True)
+    add = root.add_parser("add", help="anchor a known key in a context")
+    add.add_argument("key")
+    add.add_argument("--as", dest="as_", required=True, metavar="LABEL")
+    add.add_argument("--def", dest="def_", required=True, metavar="FILE")
+    add.add_argument("--type", required=True)
+    add.add_argument("--values")
+    add.add_argument("--context", default="default")
+    add.add_argument("--note")
+    add.set_defaults(run=cmd_root_add)
+
+    make = sub.add_parser("make", help="make and sign one attestation")
+    make.add_argument("--as", dest="as_", required=True, metavar="LABEL")
+    make.add_argument("--subject", required=True, metavar="FILE")
+    make.add_argument("--def", dest="def_", required=True, metavar="FILE")
+    make.add_argument("--type", required=True)
+    make.add_argument("--value", required=True)
+    make.add_argument("--valid-days", type=int, default=30)
+    make.add_argument("-o", dest="out", metavar="OUT")
+    make.add_argument("--passphrase-stdin", action="store_true")
+    make.set_defaults(run=cmd_make)
+
+    chk = sub.add_parser("check", help="evaluate the statements you were handed")
+    chk.add_argument("stmt", nargs="+")
+    chk.add_argument("--artifact", required=True, metavar="FILE")
+    chk.add_argument("--def", dest="def_", required=True, metavar="FILE")
+    chk.add_argument("--context", default="default")
+    chk.add_argument("--format", choices=("text", "json"), default="text")
+    chk.add_argument("--at", metavar="TIME", help="evaluation time, YYYY-MM-DDTHH:MM:SSZ (default: now)")
+    chk.set_defaults(run=cmd_check)
+    return top
+
+
+def main(argv=None) -> int:
+    a = parser().parse_args(argv)
+    try:
+        return a.run(a) or 0
+    except (WalletError, DefinitionError, EncodingError, Rejected, OSError, ValueError) as e:
+        print(f"mofn: error: {e}", file=sys.stderr)
+        return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())

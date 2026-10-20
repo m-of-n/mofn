@@ -29,6 +29,16 @@ jobs:
         run: |
           git diff --exit-code -- mkdocs.nav.yml project/PUBLISHING.md || {
             echo "::error::tracked nav/manifest is stale — run bin/build-site (or: library views, then bin/manifest) and commit"; exit 1; }
+  wallet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: wallet engine tests (prototype/wallet, mofn#65)
+        run: |
+          pip install -q -r prototype/wallet/requirements.txt
+          pytest -q prototype/wallet
   dco:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
