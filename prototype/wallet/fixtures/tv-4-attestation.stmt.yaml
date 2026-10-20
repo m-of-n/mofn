@@ -1,0 +1,14 @@
+kind: attestation
+suite: ksa-ed25519-sha256
+says: '0x21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9'
+this: {digest: {alg: sha-256, value: '0x48dfc39586b0c4f9e905b3b60f59a30b7c0c7408e44f7cb4df2a09fbf3e67ba7'}}
+valid:
+  not before: "2026-10-06T00:00:00Z"
+  not on or after: "2026-11-01T00:00:00Z"
+  issued: "2026-10-06T10:30:00Z"
+body:
+  has:
+    - type: {definition: '0x517007656a617b3b5ab7cc376275a46ad88d14594f6846df88a34f2c8b3a7175', label: build-provenance}
+      value: reproducible
+signed:
+  value: '0x8f30ee4ef039d81813703a2b629bb60e5abfc5b82a07432594a2add6fb77d24ccb9a41d744022af89e5ce0ead553131929e2f66fbd1c2ec1869b2c4c91319c0f'
