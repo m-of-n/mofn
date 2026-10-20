@@ -16,6 +16,7 @@ them.
 |---|---|
 | `statements/` | create statements in a reduced CBOR profile; render a PICS-like label type. Evaluates the *representation*, not the implementation |
 | `statements/csexp.py`, `statements/rcbor_decode.py` | single-pass **rejecting decoders** for DEC-002 options 1 and 5 — the experiment the `canonical-encoding` falsifier named (#73). See `statements/DECODE-FINDINGS.md` |
+| `lane-a/` | mofn#13: COSE, DSSE/in-toto and a real SLSA provenance, kept byte for byte; `04` makes each registry identifier key-relative and records what breaks. See `lane-a/README.md` |
 
 ## Why this exists now
 
