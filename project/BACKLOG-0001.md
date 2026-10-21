@@ -7,9 +7,9 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.11.3"
+version: "0.12.2"
 date: "2026-09-16"
-updated: "2026-10-17"
+updated: "2026-10-20"
 needs_review: true
 reviewed: false
 canonical_path: project/BACKLOG-0001.md
@@ -109,14 +109,14 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-023 | **Shelfmark: converge requirements, then schema. No data merger.** Write the requirements diff | D2 | PL | M | todo |
 | T-024 | Library to ~40 records across the topics — **count met (280), quality not**: 16 written, 264 scaffolds. Fill tracked in library#45 | D2 | S2 | L | doing |
 | T-025 | Report: *context* — **drafted** as `R-0005` (research/0005-context). Synthesis pass over R-001 §1–§6/§11/§12 and R-0004 §8; **no retrieval pass**, stated as a limitation in its `searches.md` | D3 | S1 | L | review |
-| T-026 | Report: *mechanism* — **drafted** as `R-0006` (research/0006-mechanism), v0.3.0. The comparative anatomy of in-toto/DSSE, SCITT/COSE, SPKI, PICS and VC/DID in one frame (§2.2–§2.5; PICS and VC cells marked unsourced, `unverified.md`), the six conditions, all four DEC-002 candidates scored, DEC-004's meet-vs-accumulation evidence. Decides nothing; §3.9 states where the evidence sits relative to MD-3 **and `ADR-0003` D2**, and §3.13 reads conditions (5) and (6) against `SPEC-0002`/`SPEC-0003`. §4.6–§4.7: the accepted core's range algebra, and whether T-042 is subsumed by it — **raised for T-042's owner, not decided** | D3 | S1 | L | review |
+| T-026 | Report: *mechanism* — **drafted** as `R-0006` (research/0006-mechanism), v0.3.0. The comparative anatomy of in-toto/DSSE, SCITT/COSE, SPKI, PICS and VC/DID in one frame (§2.2–§2.5; PICS and VC cells marked unsourced, `unverified.md`), the six conditions, all four DEC-002 candidates scored, DEC-004's meet-vs-accumulation evidence. Decides nothing; §3.9 states where the evidence sits relative to MD-3 **and `ADR-0003` D2**, and §3.13 reads conditions (5) and (6) against `SPEC-0002`/`SPEC-0003`. §4.6–§4.7: the accepted core's range algebra, and whether T-042 is subsumed by it — **raised for T-042's owner, not decided**. Owned jointly (#100 assigned to both, 2026-10-20) | D3 | S1+S2 | L | review |
 | T-027 | Report: *uptake/applications* — incl. SPKI and PICS failure-to-adopt — **drafted** as `R-0004` (research/0004-uptake-and-applications), merged in mofn#87 on 2026-10-12. **The row was stale, not the work** | D3 | S2 | L | review |
 | T-028 | Topic notes answered for `namespace-governance`, `canonical-encoding` — canonical-encoding in review (library#46); 3 of 17 topics answered overall | D3 | PL/S1 | M | doing |
 | T-029a | Schema scenarios (3–5, incl. email delegation) and Product Spec personas, GAP-1 (MD-1) | D3 | S1+S2 | M | todo — was due Oct 5 |
 | T-029b | Product Spec, PLAN-0002 v0.2 — GAP-4 real sketches (Ndewedo, Oct 14), GAP-6 course dates (PL) | — | PL+S2 | M | doing |
 | T-029c | Confirm Tauri for the wallet GUI (MD-7) before GUI work starts | D8 | S2 | S | todo — Oct 14 |
-| T-029d | ADR-0002: accept P2, P3, P5, P6 provisionally (MD-2) | — | Claude→PL | M | **overdue** (was Oct 2) |
-| T-029e | Close T1-A in DECISIONS-0001 citing MD-1 | — | Claude | S | **overdue** |
+| T-029d | ADR-0002: accept P2, P3, P5, P6 provisionally (MD-2) — **drafted** (#83, `proposed`); condition 6(b) **met** by ARCH-0002 v0.7.0, condition 6(a) **met** 2026-10-16 (v0.7.1 carries a reviewer, `reviewed: true`). **`SPEC-0003` §7.1 cites P5 by name inside the Definition Publisher conformance class** (ADR-0002 §6a), so a governing spec rests on a draft principle. What is left is the sponsor's call: accept P5 **as amended**, or accept P2/P3/P6 and P5 **as drafted**, holding P5.1/P5.2 for a reader who did not write them | — | ~~Claude~~→**PL** | M | **review** — waiting on the sponsor |
+| T-029e | ~~Close T1-A in DECISIONS-0001 citing MD-1~~ — done 2026-10-10 in DECISIONS-0001 v0.2.0; PLAN-0002 §2 carries MD-1. The row, not the work, was stale | — | Claude | S | done |
 
 ## I2 — Schema + DEC-002 · Oct 15–28 · D4 D5
 
@@ -126,7 +126,7 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-031 | Fixtures: `NameCert`, `AuthzCert` **with threshold subject**, `ArtifactStatement` — in **option 5** (MD-3) plus the option-2 comparison. **Narrowed by `spec/vectors/ksa-core/`**, which covers the name-binding and artifact shapes under `ADR-0003` D2's encoding; **the threshold subject has no vector** and is the remaining gap — R-0006 §3.12, §3.13 | D5 | S1 | L | todo |
 | T-032 | Score option 5 against option 2 incl. namespace governance (MD-3 narrowed DEC-002 to these) — needs library#39 Tier 1 extracted first | D5 | S1 | M | todo |
 | T-033 | ADR for DEC-002 (ADR-0001 is taken by key-relative naming) — accepted; ARCH-0001 status updated + changelog | D5 | PL | M | todo |
-| T-034 | Canonicalization idempotence + round-trip tests in CI | D5 | S2 | M | todo |
+| T-034 | Canonicalization idempotence + round-trip tests in CI — **now also carries P5.1's acceptance test**: reject every RFC 8949 FX-1 negative fixture in one pass, no re-encoding (ARCH-0002 v0.7.0). `spec/vectors/ksa-core/` N-1 and N-6 are a partial start | D5 | S2 | M | todo |
 | T-035 | ~~Resolve R-M-12: requirement row, or ARCH-0002?~~ — ARCH-0002, accepted as P1 via ADR-0001 | — | PL | M | done |
 
 ## I3 — Reduction · Oct 29–Nov 11 · D6 · **DEMO FLOOR**

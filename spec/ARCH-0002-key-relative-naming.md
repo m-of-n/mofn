@@ -7,21 +7,29 @@ description: "Type names, constraints, types-as-schemas, hash-identified domains
 type: architecture
 category: security
 status: draft
-version: "0.6.0"
+version: "0.7.1"
 version_policy: "semver; PATCH = editorial; MINOR = additive principle; MAJOR = breaking"
 date: "2026-09-22"
-updated: "2026-10-14"
+updated: "2026-10-16"
 decision_makers:
   - role: sponsor
     id: paul-lambert
-reviewers: []
+reviewers:
+  - role: student
+    id: ndewedo-newbury
+    pass: >
+      v0.7.1 read 2026-10-16 — the review MD-2 named and ADR-0002 §6(a)
+      requires. Covers P1–P7 and the CBOR note as drafted by the document's
+      author. Scope limit, recorded rather than glossed: this reviewer wrote
+      P5.1 and P5.2 (mofn#97), so the amendment half of P5 has not been read
+      by anyone who did not write it. ADR-0002 §6(a) states the residue.
 needs_review: true
-reviewed: false
+reviewed: true
 canonical_path: spec/ARCH-0002-key-relative-naming.md
 companion:
   - spec/ADR-0001-key-relative-naming.md
 defers_to: ARCH-0001
-related_rfcs: [RFC2693, RFC8949, RFC9052]
+related_rfcs: [RFC2693, RFC8949, RFC8785, RFC9052, RFC9804]
 open_decisions: [DEC-008, DEC-009]
 agent_checkpoint: true
 agent_notes: >
@@ -31,6 +39,10 @@ agent_notes: >
   P1 is accepted (ADR-0001). P2-P7 are drafted from sponsor direction of
   2026-09-22 and are not accepted. The CBOR note is an observation, not a
   principle. DEC-008 and DEC-009 are open.
+  P5 gained two clauses in v0.7.0 (P5.1, P5.2 - mofn#72). P5 REMAINS DRAFT:
+  ADR-0002 is the instrument that would make it normative, and it is proposed,
+  not accepted. The clauses are an INPUT to DEC-002 and DEC-005 and select
+  neither.
 ---
 
 # ARCH-0002 — Key-relative naming and processing
@@ -343,6 +355,138 @@ authorization bypass. COSE's `crit` (RFC 9052 §3.1) exists precisely to say
 silently accepts authorization it never evaluated. **We invert the default so
 that forgetting is safe:** unknown is critical unless declared otherwise.
 
+### P5.1 — A non-canonical serialisation of known content is also a rejection **[draft]**
+
+Everything above speaks to **content**: a field we do not recognise, a
+constraint we can state. It does not reach bytes that decode to content we
+understand perfectly, by a route the canonical profile does not permit. That is
+a different failure, and P5 as drafted did not cover it.
+
+**The clause.** Where a profile declares a canonical encoding, a decoder SHALL
+**reject** input that is not in that profile's canonical form. It SHALL NOT
+normalise it, re-encode it, or repair it. Non-canonical is not a lesser fault
+than unknown; it is the same fault one layer down.
+
+> **This is now instantiated, and the SPEC governs.** `SPEC-0002` §4.3 states
+> the rule normatively for KSA-CBOR, enumerating what a validating decoder MUST
+> reject and adding that *"Rejection MUST NOT be replaced by repair: a decoder
+> MUST NOT re-sort, re-encode or otherwise normalise and then accept."* §5
+> states the consequence — the verifier never re-encodes. Under `ADR-0003`,
+> where a SPEC and an ARCH document differ the SPEC governs; here they agree,
+> and this clause is the principle the SPEC instantiates. `SPEC-0002` §13.5
+> cites **P5** by name as the basis for *"A verifier MUST NOT skip what it does
+> not understand"* — which is why P5 needs the serialisation half written down:
+> a normative specification is already resting on it.
+
+**Why it is not already covered.** RFC 8949 §4.2 is an **encoder-side** rule,
+and a conforming decoder accepts non-deterministic input happily. Its FX-1
+extraction enumerates fourteen decisions §4.2 leaves to the application, three
+of which already route through P5. This is condition (2) of the
+`canonical-encoding` answer — absent from RFC 8949 §4.2, absent from ARCH-0001
+§5.3, and absent from the `rcbor` spike, which had an encoder and **no
+decoder**.
+
+**Why a clause rather than a new requirement.** P5 already binds encoder and
+verifier both and already reads as *checked, never assumed*. Minting an
+`R-O-07` would put half of one rule in ARCH-0001 §5.3 and half here.
+
+**What it buys.** R-O-05 requires canonicalisation to run once, at authoring,
+on trusted input, and never as part of verification. **Rejection is what makes
+that separation real.** If a verifier may repair what it receives, the
+canonicaliser is back inside the verifier and the separation is cosmetic.
+`ADR-0003` records the same reasoning in deciding that KSA transmits the signed
+bytes as signed and verifies before decoding, where FKSA re-encoded.
+
+**It is measured, not assumed.** mofn#73 wrote the falsifier and it **did not
+fire**: canonicality is decidable by parsing alone, in a single pass, with no
+re-encoding — 60 fixtures, 36 of them negative (DL-0007). `SPEC-0002` §4.3
+cites that result directly, and `spec/vectors/ksa-core/` ships negative vectors
+**N-1** and **N-6** that reject at canonical decode.
+
+**Why the rule had to be written down at all, given the encoding now in use.**
+`ADR-0003` D2 fixes one canonical encoding — the deterministic CBOR profile,
+MD-3's option 5 — while explicitly **not** accepting DEC-002. That is precisely
+the profile where the rule is *not* enforced for you. Under RFC 9804 the
+equivalent of smallest-form is **in the grammar**: `03:abc` is ungrammatical,
+not non-canonical, so a conforming reader cannot omit the check. Under a
+reduced-CBOR profile it is a rule an implementation must state and check, and
+one that omits it still parses every valid document. **P5.1 is the rule that
+would otherwise be optional** — which is why `SPEC-0002` §4.3 has to enumerate
+seven conditions where a grammar would have enumerated none.
+
+**What rejection cannot reach — and what has since been closed.** Parsing
+decides canonicality only where the format makes non-canonicality visible.
+
+- **Condition (6), Unicode normalisation, is now closed for KSA-CBOR.**
+  `SPEC-0002` §4.1 takes the explicit-refusal route: a text string is
+  *"preserved byte-exact; MUST NOT be normalised (no Unicode normalisation, no
+  case folding, no whitespace trimming) by any producer or verifier."* That is
+  the second of the two options the `canonical-encoding` answer left open, and
+  it is the right one — it keeps the hazard at the application boundary where
+  it is visible rather than in the serialiser where it is not.
+- **Condition (5) — a canonical order for set-valued fields carried in arrays —
+  is not addressed by this clause.** Map-key order is settled; sets carried in
+  arrays are not, and no decoder can supply it. It depends on **P4**, which is
+  held, and `library#56` owns the ordering rule.
+- An option-1 **default display hint** would reopen injectivity on the identity
+  path — `[24:application/octet-stream]3:abc` and `3:abc` are both grammatical,
+  denote the same value, and hash differently. Recorded in case DEC-002 is ever
+  taken back to option 1; it is not a live hazard under D2.
+
+---
+
+### P5.2 — Where P5 stops: the interchange boundary **[draft]**
+
+P5 inverts a default that a foreign envelope inverts back, and **no document of
+ours says which reading holds at the boundary.** DSSE's `envelope.md` requires
+that consumers *"MUST ignore unrecognized fields"*. That is the opposite of
+must-understand.
+
+**The native side is no longer in question.** `SPEC-0002` §3 specifies the
+envelope — `[suite, says, tbs, sig, ? pub]` — and §13.5 settles the interior:
+*"an unknown kind or field is invalid. A verifier MUST NOT skip what it does
+not understand (ARCH-0002 P5)."* So this clause is now purely about **export
+and import against a foreign envelope**, which is where it always belonged.
+
+**Scope the collision before resolving it.** It is at the **envelope exterior
+only** — unknown sibling fields of `payload`, `payloadType` and `signatures`.
+For *types* DSSE is already reject-unknown, and the payload interior is ours to
+govern.
+
+**The clause.** P5 governs the native model and the payload interior, in both
+directions. At an interchange boundary the foreign envelope's own rules govern
+its exterior. Concretely, and **asymmetrically**:
+
+| direction | rule | why we may say it |
+|---|---|---|
+| **import** | our verifier **rejects** an envelope carrying unrecognised exterior fields | we control our verifier; DSSE's MUST binds *consumers*, and declining to be a conforming consumer at that one point is a documented deviation, not a silent one |
+| **export** | we **emit no** exterior field a conforming DSSE consumer would have to ignore, and we require nothing of foreign consumers | a rule binding parties we do not control is unenforceable — the objection the `canonical-encoding` answer already raised against RFC 8785 §3.1 |
+
+**Why asymmetric rather than a flat answer.** A flat *"we deviate from DSSE"*
+costs interoperability on the export side for no security gain, because the
+security question is only ever what **our** verifier accepts. A flat *"P5 stops
+at the payload"* hands an attacker the envelope exterior to carry meaning in.
+The asymmetry takes the security on the side we control and the conformance on
+the side we do not.
+
+**This bears on R-I-03** and is owed to **R-I-01**, which already requires a
+published mapping table saying what each foreign format preserves, drops, or
+infers. The deviation belongs in that table rather than in prose here.
+**DEC-005 is open**, and the same analysis is owed for COSE `crit` if COSE is
+chosen as an export envelope.
+
+**One collision in the same table is worth naming now**, because it is quiet:
+DSSE's `KEYID` is unauthenticated and *"MUST NOT be used for security
+decisions"*, while our `says` / `kid` **is** the principal's name
+(`SPEC-0002` §13.4, R-M-02). A mapping that lined the two up because they share
+a name would put the principal in the one envelope field DSSE forbids relying
+on. **The principal travels in the payload, never in `signatures[].keyid`.**
+
+**Acceptance test.** The R-I-01 mapping table for DSSE carries a row for
+exterior unknown fields stating import-rejects and export-emits-none, and a row
+for `KEYID`; and a negative fixture — a DSSE envelope with an unrecognised
+sibling of `payload` — is rejected on import.
+
 ---
 
 ## Note — how CBOR separates extent from meaning **[observation, not a principle]**
@@ -469,6 +613,8 @@ as answered by them.
 | DEC-002 encoding | P1 — registry dependence is native-disqualifying; **P4 — the domain-of-discourse hash needs deterministic canonicalization** |
 | DEC-004 tag language | P1, P2, P3 |
 | §4.3 statement acceptance | P5 |
+| R-O-03, R-O-05 canonicalization | **P5.1 — reject, never normalise or repair** |
+| R-I-01, R-I-03 export boundary | **P5.2 — P5 stops at the payload interior; import rejects, export emits none** |
 | §4.2 statement kinds | **P6 — functions over one form, not five object types** |
 | DEC-004 tag language | **P7 — a profile question, not a language choice** |
 
