@@ -20,19 +20,62 @@ from . import ksatime
 from .encoding.ksa_cbor import INT_MAX
 from .errors import StructureError
 
-KINDS = {1: "key-publish", 2: "self", 3: "speaks", 4: "attestation", 5: "trust", 6: "revoke",
-         7: "rotate", 8: "define", 9: "review", 10: "approve", 11: "aggregate"}
+KINDS = {
+    1: "key-publish",
+    2: "self",
+    3: "speaks",
+    4: "attestation",
+    5: "trust",
+    6: "revoke",
+    7: "rotate",
+    8: "define",
+    9: "review",
+    10: "approve",
+    11: "aggregate",
+}
 KIND = {v: k for k, v in KINDS.items()}
 SUITES = {1: "ksa-ed25519-sha256", 8: "ksa-mldsa65-sha256"}
 KEY_ALGS = {1: "ed25519", 2: "ecdsa-p256", 8: "ml-dsa-65"}
 DIGEST_ALGS = {1: "sha-256", 2: "sha-384", 3: "sha-512"}
 DIGEST_LEN = {1: 32, 2: 48, 3: 64}
-USAGES = {1: "statements", 2: "tls", 3: "ipsec", 4: "email", 5: "payments", 6: "transport"}
-CONTROLLERS = {1: "person", 2: "organisation", 3: "service", 4: "agent", 5: "software", 6: "device"}
-TARGETS = {1: "key", 2: "digest", 3: "statement", 4: "definition", 5: "locator", 6: "description"}
+USAGES = {
+    1: "statements",
+    2: "tls",
+    3: "ipsec",
+    4: "email",
+    5: "payments",
+    6: "transport",
+}
+CONTROLLERS = {
+    1: "person",
+    2: "organisation",
+    3: "service",
+    4: "agent",
+    5: "software",
+    6: "device",
+}
+TARGETS = {
+    1: "key",
+    2: "digest",
+    3: "statement",
+    4: "definition",
+    5: "locator",
+    6: "description",
+}
 TARGET = {v: k for k, v in TARGETS.items()}
-KIND_TARGETS = {1: {1}, 2: {1}, 3: {1}, 4: set(TARGETS), 5: {1}, 6: {1}, 7: {1}, 8: {4},
-                9: {2, 3}, 10: {2, 3}, 11: {2, 3, 4, 5, 6}}
+KIND_TARGETS = {
+    1: {1},
+    2: {1},
+    3: {1},
+    4: set(TARGETS),
+    5: {1},
+    6: {1},
+    7: {1},
+    8: {4},
+    9: {2, 3},
+    10: {2, 3},
+    11: {2, 3, 4, 5, 6},
+}
 
 _DECIMAL = re.compile(r"0|-?[1-9][0-9]*")
 _HEX = re.compile(r"0x(?:[0-9a-f]{2})*")
@@ -167,7 +210,10 @@ class Bstr:
 
     def check(self, v, path):
         if not isinstance(v, bytes) or (self.size is not None and len(v) != self.size):
-            fail(path, f"expected a byte string{f' of {self.size} octets' if self.size else ''}")
+            fail(
+                path,
+                f"expected a byte string{f' of {self.size} octets' if self.size else ''}",
+            )
 
     def to_h(self, v):
         return Hex(v)
@@ -239,7 +285,9 @@ class Value:
             return Hex(v)
         if isinstance(v, str):
             if _HEX.fullmatch(v):
-                raise StructureError(f"text {v!r} would read back as bytes; it cannot be written in a value")
+                raise StructureError(
+                    f"text {v!r} would read back as bytes; it cannot be written in a value"
+                )
             return Text(v)
         if isinstance(v, list):
             return [self.to_h(x) for x in v]
@@ -347,30 +395,66 @@ ID = Bstr(32)
 LABEL = Tstr()
 VALUE = Value()
 TIME = Time()
-TYPE_REF = Map(Field(1, "definition", ID, True), Field(2, "label", LABEL, True), flow=True)
+TYPE_REF = Map(
+    Field(1, "definition", ID, True), Field(2, "label", LABEL, True), flow=True
+)
 ATTRIBUTE = Map(Field(1, "type", TYPE_REF, True), Field(2, "value", VALUE, True))
 ATTRIBUTE_RANGE = Map(Field(1, "type", TYPE_REF, True), Field(3, "range", VALUE))
-PUBLIC_KEY = Map(Field(1, "alg", Code(KEY_ALGS), True), Field(2, "pub", Bstr(), True), flow=True)
-VALIDITY = Map(Field(1, "not-before", TIME), Field(2, "not-on-or-after", TIME), Field(3, "issued", TIME))
-DELEGATION = Map(Field(1, "depth", Uint()), Field(2, "ranges", ListOf(ATTRIBUTE_RANGE)),
-                 Field(3, "allow-keys", ListOf(KID)), Field(4, "exclude-keys", ListOf(KID)),
-                 Field(5, "not-on-or-after", TIME))
+PUBLIC_KEY = Map(
+    Field(1, "alg", Code(KEY_ALGS), True), Field(2, "pub", Bstr(), True), flow=True
+)
+VALIDITY = Map(
+    Field(1, "not-before", TIME),
+    Field(2, "not-on-or-after", TIME),
+    Field(3, "issued", TIME),
+)
+DELEGATION = Map(
+    Field(1, "depth", Uint()),
+    Field(2, "ranges", ListOf(ATTRIBUTE_RANGE)),
+    Field(3, "allow-keys", ListOf(KID)),
+    Field(4, "exclude-keys", ListOf(KID)),
+    Field(5, "not-on-or-after", TIME),
+)
 
 BODIES = {
     1: Map(Field(1, "key", PUBLIC_KEY, True)),
-    2: Map(Field(1, "key", PUBLIC_KEY), Field(2, "label", Tstr()), Field(3, "uses", ListOf(Code(USAGES, open=True))),
-           Field(4, "created", TIME), Field(5, "controller", Code(CONTROLLERS, open=True))),
+    2: Map(
+        Field(1, "key", PUBLIC_KEY),
+        Field(2, "label", Tstr()),
+        Field(3, "uses", ListOf(Code(USAGES, open=True))),
+        Field(4, "created", TIME),
+        Field(5, "controller", Code(CONTROLLERS, open=True)),
+    ),
     3: Map(Field(1, "definitions", ListOf(ID), True)),
     4: Map(Field(1, "has", ListOf(ATTRIBUTE), True), Field(3, "template", TYPE_REF)),
-    5: Map(Field(1, "about", ListOf(ATTRIBUTE_RANGE), True), Field(2, "may-delegate", DELEGATION),
-           Field(3, "trusts", ListOf(KID, min=2)), Field(4, "threshold", Uint())),
+    5: Map(
+        Field(1, "about", ListOf(ATTRIBUTE_RANGE), True),
+        Field(2, "may-delegate", DELEGATION),
+        Field(3, "trusts", ListOf(KID, min=2)),
+        Field(4, "threshold", Uint()),
+    ),
     6: Map(Field(1, "revokes", Bstr(32), True)),
     7: Map(Field(1, "note", Tstr())),
-    8: Map(Field(1, "name", Tstr(), True), Field(2, "version", Tstr(), True), Field(3, "supersedes", ID)),
-    9: Map(Field(1, "has", ListOf(ATTRIBUTE), True), Field(2, "comment", Tstr()), Field(3, "template", TYPE_REF)),
-    10: Map(Field(1, "has", ListOf(ATTRIBUTE)), Field(2, "comment", Tstr()), Field(3, "template", TYPE_REF)),
-    11: Map(Field(1, "process", TYPE_REF, True), Field(2, "inputs", ListOf(Bstr(32)), True),
-            Field(3, "result", Bool(), True)),
+    8: Map(
+        Field(1, "name", Tstr(), True),
+        Field(2, "version", Tstr(), True),
+        Field(3, "supersedes", ID),
+    ),
+    9: Map(
+        Field(1, "has", ListOf(ATTRIBUTE), True),
+        Field(2, "comment", Tstr()),
+        Field(3, "template", TYPE_REF),
+    ),
+    10: Map(
+        Field(1, "has", ListOf(ATTRIBUTE)),
+        Field(2, "comment", Tstr()),
+        Field(3, "template", TYPE_REF),
+    ),
+    11: Map(
+        Field(1, "process", TYPE_REF, True),
+        Field(2, "inputs", ListOf(Bstr(32)), True),
+        Field(3, "result", Bool(), True),
+    ),
 }
 
 
@@ -379,7 +463,12 @@ class Target:
     named by the target type: `{digest: {alg: sha-256, value: '0x…'}}`."""
 
     def check(self, v, path):
-        if not isinstance(v, list) or len(v) < 2 or not is_int(v[0]) or v[0] not in TARGETS:
+        if (
+            not isinstance(v, list)
+            or len(v) < 2
+            or not is_int(v[0])
+            or v[0] not in TARGETS
+        ):
             fail(path, "a target is an array starting with a registered target type")
         t, n = v[0], len(v)
         if t == 2:
@@ -413,15 +502,20 @@ class Target:
     def from_h(self, h, path):
         if not isinstance(h, dict) or len(h) != 1:
             fail(path, "a target is a map with exactly one target type")
-        (name, x), = h.items()
+        ((name, x),) = h.items()
         t = TARGET.get(name)
         if t is None:
             fail(path, f"{name!r} is not a target type")
         if t == 2:
-            m = Map(Field(1, "alg", Code(DIGEST_ALGS), True), Field(2, "value", Bstr(), True)).from_h(x, path)
+            m = Map(
+                Field(1, "alg", Code(DIGEST_ALGS), True),
+                Field(2, "value", Bstr(), True),
+            ).from_h(x, path)
             v = [2, m[1], m[2]]
         elif t == 6:
-            m = Map(Field(1, "type", TYPE_REF, True), Field(2, "value", VALUE, True)).from_h(x, path)
+            m = Map(
+                Field(1, "type", TYPE_REF, True), Field(2, "value", VALUE, True)
+            ).from_h(x, path)
             v = [6, m[1], m[2]]
         elif t == 5:
             v = [5, _text(x, path)]
@@ -438,9 +532,14 @@ class Statement:
     """The statement map (SPEC-0002 §7.1). The body's shape depends on the
     kind, and `this` must be a target type the kind allows (§8.1)."""
 
-    head = Map(Field(1, "kind", Code(KINDS), True), Field(2, "suite", Code(SUITES, open=True), True),
-               Field(3, "says", KID, True), Field(4, "this", TARGET_TYPE), Field(5, "valid", VALIDITY),
-               Field(6, "body", Checked(), True))
+    head = Map(
+        Field(1, "kind", Code(KINDS), True),
+        Field(2, "suite", Code(SUITES, open=True), True),
+        Field(3, "says", KID, True),
+        Field(4, "this", TARGET_TYPE),
+        Field(5, "valid", VALIDITY),
+        Field(6, "body", Checked(), True),
+    )
 
     def check(self, v, path=""):
         self.head.check(v, path)
@@ -448,7 +547,10 @@ class Statement:
         BODIES[kind].check(v[6], "body")
         if 4 in v:
             if v[4][0] not in KIND_TARGETS[kind]:
-                fail("this", f"a {KINDS[kind]} statement cannot be about a {TARGETS[v[4][0]]}")
+                fail(
+                    "this",
+                    f"a {KINDS[kind]} statement cannot be about a {TARGETS[v[4][0]]}",
+                )
         elif kind != 5:
             fail(path, "missing required field this")
 

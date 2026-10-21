@@ -41,7 +41,9 @@ def to_datetime(t: int) -> datetime.datetime:
 def from_text(text: str) -> int:
     if not isinstance(text, str) or not _TEXT.fullmatch(text) or int(text[17:19]) > 59:
         raise ValueError(f"time {text!r} is not exactly YYYY-MM-DDTHH:MM:SSZ")
-    d = datetime.datetime.strptime(text, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=datetime.timezone.utc)
+    d = datetime.datetime.strptime(text, "%Y-%m-%dT%H:%M:%SZ").replace(
+        tzinfo=datetime.timezone.utc
+    )
     return from_datetime(d)
 
 
@@ -50,7 +52,9 @@ def to_text(t: int) -> str:
 
 
 def now() -> int:
-    return from_datetime(datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0))
+    return from_datetime(
+        datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
+    )
 
 
 def add_days(t: int, days: int) -> int:

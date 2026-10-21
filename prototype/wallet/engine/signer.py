@@ -16,4 +16,6 @@ def sign(seed: bytearray, statement: dict, carry_pub: bool = False) -> bytes:
         sig = suite.sign(seed, tbs)
     finally:
         seed[:] = bytes(len(seed))
-    return envelope.build(statement[2], statement[3], tbs, sig, pub if carry_pub else None)
+    return envelope.build(
+        statement[2], statement[3], tbs, sig, pub if carry_pub else None
+    )

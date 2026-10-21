@@ -21,7 +21,9 @@ class Envelope:
     pub: bytes | None = None
 
 
-def build(suite: int, says: bytes, tbs: bytes, sig: bytes, pub: bytes | None = None) -> bytes:
+def build(
+    suite: int, says: bytes, tbs: bytes, sig: bytes, pub: bytes | None = None
+) -> bytes:
     return encode([suite, says, tbs, sig] + ([pub] if pub is not None else []))
 
 

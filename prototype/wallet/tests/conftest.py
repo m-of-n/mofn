@@ -10,7 +10,9 @@ import pytest
 
 WALLET = Path(__file__).resolve().parents[1]
 FIXTURES = WALLET / "fixtures"
-VECTORS = json.loads((WALLET.parents[1] / "spec" / "vectors" / "ksa-core" / "vectors.json").read_text())
+VECTORS = json.loads(
+    (WALLET.parents[1] / "spec" / "vectors" / "ksa-core" / "vectors.json").read_text()
+)
 
 
 def keystore() -> dict:
@@ -30,8 +32,13 @@ def envelope(name: str) -> bytes:
 
 
 def run_mofn(*args, stdin: str = "", cwd=None) -> subprocess.CompletedProcess:
-    return subprocess.run([sys.executable, str(WALLET / "mofn"), *map(str, args)], input=stdin,
-                          capture_output=True, text=True, cwd=cwd)
+    return subprocess.run(
+        [sys.executable, str(WALLET / "mofn"), *map(str, args)],
+        input=stdin,
+        capture_output=True,
+        text=True,
+        cwd=cwd,
+    )
 
 
 @pytest.fixture

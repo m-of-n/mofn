@@ -8,8 +8,14 @@ from engine.encoding.ksa_cbor import decode, encode
 from engine.errors import Invalid
 from engine.verifier import verify
 
-NEGATIVE = {"N-1": ("V5", "encoding"), "N-2": ("V4", "signature"), "N-3": ("V6", "envelope-mismatch"),
-            "N-4": ("V3", "key"), "N-5": ("V4", "signature"), "N-6": ("V5", "encoding")}
+NEGATIVE = {
+    "N-1": ("V5", "encoding"),
+    "N-2": ("V4", "signature"),
+    "N-3": ("V6", "envelope-mismatch"),
+    "N-4": ("V3", "key"),
+    "N-5": ("V4", "signature"),
+    "N-6": ("V5", "encoding"),
+}
 
 
 @pytest.mark.parametrize("name", sorted(VECTORS["positive"]))

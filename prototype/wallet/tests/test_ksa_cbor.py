@@ -9,12 +9,38 @@ import engine.encoding.ksa_cbor as m
 from engine.encoding.ksa_cbor import decode, encode
 from engine.errors import EncodingError
 
-ACCEPT = [23, 24, 256, -1, b"\x01\x02", "hello", "", [1, 2, 3], [], {"a": 1, "b": 2}, {}, False, True,
-          {"z": [1, {"a": b"\xff"}], "a": "x"}, "Ünïcødé ✓", {1: "x", 2: "y"}, 2**53 - 1, -(2**53 - 1)]
+ACCEPT = [
+    23,
+    24,
+    256,
+    -1,
+    b"\x01\x02",
+    "hello",
+    "",
+    [1, 2, 3],
+    [],
+    {"a": 1, "b": 2},
+    {},
+    False,
+    True,
+    {"z": [1, {"a": b"\xff"}], "a": "x"},
+    "Ünïcødé ✓",
+    {1: "x", 2: "y"},
+    2**53 - 1,
+    -(2**53 - 1),
+]
 
 REJECT = {
-    "map keys out of order": bytes([0xA2]) + encode("b") + encode(2) + encode("a") + encode(1),
-    "duplicate map key": bytes([0xA2]) + encode("a") + encode(1) + encode("a") + encode(2),
+    "map keys out of order": bytes([0xA2])
+    + encode("b")
+    + encode(2)
+    + encode("a")
+    + encode(1),
+    "duplicate map key": bytes([0xA2])
+    + encode("a")
+    + encode(1)
+    + encode("a")
+    + encode(2),
     "non-smallest head 24 in 2B": bytes([0x19, 0x00, 0x18]),
     "non-smallest head 0 in 1B": bytes([0x18, 0x00]),
     "non-smallest head in 4B": bytes([0x1A, 0x00, 0x00, 0xFF, 0xFF]),
@@ -53,7 +79,9 @@ def test_rejects(name):
         decode(REJECT[name])
 
 
-@pytest.mark.parametrize("value", [None, 1.5, 2**53, -(2**53), {b"k": 1}, {-1: 1}, {True: 1}])
+@pytest.mark.parametrize(
+    "value", [None, 1.5, 2**53, -(2**53), {b"k": 1}, {-1: 1}, {True: 1}]
+)
 def test_encoder_refuses_outside_data_model(value):
     with pytest.raises(EncodingError):
         encode(value)

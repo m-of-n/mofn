@@ -55,9 +55,15 @@ def encode(v) -> bytes:
         return _head(4, len(v)) + b"".join(encode(x) for x in v)
     if isinstance(v, dict):
         for k in v:
-            if isinstance(k, bool) or not (isinstance(k, str) or (isinstance(k, int) and k >= 0)):
-                raise EncodingError(f"map key {k!r} is neither an unsigned integer nor text")
-        items = sorted(((encode(k), encode(x)) for k, x in v.items()), key=lambda kv: kv[0])
+            if isinstance(k, bool) or not (
+                isinstance(k, str) or (isinstance(k, int) and k >= 0)
+            ):
+                raise EncodingError(
+                    f"map key {k!r} is neither an unsigned integer nor text"
+                )
+        items = sorted(
+            ((encode(k), encode(x)) for k, x in v.items()), key=lambda kv: kv[0]
+        )
         return _head(5, len(items)) + b"".join(k + x for k, x in items)
     raise EncodingError(f"not in the KSA data model: {type(v).__name__}")
 
@@ -71,7 +77,7 @@ class _Reader:
         end = self.pos + n
         if end > len(self.buf):
             raise EncodingError(f"truncated at offset {self.pos}: wanted {n} byte(s)")
-        out = self.buf[self.pos:end]
+        out = self.buf[self.pos : end]
         self.pos = end
         return out
 
@@ -91,7 +97,9 @@ class _Reader:
         width, floor = _WIDTH[ai]
         n = int.from_bytes(self.take(width), "big")
         if major != 7 and n < floor:
-            raise EncodingError(f"non-smallest head at offset {at}: {n} in {width} byte(s)")
+            raise EncodingError(
+                f"non-smallest head at offset {at}: {n} in {width} byte(s)"
+            )
         return major, ai, n
 
     def item(self, depth: int):
@@ -114,13 +122,17 @@ class _Reader:
             try:
                 return raw.decode("utf-8")
             except UnicodeDecodeError as e:
-                raise EncodingError(f"text at offset {at} is not valid UTF-8: {e}") from None
+                raise EncodingError(
+                    f"text at offset {at} is not valid UTF-8: {e}"
+                ) from None
         if major == 4:
             return [self.item(depth + 1) for _ in range(arg)]
         if major == 5:
             return self.map(arg, depth)
         if major == 6:
-            raise EncodingError(f"tag {arg} at offset {at}: tags are not in the KSA data model")
+            raise EncodingError(
+                f"tag {arg} at offset {at}: tags are not in the KSA data model"
+            )
         if ai in (25, 26, 27):
             raise EncodingError(f"floating-point value at offset {at}")
         if ai == 20:
@@ -140,10 +152,14 @@ class _Reader:
             start = self.pos
             key = self.item(depth + 1)
             end = self.pos
-            if isinstance(key, bool) or not (isinstance(key, str) or (isinstance(key, int) and key >= 0)):
-                raise EncodingError(f"map key at offset {start} is neither an unsigned integer nor text")
+            if isinstance(key, bool) or not (
+                isinstance(key, str) or (isinstance(key, int) and key >= 0)
+            ):
+                raise EncodingError(
+                    f"map key at offset {start} is neither an unsigned integer nor text"
+                )
             if prev is not None:
-                before, now = self.buf[prev[0]:prev[1]], self.buf[start:end]
+                before, now = self.buf[prev[0] : prev[1]], self.buf[start:end]
                 if before == now:
                     raise EncodingError(f"duplicate map key at offset {start}")
                 if before > now:
@@ -168,6 +184,7 @@ def decode(buf: bytes):
 class KsaCborCodec(Codec):
     """The file is the envelope bytes themselves (ARCH-0003 §9: `.stmt` holds
     the exact signed bytes)."""
+
     name = "ksa-cbor"
     suffix = ".stmt"
 

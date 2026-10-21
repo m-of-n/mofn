@@ -32,7 +32,18 @@ import yaml
 
 from .. import envelope as env
 from ..errors import EncodingError, StructureError
-from ..schema import STATEMENT, Bstr, Field, Hex, Map, Name, Scalar, Text, TimeText, plain_is_text
+from ..schema import (
+    STATEMENT,
+    Bstr,
+    Field,
+    Hex,
+    Map,
+    Name,
+    Scalar,
+    Text,
+    TimeText,
+    plain_is_text,
+)
 from .base import Codec
 from .ksa_cbor import decode, encode
 
@@ -55,8 +66,13 @@ def _scalar_text(v) -> str:
 
 
 def _text(s: str) -> str:
-    if (_SAFE_PLAIN.fullmatch(s) and not s.endswith(" ") and ": " not in s
-            and " #" not in s and plain_is_text(s)):
+    if (
+        _SAFE_PLAIN.fullmatch(s)
+        and not s.endswith(" ")
+        and ": " not in s
+        and " #" not in s
+        and plain_is_text(s)
+    ):
         return s
     return json.dumps(s, ensure_ascii=False)
 
@@ -71,7 +87,8 @@ def _inline(v) -> str:
 
 def _is_block(v) -> bool:
     return (type(v) is dict and len(v) > 0) or (
-        isinstance(v, list) and any(type(x) is dict or isinstance(x, list) for x in v))
+        isinstance(v, list) and any(type(x) is dict or isinstance(x, list) for x in v)
+    )
 
 
 def _block_map(d: dict, indent: int) -> list[str]:
@@ -93,7 +110,7 @@ def _block_seq(seq: list, indent: int) -> list[str]:
     for x in seq:
         if type(x) is dict and x:
             sub = _block_map(x, indent + 2)
-            sub[0] = pad + "- " + sub[0][indent + 2:]
+            sub[0] = pad + "- " + sub[0][indent + 2 :]
             lines += sub
         else:
             lines.append(pad + "- " + _inline(x))
@@ -129,7 +146,13 @@ def parse(text: str):
         for ev in yaml.parse(text, Loader=yaml.SafeLoader):
             if isinstance(ev, yaml.AliasEvent) or getattr(ev, "anchor", None):
                 raise EncodingError("anchors and aliases are not allowed")
-            if isinstance(ev, (yaml.ScalarEvent, yaml.MappingStartEvent, yaml.SequenceStartEvent)) and ev.tag:
+            if (
+                isinstance(
+                    ev,
+                    (yaml.ScalarEvent, yaml.MappingStartEvent, yaml.SequenceStartEvent),
+                )
+                and ev.tag
+            ):
                 raise EncodingError(f"explicit tag {ev.tag} is not allowed")
             if isinstance(ev, yaml.DocumentStartEvent):
                 docs += 1
@@ -152,7 +175,10 @@ class ReviewYamlCodec(Codec):
             h = STATEMENT.to_h(s)
         except StructureError as x:
             raise EncodingError(f"cannot write the human form: {x}") from None
-        h["signed"] = {"value": Hex(e.sig), **({"pub": Hex(e.pub)} if e.pub is not None else {})}
+        h["signed"] = {
+            "value": Hex(e.sig),
+            **({"pub": Hex(e.pub)} if e.pub is not None else {}),
+        }
         return emit(h).encode("utf-8")
 
     def load(self, data: bytes) -> bytes:

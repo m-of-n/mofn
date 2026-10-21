@@ -22,12 +22,19 @@ from engine.codecs import CODECS
 
 VECTORS = HERE.parents[2] / "spec" / "vectors" / "ksa-core" / "vectors.json"
 ARTIFACT = b"ksa example artifact\n"
-STATEMENTS = {"TV-1": "tv-1-alice.pub", "TV-3": "tv-3-define", "TV-4": "tv-4-attestation"}
+STATEMENTS = {
+    "TV-1": "tv-1-alice.pub",
+    "TV-3": "tv-3-define",
+    "TV-4": "tv-4-attestation",
+}
 
 
 def wanted() -> dict[str, bytes]:
     v = json.loads(VECTORS.read_text())
-    out = {"dv-1.def": bytes.fromhex(v["definitions"]["DV-1"]["body"]), "artifact.bin": ARTIFACT}
+    out = {
+        "dv-1.def": bytes.fromhex(v["definitions"]["DV-1"]["body"]),
+        "artifact.bin": ARTIFACT,
+    }
     for name, stem in STATEMENTS.items():
         envelope = bytes.fromhex(v["positive"][name]["envelope"])
         for codec in CODECS.values():

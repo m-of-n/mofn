@@ -39,25 +39,67 @@ class LangMap:
 LANG = LangMap()
 LABEL = Tstr(LABEL_RE)
 LOCAL_REF = Map(Field(1, "definition", schema.ID), Field(2, "label", LABEL, True))
-VALUE_DEF = Map(Field(1, "value", Tstr(), True), Field(2, "names", LANG, True), Field(3, "meaning", LANG, True))
+VALUE_DEF = Map(
+    Field(1, "value", Tstr(), True),
+    Field(2, "names", LANG, True),
+    Field(3, "meaning", LANG, True),
+)
 REVIEW_Q = Map(Field(1, "tag", LABEL, True), Field(2, "ask", LANG, True))
-FIELD_DEF = Map(Field(1, "name", LABEL, True), Field(2, "type", LOCAL_REF, True), Field(3, "required", Bool(), True),
-                Field(4, "names", LANG, True), Field(5, "description", LANG, True), Field(6, "unit", Tstr()))
-TYPE_DEF = Map(Field(1, "label", LABEL, True), Field(2, "base", Uint(1, 11), True), Field(3, "names", LANG, True),
-               Field(4, "short", LANG, True), Field(5, "long", LANG), Field(6, "values", ListOf(VALUE_DEF)),
-               Field(7, "constraints", ListOf(Checked())), Field(8, "delegation", Uint(0, 2), True),
-               Field(9, "review", ListOf(REVIEW_Q)), Field(10, "examples", ListOf(Value())),
-               Field(11, "fields", ListOf(FIELD_DEF)), Field(12, "params", Checked()))
-TEMPLATE_ATTR = Map(Field(1, "type", LOCAL_REF, True), Field(2, "required", Bool(), True),
-                    Field(3, "fixed", Value()), Field(4, "default", Value()))
-TEMPLATE_DEF = Map(Field(1, "label", LABEL, True), Field(2, "function", Uint(1, 11), True),
-                   Field(3, "target", Map(Field(1, "types", ListOf(Uint(1, 6)), True),
-                                          Field(2, "rules", ListOf(Checked()))), True),
-                   Field(4, "attributes", ListOf(TEMPLATE_ATTR), True), Field(5, "max-validity", Uint()),
-                   Field(6, "approval", schema.TYPE_REF), Field(7, "issuer", Map(Field(1, "topic", LABEL, True))),
-                   Field(8, "sentence", LANG, True), Field(9, "names", LANG, True), Field(10, "short", LANG))
-BODY = Map(Field(1, "definer", schema.KID, True), Field(2, "name", Tstr(), True), Field(3, "version", Tstr(), True),
-           Field(4, "imports", ListOf(schema.ID)), Field(5, "entries", ListOf(Checked()), True))
+FIELD_DEF = Map(
+    Field(1, "name", LABEL, True),
+    Field(2, "type", LOCAL_REF, True),
+    Field(3, "required", Bool(), True),
+    Field(4, "names", LANG, True),
+    Field(5, "description", LANG, True),
+    Field(6, "unit", Tstr()),
+)
+TYPE_DEF = Map(
+    Field(1, "label", LABEL, True),
+    Field(2, "base", Uint(1, 11), True),
+    Field(3, "names", LANG, True),
+    Field(4, "short", LANG, True),
+    Field(5, "long", LANG),
+    Field(6, "values", ListOf(VALUE_DEF)),
+    Field(7, "constraints", ListOf(Checked())),
+    Field(8, "delegation", Uint(0, 2), True),
+    Field(9, "review", ListOf(REVIEW_Q)),
+    Field(10, "examples", ListOf(Value())),
+    Field(11, "fields", ListOf(FIELD_DEF)),
+    Field(12, "params", Checked()),
+)
+TEMPLATE_ATTR = Map(
+    Field(1, "type", LOCAL_REF, True),
+    Field(2, "required", Bool(), True),
+    Field(3, "fixed", Value()),
+    Field(4, "default", Value()),
+)
+TEMPLATE_DEF = Map(
+    Field(1, "label", LABEL, True),
+    Field(2, "function", Uint(1, 11), True),
+    Field(
+        3,
+        "target",
+        Map(
+            Field(1, "types", ListOf(Uint(1, 6)), True),
+            Field(2, "rules", ListOf(Checked())),
+        ),
+        True,
+    ),
+    Field(4, "attributes", ListOf(TEMPLATE_ATTR), True),
+    Field(5, "max-validity", Uint()),
+    Field(6, "approval", schema.TYPE_REF),
+    Field(7, "issuer", Map(Field(1, "topic", LABEL, True))),
+    Field(8, "sentence", LANG, True),
+    Field(9, "names", LANG, True),
+    Field(10, "short", LANG),
+)
+BODY = Map(
+    Field(1, "definer", schema.KID, True),
+    Field(2, "name", Tstr(), True),
+    Field(3, "version", Tstr(), True),
+    Field(4, "imports", ListOf(schema.ID)),
+    Field(5, "entries", ListOf(Checked()), True),
+)
 
 
 @dataclass
@@ -86,13 +128,18 @@ class Definition:
 
     def type(self, label: str) -> dict:
         if label not in self.types:
-            raise DefinitionError("type-error", f"{self.name} {self.version} has no type {label!r}")
+            raise DefinitionError(
+                "type-error", f"{self.name} {self.version} has no type {label!r}"
+            )
         return self.types[label]
 
     def _enum(self, label: str) -> list[str]:
         t = self.type(label)
         if t[2] != ENUM:
-            raise DefinitionError("type-error", f"type {label!r} has base kind {t[2]}; v0 supports only enum")
+            raise DefinitionError(
+                "type-error",
+                f"type {label!r} has base kind {t[2]}; v0 supports only enum",
+            )
         return [v[1] for v in t[6]]
 
     def valid_assignment(self, label: str, value) -> bool:
@@ -104,12 +151,20 @@ class Definition:
         allowed = self._enum(label)
         for v in values:
             if v not in allowed:
-                raise DefinitionError("type-error", f"{v!r} is not a value of {label!r}; allowed: {', '.join(allowed)}")
+                raise DefinitionError(
+                    "type-error",
+                    f"{v!r} is not a value of {label!r}; allowed: {', '.join(allowed)}",
+                )
         return [v for v in allowed if v in values]
 
     def well_formed_range(self, label: str, rng) -> bool:
-        return (isinstance(rng, list) and len(rng) > 0 and all(isinstance(v, str) for v in rng)
-                and len(set(rng)) == len(rng) and self.canonical_range(label, rng) == rng)
+        return (
+            isinstance(rng, list)
+            and len(rng) > 0
+            and all(isinstance(v, str) for v in rng)
+            and len(set(rng)) == len(rng)
+            and self.canonical_range(label, rng) == rng
+        )
 
     def in_range(self, label: str, value, rng) -> bool:
         """`rng` None is the unbounded range of the type."""
@@ -129,12 +184,16 @@ def load(data: bytes, expected_id: bytes | None = None) -> Definition:
     (SPEC-0003 §4.2, §9). Raises `DefinitionError`."""
     did = hashlib.sha256(data).digest()
     if expected_id is not None and did != expected_id:
-        raise DefinitionError("definition-unobtainable",
-                              f"the bytes hash to {did.hex()[:16]}…, not {expected_id.hex()[:16]}…")
+        raise DefinitionError(
+            "definition-unobtainable",
+            f"the bytes hash to {did.hex()[:16]}…, not {expected_id.hex()[:16]}…",
+        )
     try:
         body = decode(data)
     except EncodingError as e:
-        raise DefinitionError("definition-non-conforming", f"not KSA-CBOR: {e}") from None
+        raise DefinitionError(
+            "definition-non-conforming", f"not KSA-CBOR: {e}"
+        ) from None
     try:
         return _conform(did, data, body)
     except StructureError as e:
@@ -158,7 +217,9 @@ def _conform(did: bytes, data: bytes, body) -> Definition:
             TEMPLATE_DEF.check(m, path)
             templates[m[1]] = m
         elif kind in (3, 4):
-            schema.fail(path, "panels and processes (SPEC-0005) are not supported in v0")
+            schema.fail(
+                path, "panels and processes (SPEC-0005) are not supported in v0"
+            )
         else:
             schema.fail(path, f"entry type {kind!r} is not registered")
         if m[1] in labels:
@@ -174,7 +235,9 @@ def _conform(did: bytes, data: bytes, body) -> Definition:
     for label, t in types.items():
         for ex in t.get(10, []):
             if t[2] == ENUM and not d.valid_assignment(label, ex):
-                schema.fail(f"type {label}", f"example {ex!r} is not a valid assignment")
+                schema.fail(
+                    f"type {label}", f"example {ex!r} is not a valid assignment"
+                )
     return d
 
 
@@ -185,7 +248,9 @@ def _check_type(t: dict, path: str) -> None:
     if base == 9 and (11 not in t or t[8] != 0):
         schema.fail(path, "a record type needs fields and delegation 0")
     if 7 in t:
-        schema.fail(path, "constraint expressions (SPEC-0003 §8) are not supported in v0")
+        schema.fail(
+            path, "constraint expressions (SPEC-0003 §8) are not supported in v0"
+        )
     if 6 in t and len({v[1] for v in t[6]}) != len(t[6]):
         schema.fail(path, "enum values must be distinct")
 
@@ -193,9 +258,14 @@ def _check_type(t: dict, path: str) -> None:
 def _resolve(ref: dict, types: dict, imports: set, where: str) -> None:
     if 1 in ref:
         if ref[1] not in imports:
-            schema.fail(where, f"type reference {ref[2]!r} names a definition that is not imported")
+            schema.fail(
+                where,
+                f"type reference {ref[2]!r} names a definition that is not imported",
+            )
     elif ref[2] not in types:
-        schema.fail(where, f"type reference {ref[2]!r} is not a type of this definition")
+        schema.fail(
+            where, f"type reference {ref[2]!r} is not a type of this definition"
+        )
 
 
 def attributed(d: Definition, verified) -> object | None:
@@ -203,8 +273,13 @@ def attributed(d: Definition, verified) -> object | None:
     (SPEC-0003 §11.1): target `[4, id]`, speaker equal to the definer, and
     name and version equal to the body's."""
     for v in verified:
-        if (v.kind == 8 and v.this == [4, d.id] and v.says == d.definer
-                and v.body[1] == d.name and v.body[2] == d.version):
+        if (
+            v.kind == 8
+            and v.this == [4, d.id]
+            and v.says == d.definer
+            and v.body[1] == d.name
+            and v.body[2] == d.version
+        ):
             return v
     return None
 

@@ -98,7 +98,9 @@ class Wallet:
     @classmethod
     def open(cls, root: Path) -> "Wallet":
         if not (Path(root) / WALLET_FILE).is_file():
-            raise WalletError(f"{root} is not a wallet; run `mofn --wallet {root} init`")
+            raise WalletError(
+                f"{root} is not a wallet; run `mofn --wallet {root} init`"
+            )
         return cls(root)
 
     def _dir(self, kid: bytes) -> Path:
@@ -108,8 +110,15 @@ class Wallet:
         out = []
         for p in sorted((self.root / "personas").glob("*/persona.yaml")):
             d = _read(p)
-            out.append(Persona(_unhex(d["kid"]), d.get("label"), d["control"], d.get("controller"),
-                               d.get("provenance", {})))
+            out.append(
+                Persona(
+                    _unhex(d["kid"]),
+                    d.get("label"),
+                    d["control"],
+                    d.get("controller"),
+                    d.get("provenance", {}),
+                )
+            )
         return out
 
     def find(self, ref: str) -> Persona:
@@ -118,9 +127,15 @@ class Wallet:
         ps = self.personas()
         hits = [p for p in ps if p.label == ref]
         if not hits and len(ref) >= 8:
-            hits = [p for p in ps if p.kid.hex().startswith(ref.lower().removeprefix("0x"))]
+            hits = [
+                p for p in ps if p.kid.hex().startswith(ref.lower().removeprefix("0x"))
+            ]
         if len(hits) != 1:
-            raise WalletError(f"no persona {ref!r} in this wallet" if not hits else f"{ref!r} is ambiguous")
+            raise WalletError(
+                f"no persona {ref!r} in this wallet"
+                if not hits
+                else f"{ref!r} is ambiguous"
+            )
         return hits[0]
 
     def _check_label(self, label: str | None) -> None:
@@ -130,30 +145,73 @@ class Wallet:
     def _add(self, persona: Persona, pub: bytes) -> Path:
         d = self._dir(persona.kid)
         if d.exists():
-            raise WalletError(f"key {persona.kid.hex()[:16]}… is already in this wallet")
+            raise WalletError(
+                f"key {persona.kid.hex()[:16]}… is already in this wallet"
+            )
         keys = d / "keys"
         keys.mkdir(parents=True)
         os.chmod(keys, 0o700)
-        _write(d / "persona.yaml", {"kid": _hex(persona.kid), "label": persona.label, "control": persona.control,
-                                    "controller": persona.controller, "provenance": persona.provenance})
-        _write(keys / f"{persona.kid.hex()}.yaml",
-               {"suite": suite.CODE, "alg": "ed25519", "pub": _hex(pub), "state": "active"})
+        _write(
+            d / "persona.yaml",
+            {
+                "kid": _hex(persona.kid),
+                "label": persona.label,
+                "control": persona.control,
+                "controller": persona.controller,
+                "provenance": persona.provenance,
+            },
+        )
+        _write(
+            keys / f"{persona.kid.hex()}.yaml",
+            {
+                "suite": suite.CODE,
+                "alg": "ed25519",
+                "pub": _hex(pub),
+                "state": "active",
+            },
+        )
         return keys
 
-    def add_owned(self, label: str, controller: str, seed: bytearray, pub: bytes, passphrase: bytes) -> Persona:
+    def add_owned(
+        self,
+        label: str,
+        controller: str,
+        seed: bytearray,
+        pub: bytes,
+        passphrase: bytes,
+    ) -> Persona:
         if controller not in CONTROLLERS:
             raise WalletError(f"controller must be one of {', '.join(CONTROLLERS)}")
         self._check_label(label)
-        p = Persona(suite.kid(pub), label, "owned", controller,
-                    {"how": "generated", "when": ksatime.to_text(ksatime.now())})
+        p = Persona(
+            suite.kid(pub),
+            label,
+            "owned",
+            controller,
+            {"how": "generated", "when": ksatime.to_text(ksatime.now())},
+        )
         keys = self._add(p, pub)
         salt = nacl.utils.random(nacl.pwhash.argon2id.SALTBYTES)
-        key = nacl.pwhash.argon2id.kdf(nacl.secret.SecretBox.KEY_SIZE, passphrase, salt,
-                                       opslimit=OPSLIMIT, memlimit=MEMLIMIT)
+        key = nacl.pwhash.argon2id.kdf(
+            nacl.secret.SecretBox.KEY_SIZE,
+            passphrase,
+            salt,
+            opslimit=OPSLIMIT,
+            memlimit=MEMLIMIT,
+        )
         box = nacl.secret.SecretBox(key).encrypt(bytes(seed))
-        _write(keys / f"{p.kid.hex()}.key",
-               {"kdf": "argon2id", "opslimit": OPSLIMIT, "memlimit": MEMLIMIT, "salt": _hex(salt),
-                "cipher": "xsalsa20-poly1305", "box": _hex(bytes(box))}, mode=0o600)
+        _write(
+            keys / f"{p.kid.hex()}.key",
+            {
+                "kdf": "argon2id",
+                "opslimit": OPSLIMIT,
+                "memlimit": MEMLIMIT,
+                "salt": _hex(salt),
+                "cipher": "xsalsa20-poly1305",
+                "box": _hex(bytes(box)),
+            },
+            mode=0o600,
+        )
         return p
 
     def add_known(self, label: str | None, pub: bytes, provenance: dict) -> Persona:
@@ -166,10 +224,17 @@ class Wallet:
 
     def unlock(self, persona: Persona, passphrase: bytes) -> bytearray:
         if not persona.owned:
-            raise WalletError(f"{persona.label or persona.kid.hex()[:16]} is not owned by this wallet")
+            raise WalletError(
+                f"{persona.label or persona.kid.hex()[:16]} is not owned by this wallet"
+            )
         d = _read(self._dir(persona.kid) / "keys" / f"{persona.kid.hex()}.key")
-        key = nacl.pwhash.argon2id.kdf(nacl.secret.SecretBox.KEY_SIZE, passphrase, _unhex(d["salt"]),
-                                       opslimit=d["opslimit"], memlimit=d["memlimit"])
+        key = nacl.pwhash.argon2id.kdf(
+            nacl.secret.SecretBox.KEY_SIZE,
+            passphrase,
+            _unhex(d["salt"]),
+            opslimit=d["opslimit"],
+            memlimit=d["memlimit"],
+        )
         try:
             return bytearray(nacl.secret.SecretBox(key).decrypt(_unhex(d["box"])))
         except nacl.exceptions.CryptoError:
@@ -193,29 +258,58 @@ class Wallet:
             f = self._dir(p.kid) / "trusts" / f"{context}.yaml"
             if p.owned and f.is_file():
                 for a in _read(f) or []:
-                    out.append(Anchor(context, _unhex(a["trusts"]),
-                                      [{1: {1: _unhex(r["type"]["definition"]), 2: r["type"]["label"]},
-                                        **({3: r["range"]} if "range" in r else {})} for r in a["about"]],
-                                      p.kid, ksatime.from_text(a["accepted at"]), a["source"], a.get("note")))
+                    out.append(
+                        Anchor(
+                            context,
+                            _unhex(a["trusts"]),
+                            [
+                                {
+                                    1: {
+                                        1: _unhex(r["type"]["definition"]),
+                                        2: r["type"]["label"],
+                                    },
+                                    **({3: r["range"]} if "range" in r else {}),
+                                }
+                                for r in a["about"]
+                            ],
+                            p.kid,
+                            ksatime.from_text(a["accepted at"]),
+                            a["source"],
+                            a.get("note"),
+                        )
+                    )
         return out
 
     def add_anchor(self, anchor: Anchor) -> Path:
-        acceptor = next((p for p in self.personas() if p.kid == anchor.accepted_by), None)
+        acceptor = next(
+            (p for p in self.personas() if p.kid == anchor.accepted_by), None
+        )
         if acceptor is None or not acceptor.owned:
             raise WalletError("an anchor is accepted by a persona this wallet owns")
         if acceptor.controller not in ("person", "organisation"):
-            raise WalletError(f"{acceptor.label} is a {acceptor.controller}; only a person or an organisation "
-                              f"may accept an anchor (SPEC-0004 §4.4)")
+            raise WalletError(
+                f"{acceptor.label} is a {acceptor.controller}; only a person or an organisation "
+                f"may accept an anchor (SPEC-0004 §4.4)"
+            )
         if not anchor.about:
             raise WalletError("an anchor with an empty about must not exist")
         d = self._dir(acceptor.kid) / "trusts"
         d.mkdir(exist_ok=True)
         f = d / f"{anchor.context}.yaml"
         items = (_read(f) or []) if f.is_file() else []
-        entry = {"source": anchor.source, "trusts": _hex(anchor.trusts),
-                 "about": [{"type": {"definition": _hex(r[1][1]), "label": r[1][2]},
-                            **({"range": r[3]} if 3 in r else {})} for r in anchor.about],
-                 "accepted by": _hex(anchor.accepted_by), "accepted at": ksatime.to_text(anchor.accepted_at)}
+        entry = {
+            "source": anchor.source,
+            "trusts": _hex(anchor.trusts),
+            "about": [
+                {
+                    "type": {"definition": _hex(r[1][1]), "label": r[1][2]},
+                    **({"range": r[3]} if 3 in r else {}),
+                }
+                for r in anchor.about
+            ],
+            "accepted by": _hex(anchor.accepted_by),
+            "accepted at": ksatime.to_text(anchor.accepted_at),
+        }
         if anchor.note:
             entry["note"] = anchor.note
         _write(f, items + [entry])

@@ -33,8 +33,11 @@ def kid(pub: bytes) -> bytes:
 
 
 def key_ok(pub: bytes) -> bool:
-    return (isinstance(pub, bytes) and len(pub) == PUB_LEN
-            and nacl.bindings.crypto_core_ed25519_is_valid_point(pub))
+    return (
+        isinstance(pub, bytes)
+        and len(pub) == PUB_LEN
+        and nacl.bindings.crypto_core_ed25519_is_valid_point(pub)
+    )
 
 
 def verify(pub: bytes, tbs: bytes, sig: bytes) -> bool:

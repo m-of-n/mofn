@@ -60,7 +60,9 @@ def verify(data: bytes, keystore: KeyStore) -> Verified:
     in_store = pub is not None
     if pub is None:
         if e.pub is None:
-            raise Unverifiable("V3", "unknown-key", f"no key for {e.says.hex()[:16]}… in the key store")
+            raise Unverifiable(
+                "V3", "unknown-key", f"no key for {e.says.hex()[:16]}… in the key store"
+            )
         if suite.kid(e.pub) != e.says:
             raise Invalid("V3", "key", "kid(pub) does not equal says")
         pub = e.pub
@@ -76,7 +78,11 @@ def verify(data: bytes, keystore: KeyStore) -> Verified:
         raise Invalid("V5", "encoding", str(x)) from None
 
     if not isinstance(s, dict) or s.get(2) != e.suite or s.get(3) != e.says:
-        raise Invalid("V6", "envelope-mismatch", "the envelope's suite or says differs from the statement's")
+        raise Invalid(
+            "V6",
+            "envelope-mismatch",
+            "the envelope's suite or says differs from the statement's",
+        )
 
     try:
         schema.STATEMENT.check(s)
@@ -98,20 +104,40 @@ def _kind_rules(s: dict, e: env.Envelope) -> None:
             raise Invalid("V8", "kind-rule", why)
 
     if kind in (1, 2, 3, 6):
-        rule(this == [1, says], f"a {schema.KINDS[kind]} statement must be about its own key")
+        rule(
+            this == [1, says],
+            f"a {schema.KINDS[kind]} statement must be about its own key",
+        )
     if kind == 1 or (kind == 2 and 1 in body):
         key = body[1]
-        rule(key[1] == suite.KEY_ALG, "the published key's algorithm does not match the suite")
+        rule(
+            key[1] == suite.KEY_ALG,
+            "the published key's algorithm does not match the suite",
+        )
         rule(suite.kid(key[2]) == says, "kid(body.key) does not equal says")
-        rule(e.pub is not None and e.pub == key[2], "the envelope must carry pub, equal to body.key.pub")
+        rule(
+            e.pub is not None and e.pub == key[2],
+            "the envelope must carry pub, equal to body.key.pub",
+        )
     if kind == 5:
         threshold_form = this is None
         if threshold_form:
-            rule(3 in body and 4 in body, "the threshold form needs trusts and threshold")
-            rule(1 <= body[4] <= len(body[3]), "threshold must be between 1 and the number of keys")
+            rule(
+                3 in body and 4 in body, "the threshold form needs trusts and threshold"
+            )
+            rule(
+                1 <= body[4] <= len(body[3]),
+                "threshold must be between 1 and the number of keys",
+            )
         else:
-            rule(3 not in body and 4 not in body, "trusts and threshold belong only to the threshold form")
+            rule(
+                3 not in body and 4 not in body,
+                "trusts and threshold belong only to the threshold form",
+            )
     if kind in (6, 7):
-        rule(3 in s.get(5, {}), f"a {schema.KINDS[kind]} statement must carry valid.issued")
+        rule(
+            3 in s.get(5, {}),
+            f"a {schema.KINDS[kind]} statement must carry valid.issued",
+        )
     if kind == 7:
         rule(this != [1, says], "a rotate cannot name its own key as successor")

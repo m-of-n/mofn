@@ -27,12 +27,14 @@ class Rejected(Exception):
 
 class Invalid(Rejected):
     """Malformed, or the signature does not verify. MUST NOT be used."""
+
     result = "invalid"
 
 
 class Unverifiable(Rejected):
     """May be valid, but this verifier cannot tell: unsupported suite, or no
     key for `says`."""
+
     result = "unverifiable"
 
 

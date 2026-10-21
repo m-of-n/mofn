@@ -11,9 +11,18 @@ import json
 from . import ksatime
 from .definition import Definition
 
-LIMIT = ("This establishes who said it and whether they were entitled to say it; "
-         "it does not establish that it is true.")
-LINES = ("integrity", "authenticity", "names", "authorization", "acceptance", "semantics")
+LIMIT = (
+    "This establishes who said it and whether they were entitled to say it; "
+    "it does not establish that it is true."
+)
+LINES = (
+    "integrity",
+    "authenticity",
+    "names",
+    "authorization",
+    "acceptance",
+    "semantics",
+)
 
 
 def lang(m: dict) -> str:
@@ -70,11 +79,17 @@ def sentence(d: Definition | None, statement: dict, labels: dict[bytes, str]) ->
     attrs = statement[6].get(1, [])
     if d is None or any(a[1][1] != d.id for a in attrs):
         ids = {a[1][1] for a in attrs if d is None or a[1][1] != d.id}
-        return f"{says} says something about {this} in unresolved vocabulary " + \
-            ", ".join(f"definition:{i[:8].hex()}" for i in sorted(ids)) + "."
+        return (
+            f"{says} says something about {this} in unresolved vocabulary "
+            + ", ".join(f"definition:{i[:8].hex()}" for i in sorted(ids))
+            + "."
+        )
     t = _template(d, statement)
     if t is None:
-        parts = ", ".join(f"{type_name(d, a[1][2])} is {value_text(d, a[1][2], a[2], 2)}" for a in attrs)
+        parts = ", ".join(
+            f"{type_name(d, a[1][2])} is {value_text(d, a[1][2], a[2], 2)}"
+            for a in attrs
+        )
         return f"{says} says that for {this}, {parts}."
     text = lang(t[8]).replace("{says}", says).replace("{this}", this)
     for a in attrs:

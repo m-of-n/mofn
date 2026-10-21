@@ -33,31 +33,121 @@ def world(request, tmp_path_factory):
     (root / "app.pyz").write_bytes(ARTIFACT)
 
     def m(wallet, *args, stdin="", cwd=root):
-        return run_mofn("--wallet", root / wallet, "--codec", codec, *args, stdin=stdin, cwd=cwd)
+        return run_mofn(
+            "--wallet", root / wallet, "--codec", codec, *args, stdin=stdin, cwd=cwd
+        )
 
     out = {"codec": codec, "root": root, "m": m, "logs": []}
     ok(m("issuer", "init"))
-    out["logs"].append(ok(m("issuer", "key", "gen", "build", "--controller", "service", "--passphrase-stdin",
-                            "-o", hand / "build.pub.stmt", stdin=PASS + "\n")))
-    out["logs"].append(ok(m("issuer", "make", "--as", "build", "--subject", "app.pyz", "--def", DV1,
-                            "--type", "build-provenance", "--value", "reproducible", "-o", hand / "prov.stmt",
-                            "--passphrase-stdin", stdin=PASS + "\n")))
+    out["logs"].append(
+        ok(
+            m(
+                "issuer",
+                "key",
+                "gen",
+                "build",
+                "--controller",
+                "service",
+                "--passphrase-stdin",
+                "-o",
+                hand / "build.pub.stmt",
+                stdin=PASS + "\n",
+            )
+        )
+    )
+    out["logs"].append(
+        ok(
+            m(
+                "issuer",
+                "make",
+                "--as",
+                "build",
+                "--subject",
+                "app.pyz",
+                "--def",
+                DV1,
+                "--type",
+                "build-provenance",
+                "--value",
+                "reproducible",
+                "-o",
+                hand / "prov.stmt",
+                "--passphrase-stdin",
+                stdin=PASS + "\n",
+            )
+        )
+    )
     (hand / "app.pyz").write_bytes(ARTIFACT)
 
     for wallet in ("rp", "rp-unknown"):
         ok(m(wallet, "init"))
-        ok(m(wallet, "key", "gen", "rp", "--passphrase-stdin", "-o", root / f"{wallet}.pub", stdin=PASS + "\n"))
-        ok(m(wallet, "key", "import", FIXTURES / f"tv-1-alice.pub{suffix}", "--label", "Alice (definer)"))
-    out["logs"].append(ok(m("rp", "key", "import", hand / "build.pub.stmt", "--label", "release machine")))
+        ok(
+            m(
+                wallet,
+                "key",
+                "gen",
+                "rp",
+                "--passphrase-stdin",
+                "-o",
+                root / f"{wallet}.pub",
+                stdin=PASS + "\n",
+            )
+        )
+        ok(
+            m(
+                wallet,
+                "key",
+                "import",
+                FIXTURES / f"tv-1-alice.pub{suffix}",
+                "--label",
+                "Alice (definer)",
+            )
+        )
+    out["logs"].append(
+        ok(
+            m(
+                "rp",
+                "key",
+                "import",
+                hand / "build.pub.stmt",
+                "--label",
+                "release machine",
+            )
+        )
+    )
 
     def chk(wallet, artifact="app.pyz", *extra):
-        return m(wallet, "check", "prov.stmt", FIXTURES / f"tv-3-define{suffix}", "--artifact", artifact,
-                 "--def", DV1, *extra, cwd=hand)
+        return m(
+            wallet,
+            "check",
+            "prov.stmt",
+            FIXTURES / f"tv-3-define{suffix}",
+            "--artifact",
+            artifact,
+            "--def",
+            DV1,
+            *extra,
+            cwd=hand,
+        )
 
     out["unauthorized"] = chk("rp")
     out["unknown-key"] = chk("rp-unknown")
-    ok(m("rp", "root", "add", "release machine", "--as", "rp", "--def", DV1, "--type", "build-provenance",
-         "--values", "reproducible,attested"))
+    ok(
+        m(
+            "rp",
+            "root",
+            "add",
+            "release machine",
+            "--as",
+            "rp",
+            "--def",
+            DV1,
+            "--type",
+            "build-provenance",
+            "--values",
+            "reproducible,attested",
+        )
+    )
     out["green"] = chk("rp")
     out["json"] = chk("rp", "app.pyz", "--format", "json")
     (hand / "bad.pyz").write_bytes(b"X" + ARTIFACT[1:])
@@ -65,7 +155,10 @@ def world(request, tmp_path_factory):
     return out
 
 
-@pytest.mark.parametrize("case,code", [("green", 0), ("unauthorized", 1), ("unknown-key", 1), ("tampered", 1)])
+@pytest.mark.parametrize(
+    "case,code",
+    [("green", 0), ("unauthorized", 1), ("unknown-key", 1), ("tampered", 1)],
+)
 def test_golden_verdicts(world, case, code):
     p = world[case]
     assert p.stdout == (GOLDEN / f"{case}.txt").read_text()
@@ -75,7 +168,10 @@ def test_golden_verdicts(world, case, code):
 def test_json_verdict(world):
     j = json.loads(world["json"].stdout)
     assert j["answer"] == "yes"
-    assert j["verdict"]["acceptance"] == {"result": "pass", "sentence": "no template is named"}
+    assert j["verdict"]["acceptance"] == {
+        "result": "pass",
+        "sentence": "no template is named",
+    }
     assert j["because"][0]["path"][0]["key"] == "release machine"
 
 
@@ -90,12 +186,25 @@ def test_tampered_statement_exits_3(world):
     if world["codec"] == "ksa-cbor":
         data[-1] ^= 0x01
     else:
-        data = bytearray(bytes(data).replace(b"value: reproducible", b"value: attested"))
+        data = bytearray(
+            bytes(data).replace(b"value: reproducible", b"value: attested")
+        )
     (hand / "forged.stmt").write_bytes(bytes(data))
-    p = world["m"]("rp", "check", "forged.stmt", FIXTURES / "dv-1.def", "--artifact", "app.pyz", "--def", DV1,
-                   cwd=hand)
+    p = world["m"](
+        "rp",
+        "check",
+        "forged.stmt",
+        FIXTURES / "dv-1.def",
+        "--artifact",
+        "app.pyz",
+        "--def",
+        DV1,
+        cwd=hand,
+    )
     assert p.returncode == 3
-    assert p.stdout.startswith("integrity      fail           forged.stmt is invalid at V4 (signature)")
+    assert p.stdout.startswith(
+        "integrity      fail           forged.stmt is invalid at V4 (signature)"
+    )
 
 
 def test_passphrase_never_leaves_the_prompt(world):
@@ -118,8 +227,19 @@ def test_key_permissions(world):
 def wallet(tmp_path):
     w = tmp_path / "w"
     ok(run_mofn("--wallet", w, "init"))
-    ok(run_mofn("--wallet", w, "key", "gen", "me", "--passphrase-stdin", "-o", tmp_path / "me.pub",
-                stdin=PASS + "\n"))
+    ok(
+        run_mofn(
+            "--wallet",
+            w,
+            "key",
+            "gen",
+            "me",
+            "--passphrase-stdin",
+            "-o",
+            tmp_path / "me.pub",
+            stdin=PASS + "\n",
+        )
+    )
     (tmp_path / "file").write_bytes(ARTIFACT)
     return tmp_path, w
 
@@ -133,22 +253,59 @@ def test_init_never_overwrites(wallet):
 def test_wallet_from_environment(wallet):
     _, w = wallet
     env = dict(os.environ, MOFN_WALLET=str(w))
-    p = subprocess.run([sys.executable, str(WALLET / "mofn"), "init"], env=env, capture_output=True, text=True)
+    p = subprocess.run(
+        [sys.executable, str(WALLET / "mofn"), "init"],
+        env=env,
+        capture_output=True,
+        text=True,
+    )
     assert p.returncode == 2 and str(w) in p.stderr
 
 
 def test_wrong_passphrase(wallet):
     tmp, w = wallet
-    p = run_mofn("--wallet", w, "make", "--as", "me", "--subject", tmp / "file", "--def", DV1, "--type",
-                 "build-provenance", "--value", "reproducible", "--passphrase-stdin", stdin="nope\n")
+    p = run_mofn(
+        "--wallet",
+        w,
+        "make",
+        "--as",
+        "me",
+        "--subject",
+        tmp / "file",
+        "--def",
+        DV1,
+        "--type",
+        "build-provenance",
+        "--value",
+        "reproducible",
+        "--passphrase-stdin",
+        stdin="nope\n",
+    )
     assert p.returncode == 2 and "wrong passphrase" in p.stderr
 
 
 def test_make_refuses_a_typo(wallet):
     tmp, w = wallet
-    p = run_mofn("--wallet", w, "make", "--as", "me", "--subject", tmp / "file", "--def", DV1, "--type",
-                 "build-provenance", "--value", "reproducable", "--passphrase-stdin", stdin=PASS + "\n")
-    assert p.returncode == 2 and "allowed: reproducible, attested, unverified" in p.stderr
+    p = run_mofn(
+        "--wallet",
+        w,
+        "make",
+        "--as",
+        "me",
+        "--subject",
+        tmp / "file",
+        "--def",
+        DV1,
+        "--type",
+        "build-provenance",
+        "--value",
+        "reproducable",
+        "--passphrase-stdin",
+        stdin=PASS + "\n",
+    )
+    assert (
+        p.returncode == 2 and "allowed: reproducible, attested, unverified" in p.stderr
+    )
     assert len(list((w / "statements").glob("*.stmt"))) == 1
 
 
@@ -161,27 +318,121 @@ def test_empty_passphrase_is_refused(tmp_path):
 
 def test_duplicate_label_is_refused(wallet):
     tmp, w = wallet
-    p = run_mofn("--wallet", w, "key", "gen", "me", "--passphrase-stdin", "-o", tmp / "x", stdin=PASS + "\n")
+    p = run_mofn(
+        "--wallet",
+        w,
+        "key",
+        "gen",
+        "me",
+        "--passphrase-stdin",
+        "-o",
+        tmp / "x",
+        stdin=PASS + "\n",
+    )
     assert p.returncode == 2 and "already exists" in p.stderr
 
 
 def test_only_a_person_or_organisation_accepts_an_anchor(wallet):
     tmp, w = wallet
-    ok(run_mofn("--wallet", w, "key", "gen", "bot", "--controller", "agent", "--passphrase-stdin",
-                "-o", tmp / "bot.pub", stdin=PASS + "\n"))
-    ok(run_mofn("--wallet", w, "key", "import", FIXTURES / "tv-1-alice.pub.stmt", "--label", "Alice"))
-    p = run_mofn("--wallet", w, "root", "add", "Alice", "--as", "bot", "--def", DV1, "--type", "build-provenance")
+    ok(
+        run_mofn(
+            "--wallet",
+            w,
+            "key",
+            "gen",
+            "bot",
+            "--controller",
+            "agent",
+            "--passphrase-stdin",
+            "-o",
+            tmp / "bot.pub",
+            stdin=PASS + "\n",
+        )
+    )
+    ok(
+        run_mofn(
+            "--wallet",
+            w,
+            "key",
+            "import",
+            FIXTURES / "tv-1-alice.pub.stmt",
+            "--label",
+            "Alice",
+        )
+    )
+    p = run_mofn(
+        "--wallet",
+        w,
+        "root",
+        "add",
+        "Alice",
+        "--as",
+        "bot",
+        "--def",
+        DV1,
+        "--type",
+        "build-provenance",
+    )
     assert p.returncode == 2 and "only a person or an organisation" in p.stderr
-    ok(run_mofn("--wallet", w, "root", "add", "Alice", "--as", "me", "--def", DV1, "--type", "build-provenance"))
+    ok(
+        run_mofn(
+            "--wallet",
+            w,
+            "root",
+            "add",
+            "Alice",
+            "--as",
+            "me",
+            "--def",
+            DV1,
+            "--type",
+            "build-provenance",
+        )
+    )
 
 
 def test_root_add_needs_a_known_key_and_a_real_value(wallet):
     _, w = wallet
-    p = run_mofn("--wallet", w, "root", "add", "nobody", "--as", "me", "--def", DV1, "--type", "build-provenance")
+    p = run_mofn(
+        "--wallet",
+        w,
+        "root",
+        "add",
+        "nobody",
+        "--as",
+        "me",
+        "--def",
+        DV1,
+        "--type",
+        "build-provenance",
+    )
     assert p.returncode == 2 and "no persona" in p.stderr
-    ok(run_mofn("--wallet", w, "key", "import", FIXTURES / "tv-1-alice.pub.stmt", "--label", "Alice"))
-    p = run_mofn("--wallet", w, "root", "add", "Alice", "--as", "me", "--def", DV1, "--type", "build-provenance",
-                 "--values", "reproducible,maybe")
+    ok(
+        run_mofn(
+            "--wallet",
+            w,
+            "key",
+            "import",
+            FIXTURES / "tv-1-alice.pub.stmt",
+            "--label",
+            "Alice",
+        )
+    )
+    p = run_mofn(
+        "--wallet",
+        w,
+        "root",
+        "add",
+        "Alice",
+        "--as",
+        "me",
+        "--def",
+        DV1,
+        "--type",
+        "build-provenance",
+        "--values",
+        "reproducible,maybe",
+    )
     assert p.returncode == 2 and "'maybe' is not a value" in p.stderr
 
 
