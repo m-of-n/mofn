@@ -9,7 +9,8 @@ import pathlib, re, subprocess, sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DOCS = [ROOT / "spec", ROOT / "project"]
 REQ = ["schema", "id", "title", "type", "status", "version", "date", "updated"]
-KINDS = {"ARCH", "ADR", "MAP", "PLAN", "PROC", "BACKLOG", "DECISIONS", "GLOSSARY", "RETRO", "APP", "SPEC", "UC"}  # SPEC = normative protocol specifications; UC = use cases
+KINDS = {"ARCH", "ADR", "MAP", "PLAN", "PROC", "BACKLOG", "DECISIONS", "GLOSSARY", "RETRO", "APP", "SPEC", "UC",
+         "R", "RPT"}  # SPEC = normative protocol specifications; UC = use cases; R/RPT = research reports (RPT-0001 predates R-NNNN)
 errs = []
 
 try:
@@ -42,7 +43,13 @@ def changed_in_head(path):
         return ""
 
 
-for p in sorted(q for d in DOCS for q in d.glob("*.md")):
+# Research reports publish (bin/manifest), so they carry the same contract —
+# until mofn#88 nothing checked them, and §9.5 went unenforced for every one.
+# Only report.md: the evidence files beside it are not archdoc documents.
+FILES = sorted([q for d in DOCS for q in d.glob("*.md")]
+               + list((ROOT / "research").glob("*/report.md")))
+
+for p in FILES:
     fm, raw = front(p)
     rel = p.relative_to(ROOT)
     if raw.lstrip().startswith("<!-- GENERATED"):
@@ -92,6 +99,6 @@ for p in sorted(q for d in DOCS for q in d.glob("*.md")):
 
 for e in errs:
     print(f"ERROR {e}")
-n = sum(len(list(d.glob("*.md"))) for d in DOCS)
+n = len(FILES)
 print(f"\n{n} documents — {len(errs)} errors")
 sys.exit(1 if errs else 0)
