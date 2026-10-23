@@ -8,10 +8,10 @@ description: "Canonical working architecture for a native model that is not X.50
 type: architecture
 category: security
 status: draft
-version: "0.1.2"
+version: "0.1.3"
 version_policy: "semver; PATCH = editorial; MINOR = additive requirements; MAJOR = breaking model change"
 date: "2026-09-15"
-updated: "2026-10-14"
+updated: "2026-10-23"
 authors:
   - role: architect
     id: conversation-brainpool256
@@ -78,7 +78,7 @@ agent_notes: >
 
 # ARCH-0001 — Authorization, local names, and artifact attestation
 
-**Status:** draft · **Version:** 0.1.1 · **Date:** 2026-09-15  
+**Status:** draft · **Version:** 0.1.3 · **Date:** 2026-09-15 · **Updated:** 2026-10-23  
 **Canonical file:** `spec/ARCH-0001-authorization-attestation.md`  
 **Changelog:** `spec/ARCH-0001-CHANGELOG.md`
 
@@ -355,11 +355,74 @@ Options:
 Drivers: library availability, SCITT alignment, SPKI fidelity, human debug.  
 Acceptance test: round-trip fixtures for NameCert, AuthzCert (including threshold subject), ArtifactStatement.
 
+**Inputs the DEC-002 ADR must answer** — added 0.1.3 from the CBOR/COSE
+extraction (mofn#112; library records at `bafd536`). Additive. No option is
+selected, ranked or withdrawn here.
+
+- **A driver the list above omits: detectability of an order-only divergence.**
+  RFC 8747 §3.3's worked example does not reproduce, and the cause is map order
+  alone: the ciphertext authenticates and re-encrypts to every printed octet,
+  but its plaintext is ordered `3, 1, -1` where the document prints the
+  RFC 8949 §4.2.1 order `1, 3, -1` (library `rfc-8747` cut B). The record ranks
+  option 1 ahead of option 3 ahead of option 5 on this ground — the reverse of
+  MD-3's narrowing. Under option 5 as `SPEC-0002` §4.2–§4.3 profiles it, an
+  order-only divergence **is** a rejection (V5, `encoding`), but only because
+  the profile states the rule; a decoder that omits it still parses every valid
+  document. That is the difference in kind `DECISIONS-0001` item 2 already
+  records for condition (2). The ADR scores this driver by name.
+- **"No IANA tags" is a rule of our profile, not a property of the format.**
+  The COSE_Encrypt0 tag is optional — 71 octets untagged against 72 tagged
+  (`rfc-8747` cut A, corroborating `rfc-8392` cut 3) — so the property holds
+  only because `SPEC-0002` §4.1 forbids major type 6 and §4.3 rejects it. Nor
+  does it reach registry dependence outside the tag space: COSE algorithm
+  identifiers, CWT claim keys, confirmation methods. The ADR states option 5's
+  no-registry property as the list of registries it excludes, not as "no tags".
+- **The acceptance test names an invariant no schema language checks.**
+  `Threshold`'s `1 ≤ k ≤ n` and `n = len(members)` (§4.1) are not expressible
+  in CDDL (`rfc-8610`); options 1 and 3 ship no schema language, so this scores
+  against no option. It is a defect in the **test**: the threshold fixture's
+  expected-results file carries the invariant as positive and negative cases
+  (`k = 0`, `k > n`, `n ≠ len(members)`), and the component that owns the check
+  is named — today `SPEC-0002` V8, *"`trust`: target and threshold form"*
+  (§8.6 writes `k` as `threshold` and `n` as the length of `trusts`).
+  `spec/vectors/ksa-core/` carries no threshold vector yet.
+
 ### DEC-003 — Issuer / subject identifiers on the wire
 
 Options: raw COSE key; COSE key thumbprint; `did:key`; hash-uri (`sha256:…`); text KeyId.
 
 Must specify: canonical key bytes before hashing.
+
+**Inputs the DEC-003 ADR must answer** — added 0.1.3 from the CBOR/COSE
+extraction (mofn#112). Additive. No option is selected.
+
+`SPEC-0002` §4.5 specifies `kid = SHA-256(public-key encoding under the
+suite)`, the encoding fixed per suite (§6.3: RFC 8032 §5.1.2; §6.5: FIPS 204).
+`ADR-0003` makes the SPECs govern; it does not accept this decision, and the
+findings below are what the ADR weighs that derivation against.
+
+- **COSE key thumbprint (RFC 9679) is not native-eligible as written.** Its
+  preimage is a registry-labelled `COSE_Key`, which `ARCH-0002` P1 places at
+  interchange. For RSA, Symmetric and HSS-LMS a single representation must be
+  pinned — RFC 8230 §4 and RFC 8778 §2.1–§2.2 already pin two, and Symmetric
+  `k` has nothing to normalise. For AKP, the only post-quantum key type, `alg`
+  is inside the digest and RFC 9679 offers no subset that excludes it; that is
+  not ours to fix (library `rfc-9679`).
+- **A post-quantum COSE thumbprint contains an IANA allocation.** For ML-DSA
+  the COSE Algorithms values −48/−49/−50 sit inside the preimage at offsets
+  4–5, offset 5 being the allocation itself (`2f`, `30`, `31`; `rfc-9964`
+  cut B). That is `ADR-0001`'s rejected private-use escape arriving by another
+  route: the identifier carries a registry number in its bytes. Hashing the
+  suite's raw key encoding, as `SPEC-0002` does, avoids it.
+- **The inverse question, which RFC 9679 does not reach.** Its AKP defect is an
+  algorithm *inside* the preimage; `SPEC-0002`'s `kid` has none, so identical
+  key octets under two suites yield one `kid`. Today's suites cannot collide
+  (32 against 1952 octets). Whether a future suite with an equal-length
+  encoding needs the suite in the preimage is for this ADR; not answered here.
+- **RFC 8747 §3.4 is not an option.** It names a hash of the public key with no
+  algorithm, encoding, parameter subset or truncation, and its own example
+  `kid` is not SHA-256 of its key under six encodings tried (`rfc-8747`). It is
+  evidence about what a COSE `kid` is — `ARCH-0002` P1.1 — not a derivation.
 
 ### DEC-004 — Tag language (authorization)
 
