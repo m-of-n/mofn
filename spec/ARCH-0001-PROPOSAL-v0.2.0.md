@@ -7,10 +7,10 @@ description: "Prose proposal for the next MINOR version of ARCH-0001. Additive o
 type: proposal
 category: security
 status: proposed
-version: "0.2.0-proposed.4"
+version: "0.2.0-proposed.5"
 version_policy: "target is a MINOR bump of ARCH-0001; all changes additive. This proposal's own revisions tracked in §10."
 date: "2026-09-16"
-updated: "2026-09-22"
+updated: "2026-10-23"
 authors:
   - role: proposer
     id: conversation-claude-opus-5
@@ -190,6 +190,17 @@ with key-centricity.
 > **export** envelopes under R-I-03, with the mapping from key-relative
 > identifiers to registered COSE labels documented as a lossy interchange step in
 > the §6 matrix.
+> *(Rev.5.)* The deterministic rules are those of RFC 8949 §4.2.1 — map keys in
+> bytewise lexicographic order of their encodings, not §4.2.3's length-first
+> order — and a decoder **rejects** any other order; no-tags is likewise a rule
+> the decoder enforces, not a property the format supplies.
+
+**Rev.5 note.** The pinning sentence is what the RFC 8747 extraction asked for:
+*one sentence in option 5's profile*. RFC 8747 §3.3's worked example fails to
+reproduce on map order alone (library `rfc-8747` cut B), and the COSE_Encrypt0
+tag is optional, so a no-tags property is ours to enforce (cut A). `SPEC-0002`
+§4.2(3) and §4.3 already state both; the sentence brings the option into line
+with the profile written against it. It selects nothing (mofn#112).
 
 This keeps modern library support, keeps SCITT and RFC 9943 interoperability at
 the boundary, and keeps the native model free of central allocation. It is
@@ -519,6 +530,13 @@ what is actually accepted.
 ---
 
 ## 10. Revision history of this proposal
+
+**0.2.0-proposed.5 — 2026-10-23.** Option 5 (§3.3) pins its deterministic
+rules to RFC 8949 §4.2.1 with a rejecting decoder, and states no-tags as a
+decoder rule — one sentence, from the CBOR/COSE extraction (mofn#112). The
+other #112 findings are inputs to the DEC-002 and DEC-003 ADRs and went to
+`ARCH-0001` v0.1.3 §7, not here. Nothing accepted. (proposed.4 has no entry
+here; it is not reconstructed.)
 
 **0.2.0-proposed.3 — 2026-09-22.** Sponsor accepted R-M-12; it moves to
 ARCH-0002 P1 via ADR-0001 and is no longer proposed here. Two §8 questions

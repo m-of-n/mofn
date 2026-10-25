@@ -7,10 +7,10 @@ description: "Type names, constraints, types-as-schemas, hash-identified domains
 type: architecture
 category: security
 status: draft
-version: "0.7.1"
+version: "0.8.0"
 version_policy: "semver; PATCH = editorial; MINOR = additive principle; MAJOR = breaking"
 date: "2026-09-22"
-updated: "2026-10-16"
+updated: "2026-10-23"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -43,6 +43,8 @@ agent_notes: >
   ADR-0002 is the instrument that would make it normative, and it is proposed,
   not accepted. The clauses are an INPUT to DEC-002 and DEC-005 and select
   neither.
+  P1.1 added in v0.8.0 (mofn#112) is DRAFT and does not amend accepted P1.
+  It postdates the v0.7.1 review pass and has not been read by a reviewer.
 ---
 
 # ARCH-0002 — Key-relative naming and processing
@@ -79,6 +81,47 @@ encoding can disambiguate them because no principal is attached.
 
 **Consequence.** CBOR tags, COSE header parameters and CWT claim keys are
 **interchange, not native** — the same move R-M-01 already makes for X.509.
+
+### P1.1 — What a foreign `kid` is not **[draft]**
+
+Added 0.8.0 from the CBOR/COSE extraction (mofn#112; library `rfc-8747` at
+`bafd536`). **This clause does not amend P1**, which stays as `ADR-0001`
+accepted it. It is draft and states only what P1 already implies at the COSE
+boundary.
+
+RFC 8747 §3.4 is the standards-track statement of what a COSE `kid` is, and it
+is a **definition by contrast**, not an adoption: *"Note that the value of a Key
+ID for a specific key is not necessarily the same for different parties."* A
+COSE `kid` is a **(party, local label)** pair resolved by table lookup; P1's is a
+**(defining key, local label)** pair resolved by derivation. Same shape,
+different first element — and a party-relative alias has an owner but no
+cryptographic root, which is *escape from a registry, not a namespace* reached
+from the other side. §3.4 carries no BCP 14 keyword: it is a description, and a
+reader who takes it for a prohibition has misread it.
+
+The collision is quiet because it is a naming one: `SPEC-0002` §4.5 calls its
+**derived** identifier `kid` too. The native side is settled — `says` inside the
+TBS is the principal, and the envelope's `says` is a hint checked at V6
+(`SPEC-0002` §5). What remains is the boundary:
+
+| case | RFC 8747 | rule here |
+|---|---|---|
+| **two places for one identifier** | §3.2's MAY permits a `kid` inside the `COSE_Key` while Confirmation Key 3 carries one beside it in the same `cnf` map, with no stated precedence and no requirement that the two agree | **neither wins.** On import the KSA `kid` is computed from the key (`SPEC-0002` §4.5); a foreign `kid` that disagrees is reported, never adopted |
+| **intentional collision** | §6 requires an issuer not to reuse a Key ID within the CWTs' lifetime *"unless intentionally desired"*, and names DTLS session continuity as such a case | a derived `kid` makes the collision **impossible**, not discouraged. A profile that wants session continuity carries it in something other than the principal's identifier |
+| **`cnf`** | carrying `cnf` imports a second IANA registry, with **no allocation tiers**, where RFC 8392 §9.1.1 tiers the Claim Key space four ways (`rfc-8747` cut D) | **export emits no `cnf` claim.** Proof of possession is native (`SPEC-0002` §6.4, `KSA-POP-SIG-v1`) |
+
+This is P5.2's DSSE `KEYID` row, for COSE: **the principal travels in the
+payload, never in a foreign `kid`.** An export may place the KSA `kid` in the
+COSE `kid` header as a hint; an import never treats one as a principal.
+
+**This bears on** DEC-003 (`ARCH-0001` §7 records the derivation findings) and
+on the COSE_Sign1 + CWT row of the `ARCH-0001` §6 matrix, which mofn#110
+amends; the rows belong in that table, per R-I-01, and are not duplicated here.
+
+**Acceptance test.** The R-I-01 mapping table for COSE_Sign1 + CWT carries a
+`kid` row and a `cnf` row stating the rules above; and a negative fixture — a
+`COSE_Key` whose embedded `kid` disagrees with the KSA `kid` of its key —
+imports with the disagreement reported.
 
 ---
 
@@ -611,6 +654,7 @@ as answered by them.
 | `AuthzCert` delegation | **P2 — scoped by (Domain, Topic)** |
 | `PredicateType`, `Predicate` | P1, P3, P4, DEC-007 |
 | DEC-002 encoding | P1 — registry dependence is native-disqualifying; **P4 — the domain-of-discourse hash needs deterministic canonicalization** |
+| DEC-003 identifiers on the wire | **P1.1 — a foreign `kid` is a party-relative label, never the principal** |
 | DEC-004 tag language | P1, P2, P3 |
 | §4.3 statement acceptance | P5 |
 | R-O-03, R-O-05 canonicalization | **P5.1 — reject, never normalise or repair** |

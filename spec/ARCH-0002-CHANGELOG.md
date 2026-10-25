@@ -5,9 +5,9 @@ title: "ARCH-0002 changelog"
 type: changelog
 parent: ARCH-0002
 status: active
-version: "0.7.1"
+version: "0.8.0"
 date: "2026-10-15"
-updated: "2026-10-16"
+updated: "2026-10-23"
 canonical_path: spec/ARCH-0002-CHANGELOG.md
 ---
 
@@ -23,6 +23,22 @@ Format: newest first. Versions match the principle document.
 >
 > The 0.6.0 entry below is written **from its own merge commit and PR (#102)**,
 > not reconstructed from the diff, and says so for the same reason.
+
+## 0.8.0 — 2026-10-23
+
+Additive. One clause under **P1**, `[draft]`. P1 itself is unchanged and stays
+accepted by `ADR-0001`.
+
+- **P1.1 — what a foreign `kid` is not.** From the CBOR/COSE extraction handed
+  over in mofn#112 (library `rfc-8747` at `bafd536`). RFC 8747 §3.4 defines a
+  COSE `kid` as a party-relative label resolved by lookup, the contrast case to
+  P1's derived identifier. Three boundary rules: neither of two embedded `kid`s
+  wins over the one computed from the key; a derived `kid` makes §6's
+  intentional collision impossible; export emits no `cnf`. Mirrors P5.2's DSSE
+  `KEYID` row. The §6 matrix rows are left to mofn#110.
+- **Not reviewed.** The v0.7.1 pass recorded in `reviewers` covers P1–P7 as
+  they stood; P1.1 postdates it. `reviewed` is left as the pass set it, with
+  the scope stated in `agent_notes`.
 
 ## 0.7.1 — 2026-10-16
 

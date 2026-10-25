@@ -5,15 +5,28 @@ title: "ARCH-0001 changelog"
 type: changelog
 parent: ARCH-0001
 status: active
-version: "0.1.2"
+version: "0.1.3"
 date: "2026-09-15"
-updated: "2026-10-14"
+updated: "2026-10-23"
 canonical_path: spec/ARCH-0001-CHANGELOG.md
 ---
 
 # ARCH-0001 changelog
 
 Format: newest first. Versions match the architecture document.
+
+## 0.1.3 — 2026-10-23
+
+- Additive only (§9.1), from the CBOR/COSE extraction handed over in mofn#112
+  (library records at `bafd536`). §7 DEC-002 and DEC-003 each gain a block of
+  **inputs their ADR must answer**: the omitted driver *detectability of an
+  order-only divergence*; "no IANA tags" restated as a rule of our profile; the
+  acceptance test's threshold invariant, which no schema language checks, owned
+  by a named verifier step; RFC 9679 thumbprints not native-eligible as written;
+  the IANA allocation inside a post-quantum COSE thumbprint; and the inverse
+  question for a suite-free `kid`.
+- No decision accepted, ranked or withdrawn. DEC-001 … DEC-005 remain open. The
+  §6 matrix is untouched — that is mofn#110's lane.
 
 ## 0.1.2 — 2026-10-14
 
