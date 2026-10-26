@@ -7,7 +7,9 @@ Key-centric semantic assertions. Read this before touching anything.
 `spec/ARCH-0001-authorization-attestation.md` is the **source of truth** for the
 architecture. Everything else defers to it. Read it before proposing anything.
 
-**DEC-001 … DEC-005 and DEC-007 are open.** No encoding, tag language, or
+**DEC-002 is accepted** (`ADR-0004`: KSA-CBOR, option 5) and **DEC-003 is
+accepted** (`ADR-0005`: `kid` = SHA-256 of the suite public-key encoding).
+**DEC-001, DEC-004, DEC-005 and DEC-007 are open.** No tag language or export
 envelope has been selected. Do not write code or documents that assume one.
 
 ## Never
@@ -33,7 +35,7 @@ envelope has been selected. Do not write code or documents that assume one.
 | `spec/` | ARCH, ADR, MAP, `schema/`, `vectors/` — normative, authored |
 | `project/` | PLAN, BACKLOG, PROC — execution, authored |
 | `docs/` | **generated**, gitignored |
-| `src/` | empty on purpose — DEC-002 is open; code now decides it by accident |
+| `src/` | empty — DEC-002 is accepted, but DEC-004/DEC-005 are open; code must not decide them by accident |
 | `prototype/` | throwaway spikes; never ships |
 | `design-log/` | AI-assisted design record — see below |
 | `library/` | submodule; has its own `CLAUDE.md` |
