@@ -7,11 +7,20 @@ description: "Every open decision across both repos, ranked by what it blocks. T
 type: process
 category: process
 status: active
-version: "0.3.3"
+version: "0.3.4"
 version_policy: "semver; MINOR = decisions added or closed"
 date: "2026-09-22"
-updated: "2026-10-16"
-decision_makers: []
+updated: "2026-10-25"
+decision_makers:
+  - role: sponsor
+    id: paul-lambert
+  - role: student
+    id: ndewedo-newbury
+    authority: >
+      Delegated by the sponsor on 2026-10-25 to accept, by ADR under
+      ARCH-0001 §9.2, the open decisions recorded in ARCH-0001 §7 (Tier 1 items 2 and 4b). Relayed
+      verbally by ndewedo-newbury; the sponsor confirms on the PR that adds
+      this entry. Does not extend to ADR-0002 (DECISIONS-0001 item 4a).
 reviewers: []
 needs_review: false
 reviewed: false
@@ -249,6 +258,17 @@ supply-chain profile first (T1-A), then accept P7 or correct it.
 | **28** | **Wallet GUI framework — Tauri, tentative (MD-7).** Web frontend plus a Python sidecar; PySide6 is the fallback. **Confirm before GUI work begins** (`BACKLOG-0001` T-029c). | due Oct 14 |
 
 ---
+
+## What changed in v0.3.4 — 2026-10-25
+
+Process. **No decision added, closed, or narrowed.** The sponsor delegated
+acceptance of `ARCH-0001`'s open decisions to **`ndewedo-newbury`** on
+2026-10-25, offering either that or removing `decision_makers` altogether. The
+field is kept and filled — here and in `ARCH-0001` v0.1.4 — because an ADR has
+to name who accepted it. Consequence for item **4b**: the DEC-002 ADR (and the
+DEC-003 ADR, whose inputs are in `ARCH-0001` §7 since v0.1.3) no longer waits
+on the sponsor's calendar. Item **4a**, `ADR-0002`, is unchanged and still the
+sponsor's.
 
 ## What changed in v0.3.3 — 2026-10-16
 

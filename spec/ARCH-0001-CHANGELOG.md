@@ -5,15 +5,25 @@ title: "ARCH-0001 changelog"
 type: changelog
 parent: ARCH-0001
 status: active
-version: "0.1.3"
+version: "0.1.4"
 date: "2026-09-15"
-updated: "2026-10-23"
+updated: "2026-10-25"
 canonical_path: spec/ARCH-0001-CHANGELOG.md
 ---
 
 # ARCH-0001 changelog
 
 Format: newest first. Versions match the architecture document.
+
+## 0.1.4 — 2026-10-25
+
+- Front matter only. `decision_makers` was empty; it now names the sponsor
+  (`paul-lambert`) and **`ndewedo-newbury`, by the sponsor's delegation of
+  2026-10-25**, scoped to the open decisions in §7. The sponsor offered either
+  adding the delegate or dropping the field; the field was kept, because §9.2
+  acceptance has to name who accepted.
+- No decision accepted. DEC-001 … DEC-005 remain open; accepting one is still
+  an ADR, a changelog line and a §7 status update.
 
 ## 0.1.3 — 2026-10-23
 
