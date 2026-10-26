@@ -7,10 +7,10 @@ description: "Every open decision across both repos, ranked by what it blocks. T
 type: process
 category: process
 status: active
-version: "0.3.4"
+version: "0.3.5"
 version_policy: "semver; MINOR = decisions added or closed"
 date: "2026-09-22"
-updated: "2026-10-25"
+updated: "2026-10-26"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -71,7 +71,7 @@ Ordered by **what it unblocks**, not by importance.
 
 **Added 2026-10-15.** `ADR-0003` was accepted on 2026-10-14 and its **D2** fixes
 *one canonical encoding for every hashed or signed object* — the deterministic
-CBOR profile of FKSA suite 1, which is MD-3's option 5. `SPEC-0002` §4 specifies
+CBOR profile used by KSA suite 1, which is MD-3's option 5. `SPEC-0002` §4 specifies
 it and `spec/vectors/ksa-core/` ships vectors for it.
 
 **D2 says in its own text that it does not accept DEC-002**, and that the
