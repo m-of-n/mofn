@@ -5,9 +5,9 @@ title: "ARCH-0002 changelog"
 type: changelog
 parent: ARCH-0002
 status: active
-version: "0.8.0"
+version: "0.8.1"
 date: "2026-10-15"
-updated: "2026-10-23"
+updated: "2026-10-26"
 canonical_path: spec/ARCH-0002-CHANGELOG.md
 ---
 
@@ -23,6 +23,12 @@ Format: newest first. Versions match the principle document.
 >
 > The 0.6.0 entry below is written **from its own merge commit and PR (#102)**,
 > not reconstructed from the diff, and says so for the same reason.
+
+## 0.8.1 — 2026-10-26
+
+Editorial. The R-O-05 rationale no longer contrasts KSA with an earlier draft,
+and now cites `SPEC-0002`, which applies the verify-before-decode rule, rather
+than `ADR-0003`, which does not decide it. No principle changed.
 
 ## 0.8.0 — 2026-10-23
 
