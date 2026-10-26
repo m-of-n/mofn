@@ -2,7 +2,7 @@
 
 # Publishing manifest
 
-37 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
+38 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
 
 A document is published because it **exists and declares a status** in its
 front matter — not because someone remembered to add it to a nav list. Set
@@ -58,11 +58,12 @@ front matter — not because someone remembered to add it to a nav list. Set
 | [Who Adopts Provenance, and Why the Ancestors Did Not](https://m-of-n.github.io/mofn/research/0004-uptake-and-applications/report/) | `R-0004` | draft ⚠️ | 0.1.0 | 2026-10-10 | [source](https://github.com/m-of-n/mofn/blob/main/research/0004-uptake-and-applications/report.md) |
 | [Why Provenance, Why Now, and the Gap the Ancestors Left](https://m-of-n.github.io/mofn/research/0005-context/report/) | `R-0005` | draft ⚠️ | 0.1.1 | 2026-10-16 | [source](https://github.com/m-of-n/mofn/blob/main/research/0005-context/report.md) |
 | [Comparative Anatomy of the Mechanisms: the Evidence Base for DEC-002 and DEC-004](https://m-of-n.github.io/mofn/research/0006-mechanism/report/) | `R-0006` | draft ⚠️ | 0.3.0 | 2026-10-17 | [source](https://github.com/m-of-n/mofn/blob/main/research/0006-mechanism/report.md) |
+| [Who May Speak for foo.com: Delegation and Trust in X.509, S/MIME, OpenPGP and SDSI/SPKI](https://m-of-n.github.io/mofn/research/0007-delegation-models/report/) | `R-0007` | draft ⚠️ | 0.1.0 | 2026-10-26 | [source](https://github.com/m-of-n/mofn/blob/main/research/0007-delegation-models/report.md) |
 | [README](https://m-of-n.github.io/mofn/research/README/) | `README` | unknown |  |  | [source](https://github.com/m-of-n/mofn/blob/main/research/README.md) |
 
 ## Status
 
-⚠️ **31 of 37 published documents are draft or proposed.**
+⚠️ **32 of 38 published documents are draft or proposed.**
 They are public and marked as such. Nothing here is accepted; an open
 `DEC-*` is not settled because it appears on a website.
 

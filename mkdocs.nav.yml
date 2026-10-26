@@ -41,6 +41,7 @@ nav:
       - "Who Adopts Provenance, and Why the Ancestors Did Not": research/0004-uptake-and-applications/report.md
       - "Why Provenance, Why Now, and the Gap the Ancestors Left": research/0005-context/report.md
       - "Comparative Anatomy of the Mechanisms: the Evidence Base for DEC-002 and DEC-004": research/0006-mechanism/report.md
+      - "Who May Speak for foo.com: Delegation and Trust in X.509, S/MIME, OpenPGP and SDSI/SPKI": research/0007-delegation-models/report.md
       - "README": research/README.md
   - Library:
       - Construction method: library/construction.md
