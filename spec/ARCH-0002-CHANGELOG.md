@@ -5,9 +5,9 @@ title: "ARCH-0002 changelog"
 type: changelog
 parent: ARCH-0002
 status: active
-version: "0.8.0"
+version: "0.9.0"
 date: "2026-10-15"
-updated: "2026-10-23"
+updated: "2026-10-25"
 canonical_path: spec/ARCH-0002-CHANGELOG.md
 ---
 
@@ -23,6 +23,16 @@ Format: newest first. Versions match the principle document.
 >
 > The 0.6.0 entry below is written **from its own merge commit and PR (#102)**,
 > not reconstructed from the diff, and says so for the same reason.
+
+## 0.9.0 — 2026-10-25
+
+- **P1.1's import rule changed from *report* to *reject*.** A foreign `kid`
+  that disagrees with the one computed from the key now rejects the import,
+  matching P5 (validity is checked, never assumed) and P5.2's rejection of
+  unknown DSSE exterior fields. Chosen by `ndewedo-newbury`; recorded as a
+  consequence in `ADR-0005`. The acceptance-test fixture now expects rejection.
+- P1.1 stays `[draft]`. Neither ADR-0005 nor the delegation in `ARCH-0001`
+  v0.1.4 accepts anything in ARCH-0002.
 
 ## 0.8.0 — 2026-10-23
 

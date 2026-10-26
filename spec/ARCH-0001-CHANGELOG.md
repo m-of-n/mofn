@@ -5,7 +5,7 @@ title: "ARCH-0001 changelog"
 type: changelog
 parent: ARCH-0001
 status: active
-version: "0.1.4"
+version: "0.1.5"
 date: "2026-09-15"
 updated: "2026-10-25"
 canonical_path: spec/ARCH-0001-CHANGELOG.md
@@ -14,6 +14,17 @@ canonical_path: spec/ARCH-0001-CHANGELOG.md
 # ARCH-0001 changelog
 
 Format: newest first. Versions match the architecture document.
+
+## 0.1.5 — 2026-10-25
+
+- **DEC-002 accepted — option 5, `ADR-0004`.** Option 5 added to §7's list as
+  the accepted option. Threshold fixture (T-031) and set-array order (condition
+  5) recorded in the ADR as owed.
+- **DEC-003 accepted — `kid` = SHA-256 of the suite's public-key encoding,
+  `ADR-0005`.** §4.1 `KeyId` row narrowed: the digest is fixed, not
+  parameterized.
+- `open_decisions` now DEC-001, DEC-004, DEC-005. Decided by `ndewedo-newbury`
+  under the delegation recorded in 0.1.4.
 
 ## 0.1.4 — 2026-10-25
 
