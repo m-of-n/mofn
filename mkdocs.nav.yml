@@ -6,6 +6,8 @@ nav:
       - "R-M-12 stands: key-relative naming is a core principle": architecture/ADR-0001-key-relative-naming.md
       - "ARCH-0002 P2, P3, P5 and P6 — the instrument MD-2 deferred": architecture/ADR-0002-provisional-principles.md
       - "KSA core design decisions": architecture/ADR-0003-ksa-core-decisions.md
+      - "DEC-002 accepted: option 5 — reduced deterministic CBOR (KSA-CBOR) is the native encoding": architecture/ADR-0004-dec-002-encoding.md
+      - "DEC-003 accepted: a principal is identified on the wire by kid = SHA-256 of its suite public-key encoding": architecture/ADR-0005-dec-003-key-identifier.md
       - "ARCH-0001 changelog": architecture/ARCH-0001-CHANGELOG.md
       - "Proposed ARCH-0001 v0.2.0 — key-relative extension points, predicate rendering, subject identity, citation corrections": architecture/ARCH-0001-PROPOSAL-v0.2.0.md
       - "Authorization, local names, and artifact attestation — architecture checkpoint": architecture/ARCH-0001-authorization-attestation.md

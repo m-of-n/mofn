@@ -7,10 +7,10 @@ description: "The KSA statement: its data model, deterministic encoding, signed 
 type: specification
 category: security
 status: draft
-version: "0.1.0"
+version: "0.2.0"
 version_policy: "semver; MAJOR = any change to signed or hashed bytes; MINOR = additive registry entries or requirements; PATCH = editorial"
 date: "2026-10-14"
-updated: "2026-10-14"
+updated: "2026-10-25"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -45,7 +45,10 @@ statement should be *believed* is out of scope here; that is trust evaluation
 ## Status of this document
 
 Draft for review in the m-of-n project. Design decisions are recorded in
-ADR-0003. Nothing in this draft is final until its version leaves `0.x`.
+ADR-0003, ADR-0004 (the encoding, DEC-002) and ADR-0005 (`kid`, DEC-003).
+**0.2.0 (2026-10-25):** §6.1's digest row no longer covers `kid`s, which are
+SHA-256 under every suite; §12.3 gains the key-encoding collision rule. No
+signed or hashed bytes change. Nothing in this draft is final until its version leaves `0.x`.
 
 ---
 
@@ -265,7 +268,7 @@ A cipher suite is an immutable registry entry (§12.3). Each entry MUST define:
 | signature input | the exact octets signed: `DS ‖ TBS`, with its DS label (§6.4) |
 | signature encoding | the exact octets of `sig` |
 | verification rules | including any strictness beyond the base algorithm |
-| digest | the hash used for statement digests and kids |
+| digest | the hash used for statement digests. `kid`s are SHA-256 under every suite (§4.5, ADR-0005) |
 
 A statement's suite is inside its TBS and is therefore covered by its signature.
 A verifier MUST report a statement under an unregistered or unsupported suite as
@@ -696,6 +699,13 @@ bytes of any existing statement.
 ### 12.2 Target types — §7.2
 
 ### 12.3 Cipher suites — §6.2
+
+A suite whose key algorithm differs from that of a registered suite MUST NOT be
+registered if a valid public-key encoding under it can equal a valid
+public-key encoding under the registered suite: `kid` does not hash the suite
+(§4.5), so equal encodings would give two keys one identifier. Suites that
+share a key algorithm share `kid`s, because the key is the principal
+(ADR-0005).
 
 ### 12.4 Key algorithms (`public-key.alg`)
 

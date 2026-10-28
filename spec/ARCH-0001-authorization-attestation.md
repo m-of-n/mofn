@@ -8,14 +8,23 @@ description: "Canonical working architecture for a native model that is not X.50
 type: architecture
 category: security
 status: draft
-version: "0.1.3"
+version: "0.1.5"
 version_policy: "semver; PATCH = editorial; MINOR = additive requirements; MAJOR = breaking model change"
 date: "2026-09-15"
-updated: "2026-10-23"
+updated: "2026-10-25"
 authors:
   - role: architect
     id: conversation-brainpool256
-decision_makers: []
+decision_makers:
+  - role: sponsor
+    id: paul-lambert
+  - role: student
+    id: ndewedo-newbury
+    authority: >
+      Delegated by the sponsor on 2026-10-25 to accept, by ADR under
+      ARCH-0001 §9.2, the open decisions recorded in ARCH-0001 §7. Relayed
+      verbally by ndewedo-newbury; the sponsor confirms on the PR that adds
+      this entry. Does not extend to ADR-0002 (DECISIONS-0001 item 4a).
 reviewers: []
 needs_review: true
 reviewed: false
@@ -47,8 +56,6 @@ related_drafts:
   - slsa-provenance-v1
 open_decisions:
   - DEC-001
-  - DEC-002
-  - DEC-003
   - DEC-004
   - DEC-005
 constraints:
@@ -78,7 +85,7 @@ agent_notes: >
 
 # ARCH-0001 — Authorization, local names, and artifact attestation
 
-**Status:** draft · **Version:** 0.1.3 · **Date:** 2026-09-15 · **Updated:** 2026-10-23  
+**Status:** draft · **Version:** 0.1.5 · **Date:** 2026-09-15 · **Updated:** 2026-10-25  
 **Canonical file:** `spec/ARCH-0001-authorization-attestation.md`  
 **Changelog:** `spec/ARCH-0001-CHANGELOG.md`
 
@@ -188,7 +195,7 @@ Logical types. Encoding is DEC-002.
 | Type | Meaning |
 |------|---------|
 | `Key` | Public key material + algorithm identifier |
-| `KeyId` | Digest of a canonical key encoding (algorithm of digest is parameterized) |
+| `KeyId` | Digest of a canonical key encoding (algorithm of digest is parameterized) — **narrowed by `ADR-0005`:** SHA-256 of the key's public-key encoding under its suite (`SPEC-0002` §4.5) |
 | `Principal` | `Key` \| `KeyId` \| `Name` \| `Threshold` \| `Group` |
 | `Name` | `{ issuer: Principal, labels: [string, ...] }` — SDSI compound name |
 | `Threshold` | `{ k: int, n: int, members: [Principal, ...] }` with `1 ≤ k ≤ n` and `n = len(members)` |
@@ -345,12 +352,15 @@ Affects: packaging only.
 
 ### DEC-002 — Concrete native encoding
 
+**Status: accepted 2026-10-25 — option 5, by [`ADR-0004`](ADR-0004-dec-002-encoding.md).** The text below is kept as the record of what was decided between.
+
 Options:
 
 1. Canonical S-expressions (RFC 9804) as canonical; JSON as diagnostic.
 2. CBOR + CDDL as canonical; COSE for signed form.
 3. JSON + RFC 8785 JCS as canonical; DSSE for signed form.
 4. Dual canonical (CBOR and JSON) with a documented bijection.
+5. *(Added with `ADR-0004`; drafted in `ARCH-0001-PROPOSAL-v0.2.0` §3.3.)* CBOR data model under RFC 8949 §4.2.1, restricted and decoder-enforced, with no IANA registry native; COSE and DSSE as export envelopes only.
 
 Drivers: library availability, SCITT alignment, SPKI fidelity, human debug.  
 Acceptance test: round-trip fixtures for NameCert, AuthzCert (including threshold subject), ArtifactStatement.
@@ -388,6 +398,8 @@ selected, ranked or withdrawn here.
   `spec/vectors/ksa-core/` carries no threshold vector yet.
 
 ### DEC-003 — Issuer / subject identifiers on the wire
+
+**Status: accepted 2026-10-25 — `kid` = SHA-256 of the suite's public-key encoding, by [`ADR-0005`](ADR-0005-dec-003-key-identifier.md).** The text below is kept as the record of what was decided between.
 
 Options: raw COSE key; COSE key thumbprint; `did:key`; hash-uri (`sha256:…`); text KeyId.
 

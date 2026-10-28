@@ -7,10 +7,10 @@ description: "Type names, constraints, types-as-schemas, hash-identified domains
 type: architecture
 category: security
 status: draft
-version: "0.8.0"
+version: "0.9.0"
 version_policy: "semver; PATCH = editorial; MINOR = additive principle; MAJOR = breaking"
 date: "2026-09-22"
-updated: "2026-10-23"
+updated: "2026-10-25"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -44,6 +44,7 @@ agent_notes: >
   not accepted. The clauses are an INPUT to DEC-002 and DEC-005 and select
   neither.
   P1.1 added in v0.8.0 (mofn#112) is DRAFT and does not amend accepted P1.
+  v0.9.0: its import rule is reject, not report (ADR-0005, Interchange).
   It postdates the v0.7.1 review pass and has not been read by a reviewer.
 ---
 
@@ -106,7 +107,7 @@ TBS is the principal, and the envelope's `says` is a hint checked at V6
 
 | case | RFC 8747 | rule here |
 |---|---|---|
-| **two places for one identifier** | §3.2's MAY permits a `kid` inside the `COSE_Key` while Confirmation Key 3 carries one beside it in the same `cnf` map, with no stated precedence and no requirement that the two agree | **neither wins.** On import the KSA `kid` is computed from the key (`SPEC-0002` §4.5); a foreign `kid` that disagrees is reported, never adopted |
+| **two places for one identifier** | §3.2's MAY permits a `kid` inside the `COSE_Key` while Confirmation Key 3 carries one beside it in the same `cnf` map, with no stated precedence and no requirement that the two agree | **neither wins.** On import the KSA `kid` is computed from the key (`SPEC-0002` §4.5); an import carrying a foreign `kid` that disagrees is **rejected** — chosen 2026-10-25 over *report and keep*, for consistency with P5 and P5.2 |
 | **intentional collision** | §6 requires an issuer not to reuse a Key ID within the CWTs' lifetime *"unless intentionally desired"*, and names DTLS session continuity as such a case | a derived `kid` makes the collision **impossible**, not discouraged. A profile that wants session continuity carries it in something other than the principal's identifier |
 | **`cnf`** | carrying `cnf` imports a second IANA registry, with **no allocation tiers**, where RFC 8392 §9.1.1 tiers the Claim Key space four ways (`rfc-8747` cut D) | **export emits no `cnf` claim.** Proof of possession is native (`SPEC-0002` §6.4, `KSA-POP-SIG-v1`) |
 
@@ -121,7 +122,7 @@ amends; the rows belong in that table, per R-I-01, and are not duplicated here.
 **Acceptance test.** The R-I-01 mapping table for COSE_Sign1 + CWT carries a
 `kid` row and a `cnf` row stating the rules above; and a negative fixture — a
 `COSE_Key` whose embedded `kid` disagrees with the KSA `kid` of its key —
-imports with the disagreement reported.
+is rejected on import.
 
 ---
 

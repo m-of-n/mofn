@@ -7,11 +7,20 @@ description: "Every open decision across both repos, ranked by what it blocks. T
 type: process
 category: process
 status: active
-version: "0.3.3"
+version: "0.4.0"
 version_policy: "semver; MINOR = decisions added or closed"
 date: "2026-09-22"
-updated: "2026-10-16"
-decision_makers: []
+updated: "2026-10-25"
+decision_makers:
+  - role: sponsor
+    id: paul-lambert
+  - role: student
+    id: ndewedo-newbury
+    authority: >
+      Delegated by the sponsor on 2026-10-25 to accept, by ADR under
+      ARCH-0001 §9.2, the open decisions recorded in ARCH-0001 §7 (Tier 1 items 2 and 4b). Relayed
+      verbally by ndewedo-newbury; the sponsor confirms on the PR that adds
+      this entry. Does not extend to ADR-0002 (DECISIONS-0001 item 4a).
 reviewers: []
 needs_review: false
 reviewed: false
@@ -52,11 +61,11 @@ Ordered by **what it unblocks**, not by importance.
 | # | Decision | Where | Why it blocks |
 |---|---|---|---|
 | ~~1~~ | ~~**Does R-M-12 stand?**~~ **DECIDED 2026-09-22 — yes.** `ADR-0001`; now `ARCH-0002` P1. | ADR-0001 | closed |
-| **2** | **DEC-002 — the encoding. NARROWED 2026-09-28 by MD-3 to option 5** (CBOR data model, no IANA tags, COSE export only; YAML as the human form). **Still open: a narrowing is not an acceptance, and no ADR exists.** Option 2 is retained only as the comparison fixture. See the standing note below — the library's evidence now cuts against the narrowing. | ARCH-0001 §7, proposal §3.3, mofn#8 | Everything downstream. WP1 is encoding-neutral by design, but D5 needs a target by **Oct 28**. |
+| ~~2~~ | **DECIDED 2026-10-25 — option 5, `ADR-0004`.** Was: **DEC-002 — the encoding. NARROWED 2026-09-28 by MD-3 to option 5** (CBOR data model, no IANA tags, COSE export only; YAML as the human form). **Still open: a narrowing is not an acceptance, and no ADR exists.** Option 2 is retained only as the comparison fixture. See the standing note below — the library's evidence now cuts against the narrowing. | ARCH-0001 §7, proposal §3.3, mofn#8 | Everything downstream. WP1 is encoding-neutral by design, but D5 needs a target by **Oct 28**. |
 | ~~3~~ | ~~**Who drives the agent lanes — students or sponsor?**~~ **ANSWERED 2026-09-28 by MD-4** — students drive, with named lanes: David #13 → option-5 encoder fixtures and #23 → D3 mechanism; Ndewedo #14 → D3 and the archives domain. The teaching reading was taken over the throughput one. | PROC-0002 §8.1 | closed |
 | **4** | **Accept the proposal as ARCH-0001 v0.2.0?** DEC-007 filed, DEC-006 withdrawn, R-M-11, R-O-05, R-O-06, RFC 9943 citation. **Not on any agenda to date.** | proposal | Until accepted, ARCH-0001 still cites a draft that became an RFC in June 2026, and R-M-11/R-O-05/R-O-06 have no force — while roughly thirty library records already name them in `bears_on`. See the standing note below. |
 | **4a** | **Accept `ADR-0002`?** MD-2 granted P2, P3, P5, P6 *provisionally* and said each becomes final "only through an ADR after review". `ADR-0002` has landed at `status: proposed` (#83). **Both acceptance conditions are now met:** §6(b) by `ARCH-0002` v0.7.0 carrying the amended P5 (#72), and §6(a) by the review of **2026-10-16** — v0.7.1 carries a reviewer and `reviewed: true`. **Sharpened 2026-10-14, corrected 2026-10-16:** the citation that binds is `SPEC-0003` §7.1, which cites `ARCH-0002` P5 by name *inside the Definition Publisher conformance class*; `SPEC-0002` §13.5 is the louder quote but sits in Security Considerations, which no conformance class requires. The SPECs are themselves `draft` — what is accepted is `ADR-0003`, whose consequences make them govern (ADR-0002 §6a). **What is left is a judgement, not a condition:** the reviewer wrote P5.1 and P5.2, so the sponsor accepts either P5 **as amended**, or P2/P3/P6 plus P5 **as drafted** with the two clauses held for a second reader. Then acceptance is a status flip plus a name. | ADR-0002 | `prototype/`, `APP-0001` and three answered library topics already build on P2 and P3. |
-| **4b** | **The DEC-002 ADR.** Item 2's instrument. Scoring input is in `library/topics/canonical-encoding.yaml` (`status: answered`) and summarised on mofn#8. | mofn#8 | **Oct 28.** Nothing downstream of D5 can freeze until it is accepted. |
+| ~~4b~~ | **DONE 2026-10-25 — `ADR-0004` (DEC-002) and `ADR-0005` (DEC-003), both accepted, both `reviewed: false`.** Was: **The DEC-002 ADR.** Item 2's instrument. Scoring input is in `library/topics/canonical-encoding.yaml` (`status: answered`) and summarised on mofn#8. | mofn#8 | **Oct 28.** Nothing downstream of D5 can freeze until it is accepted. |
 
 ### Standing note on item 2 — `ADR-0003` D2, and what it did not do
 
@@ -249,6 +258,31 @@ supply-chain profile first (T1-A), then accept P7 or correct it.
 | **28** | **Wallet GUI framework — Tauri, tentative (MD-7).** Web frontend plus a Python sidecar; PySide6 is the fallback. **Confirm before GUI work begins** (`BACKLOG-0001` T-029c). | due Oct 14 |
 
 ---
+
+## What changed in v0.4.0 — 2026-10-25
+
+**Two decisions closed**, by `ndewedo-newbury` under the delegation of v0.3.4:
+
+| item | was | now |
+|---|---|---|
+| Tier 1 #2 | DEC-002 narrowed to option 5, open | **accepted — option 5**, `ADR-0004` |
+| Tier 1 #4b | the DEC-002 ADR, owed | **done** — `ADR-0004`; DEC-003 decided alongside in `ADR-0005` |
+
+Owed by the ADRs, not closed by them: the threshold fixture (T-031), the order
+of set-valued arrays (condition 5), a suite-8 `kid` vector, and a second reader
+for both ADRs. The standing notes on item 2 are kept as the record of what the
+decision answered.
+
+## What changed in v0.3.4 — 2026-10-25
+
+Process. **No decision added, closed, or narrowed.** The sponsor delegated
+acceptance of `ARCH-0001`'s open decisions to **`ndewedo-newbury`** on
+2026-10-25, offering either that or removing `decision_makers` altogether. The
+field is kept and filled — here and in `ARCH-0001` v0.1.4 — because an ADR has
+to name who accepted it. Consequence for item **4b**: the DEC-002 ADR (and the
+DEC-003 ADR, whose inputs are in `ARCH-0001` §7 since v0.1.3) no longer waits
+on the sponsor's calendar. Item **4a**, `ADR-0002`, is unchanged and still the
+sponsor's.
 
 ## What changed in v0.3.3 — 2026-10-16
 
