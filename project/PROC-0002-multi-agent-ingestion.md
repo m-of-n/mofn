@@ -7,10 +7,10 @@ description: "How agents find and process documents at scale while human review 
 type: process
 category: process
 status: draft
-version: "0.2.0"
+version: "0.3.0"
 version_policy: "semver; MINOR = additive process rules"
 date: "2026-09-22"
-updated: "2026-09-22"
+updated: "2026-10-29"
 decision_makers: []
 reviewers: []
 needs_review: true
@@ -20,7 +20,7 @@ companion:
   - project/PROC-0001-agents-and-topics.md
 defers_to: ARCH-0001
 backlog: L-020
-source: "library#1 item 5; sponsor review of mofn#18"
+source: "library#1 item 5; sponsor review of mofn#18; DL-0009 §3–4; MD-4"
 ---
 
 # PROC-0002 — Multi-agent ingestion
@@ -55,7 +55,7 @@ point: everything else exists to make **stage 10** cheap and reliable.
 | 5 | **Extract references** | agent | the document's own reference list → `cites`; unheld targets land on `index/frontier.md` |
 | 6 | **Tag** | agent | `tags`, `topic`, `maturity`, draft `applicability` |
 | 7 | **Distil** | agent | `distilled.md`, then `requirements/*.yaml` per `docs/requirements.md` |
-| 8 | **Implement** | agent | reference code from the spec — e.g. NIST DSS → Python or C — plus **test vectors collected from the source**, in `artifacts/` |
+| 8 | **Implement** | agent | a **harness** that drives a vetted library through the spec's interfaces — e.g. NIST DSS → Python or C over a vetted library — plus **test vectors collected from the source**, in the record's `harness/` |
 | 9 | **Survey implementations** | agent | `implementations.open_source` / `.commercial`, with a `searched` date |
 | 10 | **Adversarial review** | agent | attacks the summary, the applicability rating, and the code: *are the test vectors real, are they used, does it run?* |
 | 11 | **Human review** | **human** | promotes to `summarized`, or sends back |
@@ -80,16 +80,33 @@ what our records cite, not what *those* cite — and the cap is raised only for 
 named topic.
 
 ### Stage 8 — code and test vectors
-Generating an implementation from a specification is the sharpest available
-test of whether the spec was understood. NIST DSS is the worked example.
+Making code run against a specification is the sharpest available test of
+whether the spec was understood. NIST DSS is the worked example.
 
-Three hard rules:
+**What stage 8 builds is a harness, not a primitive.** CLAUDE.md and the
+design-log guardrail forbid generated cryptographic primitives, and v0.2 read as
+if stage 8 asked for one ("reference code from the spec"). It does not. For an
+algorithm specification the agent writes the code that binds a **vetted
+library** to the spec — parameter sets, input encodings, hash choices, the
+edge cases the spec calls out — and runs the publisher's vectors through it.
+That is where misreadings show: a wrong parameter mapping or byte order fails
+a CAVP vector as surely as a wrong primitive would. For an **encoding or wire
+format** — inside the AI-assisted scope CLAUDE.md names — the agent may write
+the codec itself.
+
+Four hard rules:
 - **Test vectors come from the source document or its publisher, never
   generated.** A self-generated vector proves the code agrees with itself.
 - **If the source publishes vectors and we did not find them, that is a stage
   10 failure**, not an acceptable outcome.
-- **Generated code lives in `artifacts/` and never in `src/`.** It is evidence
-  of comprehension, not project code, and `src/` remains empty until DEC-002.
+- **No generated primitive, ever.** Signing, verification, hashing, key
+  generation and their arithmetic come from a vetted library; a spec with no
+  vetted implementation gets no stage 8, and that absence is recorded.
+- **Generated code lives in the record's `harness/` and never in `src/`.** It is
+  evidence of comprehension, not project code; `src/` stays empty while
+  DEC-004 and DEC-005 are open (CLAUDE.md). The directory was `artifacts/` in
+  v0.2 — renamed because *Artifact* is a normative term here (`ArtifactId`,
+  R-M-07) and must not name a folder.
 
 ### Stage 10 — adversarial review
 PROC-0001 §3 argues this is the highest-leverage agent use, because it spends
@@ -131,8 +148,8 @@ Mechanical, in CI, before a human sees anything:
   `index/` stale — records, folded versions, crosswalk, bibliography, frontier.
   The human-visible bibliography going out of date after an ingestion run is
   the normal failure, which is why it is a gate and not a reminder.
-- generated code in `artifacts/` runs, and its test vectors are cited to the
-  source
+- generated code in `harness/` runs, imports a vetted library for every
+  primitive, and its test vectors are cited to the source
 
 Judgement rules the tools cannot check, from the skills:
 
@@ -153,6 +170,14 @@ Judgement rules the tools cannot check, from the skills:
 - Never extract requirements into `requirements/` from a `summary.md` — only
   from `distilled.md`, which is only made from the source.
 - Never ingest past the caps in `docs/scope.md` without saying so.
+- **Never write a field you cannot cite** (DL-0009 §3). `decision_makers`,
+  `reviewers` and `reviewed` are never citable from a minute or a chat: they
+  record that a named person acted, and only that person's action creates
+  them. Left empty, with an `agent_notes` line saying why, is correct.
+- **Never report something stale, missing or undone from a local checkout**
+  (DL-0009 §4). Fetch and compare against `origin/main` and the issue tracker
+  first. "Not in my checkout" is not a finding — the failure recurred within
+  48 hours of DL-0006 writing it up, so it is a rule here, not a note.
 
 ## 7. Where this is worth it, and where it is not
 
@@ -172,17 +197,22 @@ resource rather than the abundant one.
 
 ## 8. Open questions **[?]**
 
-1. **Who runs the lanes — students, or the sponsor?** L-011 through L-014 are
-   large. If students drive agents they learn the material; if the sponsor does
-   it is faster and they learn less. A teaching decision, not a throughput one.
-   **Unchanged from v0.1 and still the sharpest question here.**
+Items 2, 4, 6 and 7 are carried in the open decision register
+(`DECISIONS-0001` rows 7, 16, 14 and 15); answer them there and fold the
+answer back here.
+
+1. ~~**Who runs the lanes — students, or the sponsor?**~~ **Answered
+   2026-09-28 by MD-4: students drive**, with named lanes
+   (`project/meetings/2026-09-28.md`; DECISIONS-0001 Tier 1 #3). The teaching
+   reading was taken over the throughput one.
 2. **Which records get stage 8?** Generating code from every spec is not
    affordable. Proposed: only where a specification defines an algorithm or a
    wire format we intend to implement or map — NIST DSS yes, a market analysis
    no.
 3. **Does stage 8 code get its own review**, or does adversarial review cover
    it? "Does it run" is mechanical; "is it a faithful reading of the spec" is
-   not, and that is the part worth catching.
+   not, and that is the part worth catching. v0.3 narrows the surface — a
+   harness over a vetted library, not a primitive — but does not answer it.
 4. **Reference-extraction depth.** Capped at 1 above. Raising it to 2 for a
    topic like `trust-management` may be right, but the frontier grows fast and
    nothing prunes it automatically.
@@ -193,3 +223,17 @@ resource rather than the abundant one.
 7. **Does the adversarial agent see the human's prior corrections?** It would
    sharpen it considerably, and it risks training the pipeline to produce what
    this reviewer accepts rather than what is true.
+
+---
+
+## 9. Changelog
+
+- **0.3.0 — 2026-10-29.** Stage 8 builds a harness over a vetted library, never
+  a primitive — v0.2's "reference code from the spec" contradicted the
+  CLAUDE.md guardrail. `artifacts/` → `harness/` (normative-term collision);
+  `src/` rationale updated for ADR-0004. §6 gains DL-0009's two proposed
+  rules. §8.1 closed by MD-4; §8.2/4/6/7 pointed at their register rows.
+  Design log: `DL-0016`.
+- **0.2.0 — 2026-09-22.** The eleven-stage pipeline, from the sponsor's review
+  of mofn#18 (merged as mofn#19).
+- **0.1.0 — 2026-09-22.** Draft for review (L-020).
