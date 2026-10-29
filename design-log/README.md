@@ -46,6 +46,7 @@ vectors, and tooling.
 | `0013-publish-research-reports` | research reports reach the validator — mofn#88. The publishing half shipped separately in mofn#103 | **open** — human review pending |
 | `0014-cbor-cose-handover` | mofn#112 — the CBOR/COSE extraction checked against DEC-002, DEC-003, the acceptance test and P1; ARCH-0001 v0.1.3, ARCH-0002 P1.1, proposal rev.5 | **open** — human review pending; no DEC-* accepted |
 | `0015-dec-002-dec-003-adrs` | DEC-002 → option 5 (`ADR-0004`), DEC-003 → `kid` (`ADR-0005`), P1.1 → reject; under the sponsor's delegation (mofn#116) | **open** — ADR text review pending; T-031 owed |
+| `0016-proc-0002-v0-3` | PROC-0002 v0.3 — completing mofn#18: stage 8 is a harness over a vetted library, never a primitive; `artifacts/` → `harness/`; DL-0009's two rules bind | **open** — human review pending |
 
 **Two ids are shared: `0007` and `0012`.** `0007-library-harness-role` and
 `0007-rejecting-decoder-spike`, and later `0012-d3-context-and-mechanism`
@@ -54,7 +55,7 @@ lanes and each took the next free number. All four directories are on `main`,
 so none is renamed here — a design-log id is cited from PRs and must not
 silently retarget. A third `0012`, opened for mofn#88, was renumbered `0013`
 before it merged; nothing outside its own PR cited it. The next new entry
-takes `0016`.
+takes `0017`.
 
 `DL-0001` is the argument for the rule: **write the entry in the same change.**
 The prompts, and what the human rejected, were not recoverable a week later —

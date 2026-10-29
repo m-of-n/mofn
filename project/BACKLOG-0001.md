@@ -7,9 +7,9 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.12.2"
+version: "0.12.3"
 date: "2026-09-16"
-updated: "2026-10-20"
+updated: "2026-10-29"
 needs_review: true
 reviewed: false
 canonical_path: project/BACKLOG-0001.md
@@ -245,8 +245,9 @@ All `body: nist`. Each gets a full `summary.md` — bibliographic header,
 | NISTIR 8610 | Additional signature schemes, round 2 status | `informational` — stub is fine |
 | FN-DSA (FALCON) | forthcoming FIPS | stub with locator; nothing to summarise yet |
 
-**FIPS 186-5 is the PROC-0002 stage 8 worked example** the sponsor named: generate
-an implementation from the specification, then verify it. Its test vectors have a
+**FIPS 186-5 is the PROC-0002 stage 8 worked example** the sponsor named: build a
+harness that drives a vetted library through the specification, then verify it —
+never a generated primitive (PROC-0002 v0.3 §2). Its test vectors have a
 real publisher source — **NIST CAVP/ACVP** — which satisfies the stage 8 rule that
 vectors come from the source or its publisher and are never generated. If the
 student cannot find CAVP vectors for the scheme they implemented, that is a stage
