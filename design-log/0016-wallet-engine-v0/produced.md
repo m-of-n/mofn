@@ -24,6 +24,8 @@ PyNaCl (libsodium) and `hashlib`; no primitive is implemented.
 | `reduce.py` | SPEC-0004 §10.2 coverage, one hop, one context, validity at `at` | `no-path`, `not-valid-at-time`, `unattributed-definition`, `template` each tested |
 | `render.py`, `check.py` | six lines, the template sentence, the limit line; text and §10.3-shaped JSON | ⑧: TV-4 renders the SPEC-0003 §10.1 sentence exactly |
 | `store.py`, `unlock.py`, `mofn` | ARCH-0003 §9 subset, Argon2id + SecretBox at rest, `keys/` 0700, `.key` 0600, `--passphrase-stdin` | permissions and "passphrase never in any output or file" tested |
+| `mofn show`, `definition.to_h` | prints a statement as envelope plus decoded statement, and a `.def` in the human-review form; decodes, never verifies | DV-1's form equals SPEC-0003 Appendix A as data; TV-4 shown under both codecs |
+| `mofn root list` | prints a context's anchors in the words `root add` uses, with when each was accepted and its note | the listed line equals what `root add` printed |
 | `fixtures/` | DV-1, TV-1, TV-3, TV-4, the artifact, in both codecs, written by `sync.py` from `vectors.json` | drift test |
 | `fixtures/golden/` | green, unauthorized, unknown-key (②b), tampered | the CLI test runs init → key gen → make → key import → root add → check with separate wallets per role, under **both** codecs, and diffs stdout against these |
 

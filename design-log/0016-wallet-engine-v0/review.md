@@ -19,6 +19,10 @@ by whom.
 - **Acceptance line = pass when no template is named.** SPEC-0004 Appendix A
   prints `acceptance: pass  # TV-4 names no template`. Golden ① is therefore
   six passes.
+- **Show the data in the demo.** For the presentation, the human asked to see
+  a statement, a definition, an envelope and an anchor. Produced `mofn show`,
+  which decodes without verifying, and `mofn root list` for the anchors. The
+  wallet README explains each field under "Reading the files".
 
 ## Rejected by the human
 
@@ -28,6 +32,12 @@ by whom.
 - **Pushing the branch and opening a draft PR** as the last step of the plan.
   Rejected: "don't push". The commits are local only; CLAUDE.md's "open the PR
   in the browser" step waits for the human.
+- **Committing the demo guide** (`prototype/wallet/DEMO.md`, a script for
+  presenting the engine live, with talking points). Rejected: "demo.md don't
+  need to be committed; update readme instead". The guide stays a local file;
+  what a reader of the repo needs from it went into the README: the cases and
+  the line that decides each, the six lines, how to read the files, and what
+  the wallet keeps.
 
 ## Rejected before this session (carried from #65-c2 and the notes)
 
@@ -85,3 +95,8 @@ code follows them. Recorded so the rejection lives here too.
 4. **Golden ③ fixes how the byte is flipped** (first byte → `X`), because the
    integrity sentence prints the tampered file's hash. Chip's slice must flip
    the same byte, or the golden needs a placeholder.
+5. **SPEC-0003 Appendix A is YAML 1.2, not 1.1.** Its unquoted
+   `ask: {en: Does the provenance name the expected builder?}` is refused by
+   PyYAML, which the §11 strict reader is built on. `mofn show dv-1.def`
+   quotes that value, and its test quotes it before comparing. Either the
+   example quotes it, or §11 says which YAML version the human form is.

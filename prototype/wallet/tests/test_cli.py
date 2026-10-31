@@ -447,3 +447,69 @@ def test_key_import_refuses_a_small_order_key(wallet, tmp_path):
     bad.write_bytes(bytes.fromhex(VECTORS["negative"]["N-4"]["envelope"]))
     p = run_mofn("--wallet", wallet[1], "key", "import", bad)
     assert p.returncode == 2 and "V3" in p.stderr
+
+
+@pytest.mark.parametrize(
+    "codec,suffix", [("ksa-cbor", ".stmt"), ("review-yaml", ".stmt.yaml")]
+)
+def test_show_a_statement(codec, suffix):
+    p = ok(run_mofn("--codec", codec, "show", FIXTURES / f"tv-4-attestation{suffix}"))
+    head, statement = p.stdout.split("\n\nstatement")
+    assert "suite  ksa-ed25519-sha256" in head and "pub    absent" in head
+    assert f"says   0x{VECTORS['keys']['alice']['kid']}" in head
+    assert f"sig    0x{VECTORS['positive']['TV-4']['sig']}" in head
+    assert "kind: attestation" in statement and "value: reproducible" in statement
+
+
+def test_show_a_definition():
+    p = ok(run_mofn("show", DV1))
+    assert p.stdout.startswith(f"definition {VECTORS['definitions']['DV-1']['id']}\n")
+    assert "base: enum" in p.stdout and "function: attestation" in p.stdout
+
+
+def test_show_refuses_what_is_not_a_statement():
+    p = run_mofn("show", FIXTURES / "artifact.bin")
+    assert p.returncode == 2 and "mofn: error:" in p.stderr
+
+
+def test_root_list_prints_what_root_add_wrote(wallet):
+    _, w = wallet
+    p = ok(run_mofn("--wallet", w, "root", "list"))
+    assert "no anchors in context default" in p.stdout
+    ok(
+        run_mofn(
+            "--wallet",
+            w,
+            "key",
+            "import",
+            FIXTURES / "tv-1-alice.pub.stmt",
+            "--label",
+            "Alice",
+        )
+    )
+    added = ok(
+        run_mofn(
+            "--wallet",
+            w,
+            "root",
+            "add",
+            "Alice",
+            "--as",
+            "me",
+            "--def",
+            DV1,
+            "--type",
+            "build-provenance",
+            "--values",
+            "reproducible",
+            "--note",
+            "release builds only",
+        )
+    )
+    p = ok(run_mofn("--wallet", w, "root", "list"))
+    line, note = p.stdout.splitlines()
+    assert line.startswith(added.stdout.strip() + " on ")
+    assert "build-provenance ∈ {reproducible}" in line
+    assert note == "  note: release builds only"
+    p = ok(run_mofn("--wallet", w, "root", "list", "--context", "other"))
+    assert "no anchors in context other" in p.stdout

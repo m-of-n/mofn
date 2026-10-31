@@ -10,9 +10,11 @@ code. It does no cryptography, no encoding and no evaluation of its own.
     key gen LABEL [--controller KIND] [--passphrase-stdin] [-o OUT]
     key import FILE [--label NAME]
     root add KEY --as LABEL --def FILE --type TYPE [--values V1,V2] [--context NAME] [--note TEXT]
+    root list [--context NAME]
     make --as LABEL --subject FILE --def FILE --type TYPE --value VALUE [--valid-days N] [-o OUT]
          [--passphrase-stdin]
     check STMT [STMT ...] --artifact FILE --def FILE [--context NAME] [--format text|json] [--at TIME]
+    show FILE
 
 Exit codes: 0 yes or done, 1 answer no, 2 usage or wallet error, 3 a handed
 statement was invalid.
@@ -28,6 +30,7 @@ sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 from engine import (
     check as checking,
     definition as defs,
+    envelope as env,
     ksatime,
     render,
     signer,
@@ -36,8 +39,17 @@ from engine import (
     unlock,
 )
 from engine.codecs import CODECS, DEFAULT
-from engine.errors import DefinitionError, EncodingError, Rejected, WalletError
+from engine.encoding.ksa_cbor import decode
+from engine.encoding.review_yaml import emit
+from engine.errors import (
+    DefinitionError,
+    EncodingError,
+    Rejected,
+    StructureError,
+    WalletError,
+)
 from engine.reduce import Anchor
+from engine.schema import STATEMENT, SUITES
 from engine.store import CONTROLLERS, Wallet, locate
 from engine.verifier import verify
 
@@ -93,6 +105,17 @@ def cmd_key_import(a):
     print(f"known: {short(p.kid)}{name} — not trusted for anything")
 
 
+def anchor_line(an: Anchor, labels: dict[bytes, str]) -> str:
+    scope = "; ".join(
+        r[1][2] + (" ∈ {" + ", ".join(r[3]) + "}" if 3 in r else " (any value)")
+        for r in an.about
+    )
+    return (
+        f"anchor: {short(an.trusts)} ({render.key_name(an.trusts, labels)}) trusted in {an.context} "
+        f"about {scope} — accepted by {render.key_name(an.accepted_by, labels)}"
+    )
+
+
 def cmd_root_add(a):
     w = Wallet.open(locate(a.wallet))
     key, acceptor = w.find(a.key), w.find(a.as_)
@@ -100,15 +123,25 @@ def cmd_root_add(a):
     tref = d.type_ref(a.type)
     values = [v for v in (a.values or "").split(",") if v]
     about = {1: tref, 3: d.canonical_range(a.type, values)} if values else {1: tref}
-    w.add_anchor(
-        Anchor(a.context, key.kid, [about], acceptor.kid, ksatime.now(), note=a.note)
+    anchor = Anchor(
+        a.context, key.kid, [about], acceptor.kid, ksatime.now(), note=a.note
     )
+    w.add_anchor(anchor)
     w.put_definition(d.id, d.data)
-    scope = " ∈ {" + ", ".join(about[3]) + "}" if values else " (any value)"
-    print(
-        f"anchor: {short(key.kid)} ({render.key_name(key.kid, w.labels())}) trusted in {a.context} "
-        f"about {a.type}{scope} — accepted by {acceptor.label}"
-    )
+    print(anchor_line(anchor, w.labels()))
+
+
+def cmd_root_list(a):
+    w = Wallet.open(locate(a.wallet))
+    anchors, labels = w.anchors(a.context), w.labels()
+    if not anchors:
+        print(
+            f"no anchors in context {a.context}: you trust no key about anything here"
+        )
+    for an in anchors:
+        print(f"{anchor_line(an, labels)} on {ksatime.to_text(an.accepted_at)}")
+        if an.note:
+            print(f"  note: {an.note}")
 
 
 def cmd_make(a):
@@ -171,6 +204,37 @@ def cmd_check(a):
     return answer.exit_code
 
 
+def cmd_show(a):
+    data = Path(a.file).read_bytes()
+    if a.file.endswith(".def"):
+        d = defs.load(data)
+        print(f"definition {d.id.hex()}")
+        print(
+            f"  the SHA-256 of these {len(data)} bytes. A definition is not signed "
+            f"itself; a define statement names it by this id\n"
+        )
+        sys.stdout.write(emit(defs.to_h(d)))
+        return
+    e = env.split(CODECS[a.codec].load(data))
+    s = decode(e.tbs)
+    STATEMENT.check(s)
+    pub = f"0x{e.pub.hex()}" if e.pub is not None else "absent"
+    print(
+        "envelope — what is sent. suite and says are hints, checked against the statement"
+    )
+    print(f"  suite  {SUITES.get(e.suite, e.suite)}")
+    print(f"  says   0x{e.says.hex()}")
+    print(
+        f"  tbs    {len(e.tbs)} bytes, the statement below as signed: {e.tbs[:16].hex()}…"
+    )
+    print(f"  sig    0x{e.sig.hex()}")
+    print(f"  pub    {pub}")
+    print(
+        f"\nstatement — the {len(e.tbs)} signed bytes, decoded. Not verified: use check"
+    )
+    sys.stdout.write(emit(STATEMENT.to_h(s)))
+
+
 def parser() -> argparse.ArgumentParser:
     top = argparse.ArgumentParser(
         prog="mofn", description="mofn wallet engine v0 (#65)"
@@ -213,6 +277,9 @@ def parser() -> argparse.ArgumentParser:
     add.add_argument("--context", default="default")
     add.add_argument("--note")
     add.set_defaults(run=cmd_root_add)
+    ls = root.add_parser("list", help="print the anchors of a context")
+    ls.add_argument("--context", default="default")
+    ls.set_defaults(run=cmd_root_list)
 
     make = sub.add_parser("make", help="make and sign one attestation")
     make.add_argument("--as", dest="as_", required=True, metavar="LABEL")
@@ -237,6 +304,12 @@ def parser() -> argparse.ArgumentParser:
         help="evaluation time, YYYY-MM-DDTHH:MM:SSZ (default: now)",
     )
     chk.set_defaults(run=cmd_check)
+
+    show = sub.add_parser(
+        "show", help="print a statement or a .def definition, decoded, for reading"
+    )
+    show.add_argument("file")
+    show.set_defaults(run=cmd_show)
     return top
 
 
@@ -249,6 +322,7 @@ def main(argv=None) -> int:
         DefinitionError,
         EncodingError,
         Rejected,
+        StructureError,
         OSError,
         ValueError,
     ) as e:

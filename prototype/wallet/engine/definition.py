@@ -8,6 +8,9 @@ v0 implements the parts DV-1 uses. Of the base kinds only `enum` has an
 algebra here; a type of any other kind is reported as not supported, so it
 can never be silently treated as valid. Panels, processes and constraint
 expressions (SPEC-0005, SPEC-0003 §8) are refused the same way.
+
+`to_h` gives a definition's human-review form, as in SPEC-0003 Appendix A:
+fields and codes by name, and a local type reference by its label alone.
 """
 
 import hashlib
@@ -18,9 +21,36 @@ from . import schema
 from .encoding.ksa_cbor import decode
 from .errors import DefinitionError, EncodingError, StructureError
 from .ksatime import to_seconds
-from .schema import Bool, Checked, Field, ListOf, Map, Tstr, Uint, Value
+from .schema import (
+    Bool,
+    Checked,
+    Code,
+    Field,
+    Flow,
+    ListOf,
+    Map,
+    Name,
+    Text,
+    Tstr,
+    Uint,
+    Value,
+)
 
 ENUM = 1
+BASE_KINDS = {
+    1: "enum",
+    2: "integer",
+    3: "text",
+    4: "dns-name",
+    5: "ip-prefix",
+    6: "digest",
+    7: "key",
+    8: "boolean",
+    9: "record",
+    10: "time",
+    11: "email",
+}
+DELEGATIONS = {0: "none", 1: "same", 2: "scoped"}
 LABEL_RE = r"[a-z][a-z0-9-]{0,62}"
 _LANG = re.compile(r"[a-z]{2,3}(-[A-Z][a-z]{3})?(-([A-Z]{2}|[0-9]{3}))?")
 
@@ -35,10 +65,27 @@ class LangMap:
             if not isinstance(x, str):
                 schema.fail(path, "a language map's values are text")
 
+    def to_h(self, v):
+        return Flow({k: Text(x) for k, x in v.items()})
+
+
+class LocalRef:
+    """A type reference that may leave out the definition, meaning this one."""
+
+    ref = Map(
+        Field(1, "definition", schema.ID), Field(2, "label", Tstr(LABEL_RE), True)
+    )
+
+    def check(self, v, path):
+        self.ref.check(v, path)
+
+    def to_h(self, v):
+        return Flow(self.ref.to_h(v)) if 1 in v else Name(v[2])
+
 
 LANG = LangMap()
 LABEL = Tstr(LABEL_RE)
-LOCAL_REF = Map(Field(1, "definition", schema.ID), Field(2, "label", LABEL, True))
+LOCAL_REF = LocalRef()
 VALUE_DEF = Map(
     Field(1, "value", Tstr(), True),
     Field(2, "names", LANG, True),
@@ -55,13 +102,13 @@ FIELD_DEF = Map(
 )
 TYPE_DEF = Map(
     Field(1, "label", LABEL, True),
-    Field(2, "base", Uint(1, 11), True),
+    Field(2, "base", Code(BASE_KINDS), True),
     Field(3, "names", LANG, True),
     Field(4, "short", LANG, True),
     Field(5, "long", LANG),
     Field(6, "values", ListOf(VALUE_DEF)),
     Field(7, "constraints", ListOf(Checked())),
-    Field(8, "delegation", Uint(0, 2), True),
+    Field(8, "delegation", Code(DELEGATIONS), True),
     Field(9, "review", ListOf(REVIEW_Q)),
     Field(10, "examples", ListOf(Value())),
     Field(11, "fields", ListOf(FIELD_DEF)),
@@ -75,12 +122,12 @@ TEMPLATE_ATTR = Map(
 )
 TEMPLATE_DEF = Map(
     Field(1, "label", LABEL, True),
-    Field(2, "function", Uint(1, 11), True),
+    Field(2, "function", Code(schema.KINDS), True),
     Field(
         3,
         "target",
         Map(
-            Field(1, "types", ListOf(Uint(1, 6)), True),
+            Field(1, "types", ListOf(Code(schema.TARGETS)), True),
             Field(2, "rules", ListOf(Checked())),
         ),
         True,
@@ -93,12 +140,26 @@ TEMPLATE_DEF = Map(
     Field(9, "names", LANG, True),
     Field(10, "short", LANG),
 )
+ENTRIES = {1: ("type", TYPE_DEF), 2: ("template", TEMPLATE_DEF)}
+
+
+class Entry:
+    """`[entry-type, entry-map]`, checked entry by entry in `_conform`."""
+
+    def check(self, v, path):
+        pass
+
+    def to_h(self, v):
+        name, m = ENTRIES[v[0]]
+        return {name: m.to_h(v[1])}
+
+
 BODY = Map(
     Field(1, "definer", schema.KID, True),
     Field(2, "name", Tstr(), True),
     Field(3, "version", Tstr(), True),
     Field(4, "imports", ListOf(schema.ID)),
-    Field(5, "entries", ListOf(Checked()), True),
+    Field(5, "entries", ListOf(Entry()), True),
 )
 
 
@@ -198,6 +259,11 @@ def load(data: bytes, expected_id: bytes | None = None) -> Definition:
         return _conform(did, data, body)
     except StructureError as e:
         raise DefinitionError("definition-non-conforming", str(e)) from None
+
+
+def to_h(d: Definition) -> dict:
+    """The human-review form of a loaded definition (SPEC-0003 Appendix A)."""
+    return BODY.to_h(d.body)
 
 
 def _conform(did: bytes, data: bytes, body) -> Definition:

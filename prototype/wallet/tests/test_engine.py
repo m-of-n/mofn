@@ -5,10 +5,12 @@ artifact). No wallet directory is involved."""
 import hashlib
 
 import pytest
+import yaml
 
-from conftest import VECTORS, envelope, keystore, seed
+from conftest import VECTORS, WALLET, envelope, keystore, seed
 from engine import check, definition, envelope as env, ksatime, signer
 from engine.encoding.ksa_cbor import decode, encode
+from engine.encoding.review_yaml import emit
 from engine.reduce import Anchor
 
 ARTIFACT = b"ksa example artifact\n"
@@ -213,6 +215,26 @@ def test_wrong_definition_is_unobtainable():
     )
 
 
+def test_statement_in_a_look_alike_vocabulary_fails_semantics():
+    """The statement names a copy of DV-1 with one meaning changed. Checked
+    against DV-1 it is in the wrong vocabulary; checked against the copy, the
+    copy has no define statement."""
+    body = decode(DV1)
+    body[5][0][1][6][0][3] = {"en": "built on someone's laptop"}
+    copy = encode(body)
+    ref = {1: hashlib.sha256(copy).digest(), 2: "build-provenance"}
+    s = decode(bytes.fromhex(VECTORS["positive"]["TV-4"]["tbs"]))
+    s[6] = {1: [{1: ref, 2: "reproducible"}]}
+    e = signer.sign(seed("alice"), s)
+    a = run([e, envelope("TV-3")])
+    assert lines(a)["semantics"] == "fail" and lines(a)["authorization"] == "fail"
+    assert "not the one the statement names" in a.lines[5].sentence
+    assert not a.yes and a.exit_code == 1
+    a = run([e, envelope("TV-3")], definition=copy)
+    assert lines(a)["semantics"] == "fail"
+    assert "unattributed-definition" in a.lines[5].sentence
+
+
 @pytest.mark.parametrize(
     "change", ["no short", "bad label", "duplicate label", "unknown key"]
 )
@@ -244,3 +266,15 @@ def test_envelope_hint_mismatch_is_invalid():
 def test_dv1_id_recomputes():
     assert hashlib.sha256(DV1).digest() == DV1_ID
     assert definition.load(DV1).id == DV1_ID
+
+
+def test_dv1_human_form_is_the_spec_example():
+    """`mofn show dv-1.def` says what SPEC-0003 Appendix A says. The example's
+    unquoted `builder?}` is YAML 1.2; PyYAML reads YAML 1.1, which needs it
+    quoted, so that one value is quoted before reading."""
+    spec = (WALLET.parents[1] / "spec" / "SPEC-0003-ksa-definitions.md").read_text()
+    example = spec.split("## Appendix A.")[1].split("```yaml\n")[1].split("```")[0]
+    q = "Does the provenance name the expected builder?"
+    example = example.replace(q, f'"{q}"')
+    shown = emit(definition.to_h(definition.load(DV1)))
+    assert yaml.safe_load(shown) == yaml.safe_load(example)

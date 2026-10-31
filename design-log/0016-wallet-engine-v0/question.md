@@ -6,7 +6,7 @@ title: "W-1 wallet engine v0 (#65) — the mofn CLI over KSA, under SPEC-0002…
 date: "2026-10-20"
 model: "claude-opus-5-5"
 human: davidhsiaotw
-outcome: "prototype/wallet/: engine, thin store and CLI, 186 tests. No ADR — DEC-002, DEC-003, DEC-004, DEC-005 untouched; A1 and C1–C5 still with Paul."
+outcome: "prototype/wallet/: engine, thin store and CLI, 193 tests. No ADR — DEC-002, DEC-003, DEC-004, DEC-005 untouched; A1 and C1–C5 still with Paul."
 status: open
 ---
 
