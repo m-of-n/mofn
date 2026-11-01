@@ -6,8 +6,9 @@ TBS (SPEC-0002 §4.2, §11). Every codec turns its file form into the same
 envelope bytes `[suite, says, tbs, sig, ? pub]` (SPEC-0002 §5), and the
 verifier only ever sees those.
 
-Two codecs exist so that DEC-002 stays swappable (#65). Having two does not
-decide DEC-002.
+Two codecs exist because #65 asks for two, so the encoding stays swappable.
+DEC-002 chose KSA-CBOR (ADR-0004); the second codec is another way to write
+the same signed bytes, not a rival to it.
 """
 
 from abc import ABC, abstractmethod

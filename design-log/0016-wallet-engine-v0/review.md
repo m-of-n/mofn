@@ -100,3 +100,8 @@ code follows them. Recorded so the rejection lives here too.
    PyYAML, which the §11 strict reader is built on. `mofn show dv-1.def`
    quotes that value, and its test quotes it before comparing. Either the
    example quotes it, or §11 says which YAML version the human form is.
+6. **DEC-002 and DEC-003 were accepted while this was open** (ADR-0004,
+   ADR-0005, mofn#117). The engine already used KSA-CBOR and `kid` =
+   SHA-256(pub), and SPEC-0002 0.2.0 changes no signed bytes, so no code
+   changed on the rebase; only the README and docstrings that called them
+   open. The entry was renumbered from 0014, which mofn#112 took first.

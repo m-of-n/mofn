@@ -2,10 +2,11 @@
 
 A runnable `mofn` CLI over a local wallet directory. It **follows SPEC-0002,
 SPEC-0003 and SPEC-0004** (ADR-0003) behind the codec, suite and envelope
-interfaces, and **claims nothing about DEC-002, DEC-003, DEC-004 or DEC-005**,
-which stay open in ARCH-0001. It lives in `prototype/` because `src/` stays
-empty until DEC-002 is decided. The design input is #65 and the decisions
-posted on it; the design record is `design-log/0014-wallet-engine-v0/`.
+interfaces, with the encoding DEC-002 chose (ADR-0004, KSA-CBOR) and the key
+id DEC-003 chose (ADR-0005, `kid` = SHA-256 of the public key). It **claims
+nothing about DEC-004 or DEC-005**, which stay open in ARCH-0001, so it lives
+in `prototype/` and `src/` stays empty. The design input is #65 and the
+decisions posted on it; the design record is `design-log/0016-wallet-engine-v0/`.
 
 ## Run
 
@@ -170,7 +171,7 @@ presentations would build on.
 |---|---|---|
 | integrity line | also checks that a verified attestation is about **your** copy of the artifact | #65-c2 A1; SPEC-0004 §10.4 has no line for it, so golden ③ would pass every line. To be proposed as a SPEC-0004 diff |
 | acceptance line | **pass** when no template is named | SPEC-0004 Appendix A. Supersedes "not evaluated" in #65-c2 A1 |
-| answer | yes only if all six lines pass | stricter than SPEC-0004 §10.3 (coverage alone); see DL-0014 |
+| answer | yes only if all six lines pass | stricter than SPEC-0004 §10.3 (coverage alone); see DL-0016 |
 | second codec | the human-review YAML form, with `signed` | C1, still to be confirmed by Paul |
 | base kinds | enum only; others are refused, never treated as valid | DV-1 needs only enum |
 | definitions | one per `check` (`--def FILE`); `imports` are not obtained | DV-1 is the only vocabulary in the vectors, and it imports nothing. SPEC-0003 §4.3 requires every import |
