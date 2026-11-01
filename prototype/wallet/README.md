@@ -120,7 +120,7 @@ to say build-provenance is reproducible or attested, about any file.*
 
 | field | what it means |
 |---|---|
-| file name | the context it applies in; trust in one context counts for nothing in another |
+| file name | the context it applies in; trust in one context counts for nothing in another. A context name is lowercase letters, digits and `-` |
 | `source` | `local`: decided in your wallet, signed by nobody |
 | `trusts` | the key trusted, by key id. Authorization passes when it equals the statement's `says` |
 | `about` | the type (definition id and label) and the values (`range`) the key may say |

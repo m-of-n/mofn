@@ -513,3 +513,57 @@ def test_root_list_prints_what_root_add_wrote(wallet):
     assert note == "  note: release builds only"
     p = ok(run_mofn("--wallet", w, "root", "list", "--context", "other"))
     assert "no anchors in context other" in p.stdout
+
+
+@pytest.mark.parametrize("context", ["../../../escaped", "a/b", "Default", ""])
+def test_context_must_be_a_name(wallet, context):
+    _, w = wallet
+    ok(
+        run_mofn(
+            "--wallet",
+            w,
+            "key",
+            "import",
+            FIXTURES / "tv-1-alice.pub.stmt",
+            "--label",
+            "Alice",
+        )
+    )
+    p = run_mofn(
+        "--wallet",
+        w,
+        "root",
+        "add",
+        "Alice",
+        "--as",
+        "me",
+        "--def",
+        DV1,
+        "--type",
+        "build-provenance",
+        "--context",
+        context,
+    )
+    assert p.returncode == 2 and "is not a name" in p.stderr
+    assert not list(w.parent.rglob("escaped*"))
+    assert not list(w.rglob("trusts/*"))
+    p = run_mofn("--wallet", w, "root", "list", "--context", context)
+    assert p.returncode == 2 and "is not a name" in p.stderr
+
+
+def test_check_refuses_a_context_that_is_not_a_name(tmp_path):
+    w = tmp_path / "w"
+    ok(run_mofn("--wallet", w, "init"))
+    p = run_mofn(
+        "--wallet",
+        w,
+        "check",
+        FIXTURES / "tv-3-define.stmt",
+        "--artifact",
+        FIXTURES / "artifact.bin",
+        "--def",
+        DV1,
+        "--context",
+        "../x",
+    )
+    assert p.returncode == 2 and "is not a name" in p.stderr

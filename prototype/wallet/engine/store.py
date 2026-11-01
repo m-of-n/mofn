@@ -22,6 +22,7 @@ Argon2id, in a libsodium SecretBox (XSalsa20-Poly1305).
 """
 
 import os
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -39,6 +40,7 @@ WALLET_FILE = "wallet.yaml"
 CONTROLLERS = ("person", "organisation", "service", "agent", "software", "device")
 OPSLIMIT = nacl.pwhash.argon2id.OPSLIMIT_INTERACTIVE
 MEMLIMIT = nacl.pwhash.argon2id.MEMLIMIT_INTERACTIVE
+CONTEXT = re.compile(r"[a-z][a-z0-9-]{0,62}")
 
 
 def locate(flag: str | None) -> Path:
@@ -54,6 +56,19 @@ def _unhex(s: str) -> bytes:
     if not isinstance(s, str) or not s.startswith("0x"):
         raise WalletError(f"wallet file holds {s!r} where a 0x… byte string belongs")
     return bytes.fromhex(s[2:])
+
+
+def _context(context: str) -> str:
+    """A context name becomes a file name, so it must be a plain label."""
+    if not isinstance(context, str) or not CONTEXT.fullmatch(context):
+        raise WalletError(
+            f"context {context!r} is not a name: use lowercase letters, digits and -"
+        )
+    return context
+
+
+def _trusts(persona_dir: Path, context: str) -> Path:
+    return persona_dir / "trusts" / f"{_context(context)}.yaml"
 
 
 def _read(path: Path):
@@ -253,9 +268,10 @@ class Wallet:
         return {p.kid: p.label for p in self.personas() if p.label}
 
     def anchors(self, context: str) -> list[Anchor]:
+        _context(context)
         out = []
         for p in self.personas():
-            f = self._dir(p.kid) / "trusts" / f"{context}.yaml"
+            f = _trusts(self._dir(p.kid), context)
             if p.owned and f.is_file():
                 for a in _read(f) or []:
                     out.append(
@@ -293,9 +309,8 @@ class Wallet:
             )
         if not anchor.about:
             raise WalletError("an anchor with an empty about must not exist")
-        d = self._dir(acceptor.kid) / "trusts"
-        d.mkdir(exist_ok=True)
-        f = d / f"{anchor.context}.yaml"
+        f = _trusts(self._dir(acceptor.kid), anchor.context)
+        f.parent.mkdir(exist_ok=True)
         items = (_read(f) or []) if f.is_file() else []
         entry = {
             "source": anchor.source,
