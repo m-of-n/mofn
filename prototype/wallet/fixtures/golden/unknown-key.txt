@@ -1,0 +1,10 @@
+integrity      not evaluated  no verified attestation to compare your file with
+authenticity   fail           prov.stmt: the speaker's key is not in your key store
+names          pass           every key is shown by your own label for it
+authorization  not evaluated  no verified statement handed over is about your file
+acceptance     not evaluated  no verified statement handed over is about your file
+semantics      pass           supply-chain 1 is published by its definer, Alice (definer)
+
+answer: no
+
+This establishes who said it and whether they were entitled to say it; it does not establish that it is true.

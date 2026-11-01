@@ -1,0 +1,12 @@
+integrity      fail           your file is not the one described: it hashes to sha-256:910b707b0eeb4b45, the statement is about sha-256:48dfc39586b0c4f9
+authenticity   pass           every speaker's key is in your key store, and each envelope agrees with its statement
+names          pass           every key is shown by your own label for it
+authorization  not evaluated  no verified statement handed over is about your file
+acceptance     not evaluated  no verified statement handed over is about your file
+semantics      pass           supply-chain 1 is published by its definer, Alice (definer)
+
+answer: no
+
+release machine attests that sha-256:48dfc39586b0c4f9 was built reproducibly from published sources.
+
+This establishes who said it and whether they were entitled to say it; it does not establish that it is true.
