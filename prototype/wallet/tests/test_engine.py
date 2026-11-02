@@ -269,12 +269,8 @@ def test_dv1_id_recomputes():
 
 
 def test_dv1_human_form_is_the_spec_example():
-    """`mofn show dv-1.def` says what SPEC-0003 Appendix A says. The example's
-    unquoted `builder?}` is YAML 1.2; PyYAML reads YAML 1.1, which needs it
-    quoted, so that one value is quoted before reading."""
+    """`mofn show dv-1.def` says what SPEC-0003 Appendix A says."""
     spec = (WALLET.parents[1] / "spec" / "SPEC-0003-ksa-definitions.md").read_text()
     example = spec.split("## Appendix A.")[1].split("```yaml\n")[1].split("```")[0]
-    q = "Does the provenance name the expected builder?"
-    example = example.replace(q, f'"{q}"')
     shown = emit(definition.to_h(definition.load(DV1)))
     assert yaml.safe_load(shown) == yaml.safe_load(example)

@@ -105,3 +105,6 @@ code follows them. Recorded so the rejection lives here too.
    SHA-256(pub), and SPEC-0002 0.2.0 changes no signed bytes, so no code
    changed on the rebase; only the README and docstrings that called them
    open. The entry was renumbered from 0014, which mofn#112 took first.
+
+**Items 1–5 and A1, C1 and C4 are decided in DL-0020** (2026-11-01), with the
+evidence and what was rejected. C2, C3 and C5 could not be identified.

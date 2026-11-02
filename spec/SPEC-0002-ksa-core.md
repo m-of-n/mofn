@@ -7,10 +7,10 @@ description: "The KSA statement: its data model, deterministic encoding, signed 
 type: specification
 category: security
 status: draft
-version: "0.2.0"
+version: "0.4.0"
 version_policy: "semver; MAJOR = any change to signed or hashed bytes; MINOR = additive registry entries or requirements; PATCH = editorial"
 date: "2026-10-14"
-updated: "2026-10-25"
+updated: "2026-11-01"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -29,7 +29,7 @@ related_rfcs: [RFC2119, RFC8174, RFC8032, RFC8610, RFC8949]
 
 # KSA Core — statements, data model, canonical encoding and cipher suites
 
-**Specification SPEC-0002 · version 0.1.0 · draft**
+**Specification SPEC-0002 · version 0.4.0 · draft**
 
 ## Abstract
 
@@ -48,7 +48,13 @@ Draft for review in the m-of-n project. Design decisions are recorded in
 ADR-0003, ADR-0004 (the encoding, DEC-002) and ADR-0005 (`kid`, DEC-003).
 **0.2.0 (2026-10-25):** §6.1's digest row no longer covers `kid`s, which are
 SHA-256 under every suite; §12.3 gains the key-encoding collision rule. No
-signed or hashed bytes change. Nothing in this draft is final until its version leaves `0.x`.
+signed or hashed bytes change.
+**0.4.0 (2026-11-01):** proposed by DL-0020 from what building W-1 (mofn#65)
+found. §6.3 rejects a key outside the prime-order subgroup. §11.3 says which
+YAML the human form is, how a target is spelled, and that text reading as bytes
+has no human form; §11.1 notes that exception. No signed or hashed bytes
+change, and every published vector keeps its result.
+Nothing in this draft is final until its version leaves `0.x`.
 
 ---
 
@@ -302,7 +308,12 @@ A verifier MUST report a statement under an unregistered or unsupported suite as
   non-canonical (the encoded y ≥ p, with p = 2^255 − 19, or x = 0 with the sign
   bit set), if it does not decode to a curve point, or if it decodes to a point
   of small order (\[8\]A is the identity; this covers all eight points of the
-  torsion subgroup, including the identity).
+  torsion subgroup, including the identity), or if it lies outside the
+  prime-order subgroup (\[L\]A is not the identity, as for an honest key with a
+  torsion point added). An honestly generated key always passes. The last rule
+  keeps verifiers in agreement: under such a key the equation of [RFC8032]
+  §5.1.7 holds for about one message in eight at order 8, and a library's verify
+  function accepts those (DL-0020).
 - **Strict signature rules.** A verifier MUST reject a signature if
   S ≥ L, where L = 2^252 + 27742317777372353535851937790883648493; if R is
   non-canonical or not on the curve; or if R is of small order. Only then does it
@@ -620,7 +631,8 @@ A statement has exactly one **binary form** — its KSA-CBOR TBS, which is what 
 signed, hashed and transmitted — and one **human-review form**, written in YAML,
 which is what people read, write and review. The human form represents the
 binary form exactly: every field, every value, and the signature. A conforming
-tool converts between the two **one-to-one**:
+tool converts between the two **one-to-one**, with the one exception of §11.3
+(text that reads as bytes):
 
 - **human → binary, for signing:** a producer writes or edits the human form; the
   tool encodes it into the TBS (§4.2); the TBS is signed; the signature is added
@@ -673,7 +685,20 @@ map keys are always sorted (§4.2).
 - Field names are the names of §7–§8, with `-` written as a space.
 - Codes are written by name: `suite: ksa-ed25519-sha256`, `kind: attestation`,
   `alg: sha-256`. A tool maps each name to its registered code (§12).
+- The form is YAML 1.2, core schema, restricted to what a YAML 1.1 parser reads
+  the same way. Text that either version resolves to something else MUST be
+  quoted (`yes`, `no`, `on`, `off`, `y`, `n`, `1e3`, `0o17`), and a plain scalar
+  inside a flow collection MUST NOT contain `?`. A reader MUST reject such a
+  plain scalar rather than guess.
 - Byte strings are quoted text: `'0x'` followed by lowercase hexadecimal.
+- Where a field's type does not say bytes or text — a `value` of §4.1, as in
+  `body.has` or a description target — a quoted `'0x…'` is bytes. Text of exactly
+  that shape has no human form there: a tool MUST refuse to convert the statement
+  and MUST NOT alter the text. The statement stays valid in its binary form.
+- A target (§7.2) is a map with one key, the name of its type: `{key: '0x…'}`,
+  `{digest: {alg: sha-256, value: '0x…'}}`, `{statement: '0x…'}`,
+  `{definition: '0x…'}`, `{locator: text}`, and
+  `{description: {type: {definition: '0x…', label: text}, value: …}}`.
 - Times are quoted text in the exact form of §4.4. A YAML loader MUST NOT resolve
   YAML timestamps.
 - Integers are decimal only: `0`, or an optional `-` followed by a non-zero digit

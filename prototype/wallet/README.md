@@ -17,11 +17,17 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python mofn --help
 ```
 
+`demo/slice.sh`, from the repo root, needs only that venv (or `$MOFN_PYTHON`, or
+a `python3` with the requirements). It installs nothing and uses no network and
+no keychain. It gives the issuer, the key-holder and the relying party one
+wallet each, and compares every verdict with `fixtures/golden/` under both
+codecs.
+
 ## Try it
 
 A sender signs a file, and you, the receiver, check it. Each has their own
 wallet, and only the files named below move between them. Run it from a
-scratch folder, so nothing lands in the repo. (`demo/slice.sh` is #68.)
+scratch folder, so nothing lands in the repo.
 
 ```sh
 M="$PWD/.venv/bin/python $PWD/mofn"; F=$PWD/fixtures     # from prototype/wallet
@@ -169,13 +175,13 @@ presentations would build on.
 
 | | v0 | why |
 |---|---|---|
-| integrity line | also checks that a verified attestation is about **your** copy of the artifact | #65-c2 A1; SPEC-0004 §10.4 has no line for it, so golden ③ would pass every line. To be proposed as a SPEC-0004 diff |
-| acceptance line | **pass** when no template is named | SPEC-0004 Appendix A. Supersedes "not evaluated" in #65-c2 A1 |
-| answer | yes only if all six lines pass | stricter than SPEC-0004 §10.3 (coverage alone); see DL-0016 |
-| second codec | the human-review YAML form, with `signed` | C1, still to be confirmed by Paul |
+| integrity line | also checks that a verified attestation is about **your** copy of the artifact | A1 (DL-0020); proposed in SPEC-0004 0.2.0, pending sponsor review |
+| acceptance line | **pass** when no template is named | SPEC-0004 Appendix A; A1 as decided in DL-0020 |
+| answer | yes only if all six lines pass | stricter than SPEC-0004 §10.3 (coverage alone); kept for v0, see DL-0020 |
+| second codec | the human-review YAML form, with `signed` | C1 (DL-0020) |
 | base kinds | enum only; others are refused, never treated as valid | DV-1 needs only enum |
 | definitions | one per `check` (`--def FILE`); `imports` are not obtained | DV-1 is the only vocabulary in the vectors, and it imports nothing. SPEC-0003 §4.3 requires every import |
 | held statements | statements and definitions you are given are not kept (see above) | ARCH-0003 §3.8 keeps them, marked made, received or accepted |
 | delegation, revocation, rotation, thresholds, processes, contexts beyond one | not implemented; the answer says 0 revocations considered | out of scope for #65; #67 |
 | key wiping | the seed is zeroed after signing — best effort in Python | the library and interpreter may keep copies |
-| strict key rules | libsodium also rejects keys with a torsion component | stricter than SPEC-0002 §6.3; honest keys are unaffected |
+| strict key rules | libsodium also rejects keys with a torsion component | C4 (DL-0020); stricter than SPEC-0002 0.2.0, matches §6.3 as proposed in 0.4.0 |

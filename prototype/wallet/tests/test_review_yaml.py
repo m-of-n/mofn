@@ -52,13 +52,13 @@ def test_annotations_are_dropped():
     assert Y.load(annotated.encode()) == envelope("TV-4")
 
 
-def awkward(value) -> bytes:
+def awkward(value, this=None) -> bytes:
     alice = bytes.fromhex(VECTORS["keys"]["alice"]["kid"])
     s = {
         1: 4,
         2: 1,
         3: alice,
-        4: [5, value],
+        4: this or [5, value],
         6: {1: [{1: {1: bytes(32), 2: "x"}, 2: value}]},
     }
     return signer.sign(seed("alice"), s)
@@ -80,10 +80,19 @@ def awkward(value) -> bytes:
         "1.5",
         "~",
         "on",
+        "y",
+        "1e3",
+        "0o17",
     ],
 )
 def test_awkward_text_round_trips(value):
     e = awkward(value)
+    assert Y.load(Y.dump(e)) == e
+
+
+def test_description_target_round_trips():
+    e = awkward("x", this=[6, {1: bytes(32), 2: "label"}, "value"])
+    assert b"this: {description: {type: {definition: '0x" in Y.dump(e)
     assert Y.load(Y.dump(e)) == e
 
 
@@ -112,6 +121,10 @@ REJECT = {
     "tilde value": mutate("value: reproducible", "value: ~"),
     "float value": mutate("value: reproducible", "value: 1.5"),
     "yes value": mutate("value: reproducible", "value: yes"),
+    "yaml 1.1 y value": mutate("value: reproducible", "value: y"),
+    "yaml 1.2 float": mutate("value: reproducible", "value: 1e3"),
+    "yaml 1.2 octal": mutate("value: reproducible", "value: 0o17"),
+    "? in a flow collection": mutate("label: build-provenance}", "label: why?}"),
     "hex int": mutate("value: reproducible", "value: 0x1f"),
     "plus int": mutate("value: reproducible", "value: +1"),
     "leading zero": mutate("value: reproducible", "value: 012"),
