@@ -7,10 +7,10 @@ description: "Prose proposal for the next MINOR version of ARCH-0001. Additive o
 type: proposal
 category: security
 status: proposed
-version: "0.2.0-proposed.5"
+version: "0.2.0-proposed.6"
 version_policy: "target is a MINOR bump of ARCH-0001; all changes additive. This proposal's own revisions tracked in §10."
 date: "2026-09-16"
-updated: "2026-10-23"
+updated: "2026-10-25"
 authors:
   - role: proposer
     id: conversation-claude-opus-5
@@ -530,6 +530,11 @@ what is actually accepted.
 ---
 
 ## 10. Revision history of this proposal
+
+**0.2.0-proposed.6 — 2026-10-25.** Option 5 (§3.3) **accepted by `ADR-0004`**
+and folded into `ARCH-0001` §7 v0.1.5; it is no longer proposed here. The rest
+of this proposal — DEC-007, R-M-11, R-O-05, R-O-06, the RFC 9943 citation — is
+unchanged and still proposed.
 
 **0.2.0-proposed.5 — 2026-10-23.** Option 5 (§3.3) pins its deterministic
 rules to RFC 8949 §4.2.1 with a rejecting decoder, and states no-tags as a

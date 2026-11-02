@@ -1,6 +1,4 @@
-# Catch-all: any repo admin may review.
-# Normative surfaces stay with the sponsor (CONTRIBUTING.md §5).
+# Any one owner's approval satisfies review, on every path.
+# Add a path rule only to narrow who may approve it: last match wins, so a PR
+# touching a narrowed path needs that owner on top of whoever else approved.
 *                          @nymble @davidhsiaotw @Ndewedo-Newbury
-/spec/                     @nymble
-/project/                  @nymble
-/.github/                  @nymble

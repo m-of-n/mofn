@@ -1,0 +1,12 @@
+kind: define
+suite: ksa-ed25519-sha256
+says: '0x21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9'
+this: {definition: '0x517007656a617b3b5ab7cc376275a46ad88d14594f6846df88a34f2c8b3a7175'}
+valid:
+  not before: "2026-10-06T00:00:00Z"
+  issued: "2026-10-06T09:00:00Z"
+body:
+  name: supply-chain
+  version: "1"
+signed:
+  value: '0x8e08134764f37f17a2042ef965a74e5d46464db9d154772a78cb8a1c8e4bd3c4809709efef19b94bf621ca9cf6510b73f90585d3cb5a704b6303801b27513f06'

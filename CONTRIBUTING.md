@@ -79,10 +79,11 @@ Every PR states: **what changed / why / how tested / which deliverable**. The
 template asks for exactly that.
 
 **Review:**
-- One approving review to merge. The students are both Owners and review each
-  other.
-- `CODEOWNERS` routes `spec/**` and `spec/vectors/**` to Paul —
-  the normative surfaces.
+- One approving review to merge, from any code owner, on every path. The
+  students are both Owners and review each other.
+- `CODEOWNERS` lists all three owners on the catch-all and narrows no path.
+  Request Paul's review on normative surfaces (`spec/**`) by hand; nothing
+  enforces it.
 - Comment on the line, not in Slack or SMS. A line comment survives; a text does
   not.
 - **Suggested changes** for anything under ~5 lines — it is one click to accept

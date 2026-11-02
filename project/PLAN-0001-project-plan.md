@@ -7,9 +7,9 @@ description: "Execution plan for the CS690 project. Subordinate to ARCH-0001 for
 type: plan
 category: process
 status: draft
-version: "0.6.1"
+version: "0.6.2"
 date: "2026-09-16"
-updated: "2026-10-17"
+updated: "2026-11-01"
 authors:
   - role: planner
     id: conversation-claude-opus-5
@@ -60,6 +60,11 @@ corrections, folded in below: CBOR and COSE extension points are centrally
 defined and therefore not key-centric; a readable *authoring* format is not
 required, though *display* forms matter and tie to UI; and RFC 9804 is
 historical. §7.1 and §13 are rewritten accordingly.
+
+**v0.6.1 → v0.6.2.** `CODEOWNERS` no longer narrows `spec/**`, `project/**` or
+`.github/**` to Paul; one approval from any code owner merges any PR. A PR
+touching one of those paths otherwise needed Paul on top of a student's
+approval, which stalled merges (mofn#118 is the live case).
 
 Per ARCH-0001 §9, this file proposes; it does not ratify.
 
@@ -205,8 +210,8 @@ are not mechanically enforced are not followed by week 6.
   **CC-BY-4.0**; library notes **CC-BY-4.0**. Third-party PDFs never committed.
 - **DCO** (`Signed-off-by`), not a CLA — one line, CI-enforced.
 - `main` protected: no direct pushes, one approving review, CI green, linear
-  history, signed commits. `CODEOWNERS` routes `project/**` and
-  `spec/vectors/**` to Paul.
+  history, signed commits. `CODEOWNERS` lists all three owners on every path;
+  any one approves.
 - Pages via **MkDocs Material**, Python not Node — matches the project and spares
   a toolchain nobody needs.
 
@@ -515,8 +520,8 @@ failed.
   status updated in ARCH-0001 with a pointer. Never marked accepted in a PR
   description or a Zoom note.
 - **One PR per deliverable slice.** Small and reviewable beats big and correct.
-- Students hold repo `admin` and review each other; Paul reviews
-  `spec/**` and `project/**` via `CODEOWNERS`.
+- Students hold repo `admin` and review each other; Paul is requested by hand
+  on `spec/**` and `project/**`, not enforced by `CODEOWNERS`.
 - **Draft PRs opened on day one of an increment** are the progress signal.
 - The **CS690 weekly progress page is generated from the repo** — merged PRs,
   closed issues, plus a short reflection. A course requirement made a byproduct.

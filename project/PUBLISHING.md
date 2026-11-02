@@ -2,7 +2,7 @@
 
 # Publishing manifest
 
-37 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
+39 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
 
 A document is published because it **exists and declares a status** in its
 front matter — not because someone remembered to add it to a nav list. Set
@@ -15,14 +15,16 @@ front matter — not because someone remembered to add it to a nav list. Set
 | [R-M-12 stands: key-relative naming is a core principle](https://m-of-n.github.io/mofn/architecture/ADR-0001-key-relative-naming/) | `ADR-0001` | accepted | 1.0.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ADR-0001-key-relative-naming.md) |
 | [ARCH-0002 P2, P3, P5 and P6 — the instrument MD-2 deferred](https://m-of-n.github.io/mofn/architecture/ADR-0002-provisional-principles/) | `ADR-0002` | proposed ⚠️ | 0.1.4 | 2026-10-26 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ADR-0002-provisional-principles.md) |
 | [KSA core design decisions](https://m-of-n.github.io/mofn/architecture/ADR-0003-ksa-core-decisions/) | `ADR-0003` | accepted | 1.0.1 | 2026-10-17 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ADR-0003-ksa-core-decisions.md) |
-| [ARCH-0001 changelog](https://m-of-n.github.io/mofn/architecture/ARCH-0001-CHANGELOG/) | `ARCH-0001-CHANGELOG` | active | 0.1.4 | 2026-10-25 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-CHANGELOG.md) |
-| [Proposed ARCH-0001 v0.2.0 — key-relative extension points, predicate rendering, subject identity, citation corrections](https://m-of-n.github.io/mofn/architecture/ARCH-0001-PROPOSAL-v0.2.0/) | `ARCH-0001-PROPOSAL-v0.2.0` | proposed ⚠️ | 0.2.0-proposed.5 | 2026-10-23 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-PROPOSAL-v0.2.0.md) |
-| [Authorization, local names, and artifact attestation — architecture checkpoint](https://m-of-n.github.io/mofn/architecture/ARCH-0001-authorization-attestation/) | `ARCH-0001` | draft ⚠️ | 0.1.4 | 2026-10-25 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-authorization-attestation.md) |
-| [ARCH-0002 changelog](https://m-of-n.github.io/mofn/architecture/ARCH-0002-CHANGELOG/) | `ARCH-0002-CHANGELOG` | active | 0.8.1 | 2026-10-26 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0002-CHANGELOG.md) |
-| [Key-relative naming, types, and domains of discourse](https://m-of-n.github.io/mofn/architecture/ARCH-0002-key-relative-naming/) | `ARCH-0002` | draft ⚠️ | 0.8.1 | 2026-10-26 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0002-key-relative-naming.md) |
+| [DEC-002 accepted: option 5 — reduced deterministic CBOR (KSA-CBOR) is the native encoding](https://m-of-n.github.io/mofn/architecture/ADR-0004-dec-002-encoding/) | `ADR-0004` | accepted | 1.0.0 | 2026-10-25 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ADR-0004-dec-002-encoding.md) |
+| [DEC-003 accepted: a principal is identified on the wire by kid = SHA-256 of its suite public-key encoding](https://m-of-n.github.io/mofn/architecture/ADR-0005-dec-003-key-identifier/) | `ADR-0005` | accepted | 1.0.0 | 2026-10-25 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ADR-0005-dec-003-key-identifier.md) |
+| [ARCH-0001 changelog](https://m-of-n.github.io/mofn/architecture/ARCH-0001-CHANGELOG/) | `ARCH-0001-CHANGELOG` | active | 0.1.6 | 2026-11-01 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-CHANGELOG.md) |
+| [Proposed ARCH-0001 v0.2.0 — key-relative extension points, predicate rendering, subject identity, citation corrections](https://m-of-n.github.io/mofn/architecture/ARCH-0001-PROPOSAL-v0.2.0/) | `ARCH-0001-PROPOSAL-v0.2.0` | proposed ⚠️ | 0.2.0-proposed.6 | 2026-10-25 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-PROPOSAL-v0.2.0.md) |
+| [Authorization, local names, and artifact attestation — architecture checkpoint](https://m-of-n.github.io/mofn/architecture/ARCH-0001-authorization-attestation/) | `ARCH-0001` | draft ⚠️ | 0.1.6 | 2026-11-01 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-authorization-attestation.md) |
+| [ARCH-0002 changelog](https://m-of-n.github.io/mofn/architecture/ARCH-0002-CHANGELOG/) | `ARCH-0002-CHANGELOG` | active | 0.9.1 | 2026-11-02 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0002-CHANGELOG.md) |
+| [Key-relative naming, types, and domains of discourse](https://m-of-n.github.io/mofn/architecture/ARCH-0002-key-relative-naming/) | `ARCH-0002` | draft ⚠️ | 0.9.1 | 2026-11-02 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0002-key-relative-naming.md) |
 | [Wallet, persona, key and definition — the object model above the statement](https://m-of-n.github.io/mofn/architecture/ARCH-0003-wallet-object-model/) | `ARCH-0003` | draft ⚠️ | 0.3.1 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0003-wallet-object-model.md) |
 | [KSA Architecture — principals, wallets, contexts, presentations and discovery](https://m-of-n.github.io/mofn/architecture/SPEC-0001-ksa-architecture/) | `SPEC-0001` | draft ⚠️ | 0.1.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/SPEC-0001-ksa-architecture.md) |
-| [KSA Core — statements, data model, canonical encoding and cipher suites](https://m-of-n.github.io/mofn/architecture/SPEC-0002-ksa-core/) | `SPEC-0002` | draft ⚠️ | 0.1.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/SPEC-0002-ksa-core.md) |
+| [KSA Core — statements, data model, canonical encoding and cipher suites](https://m-of-n.github.io/mofn/architecture/SPEC-0002-ksa-core/) | `SPEC-0002` | draft ⚠️ | 0.3.0 | 2026-11-01 | [source](https://github.com/m-of-n/mofn/blob/main/spec/SPEC-0002-ksa-core.md) |
 | [KSA Definitions — vocabularies, types, human-readable semantics, constraints and templates](https://m-of-n.github.io/mofn/architecture/SPEC-0003-ksa-definitions/) | `SPEC-0003` | draft ⚠️ | 0.1.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/SPEC-0003-ksa-definitions.md) |
 | [KSA Trust Evaluation — contexts, anchors, delegation, revocation, rotation, and the verdict](https://m-of-n.github.io/mofn/architecture/SPEC-0004-ksa-trust-evaluation/) | `SPEC-0004` | draft ⚠️ | 0.1.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/SPEC-0004-ksa-trust-evaluation.md) |
 | [KSA Processes — panels, criteria and reproducible aggregates](https://m-of-n.github.io/mofn/architecture/SPEC-0005-ksa-processes/) | `SPEC-0005` | draft ⚠️ | 0.1.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/SPEC-0005-ksa-processes.md) |
@@ -33,16 +35,16 @@ front matter — not because someone remembered to add it to a nav list. Set
 | document | id | status | version | updated | |
 |---|---|---|---|---|---|
 | [The application — what we are actually building for the demo](https://m-of-n.github.io/mofn/project/APP-0001-application-design/) | `APP-0001` | draft ⚠️ | 0.3.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/project/APP-0001-application-design.md) |
-| [m-of-n backlog](https://m-of-n.github.io/mofn/project/BACKLOG-0001/) | `BACKLOG-0001` | draft ⚠️ | 0.12.2 | 2026-10-20 | [source](https://github.com/m-of-n/mofn/blob/main/project/BACKLOG-0001.md) |
-| [Open decision register — everything waiting on a human](https://m-of-n.github.io/mofn/project/DECISIONS-0001/) | `DECISIONS-0001` | active | 0.3.5 | 2026-10-26 | [source](https://github.com/m-of-n/mofn/blob/main/project/DECISIONS-0001.md) |
+| [m-of-n backlog](https://m-of-n.github.io/mofn/project/BACKLOG-0001/) | `BACKLOG-0001` | draft ⚠️ | 0.12.4 | 2026-11-01 | [source](https://github.com/m-of-n/mofn/blob/main/project/BACKLOG-0001.md) |
+| [Open decision register — everything waiting on a human](https://m-of-n.github.io/mofn/project/DECISIONS-0001/) | `DECISIONS-0001` | active | 0.4.1 | 2026-11-02 | [source](https://github.com/m-of-n/mofn/blob/main/project/DECISIONS-0001.md) |
 | [Glossary — terms that mean more than one thing](https://m-of-n.github.io/mofn/project/GLOSSARY-0001/) | `GLOSSARY-0001` | draft ⚠️ | 0.3.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/project/GLOSSARY-0001.md) |
-| [Project plan — semester execution, repo, library, and team](https://m-of-n.github.io/mofn/project/PLAN-0001-project-plan/) | `PLAN-0001` | draft ⚠️ | 0.6.1 | 2026-10-17 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0001-project-plan.md) |
+| [Project plan — semester execution, repo, library, and team](https://m-of-n.github.io/mofn/project/PLAN-0001-project-plan/) | `PLAN-0001` | draft ⚠️ | 0.6.2 | 2026-11-01 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0001-project-plan.md) |
 | [Product Specification — Key-centric Semantic Attestations](https://m-of-n.github.io/mofn/project/PLAN-0002-product-spec/) | `PLAN-0002` | draft ⚠️ | 0.3.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0002-product-spec.md) |
 | [Key-centric Semantic Attestations — Fall 2026 plan](https://m-of-n.github.io/mofn/project/PLAN-0003-semester-plan/) | `PLAN-0003` | draft ⚠️ | 0.1.0 | 2026-09-28 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0003-semester-plan.md) |
 | [Application plan — local wallet, two domains, verdict first](https://m-of-n.github.io/mofn/project/PLAN-0004-application-plan/) | `PLAN-0004` | draft ⚠️ | 0.1.1 | 2026-10-02 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0004-application-plan.md) |
 | [Draft pitch — the application and the benefit](https://m-of-n.github.io/mofn/project/PLAN-0005-draft-pitch/) | `PLAN-0005` | draft ⚠️ | 0.1.0 | 2026-10-12 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0005-draft-pitch.md) |
 | [Agents, topics, and the unit of parallel work](https://m-of-n.github.io/mofn/project/PROC-0001-agents-and-topics/) | `PROC-0001` | draft ⚠️ | 0.2.0 | 2026-09-21 | [source](https://github.com/m-of-n/mofn/blob/main/project/PROC-0001-agents-and-topics.md) |
-| [Multi-agent ingestion — fan-out, gates, and what humans actually review](https://m-of-n.github.io/mofn/project/PROC-0002-multi-agent-ingestion/) | `PROC-0002` | draft ⚠️ | 0.2.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/PROC-0002-multi-agent-ingestion.md) |
+| [Multi-agent ingestion — fan-out, gates, and what humans actually review](https://m-of-n.github.io/mofn/project/PROC-0002-multi-agent-ingestion/) | `PROC-0002` | draft ⚠️ | 0.3.0 | 2026-10-29 | [source](https://github.com/m-of-n/mofn/blob/main/project/PROC-0002-multi-agent-ingestion.md) |
 | [Team coordination across repositories — lanes, skills, and who opens what](https://m-of-n.github.io/mofn/project/PROC-0003-team-coordination/) | `PROC-0003` | draft ⚠️ | 0.3.0 | 2026-10-01 | [source](https://github.com/m-of-n/mofn/blob/main/project/PROC-0003-team-coordination.md) |
 | [Fall 2026 deliverables — definition of done](https://m-of-n.github.io/mofn/project/PROC-0004-community-launch/) | `PROC-0004` | draft ⚠️ | 0.3.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/PROC-0004-community-launch.md) |
 | [Cycle retrospective — what the harness caught, what it missed, what to repeat](https://m-of-n.github.io/mofn/project/RETRO-0001/) | `RETRO-0001` | draft ⚠️ | 0.1.0 | 2026-09-22 | [source](https://github.com/m-of-n/mofn/blob/main/project/RETRO-0001.md) |
@@ -62,7 +64,7 @@ front matter — not because someone remembered to add it to a nav list. Set
 
 ## Status
 
-⚠️ **31 of 37 published documents are draft or proposed.**
+⚠️ **31 of 39 published documents are draft or proposed.**
 They are public and marked as such. Nothing here is accepted; an open
 `DEC-*` is not settled because it appears on a website.
 

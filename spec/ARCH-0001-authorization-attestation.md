@@ -8,10 +8,10 @@ description: "Canonical working architecture for a native model that is not X.50
 type: architecture
 category: security
 status: draft
-version: "0.1.4"
+version: "0.1.6"
 version_policy: "semver; PATCH = editorial; MINOR = additive requirements; MAJOR = breaking model change"
 date: "2026-09-15"
-updated: "2026-10-25"
+updated: "2026-11-01"
 authors:
   - role: architect
     id: conversation-brainpool256
@@ -56,8 +56,6 @@ related_drafts:
   - slsa-provenance-v1
 open_decisions:
   - DEC-001
-  - DEC-002
-  - DEC-003
   - DEC-004
   - DEC-005
 constraints:
@@ -87,7 +85,7 @@ agent_notes: >
 
 # ARCH-0001 — Authorization, local names, and artifact attestation
 
-**Status:** draft · **Version:** 0.1.4 · **Date:** 2026-09-15 · **Updated:** 2026-10-25  
+**Status:** draft · **Version:** 0.1.6 · **Date:** 2026-09-15 · **Updated:** 2026-11-01  
 **Canonical file:** `spec/ARCH-0001-authorization-attestation.md`  
 **Changelog:** `spec/ARCH-0001-CHANGELOG.md`
 
@@ -197,7 +195,7 @@ Logical types. Encoding is DEC-002.
 | Type | Meaning |
 |------|---------|
 | `Key` | Public key material + algorithm identifier |
-| `KeyId` | Digest of a canonical key encoding (algorithm of digest is parameterized) |
+| `KeyId` | Digest of a canonical key encoding (algorithm of digest is parameterized) — **narrowed by `ADR-0005`:** SHA-256 of the key's public-key encoding under its suite (`SPEC-0002` §4.5) |
 | `Principal` | `Key` \| `KeyId` \| `Name` \| `Threshold` \| `Group` |
 | `Name` | `{ issuer: Principal, labels: [string, ...] }` — SDSI compound name |
 | `Threshold` | `{ k: int, n: int, members: [Principal, ...] }` with `1 ≤ k ≤ n` and `n = len(members)` |
@@ -354,12 +352,15 @@ Affects: packaging only.
 
 ### DEC-002 — Concrete native encoding
 
+**Status: accepted 2026-10-25 — option 5, by [`ADR-0004`](ADR-0004-dec-002-encoding.md).** The text below is kept as the record of what was decided between.
+
 Options:
 
 1. Canonical S-expressions (RFC 9804) as canonical; JSON as diagnostic.
 2. CBOR + CDDL as canonical; COSE for signed form.
 3. JSON + RFC 8785 JCS as canonical; DSSE for signed form.
 4. Dual canonical (CBOR and JSON) with a documented bijection.
+5. *(Added with `ADR-0004`; drafted in `ARCH-0001-PROPOSAL-v0.2.0` §3.3.)* CBOR data model under RFC 8949 §4.2.1, restricted and decoder-enforced, with no IANA registry native; COSE and DSSE as export envelopes only.
 
 Drivers: library availability, SCITT alignment, SPKI fidelity, human debug.  
 Acceptance test: round-trip fixtures for NameCert, AuthzCert (including threshold subject), ArtifactStatement.
@@ -392,11 +393,29 @@ selected, ranked or withdrawn here.
   against no option. It is a defect in the **test**: the threshold fixture's
   expected-results file carries the invariant as positive and negative cases
   (`k = 0`, `k > n`, `n ≠ len(members)`), and the component that owns the check
-  is named — today `SPEC-0002` V8, *"`trust`: target and threshold form"*
-  (§8.6 writes `k` as `threshold` and `n` as the length of `trusts`).
-  `spec/vectors/ksa-core/` carries no threshold vector yet.
+  is named — `SPEC-0002` V8, *"`trust`: target and threshold form"* (§8.6
+  writes `k` as `threshold` and `n` as the length of `trusts`).
+
+  **Fixture landed 0.1.6** (T-031, `DL-0019`). TV-9…11 are the positives; N-7
+  (`k = 0`) and N-8 (`k > n`) fail at V8, which owns `1 ≤ k ≤ n`. V8 cannot own
+  `n = len(members)`: §8.6 has no `n` field, because `n` *is* the array head of
+  `trusts`, so that clause holds by construction. Its two possible spellings
+  fail earlier: N-9, an added field, at V7 (closed map); N-10, a head that
+  disagrees with its items, at V5. This comes from §8.6's shape, not the
+  encoding, so it is not a defect in option 5.
+
+  The other roles of the acceptance test: `ArtifactStatement` is TV-4;
+  `NameCert` is TV-13, an `attestation` about a key (`ARCH-0002` P6, `[draft]`).
+  `ADR-0004`'s "met" list omits `NameCert`, and TV-1 and TV-2 do not supply it:
+  `self.label` is *"not a binding"* (`SPEC-0002` §8.3). Every positive vector
+  round-trips in `prototype/wallet/tests`. **Still owed:** `trusts: [A, A]` with
+  `threshold: 2` passes V8, since `SPEC-0002` has no distinctness rule and
+  `SPEC-0004` §6.4 counts distinct kids. It fails closed; it goes to `SPEC-0002`
+  with condition (5).
 
 ### DEC-003 — Issuer / subject identifiers on the wire
+
+**Status: accepted 2026-10-25 — `kid` = SHA-256 of the suite's public-key encoding, by [`ADR-0005`](ADR-0005-dec-003-key-identifier.md).** The text below is kept as the record of what was decided between.
 
 Options: raw COSE key; COSE key thumbprint; `did:key`; hash-uri (`sha256:…`); text KeyId.
 
