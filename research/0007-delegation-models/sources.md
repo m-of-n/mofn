@@ -4,16 +4,15 @@ id: R-0007-sources
 title: "Sources consulted — delegation models"
 type: evidence
 status: draft
-version: "0.1.0"
+version: "0.2.0"
 date: "2026-10-26"
-updated: "2026-10-26"
+updated: "2026-11-01"
 ---
 
 # Sources
 
-The bibliography is pinned at **`library@f15fd76`**, plus `rfc-8550` and
-`sdsi-1-1` as brought to the summary bar in the library PR that closes
-library#14. Every `[@key]` in `report.md` resolves at that state.
+The bibliography is pinned at **`library@a1aa258`**, which includes `rfc-8550`
+and `sdsi-1-1` as brought to the summary bar in library#94. Every `[@key]` in `report.md` resolves at that state.
 
 **Quote audit.** Every verbatim quotation in `report.md` was checked by script
 against the sources below: 62 italic quoted spans. The whole span was checked,
@@ -59,8 +58,9 @@ records.
 ## 3. Implementation source (GnuPG)
 
 Fetched from the GitHub mirror of the GnuPG repository (`gpg/gnupg`, branch
-`master`) on 2026-10-26. `dev.gnupg.org` did not respond. Read, not built or
-run.
+`master`) on 2026-10-26. `dev.gnupg.org` did not respond. This source was read,
+not built. The behaviour was executed separately on the released GnuPG 2.5.24
+(`unverified.md` §1–§2).
 
 | file | sha256 of fetched bytes | used for |
 |---|---|---|
@@ -69,6 +69,5 @@ run.
 | `g10/gpg.c` | not recorded | `--quick-tsign-key` argument shape `depth,[m\|f][,domain]` |
 
 **Not ingested into the library.** Source files of a moving branch are not a
-citable document. If R-0007's GnuPG claims become load-bearing, the
-experiment in `experiments/` should be run against a released version and its
-output recorded as a library record.
+citable document. The experiment's output is kept in `experiments/`, not as a
+library record: it is our own measurement, reproducible from the script.

@@ -7,9 +7,9 @@ description: "One email-delegation case (UC-5: Dave trusts Alice for foo.com, Al
 type: research
 category: security
 status: draft
-version: "0.1.0"
+version: "0.2.0"
 date: "2026-10-26"
-updated: "2026-10-26"
+updated: "2026-11-01"
 needs_review: true
 reviewed: false
 canonical_path: research/0007-delegation-models/report.md
@@ -21,7 +21,7 @@ informs: [ARCH-0001, SPEC-0003, SPEC-0004, UC-0001]
 open_decisions: [DEC-004]
 backlog: L-040
 closes: "m-of-n/library#14"
-library_pin: "library@f15fd76 + library PR for #14 (rfc-8550, sdsi-1-1 to the summary bar)"
+library_pin: "library@a1aa258"
 ---
 
 # Who May Speak for foo.com
@@ -31,14 +31,14 @@ library_pin: "library@f15fd76 + library PR for #14 (rfc-8550, sdsi-1-1 to the su
 nothing.** Its recommendations (§8) are proposals against ARCH-0001, SPEC-0003,
 SPEC-0004 and UC-0001, offered for review.
 
-Bibliography pinned at **`library@f15fd76`**, plus two records brought to the
-summary bar for this report in the library PR that closes #14: `[@rfc-8550]`
+Bibliography pinned at **`library@a1aa258`**, which includes two records
+brought to the summary bar for this report in library#94: `[@rfc-8550]`
 and `[@sdsi-1-1]`. Citation keys `[@record-id]` resolve to records at that
 state. Section locators (§) refer to the cited source. Every verbatim quotation
 below was checked against the digest-verified source text in the library's
 `.cache/`. `sources.md` lists what was read, `searches.md` lists what was
 fetched, and `unverified.md` holds the claims that are **not stated as fact
-below**.
+below**, plus the two GnuPG claims it settled by experiment.
 
 This report builds on three earlier reports and does not repeat them. R-001
 §4–§5 covers X.509's history, the name-constraint measurement and OpenPGP's
@@ -73,9 +73,9 @@ Three findings drive the report.
   (§6.3) intersect at every hop. OpenPGP defines no rule for combining scopes
   along a chain. The reference implementation, GnuPG, keeps one regular
   expression per key, and a newer trust signature *replaces* it rather than
-  intersecting with it. On a reading of its source (`unverified.md` §1, not yet
-  run), the relying party's scope reaches one hop and no further. Alice can
-  widen Bob, and GnuPG will not notice.
+  intersecting with it. Confirmed by experiment on GnuPG 2.5.24
+  (`unverified.md` §1): the relying party's scope reaches one hop and no
+  further. Alice can widen Bob, and GnuPG will not notice.
 - **Whether the relying party's own scope is in the format.** In X.509 it is an
   optional input to path validation (§6.1.1(h)), which conforming
   implementations "are not required to support". In OpenPGP it is a trust
@@ -128,9 +128,9 @@ already do most of it."*
    `[@draft-ietf-spki-cert-structure]`, which expired and was never published.
 3. **Implementation behaviour comes from code, labelled as such.** GnuPG is the
    only implementation whose behaviour this report states, and it is stated
-   from its source at a recorded digest (`sources.md` §3). The source was read,
-   not executed. `unverified.md` §1 records the experiment that would settle it,
-   and the script is in `experiments/`.
+   from its source at a recorded digest (`sources.md` §3). The two claims that
+   matter most were then executed against GnuPG 2.5.24 (`unverified.md` §1–§2);
+   the script and its output are in `experiments/`.
 4. **The library's `delegation-models` topic answer is the starting
    hypothesis, not the conclusion.** Where this report departs from it, it says
    so (§7.3).
@@ -320,8 +320,8 @@ GnuPG turns the domain into the regex `<[^>]+[@.]foo.com>$`
   `carol@eng-foo.com`, a separately registrable domain. Dave's `foo.com` regex
   likewise matches `@fooxcom`. That one is harmless only because `fooxcom` is
   not a registrable name, and the same holds for any single-label-plus-TLD
-  domain. Multi-label domains are exposed. This is a source reading, and is
-  in `unverified.md` §2.
+  domain. Multi-label domains are exposed. Confirmed by experiment for
+  `eng-foo.com` on GnuPG 2.5.24 (`unverified.md` §2).
 
 On the wire this is RFC 9580 §5.2.3.21 (level 2, amount 120) plus §5.2.3.22.
 Level 2 makes Alice a *"meta introducer"*. The Regular Expression subpacket
@@ -336,8 +336,8 @@ Expression ... have trust extended"*.
 
 - **Bob certifies `carol@bar.com`: rejected.** Alice's regex is checked against
   the User IDs Bob signs.
-- **Alice widens Bob to `bar.com`: RFC 9580 does not say; GnuPG, as read,
-  accepts it.**
+- **Alice widens Bob to `bar.com`: RFC 9580 does not say; GnuPG accepts
+  it.**
   - RFC 9580 defines a regex per signature and no rule for combining regexes
     along a chain. Trust computation is entirely the implementation's (§5.10:
     *"The format of Trust packets is defined by a given implementation"*).
@@ -354,8 +354,9 @@ Expression ... have trust extended"*.
   - Depth is handled more carefully: the code takes the minimum of the
     signature's depth and the chain's remaining depth.
 
-  This is a source reading, not an executed result (`unverified.md` §1). If it
-  holds, **OpenPGP as deployed scopes the first hop and not the chain.**
+  Run on GnuPG 2.5.24, `carol@bar.com` comes out fully valid for Dave
+  (`unverified.md` §1). **OpenPGP as deployed scopes the first hop and not the
+  chain.**
 
 **What Bob may say.** Only "this User ID belongs to this key". OpenPGP has no
 authorization field. The scope is a regex over a display string, not over a
@@ -488,7 +489,7 @@ the relying party (Dave).
 |---|---|---|---|---|---|---|---|
 | **X.509 / PKIX** | CA certificate: `cA`, `keyCertSign`, `pathLenConstraint` (§4.2.1.9) | a trust anchor chosen as *"a matter of policy"* (§6), in practice a root store | **yes**, `nameConstraints` (§4.2.1.10), fail-open per name form | names a delegate may certify | **yes**, intersect permitted, union excluded (§6.1.4(g)) | optional input `initial-permitted-subtrees` (§6.1.1(h)), support not required | **no**, three fields on the name-binding certificate |
 | **S/MIME** | none of its own; RFC 5280 path validation (RFC 8550 §4.2) | the agent's, by "some other mechanism" (RFC 8550 §2.3) | inherits PKIX; never mentions name constraints, and discourages critical extensions it does not list (§4.4) | as PKIX | as PKIX | as PKIX | **no** |
-| **OpenPGP** | trust signature, level *n* may issue *n−1*; level 2 is a *"meta introducer"* (§5.2.3.21) | the RP's own keyring and ownertrust; Trust packet format *"defined by a given implementation"* (§5.10) | **yes**, a regex over User IDs (§5.2.3.22) | names a delegate may certify | **not specified**; GnuPG keeps the latest regex per key, so first hop only (§3.3, unverified) | **yes**, the RP's own trust signature | **partly**: a subpacket on a User-ID certification |
+| **OpenPGP** | trust signature, level *n* may issue *n−1*; level 2 is a *"meta introducer"* (§5.2.3.21) | the RP's own keyring and ownertrust; Trust packet format *"defined by a given implementation"* (§5.10) | **yes**, a regex over User IDs (§5.2.3.22) | names a delegate may certify | **not specified**; GnuPG keeps the latest regex per key, so first hop only (§3.3) | **yes**, the RP's own trust signature | **partly**: a subpacket on a User-ID certification |
 | **SDSI 1.1** | name binding (`Cert:`), or a `Delegation-Cert` for signing authority | the verifier's own name space and ACLs, plus shared `!!` roots (§2) | **by position only**: a binding hands over the whole subtree | names, structurally | yes, by construction | yes: the RP's own bindings | **yes**: `Delegation-Cert` is distinct from `Cert:` |
 | **SPKI** | 5-tuple with `propagate` (boolean) | an unsigned ACL, *"the source of empowerment"* (§1.1) | **yes**, tag intersection; `prefix`, `range`, `set`, no suffix | what a delegate may say (application-defined) | **yes**, `AIntersect` at every reduction (§6.3) | **yes**: the ACL entry's tag | **yes**: 5-tuple vs 4-tuple, *"qualitatively different"* (§6.2) |
 | **ours** | trust statement with `may-delegate` (integer depth) | an unsigned local anchor, or an accepted signed statement (SPEC-0004 §4.3) | **yes**, by typed range | what a delegate may say, with typed ranges | **yes**, and widening is an error (SPEC-0004 §6.3) | **yes**: the anchor's `about` | **yes**: `trust` ≠ attestation |
@@ -603,7 +604,7 @@ who want to check `carol@eng.foo.com`.
     describes for public CAs.
 - **OpenPGP breaks at chain scope and at distribution.**
   - Inside the group, trust signatures with domain regexes work for one hop.
-  - Beyond that, as read, a sub-delegate's scope is whatever its delegator
+  - Beyond that, a sub-delegate's scope is whatever its delegator
     wrote, not what the relying party granted (§3.3).
   - Outsiders have no discovery mechanism for the group's trust signatures:
     keys.openpgp.org does not publish third-party certifications (R-001 §5.2).
@@ -630,7 +631,7 @@ who want to check `carol@eng.foo.com`.
    position in a name tree. Only SPKI and ours can say "Bob may speak about
    *mailboxes* in `eng.foo.com`, and about nothing else".
 2. **Whether scope is monotone along the chain.** X.509, SPKI, SDSI and ours:
-   yes. OpenPGP: unspecified, and per GnuPG's source, no.
+   yes. OpenPGP: unspecified, and in GnuPG, no.
 3. **Whether the relying party's scope is part of the format.** In X.509 it is
    optional and per-call. In OpenPGP, SPKI, SDSI and ours it is first-class.
 4. **Whether widening is detected or silently absorbed.** X.509 and SPKI absorb
@@ -662,8 +663,8 @@ delegation be scoped?" has the answer *yes* in every row except S/MIME.
 - Of the *deployed* systems, **none scopes delegation by what may be said**.
   X.509 and OpenPGP scope only which names may be certified.
 - Of the deployed systems that let anyone delegate without a CA (OpenPGP),
-  **the reference implementation does not narrow scope along a chain** (as
-  read; `unverified.md` §1).
+  **the reference implementation does not narrow scope along a chain**
+  (executed on 2.5.24; `unverified.md` §1).
 - **The system that had the right algebra never shipped a wire format.** SPKI
   standardised its rationale (RFC 2692, RFC 2693, both Experimental) and its
   S-expression encoding 26 years later (RFC 9804), but never its certificates.
@@ -715,9 +716,11 @@ format, for a domain where the deployed systems scope only names.*
 
 ## 9. Limits
 
-- **GnuPG behaviour is read from source, not executed** (`unverified.md` §1).
-  The chain-scoping finding is the strongest new claim in this report and the
-  one most in need of the experiment in `experiments/`.
+- **GnuPG behaviour was executed on one version only:** 2.5.24, on macOS
+  (`experiments/gnupg-tsign-chain.out`). The two chain and regex claims rest on
+  that run plus the source reading of `master`. Older release branches were not
+  tested. Other GnuPG statements (depth handling, §7.3's T6238) remain source
+  readings.
 - **Other OpenPGP implementations were not examined.** Sequoia, RNP and
   OpenPGP.js may compose regexes differently. RFC 9580 permits any choice.
 - **No X.509 library was tested** for §6.1.1(h) support. The report says only

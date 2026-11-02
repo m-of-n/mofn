@@ -4,9 +4,9 @@ id: R-0007-unverified
 title: "Unverified claims register — delegation models"
 type: evidence
 status: draft
-version: "0.1.0"
+version: "0.2.0"
 date: "2026-10-26"
-updated: "2026-10-26"
+updated: "2026-11-01"
 ---
 
 # Unverified claims register
@@ -15,7 +15,11 @@ This file is a **publication gate**. It applies the rule inherited from R-001:
 a claim listed here appears in `report.md` only labelled as unverified, with
 the basis named.
 
-## 1. GnuPG does not narrow trust-signature scope along a chain
+§1 and §2 are **settled**: they were executed on 2026-11-01 and held. They stay
+here, numbered as they were, so the report's references keep resolving. §3 and
+§4 remain open.
+
+## 1. GnuPG does not narrow trust-signature scope along a chain — SETTLED, holds
 
 **Claim (report §3.3, §6, §7.2).** With `--trust-model pgp`, a key's onward
 scope is the regex of the latest trust signature on it, and that regex
@@ -35,18 +39,18 @@ makes `carol@bar.com` valid for Dave.
   the next round"*;
 - no code path that combines two regexes was found.
 
-**Not done.** The code was not built or run. No released version was
-checked. `trust_regexp` assignment elsewhere (around line 2424, copying to the
-key list) was read but not traced through every caller.
+**Result.** `experiments/gnupg-tsign-chain.sh` on GnuPG 2.5.24 (Homebrew,
+macOS) printed validity `f` (full) for `carol@bar.com` with Alice's scope set to
+`bar.com`. Both controls behaved: `carol@eng.foo.com` under scope `eng.foo.com`
+gave `f`, and `carol@bar.com` under scope `eng.foo.com` gave `-` (unknown).
+Output: `experiments/gnupg-tsign-chain.out`.
 
-**To settle.** Run `experiments/gnupg-tsign-chain.sh` in a disposable
-environment (it makes its own `GNUPGHOME` in a temp directory). Record the
-`gpg --version` output and the validity printed for `carol@bar.com`.
-- If it prints `full` or `marginal`, the claim holds.
-- If it prints `unknown` or `never`, strike it from §3.3, §6 item 2 and §7.2,
-  and the second "what survives" bullet goes.
+**Still not done.** Only that one version was run; older release branches were
+not. `trust_regexp` assignment elsewhere (around line 2424, copying to the key
+list) was read but not traced through every caller. The result makes that
+tracing unnecessary for 2.5.24.
 
-## 2. GnuPG's command-line trust-signature regex over-matches
+## 2. GnuPG's command-line trust-signature regex over-matches — SETTLED, holds
 
 **Claim (report §3.3).** `--quick-tsign-key FPR 1,full,eng.foo.com` writes
 `<[^>]+[@.]eng.foo.com>$`, and at evaluation `.` remains a wildcard, so the
@@ -57,8 +61,9 @@ regex also matches `<carol@eng-foo.com>`.
 - `trustdb.c` `REGEXP_OPERATOR_CHARS` is `^[$()|*+?{`, without `.`.
 - `sanitize_regexp`'s comment says *"the only legal regex character is "."*".
 
-**To settle.** The same script, step 3, prints the validity of
-`carol@eng-foo.com`.
+**Result.** The same run printed validity `f` for `carol@eng-foo.com` under
+scope `eng.foo.com`, so `.` over-matches. Only that one look-alike was run;
+§3.3's `@fooxcom` follows from the same regex and was not.
 
 ## 3. X.509 libraries' support for `initial-permitted-subtrees`
 

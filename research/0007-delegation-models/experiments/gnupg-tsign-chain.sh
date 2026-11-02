@@ -2,8 +2,8 @@
 # R-0007 unverified.md §1 and §2: does GnuPG narrow trust-signature scope
 # along a chain, and does a command-line domain scope over-match?
 #
-# NOT YET RUN. Needs gpg (2.2+) on PATH. Uses throwaway GNUPGHOMEs under a
-# temp dir and touches nothing else. Record `gpg --version` with the output.
+# Needs gpg (2.2+) on PATH. Uses throwaway GNUPGHOMEs under a temp dir and
+# touches nothing else. Output of the recorded run: gnupg-tsign-chain.out
 #
 #   Dave --tsig 2,full,foo.com--> Alice --tsig 1,full,$SCOPE--> Bob --sig--> Carol <$ADDR>
 #
