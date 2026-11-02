@@ -7,9 +7,9 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.12.3"
+version: "0.12.4"
 date: "2026-09-16"
-updated: "2026-10-29"
+updated: "2026-11-01"
 needs_review: true
 reviewed: false
 canonical_path: project/BACKLOG-0001.md
@@ -123,7 +123,7 @@ summary bar). Accept or keep #32's rule — L-035.
 | id | task | del | own | sz | status |
 |---|---|---|---|---|---|
 | T-030 | WP1 — encoding-neutral schema for ARCH-0001 §4 logical types | D4 | S1 | L | todo |
-| T-031 | Fixtures: `NameCert`, `AuthzCert` **with threshold subject**, `ArtifactStatement` — in **option 5** (MD-3) plus the option-2 comparison. **Narrowed by `spec/vectors/ksa-core/`**, which covers the name-binding and artifact shapes under `ADR-0003` D2's encoding; **the threshold subject has no vector** and is the remaining gap — R-0006 §3.12, §3.13 | D5 | S1 | L | todo |
+| T-031 | Fixtures: `NameCert`, `AuthzCert` **with threshold subject**, `ArtifactStatement` — in **option 5** (`ADR-0004`). In `spec/vectors/ksa-core/`: threshold TV-9…11 and N-7…10, `NameCert` TV-13 (TV-1/TV-2 never covered it, `SPEC-0002` §8.3), `ArtifactStatement` TV-4; all round-trip in `prototype/wallet/tests`. **The option-2 comparison is not owed** — `ADR-0004` closed MD-3's narrowing on P1. `trusts` distinctness goes to `SPEC-0002` with condition (5) — `DL-0019` | D5 | S1 | L | **review** — waiting on a second reader |
 | T-032 | Score option 5 against option 2 incl. namespace governance (MD-3 narrowed DEC-002 to these) — needs library#39 Tier 1 extracted first | D5 | S1 | M | todo |
 | T-033 | ADR for DEC-002 (ADR-0001 is taken by key-relative naming) — accepted; ARCH-0001 status updated + changelog | D5 | PL | M | todo |
 | T-034 | Canonicalization idempotence + round-trip tests in CI — **now also carries P5.1's acceptance test**: reject every RFC 8949 FX-1 negative fixture in one pass, no re-encoding (ARCH-0002 v0.7.0). `spec/vectors/ksa-core/` N-1 and N-6 are a partial start | D5 | S2 | M | todo |

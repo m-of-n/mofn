@@ -174,7 +174,7 @@ presentations would build on.
 | answer | yes only if all six lines pass | stricter than SPEC-0004 §10.3 (coverage alone); see DL-0016 |
 | second codec | the human-review YAML form, with `signed` | C1, still to be confirmed by Paul |
 | base kinds | enum only; others are refused, never treated as valid | DV-1 needs only enum |
-| definitions | one per `check` (`--def FILE`); `imports` are not obtained | DV-1 is the only vocabulary in the vectors, and it imports nothing. SPEC-0003 §4.3 requires every import |
+| definitions | one per `check` (`--def FILE`); `imports` are not obtained | The vectors' two vocabularies, DV-1 and DV-2, import nothing. SPEC-0003 §4.3 requires every import |
 | held statements | statements and definitions you are given are not kept (see above) | ARCH-0003 §3.8 keeps them, marked made, received or accepted |
 | delegation, revocation, rotation, thresholds, processes, contexts beyond one | not implemented; the answer says 0 revocations considered | out of scope for #65; #67 |
 | key wiping | the seed is zeroed after signing — best effort in Python | the library and interpreter may keep copies |
