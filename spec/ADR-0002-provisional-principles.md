@@ -7,10 +7,10 @@ description: "Records MD-2's provisional grant over P2, P3, P5 and P6, and propo
 type: decision
 category: security
 status: proposed
-version: "0.1.3"
+version: "0.1.4"
 version_policy: "semver; on acceptance this becomes 1.0.0 and thereafter changes only by superseding"
 date: "2026-10-10"
-updated: "2026-10-16"
+updated: "2026-10-26"
 decision_makers: []
 reviewers: []
 needs_review: true
@@ -354,7 +354,7 @@ cell, and ARCH-0002 is the home the project chose for exactly this.
   dependence on P4 (§4).
 - `spec/ARCH-0002-CHANGELOG.md` 0.7.0 and `ARCH-0002` P5.1/P5.2 — the P5
   amendment this ADR proposes P5 *as amended* by (§6b). `mofn#72`, closed.
-- `spec/ADR-0003-fksa-convergence.md` (**accepted**), `SPEC-0002` §4.3, §5,
+- `spec/ADR-0003-ksa-core-decisions.md` (**accepted**), `SPEC-0002` §4.3, §5,
   §4.1 and §13.5 — the normative instance of P5.1, and §13.5's citation of P5
   by name (§6a).
 - `design-log/0007-rejecting-decoder-spike/` and `prototype/statements/` —

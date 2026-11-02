@@ -7,10 +7,10 @@ description: "Type names, constraints, types-as-schemas, hash-identified domains
 type: architecture
 category: security
 status: draft
-version: "0.9.0"
+version: "0.9.1"
 version_policy: "semver; PATCH = editorial; MINOR = additive principle; MAJOR = breaking"
 date: "2026-09-22"
-updated: "2026-10-25"
+updated: "2026-11-02"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -438,8 +438,8 @@ verifier both and already reads as *checked, never assumed*. Minting an
 on trusted input, and never as part of verification. **Rejection is what makes
 that separation real.** If a verifier may repair what it receives, the
 canonicaliser is back inside the verifier and the separation is cosmetic.
-`ADR-0003` records the same reasoning in deciding that KSA transmits the signed
-bytes as signed and verifies before decoding, where FKSA re-encoded.
+`SPEC-0002` applies the same reasoning: KSA transmits the signed bytes as
+signed and verifies them before decoding.
 
 **It is measured, not assumed.** mofn#73 wrote the falsifier and it **did not
 fire**: canonicality is decidable by parsing alone, in a single pass, with no
