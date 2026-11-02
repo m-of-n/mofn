@@ -69,6 +69,7 @@ SEEDS = {
     "bob":   "4ccd089b28ff96da9db6c346ec114e0f5b8a319f35aba624da8cf6ed4fb8a6fb",  # RFC 8032 TEST 2
     "carol": hashlib.sha256(b"ksa-test-carol").hexdigest(),
     "bob2":  hashlib.sha256(b"ksa-test-bob2").hexdigest(),
+    "dave":  hashlib.sha256(b"ksa-test-dave").hexdigest(),
 }
 K = {n: key(s) for n, s in SEEDS.items()}
 kid = lambda n: K[n][2]
@@ -130,6 +131,22 @@ DV1_BYTES = enc(DV1)
 DV1_ID = hashlib.sha256(DV1_BYTES).digest()
 tref = lambda label: {1: DV1_ID, 2: label}
 
+# ---------------------------------------------------------------- definition DV-2 (SPEC-0003)
+# DV-1 is hashed into every vector above, so a name type cannot join it.
+DV2 = {
+    1: kid("alice"), 2: "names", 3: "1",
+    5: [
+        [1, {1: "name", 2: 3,          # base kind 3: text (SPEC-0003 §6)
+             3: {"en": "Name"},
+             4: {"en": "What the speaker calls the target."},
+             8: 0}],
+    ],
+}
+DV2_BYTES = enc(DV2)
+DV2_ID = hashlib.sha256(DV2_BYTES).digest()
+DEFS = {"DV-1": ("definition `supply-chain` v1, definer Alice", DV1_BYTES, DV1_ID),
+        "DV-2": ("definition `names` v1, definer Alice", DV2_BYTES, DV2_ID)}
+
 ARTIFACT = hashlib.sha256(b"ksa example artifact\n").digest()
 
 # ---------------------------------------------------------------- positive vectors
@@ -177,6 +194,30 @@ add("TV-8", "bob", statement("rotate", "bob", [T_KEY, kid("bob2")],
     {1: t("2026-10-20T00:00:00Z"), 3: t("2026-10-19T18:00:00Z")}),
     "rotate: Bob's old key names its successor; valid.issued orders statements around the rotation")
 
+# Threshold form (SPEC-0002 §8.6): k is `threshold`, n is len(trusts). Members are
+# listed in bytewise kid order so these vectors survive whatever order rule
+# condition (5) settles on; nothing yet requires that order.
+def threshold_trust(k, members):
+    body = {1: [{1: tref("build-provenance"), 3: ["reproducible", "attested"]}],
+            3: sorted(kid(m) for m in members), 4: k}
+    return statement("trust", "carol", None, body,
+                     {1: t("2026-10-06T00:00:00Z"), 3: t("2026-10-06T11:30:00Z")})
+
+add("TV-9", "carol", threshold_trust(2, ["alice", "bob", "dave"]),
+    "trust, threshold form: Carol trusts any 2 of {Alice, Bob, Dave}; this is absent; k = 2, n = 3")
+add("TV-10", "carol", threshold_trust(3, ["alice", "bob", "dave"]),
+    "trust, threshold form at the upper bound: k = n = 3")
+add("TV-11", "carol", threshold_trust(1, ["alice", "bob"]),
+    "trust, threshold form at the lower bound: k = 1, and the fewest members allowed, n = 2")
+add("TV-12", "alice", statement("define", "alice", [T_DEFINITION, DV2_ID],
+    {1: "names", 2: "1"},
+    {1: t("2026-10-06T00:00:00Z"), 3: t("2026-10-06T12:30:00Z")}),
+    "define: Alice publishes definition DV-2 by its DefinitionId")
+add("TV-13", "alice", statement("attestation", "alice", [T_KEY, kid("bob")],
+    {1: [{1: {1: DV2_ID, 2: "name"}, 2: "fred"}]},
+    {1: t("2026-10-06T00:00:00Z"), 3: t("2026-10-06T13:00:00Z")}),
+    "attestation about a KEY: Alice says Bob's key has name \"fred\" (the NameCert role, ARCH-0002 P6)")
+
 # ---------------------------------------------------------------- negative vectors
 N = {}
 def bad(name, env, why, step):
@@ -216,6 +257,28 @@ s6 = dict(s4); s6[6] = {1: [{1: tref("build-provenance"), 2: 1.5}]}
 fb = cbor2.dumps(s6, canonical=True)
 bad("N-6", envelope(kid("alice"), fb, sign("alice", fb)),
     "TBS contains a floating-point value; outside the KSA data model", "V5 canonical decode")
+# N-7, N-8: the range 1 <= k <= n. Well-formed and correctly signed; only V8 can see it.
+def bad_threshold(name, stmt, why, step):
+    tb = enc(stmt)
+    bad(name, envelope(kid("carol"), tb, sign("carol", tb)), why, step)
+members = ["alice", "bob", "dave"]
+bad_threshold("N-7", threshold_trust(0, members),
+              "threshold form with k = 0, below the range 1 <= k <= n", "V8 threshold form")
+bad_threshold("N-8", threshold_trust(4, members),
+              "threshold form with k = 4 and n = 3, above the range 1 <= k <= n", "V8 threshold form")
+# N-9, N-10: n != len(members). SPEC-0002 has no n field, so these are the only two
+# ways to write it, and neither can reach V8. N-9 adds an n of 4 beside three members.
+s9 = threshold_trust(2, members); s9[6][5] = 4
+bad_threshold("N-9", s9,
+              "n = 4 beside three members needs a body field that does not exist; closed map",
+              "V7 closed map")
+# N-10: n is the array head of `trusts`; here the head says 4 and three members follow.
+head = b"\x03\x83\x58\x20"
+assert V["TV-9"]["tbs"].count(head) == 1
+lying = V["TV-9"]["tbs"].replace(head, b"\x03\x84\x58\x20")
+bad("N-10", envelope(kid("carol"), lying, sign("carol", lying)),
+    "the array head of trusts says n = 4 and three members follow; not well-formed CBOR, correctly signed",
+    "V5 canonical decode")
 
 # ---------------------------------------------------------------- output
 hx = lambda b: b.hex()
@@ -223,7 +286,7 @@ out = {
     "ds_label": hx(DS),
     "time_epoch": "2026-01-01T00:00:00Z",
     "keys": {n: {"seed": SEEDS[n], "pub": hx(K[n][1]), "kid": hx(K[n][2])} for n in K},
-    "definitions": {"DV-1": {"body": hx(DV1_BYTES), "id": hx(DV1_ID)}},
+    "definitions": {n: {"body": hx(b), "id": hx(i)} for n, (_, b, i) in DEFS.items()},
     "artifact_sha256": hx(ARTIFACT),
     "positive": {n: {"note": v["note"], "signer": v["signer"], "tbs": hx(v["tbs"]), "sig": hx(v["sig"]),
                      "envelope": hx(v["envelope"]), "digest": hx(v["digest"]), "expect": "accept"} for n, v in V.items()},
@@ -234,9 +297,9 @@ out = {
 md = ["<!-- generated by spec/vectors/ksa-core/generate.py — do not edit by hand -->", ""]
 md += ["### Keys", "", "| name | seed | public key | kid = SHA-256(pub) |", "|---|---|---|---|"]
 md += [f"| {n} | `{SEEDS[n]}` | `{hx(K[n][1])}` | `{hx(K[n][2])}` |" for n in K]
-md += ["", f"Domain-separation label (hex): `{hx(DS)}`", "",
-       "### DV-1 — definition `supply-chain` v1, definer Alice", "",
-       f"DefinitionId = SHA-256(body) = `{hx(DV1_ID)}`", "", "```", hx(DV1_BYTES), "```", ""]
+md += ["", f"Domain-separation label (hex): `{hx(DS)}`", ""]
+for n, (title, b, i) in DEFS.items():
+    md += [f"### {n} — {title}", "", f"DefinitionId = SHA-256(body) = `{hx(i)}`", "", "```", hx(b), "```", ""]
 for n, v in V.items():
     md += [f"### {n} — {v['note']}", "", f"- signer: {v['signer']}",
            f"- statement digest = SHA-256(TBS): `{hx(v['digest'])}`", "- TBS:", "```", hx(v["tbs"]), "```",

@@ -1,5 +1,5 @@
-"""SPEC-0002 Appendix A: a conforming verifier returns verified for TV-1…8
-and invalid at the stated step for N-1…6."""
+"""SPEC-0002 Appendix A: a conforming verifier returns verified for every
+positive vector and invalid at the stated step for every negative one."""
 
 import pytest
 
@@ -15,7 +15,15 @@ NEGATIVE = {
     "N-4": ("V3", "key"),
     "N-5": ("V4", "signature"),
     "N-6": ("V5", "encoding"),
+    "N-7": ("V8", "kind-rule"),
+    "N-8": ("V8", "kind-rule"),
+    "N-9": ("V7", "structure"),
+    "N-10": ("V5", "encoding"),
 }
+
+
+def test_every_negative_vector_has_an_expected_step():
+    assert set(NEGATIVE) == set(VECTORS["negative"])
 
 
 @pytest.mark.parametrize("name", sorted(VECTORS["positive"]))
