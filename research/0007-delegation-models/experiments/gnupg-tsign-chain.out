@@ -1,0 +1,6 @@
+gpg (GnuPG) 2.5.24
+validity: f=full m=marginal u=ultimate -/q=unknown n=never
+carol@eng.foo.com                  scope=eng.foo.com  carol validity=f  (expect f: in scope)
+carol@bar.com                      scope=eng.foo.com  carol validity=-  (expect -: out of Alice's scope)
+carol@bar.com                      scope=bar.com      carol validity=f  (expect - if scope narrows along the chain; f if it does not)
+carol@eng-foo.com                  scope=eng.foo.com  carol validity=f  (expect - if '.' is literal; f if it over-matches)
