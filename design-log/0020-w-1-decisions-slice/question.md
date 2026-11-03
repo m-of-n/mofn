@@ -6,7 +6,7 @@ title: "Finishing W-1 (mofn#65): the open decisions, demo/slice.sh, the spec dif
 date: "2026-11-01"
 model: "claude-opus-5-5"
 human: Ndewedo-Newbury
-outcome: "A1, C1, C4 and DL-0016's open items decided as W-1 implementation decisions; C2, C3, C5 unidentified; demo/slice.sh; SPEC-0002 0.4.0, SPEC-0003 0.1.1, SPEC-0004 0.2.0 proposed. No ADR: no DEC-* touched."
+outcome: "A1, C1, C4 and DL-0016's open items decided as W-1 implementation decisions; C2, C3, C5 unidentified; demo/slice.sh; SPEC-0002 0.4.0, SPEC-0003 0.1.1, SPEC-0004 0.2.0 accepted by ndewedo-newbury on 2026-11-03, as a decision maker added at their own instruction. No ADR: no DEC-* touched."
 status: open
 ---
 

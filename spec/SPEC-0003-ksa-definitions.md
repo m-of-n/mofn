@@ -56,7 +56,8 @@ P4, and ARCH-0003 §3.5–§3.6, under ADR-0003 D1 and D2.
 **0.1.1 (2026-11-01):** Appendix A quotes one `ask` value, as SPEC-0002 §11.3 now
 requires (DL-0020). DV-1's bytes and DefinitionId do not change.
 **0.1.2 (2026-11-03):** process. `ndewedo-newbury` is added to
-`decision_makers`, at their instruction; nothing normative changes.
+`decision_makers`, at their instruction, and accepts 0.1.1 the same day
+(DL-0020); nothing normative changes.
 
 ---
 

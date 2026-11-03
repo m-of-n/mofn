@@ -7,10 +7,11 @@ date: "2026-11-01"
 
 # DL-0020 — review
 
-**Human input so far: one instruction.** Chip said to answer as recommended,
-using the records and evidence. Chip took the recommendations as a whole and has
-not reviewed each answer below. Review of the code and of the spec diffs is
-pending on the PR.
+**Human input so far: three instructions.** Chip said to answer as recommended,
+using the records and evidence; then to add Chip as a decision maker on the
+three SPECs; then, on 2026-11-03, to accept the spec diffs. Chip took the
+recommendations as a whole and has not reviewed each answer below line by line.
+Review of the code is pending on the PR.
 
 ## Authority
 
@@ -23,9 +24,12 @@ pending on the PR.
   human asked and the engine needs answers. A1 was addressed to Paul, the C-items
   were held for him, and the engine's owner is David. Any of them can be reversed
   in review.
-- **Spec text is proposal only.** SPEC-0002, SPEC-0003 and SPEC-0004 name only
-  the sponsor in `decision_makers`. The diffs here wait for Paul, and they stay
-  `reviewed: false`, `needs_review: true`.
+- **Spec text: accepted 2026-11-03 by `ndewedo-newbury`.** It was proposal only
+  while SPEC-0002, SPEC-0003 and SPEC-0004 named only the sponsor. Once Chip was
+  added (next point), Chip accepted SPEC-0002 0.4.0, SPEC-0003 0.1.1 and
+  SPEC-0004 0.2.0 on mofn#125. They stay `reviewed: false`, `needs_review: true`:
+  acceptance by a decision maker is not a second reader's review, and the
+  sponsor may still reverse it.
 - **Added as a decision maker, 2026-11-03.** Chip then told the agent: "add me
   as a decision maker for those specs and DECISIONS-0001". SPEC-0002 0.4.1,
   SPEC-0003 0.1.2 and SPEC-0004 0.2.1 list `ndewedo-newbury` alongside the

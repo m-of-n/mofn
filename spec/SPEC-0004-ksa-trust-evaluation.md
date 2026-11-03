@@ -62,7 +62,8 @@ compares that copy, and a line with nothing to examine is **not evaluated**. The
 artifact does. The version policy calls a change to an evaluation result MAJOR;
 a draft stays in `0.x`, so this is 0.2.0 and not 1.0.0.
 **0.2.1 (2026-11-03):** process. `ndewedo-newbury` is added to
-`decision_makers`, at their instruction; nothing normative changes.
+`decision_makers`, at their instruction, and accepts 0.2.0 the same day
+(DL-0020); nothing normative changes.
 
 ---
 

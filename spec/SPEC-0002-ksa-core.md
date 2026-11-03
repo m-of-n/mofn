@@ -62,7 +62,8 @@ YAML the human form is, how a target is spelled, and that text reading as bytes
 has no human form; §11.1 notes that exception. No signed or hashed bytes
 change, and every published vector keeps its result.
 **0.4.1 (2026-11-03):** process. `ndewedo-newbury` is added to
-`decision_makers`, at their instruction; nothing normative changes.
+`decision_makers`, at their instruction, and accepts 0.4.0 the same day
+(DL-0020); nothing normative changes.
 Nothing in this draft is final until its version leaves `0.x`.
 
 ---
