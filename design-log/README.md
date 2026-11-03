@@ -48,6 +48,7 @@ vectors, and tooling.
 | `0015-dec-002-dec-003-adrs` | DEC-002 → option 5 (`ADR-0004`), DEC-003 → `kid` (`ADR-0005`), P1.1 → reject; under the sponsor's delegation (mofn#116) | **open** — ADR text review pending; T-031 in `0019` |
 | `0016-wallet-engine-v0` | W-1 wallet engine v0 (mofn#65): KSA-CBOR, V1–V9, the human-review codec, coverage and the six-line verdict; PyNaCl over `cryptography` for N-4 | **open** — human review pending; no DEC-* touched; A1/C1–C5 with Paul |
 | `0017-proc-0002-v0-3` | PROC-0002 v0.3 — completing mofn#18: stage 8 is a harness over a vetted library, never a primitive; `artifacts/` → `harness/`; DL-0009's two rules bind | **open** — human review pending |
+| `0018-delegation-models` | D3, library L-040: delegation and trust across X.509, S/MIME, OpenPGP and SDSI/SPKI, `R-0007`; UC-5 wrong under SPEC-0003 §6.3; two GnuPG claims run on 2.5.24; written after the fact, from the transcript | **open** — human review pending on mofn#118; no DEC-* accepted; P1–P6 unapplied |
 | `0019-threshold-fixture` | T-031 — threshold and `NameCert` vectors for DEC-002's acceptance test; `n = len(members)` holds by construction, so V8 owns only the range; no defect in option 5 | **open** — human review pending |
 
 **Two ids are shared: `0007` and `0012`.** `0007-library-harness-role` and
@@ -60,9 +61,9 @@ before it merged; nothing outside its own PR cited it. Likewise
 `0014-wallet-engine-v0`, for mofn#65, was renumbered `0016` before it
 merged, when `0014` and `0015` reached `main` first, and
 `0016-proc-0002-v0-3`, for mofn#121, was renumbered `0017` before it merged,
-when `0016-wallet-engine-v0` reached `main` first. `0018` is held by open
-mofn#118 (`0018-delegation-models`), so `0019-threshold-fixture` skipped it. The
-next new entry takes `0020`.
+when `0016-wallet-engine-v0` reached `main` first. `0018-delegation-models`
+was held for mofn#118, so `0019-threshold-fixture` skipped it. The next new
+entry takes `0020`.
 
 `DL-0001` is the argument for the rule: **write the entry in the same change.**
 The prompts, and what the human rejected, were not recoverable a week later —
