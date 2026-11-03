@@ -5,15 +5,23 @@ title: "ARCH-0001 changelog"
 type: changelog
 parent: ARCH-0001
 status: active
-version: "0.1.5"
+version: "0.1.6"
 date: "2026-09-15"
-updated: "2026-10-25"
+updated: "2026-11-01"
 canonical_path: spec/ARCH-0001-CHANGELOG.md
 ---
 
 # ARCH-0001 changelog
 
 Format: newest first. Versions match the architecture document.
+
+## 0.1.6 — 2026-11-01
+
+- **§7 DEC-002: the threshold fixture landed** (T-031, `DL-0019`). "No threshold
+  vector yet" replaced by what it found: V8 owns `1 ≤ k ≤ n`; `n = len(members)`
+  holds by construction, with its negatives failing at V7 and V5. `NameCert` is
+  TV-13, not TV-1/TV-2. `trusts` distinctness recorded as owed. No DEC changed;
+  `ADR-0004` unchanged.
 
 ## 0.1.5 — 2026-10-25
 

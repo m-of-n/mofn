@@ -15,5 +15,26 @@ python3 -m venv .venv && .venv/bin/pip install cbor2 cryptography
   TEST 2 keys, so their public keys can be checked against the RFC.
 - Ed25519 is deterministic, so regenerating yields identical bytes.
 
+## Threshold form and the acceptance test
+
+`k` is `threshold` and `n` is the length of `trusts` (`ARCH-0001` §7; §8.6 of
+SPEC-0002 calls the threshold `n`, and means `k`).
+
+| vector | case | expected |
+|---|---|---|
+| TV-9, TV-10, TV-11 | 2 of 3; `k = n`; `k = 1` | verified |
+| N-7 | `k = 0` | V8 `kind-rule` |
+| N-8 | `k > n` | V8 `kind-rule` |
+| N-9 | `n ≠ len(members)`, as an added field | V7 `structure` |
+| N-10 | `n ≠ len(members)`, as a disagreeing array head | V5 `encoding` |
+
+**SPEC-0002 V8 owns `1 ≤ k ≤ n`.** `n = len(members)` holds by construction:
+there is no `n` field to disagree. Member order in these vectors is bytewise by
+kid, which nothing requires yet (`ADR-0004` condition 5).
+
+For DEC-002's acceptance test: `ArtifactStatement` is TV-4, `AuthzCert` is TV-5
+and TV-9, and `NameCert` is TV-13 under DV-2 (`ARCH-0002` P6). Reasoning:
+`design-log/0019-threshold-fixture/`.
+
 After regenerating, copy `vectors.md` into SPEC-0002 between the
 `VECTORS:BEGIN` / `VECTORS:END` markers.
