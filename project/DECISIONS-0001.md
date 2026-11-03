@@ -7,10 +7,10 @@ description: "Every open decision across both repos, ranked by what it blocks. T
 type: process
 category: process
 status: active
-version: "0.4.0"
+version: "0.4.1"
 version_policy: "semver; MINOR = decisions added or closed"
 date: "2026-09-22"
-updated: "2026-10-25"
+updated: "2026-11-03"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -21,6 +21,9 @@ decision_makers:
       ARCH-0001 §9.2, the open decisions recorded in ARCH-0001 §7 (Tier 1 items 2 and 4b). Relayed
       verbally by ndewedo-newbury; the sponsor confirms on the PR that adds
       this entry. Does not extend to ADR-0002 (DECISIONS-0001 item 4a).
+      Extended 2026-11-03, at ndewedo-newbury's instruction, to decisions
+      on SPEC-0002, SPEC-0003 and SPEC-0004, where they are now listed in
+      decision_makers (DL-0020); no sponsor confirmation is recorded.
 reviewers: []
 needs_review: false
 reviewed: false
@@ -258,6 +261,15 @@ supply-chain profile first (T1-A), then accept P7 or correct it.
 | **28** | **Wallet GUI framework — Tauri, tentative (MD-7).** Web frontend plus a Python sidecar; PySide6 is the fallback. **Confirm before GUI work begins** (`BACKLOG-0001` T-029c). | due Oct 14 |
 
 ---
+
+## What changed in v0.4.1 — 2026-11-03
+
+Process. **No decision added, closed, or narrowed.** At their instruction,
+`ndewedo-newbury` is added to `decision_makers` in `SPEC-0002`, `SPEC-0003` and
+`SPEC-0004`, and their authority here is extended to decisions on those three
+specifications. The sponsor stays a decision maker on each. Unlike v0.3.4, this
+is not a sponsor delegation: no confirmation from the sponsor is recorded, and
+the v0.3.4 one is still unconfirmed on mofn#116. Recorded in DL-0020.
 
 ## What changed in v0.4.0 — 2026-10-25
 

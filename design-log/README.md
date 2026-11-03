@@ -48,7 +48,7 @@ vectors, and tooling.
 | `0015-dec-002-dec-003-adrs` | DEC-002 → option 5 (`ADR-0004`), DEC-003 → `kid` (`ADR-0005`), P1.1 → reject; under the sponsor's delegation (mofn#116) | **open** — ADR text review pending; T-031 owed |
 | `0016-wallet-engine-v0` | W-1 wallet engine v0 (mofn#65): KSA-CBOR, V1–V9, the human-review codec, coverage and the six-line verdict; PyNaCl over `cryptography` for N-4 | **open** — human review pending; no DEC-* touched; A1, C1, C4 and the open items decided in DL-0020 |
 | `0017-proc-0002-v0-3` | PROC-0002 v0.3 — completing mofn#18: stage 8 is a harness over a vetted library, never a primitive; `artifacts/` → `harness/`; DL-0009's two rules bind | **open** — human review pending |
-| `0020-w-1-decisions-slice` | W-1 decisions A1, C1, C4 and DL-0016's open items; `demo/slice.sh`; SPEC-0002 0.4.0, SPEC-0003 0.1.1, SPEC-0004 0.2.0 | **open** — sponsor review pending on the spec diffs; C2, C3, C5 unidentified; no DEC-* touched |
+| `0020-w-1-decisions-slice` | W-1 decisions A1, C1, C4 and DL-0016's open items; `demo/slice.sh`; SPEC-0002 0.4.0, SPEC-0003 0.1.1, SPEC-0004 0.2.0 | **open** — review pending on the spec diffs (ndewedo-newbury added as decision maker); C2, C3, C5 unidentified; no DEC-* touched |
 
 **Two ids are shared: `0007` and `0012`.** `0007-library-harness-role` and
 `0007-rejecting-decoder-spike`, and later `0012-d3-context-and-mechanism`

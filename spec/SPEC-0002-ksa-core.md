@@ -7,13 +7,20 @@ description: "The KSA statement: its data model, deterministic encoding, signed 
 type: specification
 category: security
 status: draft
-version: "0.4.0"
+version: "0.4.1"
 version_policy: "semver; MAJOR = any change to signed or hashed bytes; MINOR = additive registry entries or requirements; PATCH = editorial"
 date: "2026-10-14"
-updated: "2026-11-01"
+updated: "2026-11-03"
 decision_makers:
   - role: sponsor
     id: paul-lambert
+  - role: student
+    id: ndewedo-newbury
+    authority: >
+      Added 2026-11-03 at ndewedo-newbury's instruction (DL-0020): to
+      accept changes to this specification under its version policy,
+      alongside the sponsor. The sponsor's 2026-10-25 delegation covered
+      ARCH-0001 §7 only; no sponsor confirmation of this one is recorded.
 reviewers: []
 needs_review: true
 reviewed: false
@@ -29,7 +36,7 @@ related_rfcs: [RFC2119, RFC8174, RFC8032, RFC8610, RFC8949]
 
 # KSA Core — statements, data model, canonical encoding and cipher suites
 
-**Specification SPEC-0002 · version 0.4.0 · draft**
+**Specification SPEC-0002 · version 0.4.1 · draft**
 
 ## Abstract
 
@@ -54,6 +61,8 @@ found. §6.3 rejects a key outside the prime-order subgroup. §11.3 says which
 YAML the human form is, how a target is spelled, and that text reading as bytes
 has no human form; §11.1 notes that exception. No signed or hashed bytes
 change, and every published vector keeps its result.
+**0.4.1 (2026-11-03):** process. `ndewedo-newbury` is added to
+`decision_makers`, at their instruction; nothing normative changes.
 Nothing in this draft is final until its version leaves `0.x`.
 
 ---

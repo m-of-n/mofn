@@ -52,6 +52,10 @@ expected exit code. A relying party reaching into the issuer's wallet stopped th
 run with an error. Statements are made fresh each run, so the goldens do not age
 out before the Nov 11 floor. TV-3's `define` was checked at later `--at` times.
 
+**Run again 2026-11-03, at Chip's request**, by the agent: on the branch at
+`1847bf3`, and from a fresh clone of it with network denied and an empty `HOME`.
+Both printed `slice: 5 cases passed under each of 2 codecs`, ten of ten `[ok]`.
+
 ## Measured: a key with a torsion component (C4)
 
 Throwaway script (PyNaCl 1.5.0, cryptography 43.0.3), run with `python -I`.

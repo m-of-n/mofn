@@ -26,6 +26,15 @@ pending on the PR.
 - **Spec text is proposal only.** SPEC-0002, SPEC-0003 and SPEC-0004 name only
   the sponsor in `decision_makers`. The diffs here wait for Paul, and they stay
   `reviewed: false`, `needs_review: true`.
+- **Added as a decision maker, 2026-11-03.** Chip then told the agent: "add me
+  as a decision maker for those specs and DECISIONS-0001". SPEC-0002 0.4.1,
+  SPEC-0003 0.1.2 and SPEC-0004 0.2.1 list `ndewedo-newbury` alongside the
+  sponsor; DECISIONS-0001 0.4.1 extends the authority line to match. The agent
+  wrote the `authority:` text to say what happened: the instruction came from
+  Chip, and no sponsor confirmation is recorded. *Rejected:* wording it as a
+  sponsor delegation like v0.3.4's, because nothing on record shows one. So
+  Chip can now accept these diffs; the point above still describes their state
+  until Chip, or the sponsor, does.
 - **No DEC-* is accepted or narrowed.** DEC-001, DEC-004, DEC-005 and DEC-007
   stay open.
 - **An unmet condition in the delegation.** Its text says "the sponsor confirms on

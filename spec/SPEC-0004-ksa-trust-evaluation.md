@@ -7,13 +7,20 @@ description: "How a relying party decides whether to believe a verified statemen
 type: specification
 category: security
 status: draft
-version: "0.2.0"
+version: "0.2.1"
 version_policy: "semver; MAJOR = any change to an evaluation result; MINOR = additive; PATCH = editorial"
 date: "2026-10-14"
-updated: "2026-11-01"
+updated: "2026-11-03"
 decision_makers:
   - role: sponsor
     id: paul-lambert
+  - role: student
+    id: ndewedo-newbury
+    authority: >
+      Added 2026-11-03 at ndewedo-newbury's instruction (DL-0020): to
+      accept changes to this specification under its version policy,
+      alongside the sponsor. The sponsor's 2026-10-25 delegation covered
+      ARCH-0001 §7 only; no sponsor confirmation of this one is recorded.
 reviewers: []
 needs_review: true
 reviewed: false
@@ -29,7 +36,7 @@ related_rfcs: [RFC2119, RFC8174, RFC2693]
 
 # KSA Trust Evaluation — contexts, anchors, delegation, revocation, rotation, and the verdict
 
-**Specification SPEC-0004 · version 0.2.0 · draft**
+**Specification SPEC-0004 · version 0.2.1 · draft**
 
 ## Abstract
 
@@ -54,6 +61,8 @@ compares that copy, and a line with nothing to examine is **not evaluated**. The
 **answer** of §10.2 does not change; which verdict line reports a changed
 artifact does. The version policy calls a change to an evaluation result MAJOR;
 a draft stays in `0.x`, so this is 0.2.0 and not 1.0.0.
+**0.2.1 (2026-11-03):** process. `ndewedo-newbury` is added to
+`decision_makers`, at their instruction; nothing normative changes.
 
 ---
 
