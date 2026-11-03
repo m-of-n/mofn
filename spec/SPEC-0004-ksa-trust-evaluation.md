@@ -7,7 +7,7 @@ description: "How a relying party decides whether to believe a verified statemen
 type: specification
 category: security
 status: draft
-version: "0.2.1"
+version: "0.3.0"
 version_policy: "semver; MAJOR = any change to an evaluation result; MINOR = additive; PATCH = editorial"
 date: "2026-10-14"
 updated: "2026-11-03"
@@ -17,10 +17,23 @@ decision_makers:
   - role: student
     id: ndewedo-newbury
     authority: >
-      Added 2026-11-03 at ndewedo-newbury's instruction (DL-0020): to
-      accept changes to this specification under its version policy,
-      alongside the sponsor. The sponsor's 2026-10-25 delegation covered
-      ARCH-0001 §7 only; no sponsor confirmation of this one is recorded.
+      Delegated by the sponsor on a Zoom call in October 2026 (date not
+      recorded): ndewedo-newbury may decide any question in this project, on the same
+      footing as the sponsor, and is accountable for what they decide.
+      Relayed by david-hsiao on 2026-11-03; no written confirmation from the
+      sponsor is recorded (DL-0021). Supersedes the 2026-10-25 delegation and
+      its exclusion of ADR-0002. Acceptance still follows ARCH-0001 §9: a
+      DEC-* is accepted only by an ADR.
+  - role: student
+    id: david-hsiao
+    authority: >
+      Delegated by the sponsor on a Zoom call in October 2026 (date not
+      recorded): david-hsiao may decide any question in this project, on the same
+      footing as the sponsor, and is accountable for what they decide.
+      Relayed by david-hsiao on 2026-11-03; no written confirmation from the
+      sponsor is recorded (DL-0021). Supersedes the 2026-10-25 delegation and
+      its exclusion of ADR-0002. Acceptance still follows ARCH-0001 §9: a
+      DEC-* is accepted only by an ADR.
 reviewers: []
 needs_review: true
 reviewed: false
@@ -36,7 +49,7 @@ related_rfcs: [RFC2119, RFC8174, RFC2693]
 
 # KSA Trust Evaluation — contexts, anchors, delegation, revocation, rotation, and the verdict
 
-**Specification SPEC-0004 · version 0.2.1 · draft**
+**Specification SPEC-0004 · version 0.3.0 · draft**
 
 ## Abstract
 
@@ -64,6 +77,13 @@ a draft stays in `0.x`, so this is 0.2.0 and not 1.0.0.
 **0.2.1 (2026-11-03):** process. `ndewedo-newbury` is added to
 `decision_makers`, at their instruction, and accepts 0.2.0 the same day
 (DL-0020); nothing normative changes.
+**0.3.0 (2026-11-03):** §10.2 answers **yes** only when every verdict line
+passes, as the W-1 engine already does (DL-0021). The one input whose answer
+changes is a statement whose speaker is known only from its envelope `pub`:
+it was **yes** beside a failed authenticity line, and is now **no**. A change to
+an evaluation result is MAJOR under the version policy; for the reason given at
+0.2.0 the draft stays in `0.x`. `decision_makers` records the sponsor's October
+delegation.
 
 ---
 
@@ -360,8 +380,9 @@ NOT take it from a statement.
 
 ### 10.2 Coverage
 
-An ask is answered **yes** if and only if, for **every** attribute `(T, v)` in
-`has`, there is a statement `a` in the statement set such that:
+An ask is answered **yes** if and only if every line of its verdict (§10.4) is
+**pass** and, for **every** attribute `(T, v)` in `has`, there is a statement `a`
+in the statement set such that:
 
 1. `a` is an `attestation` (or, where the ask concerns a review or approval, the
    corresponding kind), `a.this` equals the ask's subject, and `a` assigns `v` to
@@ -375,6 +396,13 @@ An ask is answered **yes** if and only if, for **every** attribute `(T, v)` in
    (SPEC-0005 §6).
 
 Otherwise the answer is **no**.
+
+> **Why the answer waits for every line.** Items 1–4 can hold while the
+> authenticity line fails: a statement verifies under the key in its envelope
+> `pub`, but SPEC-0002 §10 forbids adding that key to the key store, so the
+> speaker is not known. A **yes** printed above a failed line tells the relying
+> party two contradictory things. With the verdict as a condition, a failed line
+> is always a **no**, and that line says why.
 
 ### 10.3 Answer
 

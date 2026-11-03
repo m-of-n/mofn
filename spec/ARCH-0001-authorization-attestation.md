@@ -8,10 +8,10 @@ description: "Canonical working architecture for a native model that is not X.50
 type: architecture
 category: security
 status: draft
-version: "0.1.6"
+version: "0.1.7"
 version_policy: "semver; PATCH = editorial; MINOR = additive requirements; MAJOR = breaking model change"
 date: "2026-09-15"
-updated: "2026-11-01"
+updated: "2026-11-03"
 authors:
   - role: architect
     id: conversation-brainpool256
@@ -21,10 +21,23 @@ decision_makers:
   - role: student
     id: ndewedo-newbury
     authority: >
-      Delegated by the sponsor on 2026-10-25 to accept, by ADR under
-      ARCH-0001 §9.2, the open decisions recorded in ARCH-0001 §7. Relayed
-      verbally by ndewedo-newbury; the sponsor confirms on the PR that adds
-      this entry. Does not extend to ADR-0002 (DECISIONS-0001 item 4a).
+      Delegated by the sponsor on a Zoom call in October 2026 (date not
+      recorded): ndewedo-newbury may decide any question in this project, on the same
+      footing as the sponsor, and is accountable for what they decide.
+      Relayed by david-hsiao on 2026-11-03; no written confirmation from the
+      sponsor is recorded (DL-0021). Supersedes the 2026-10-25 delegation and
+      its exclusion of ADR-0002. Acceptance still follows ARCH-0001 §9: a
+      DEC-* is accepted only by an ADR.
+  - role: student
+    id: david-hsiao
+    authority: >
+      Delegated by the sponsor on a Zoom call in October 2026 (date not
+      recorded): david-hsiao may decide any question in this project, on the same
+      footing as the sponsor, and is accountable for what they decide.
+      Relayed by david-hsiao on 2026-11-03; no written confirmation from the
+      sponsor is recorded (DL-0021). Supersedes the 2026-10-25 delegation and
+      its exclusion of ADR-0002. Acceptance still follows ARCH-0001 §9: a
+      DEC-* is accepted only by an ADR.
 reviewers: []
 needs_review: true
 reviewed: false
@@ -85,7 +98,7 @@ agent_notes: >
 
 # ARCH-0001 — Authorization, local names, and artifact attestation
 
-**Status:** draft · **Version:** 0.1.6 · **Date:** 2026-09-15 · **Updated:** 2026-11-01  
+**Status:** draft · **Version:** 0.1.7 · **Date:** 2026-09-15 · **Updated:** 2026-11-03  
 **Canonical file:** `spec/ARCH-0001-authorization-attestation.md`  
 **Changelog:** `spec/ARCH-0001-CHANGELOG.md`
 

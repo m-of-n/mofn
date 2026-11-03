@@ -7,7 +7,7 @@ description: "How a key publishes what statements mean: hash-identified definiti
 type: specification
 category: security
 status: draft
-version: "0.1.2"
+version: "0.1.3"
 version_policy: "semver; MAJOR = any change to hashed bytes or evaluation results; MINOR = additive registry entries; PATCH = editorial"
 date: "2026-10-14"
 updated: "2026-11-03"
@@ -17,10 +17,23 @@ decision_makers:
   - role: student
     id: ndewedo-newbury
     authority: >
-      Added 2026-11-03 at ndewedo-newbury's instruction (DL-0020): to
-      accept changes to this specification under its version policy,
-      alongside the sponsor. The sponsor's 2026-10-25 delegation covered
-      ARCH-0001 §7 only; no sponsor confirmation of this one is recorded.
+      Delegated by the sponsor on a Zoom call in October 2026 (date not
+      recorded): ndewedo-newbury may decide any question in this project, on the same
+      footing as the sponsor, and is accountable for what they decide.
+      Relayed by david-hsiao on 2026-11-03; no written confirmation from the
+      sponsor is recorded (DL-0021). Supersedes the 2026-10-25 delegation and
+      its exclusion of ADR-0002. Acceptance still follows ARCH-0001 §9: a
+      DEC-* is accepted only by an ADR.
+  - role: student
+    id: david-hsiao
+    authority: >
+      Delegated by the sponsor on a Zoom call in October 2026 (date not
+      recorded): david-hsiao may decide any question in this project, on the same
+      footing as the sponsor, and is accountable for what they decide.
+      Relayed by david-hsiao on 2026-11-03; no written confirmation from the
+      sponsor is recorded (DL-0021). Supersedes the 2026-10-25 delegation and
+      its exclusion of ADR-0002. Acceptance still follows ARCH-0001 §9: a
+      DEC-* is accepted only by an ADR.
 reviewers: []
 needs_review: true
 reviewed: false
@@ -35,7 +48,7 @@ related_rfcs: [RFC5646, RFC5890, RFC5952, RFC8949]
 
 # KSA Definitions — vocabularies, types, human-readable semantics, constraints and templates
 
-**Specification SPEC-0003 · version 0.1.2 · draft**
+**Specification SPEC-0003 · version 0.1.3 · draft**
 
 ## Abstract
 
@@ -58,6 +71,8 @@ requires (DL-0020). DV-1's bytes and DefinitionId do not change.
 **0.1.2 (2026-11-03):** process. `ndewedo-newbury` is added to
 `decision_makers`, at their instruction, and accepts 0.1.1 the same day
 (DL-0020); nothing normative changes.
+**0.1.3 (2026-11-03):** process. `decision_makers` records the sponsor's October
+delegation (DL-0021); nothing normative changes.
 
 ---
 
