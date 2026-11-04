@@ -7,13 +7,20 @@ description: "How a key publishes what statements mean: hash-identified definiti
 type: specification
 category: security
 status: draft
-version: "0.1.0"
+version: "0.1.2"
 version_policy: "semver; MAJOR = any change to hashed bytes or evaluation results; MINOR = additive registry entries; PATCH = editorial"
 date: "2026-10-14"
-updated: "2026-10-14"
+updated: "2026-11-03"
 decision_makers:
   - role: sponsor
     id: paul-lambert
+  - role: student
+    id: ndewedo-newbury
+    authority: >
+      Added 2026-11-03 at ndewedo-newbury's instruction (DL-0020): to
+      accept changes to this specification under its version policy,
+      alongside the sponsor. The sponsor's 2026-10-25 delegation covered
+      ARCH-0001 §7 only; no sponsor confirmation of this one is recorded.
 reviewers: []
 needs_review: true
 reviewed: false
@@ -28,7 +35,7 @@ related_rfcs: [RFC5646, RFC5890, RFC5952, RFC8949]
 
 # KSA Definitions — vocabularies, types, human-readable semantics, constraints and templates
 
-**Specification SPEC-0003 · version 0.1.0 · draft**
+**Specification SPEC-0003 · version 0.1.2 · draft**
 
 ## Abstract
 
@@ -46,6 +53,11 @@ rendered as a sentence. Process definitions are specified in SPEC-0005.
 
 Draft for review in the m-of-n project. Realises ARCH-0002 P1 (accepted), P3 and
 P4, and ARCH-0003 §3.5–§3.6, under ADR-0003 D1 and D2.
+**0.1.1 (2026-11-01):** Appendix A quotes one `ask` value, as SPEC-0002 §11.3 now
+requires (DL-0020). DV-1's bytes and DefinitionId do not change.
+**0.1.2 (2026-11-03):** process. `ndewedo-newbury` is added to
+`decision_makers`, at their instruction, and accepts 0.1.1 the same day
+(DL-0020); nothing normative changes.
 
 ---
 
@@ -533,7 +545,7 @@ entries:
         - {value: unverified, names: {en: Unverified}, meaning: {en: origin not verified}}
       delegation: scoped
       review:
-        - {tag: provenance, ask: {en: Does the provenance name the expected builder?}}
+        - {tag: provenance, ask: {en: "Does the provenance name the expected builder?"}}
   - type:
       label: outcome
       base: enum

@@ -8,3 +8,6 @@ __pycache__/
 .venv/
 docs/research/
 docs/manifest.json
+
+# demo/slice.sh: rebuilt on every run, holds demo keys
+demo/wallets/

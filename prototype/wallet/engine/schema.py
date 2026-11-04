@@ -81,6 +81,11 @@ _DECIMAL = re.compile(r"0|-?[1-9][0-9]*")
 _HEX = re.compile(r"0x(?:[0-9a-f]{2})*")
 _STR_TAG = "tag:yaml.org,2002:str"
 _resolver = yaml.resolver.Resolver()
+# Plain scalars YAML 1.2 or a 1.1 parser reads as non-text, though PyYAML's
+# resolver calls them strings (SPEC-0002 §11.3).
+_NOT_TEXT_ELSEWHERE = re.compile(
+    r"[-+]?(?:\.[0-9]+|[0-9]+(?:\.[0-9]*)?)(?:[eE][-+]?[0-9]+)?|0o[0-7]+|[yYnN]"
+)
 
 
 class Hex(bytes):
@@ -114,7 +119,9 @@ def fail(path: str, msg: str):
 
 
 def plain_is_text(text: str) -> bool:
-    return _resolver.resolve(yaml.ScalarNode, text, (True, False)) == _STR_TAG
+    return _resolver.resolve(
+        yaml.ScalarNode, text, (True, False)
+    ) == _STR_TAG and not _NOT_TEXT_ELSEWHERE.fullmatch(text)
 
 
 def _scalar(h, path) -> Scalar:

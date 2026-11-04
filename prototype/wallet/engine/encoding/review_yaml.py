@@ -19,10 +19,9 @@ The reader is strict where YAML is loose:
 - a duplicate key is rejected; a key starting with `_` is an annotation and
   is dropped.
 
-Two choices §11 does not spell out are made here: targets other than a digest are written
-`{key: '0x…'}`, `{statement: '0x…'}` and so on; and inside a generic value a
-quoted `'0x…'` is read as bytes, so text that looks like that cannot be
-written there.
+Targets are written `{key: '0x…'}`, `{statement: '0x…'}` and so on, and inside
+a generic value a quoted `'0x…'` is read as bytes, so text that looks like that
+cannot be written there (§11.3, as proposed in SPEC-0002 0.4.0).
 """
 
 import json

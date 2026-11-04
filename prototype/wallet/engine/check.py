@@ -4,7 +4,7 @@
    statements go further (SPEC-0004 §5.1).
 2. Hash the relying party's own copy of the artifact. The ask is about that
    digest, and the integrity line also checks that a verified attestation is
-   about it (#65-c2 A1: a proposed addition to SPEC-0004 §10.4).
+   about it (SPEC-0004 §10.4, as proposed in 0.2.0).
 3. Load the definition and check it is obtained, conforming and attributed.
 4. Coverage against this context's anchors (`reduce.py`).
 5. Six verdict lines (SPEC-0004 §10.4). The answer is yes only if all six

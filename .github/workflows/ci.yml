@@ -39,6 +39,8 @@ jobs:
         run: |
           pip install -q -r prototype/wallet/requirements.txt
           pytest -q prototype/wallet
+      - name: demo slice, both codecs (demo/slice.sh, mofn#65, mofn#68)
+        run: bash demo/slice.sh
   dco:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'

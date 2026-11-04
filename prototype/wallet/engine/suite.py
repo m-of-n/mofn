@@ -3,15 +3,15 @@
 Every primitive comes from libsodium. This module holds no curve math.
 
 - Strict key rules: `crypto_core_ed25519_is_valid_point` rejects a
-  non-canonical encoding, a point not on the curve, and a point of small
-  order. It also rejects points outside the prime-order subgroup, which is
-  stricter than §6.3 asks; an honestly generated key is never affected.
+  non-canonical encoding, a point not on the curve, a point of small order,
+  and a point outside the prime-order subgroup. An honestly generated key is
+  never affected.
 - Strict signature rules: libsodium's verify rejects S ≥ L and a small-order
   or non-canonical R before it checks the equation.
 
 `cryptography` (OpenSSL) was tried as well and is not used: it exposes no
 point check, so N-4 could only be met by writing one by hand (design-log
-0014).
+0016).
 """
 
 import hashlib

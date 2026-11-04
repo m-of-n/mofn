@@ -7,13 +7,20 @@ description: "How a relying party decides whether to believe a verified statemen
 type: specification
 category: security
 status: draft
-version: "0.1.0"
+version: "0.2.1"
 version_policy: "semver; MAJOR = any change to an evaluation result; MINOR = additive; PATCH = editorial"
 date: "2026-10-14"
-updated: "2026-10-14"
+updated: "2026-11-03"
 decision_makers:
   - role: sponsor
     id: paul-lambert
+  - role: student
+    id: ndewedo-newbury
+    authority: >
+      Added 2026-11-03 at ndewedo-newbury's instruction (DL-0020): to
+      accept changes to this specification under its version policy,
+      alongside the sponsor. The sponsor's 2026-10-25 delegation covered
+      ARCH-0001 §7 only; no sponsor confirmation of this one is recorded.
 reviewers: []
 needs_review: true
 reviewed: false
@@ -29,7 +36,7 @@ related_rfcs: [RFC2119, RFC8174, RFC2693]
 
 # KSA Trust Evaluation — contexts, anchors, delegation, revocation, rotation, and the verdict
 
-**Specification SPEC-0004 · version 0.1.0 · draft**
+**Specification SPEC-0004 · version 0.2.1 · draft**
 
 ## Abstract
 
@@ -48,6 +55,15 @@ six-line verdict a person can read.
 
 Draft for review in the m-of-n project. Anchors, contexts and revocation
 are ADR-0003 D3–D5.
+**0.2.0 (2026-11-01):** proposed by DL-0020 from W-1 (mofn#65). §10.1 takes a
+digest subject from the relying party's own copy. §10.4's integrity line also
+compares that copy, and a line with nothing to examine is **not evaluated**. The
+**answer** of §10.2 does not change; which verdict line reports a changed
+artifact does. The version policy calls a change to an evaluation result MAJOR;
+a draft stays in `0.x`, so this is 0.2.0 and not 1.0.0.
+**0.2.1 (2026-11-03):** process. `ndewedo-newbury` is added to
+`decision_makers`, at their instruction, and accepts 0.2.0 the same day
+(DL-0020); nothing normative changes.
 
 ---
 
@@ -338,7 +354,9 @@ ask = {
 ```
 
 An ask is a query to a local evaluator. It is not a statement and is never
-signed or transmitted as one.
+signed or transmitted as one. Where the subject is a digest target, the
+evaluator computes it from the relying party's own copy of the object; it MUST
+NOT take it from a statement.
 
 ### 10.2 Coverage
 
@@ -378,16 +396,26 @@ revocation statements considered (§7.1) and any non-default policy (§9).
 ### 10.4 The verdict
 
 The verdict presents the same evaluation to a person, one line per dimension.
-Each line is **pass**, **fail** or **not evaluated**, with a sentence.
+Each line is **pass**, **fail** or **not evaluated**, with a sentence. A line is
+**not evaluated** when there is nothing for it to examine: integrity when no
+statement was invalid and no attestation verified, and authorization and
+acceptance when no verified statement is about the subject.
 
 | line | passes when | from |
 |---|---|---|
-| **integrity** | every statement used decoded canonically and its signature verified | SPEC-0002 V1, V4, V5 |
+| **integrity** | every statement used decoded canonically and its signature verified, and, where the subject is a digest target and attestations verified, at least one is about the relying party's own copy | SPEC-0002 V1, V4, V5; §10.1 |
 | **authenticity** | every speaker's key is in the key store by §10 of SPEC-0002, and the envelope agreed with the statement | SPEC-0002 V3, V6 |
 | **names** | every key shown has been rendered by the relying party's own label or fingerprint, and any name statements used are covered | SPEC-0001 §7.3 |
 | **authorization** | §10.2 items 1–3 hold | §6 |
 | **acceptance** | every named template is conformed to and every required process is met | SPEC-0003 §7.1, SPEC-0005 |
 | **semantics** | every definition used is obtained, conforming and attributed | SPEC-0003 §9, §11 |
+
+> **Why integrity compares the relying party's copy.** The six lines say what
+> was checked, and the first question a relying party has is whether the file in
+> hand is the one described. Without the comparison, a changed artifact fails
+> §10.2 item 1 and the verdict can report it only under authorization, which
+> blames the speaker for a change to the object. With it, integrity names both
+> digests, and authorization and acceptance are not evaluated.
 
 A line that fails MUST give its reason in words: where the reason is a failed
 constraint or an unmet process, the sentence is that rule's or process's
