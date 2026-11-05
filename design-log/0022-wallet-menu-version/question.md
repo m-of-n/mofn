@@ -23,10 +23,12 @@ Paul".
 and the `ci.yml` matrix. Chip owns `release.yml`, the builds and the README
 install section. The agent wrote a plan, and David chose two things on it:
 
-- **two PRs**, one per release. This one is `wallet-v0.1.0`: menu, version,
-  CHANGELOG and matrix. `mofn run` is `wallet-v0.2.0`, in DL-0023, on a branch
-  stacked on this one. 0.1.0 goes first, because Chip's `release.yml` reads
-  `__version__` from it;
+- **one PR, `feat/w-6`**, for David's whole half. The agent first asked
+  whether to plan "Both, as two PRs": 0.1.0, then 0.2.0 stacked on it. David
+  picked it, reading "two PRs" as his and Chip's. Once he saw two branches, he
+  corrected it to one. The work keeps two versions and two entries: this one
+  covers 0.1.0 (menu, version, CHANGELOG and matrix), and DL-0023 covers
+  0.2.0 (`mofn run`). They land together, in one squash merge;
 - **commit locally only**. No push and no PR. So the Windows and macOS changes
   below are not yet run on those systems.
 
