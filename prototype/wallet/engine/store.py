@@ -72,13 +72,14 @@ def _trusts(persona_dir: Path, context: str) -> Path:
 
 
 def _read(path: Path):
-    return yaml.safe_load(path.read_text())
+    return yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
 def _write(path: Path, data, mode: int = 0o644) -> None:
     text = yaml.safe_dump(data, sort_keys=False, allow_unicode=True)
-    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, mode)
-    with os.fdopen(fd, "w") as f:
+    flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC | getattr(os, "O_BINARY", 0)
+    fd = os.open(path, flags, mode)
+    with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as f:
         f.write(text)
     os.chmod(path, mode)
 

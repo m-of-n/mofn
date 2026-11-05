@@ -11,7 +11,7 @@ import pytest
 WALLET = Path(__file__).resolve().parents[1]
 FIXTURES = WALLET / "fixtures"
 VECTORS = json.loads(
-    (WALLET.parents[1] / "spec" / "vectors" / "ksa-core" / "vectors.json").read_text()
+    (WALLET.parents[1] / "spec" / "vectors" / "ksa-core" / "vectors.json").read_text(encoding="utf-8")
 )
 
 
@@ -37,6 +37,7 @@ def run_mofn(*args, stdin: str = "", cwd=None) -> subprocess.CompletedProcess:
         input=stdin,
         capture_output=True,
         text=True,
+        encoding="utf-8",
         cwd=cwd,
     )
 

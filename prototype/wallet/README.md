@@ -14,8 +14,13 @@ decisions posted on it; the design record is `design-log/0016-wallet-engine-v0/`
 cd prototype/wallet
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/pytest -q                     # vectors, codecs, engine, CLI goldens
-.venv/bin/python mofn --help
+.venv/bin/python mofn                   # the menu; the same as mofn -h
+.venv/bin/python mofn --version         # what this mofn is built from
 ```
+
+Each command has its own help: `mofn check -h`. Without PyNaCl or PyYAML,
+`mofn` prints one line saying what to install, and exits 2. Changes are in
+[`CHANGELOG.md`](CHANGELOG.md); the version lives in `engine/__init__.py`.
 
 `demo/slice.sh`, from the repo root, needs only that venv (or `$MOFN_PYTHON`, or
 a `python3` with the requirements). It installs nothing and uses no network and
@@ -63,15 +68,15 @@ lines, the answer and the limit line; the table gives the line that decides.
 | ③ file changed | check a copy of the file with one byte changed | integrity fail: your file is not the one described | 1 |
 | ④ statement changed | flip one bit of `prov.stmt`, or change one word of `prov.stmt.yaml` | integrity fail: invalid at V4 (signature) | 3 |
 | vocabulary unsigned | leave out `tv-3-define.stmt` | semantics and authorization fail (unattributed-definition) | 1 |
-| expired | add `--at 2027-01-01T00:00:00Z` | authorization fail (not-valid-at-time) | 1 |
+| expired | add `--at 2099-01-01T00:00:00Z` | authorization fail (not-valid-at-time) | 1 |
 
 In ④ the changed statement is thrown out at once, so authorization and
 acceptance are *not evaluated* and no sentence is printed. `root add` for a
 key the wallet does not know is refused before anything is checked:
 `no persona '…' in this wallet`, exit 2.
 
-Exit codes: `0` answer yes, `1` answer no, `2` usage or wallet error, `3` a
-handed statement was invalid.
+Exit codes: `0` answer yes, or done (a bare `mofn` too), `1` answer no, `2`
+usage or wallet error, `3` a handed statement was invalid.
 
 ### What the six lines mean
 
@@ -151,6 +156,11 @@ So every `check` is given the statements and the definition again; the
 wallet remembers keys and decisions, not evidence. Holding received
 statements and definitions (ARCH-0003 §3.8) is what multiple definitions and
 presentations would build on.
+
+On Windows the 0600 and 0700 modes are not enforced: NTFS has no POSIX mode
+bits. There the private key is protected by the encryption at rest (Argon2id
+and SecretBox) and by the user profile's ACL. The test of the modes is skipped
+on Windows.
 
 ## Layout
 

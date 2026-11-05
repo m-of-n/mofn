@@ -35,7 +35,7 @@ front matter — not because someone remembered to add it to a nav list. Set
 | document | id | status | version | updated | |
 |---|---|---|---|---|---|
 | [The application — what we are actually building for the demo](https://m-of-n.github.io/mofn/project/APP-0001-application-design/) | `APP-0001` | draft ⚠️ | 0.3.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/project/APP-0001-application-design.md) |
-| [m-of-n backlog](https://m-of-n.github.io/mofn/project/BACKLOG-0001/) | `BACKLOG-0001` | draft ⚠️ | 0.12.4 | 2026-11-01 | [source](https://github.com/m-of-n/mofn/blob/main/project/BACKLOG-0001.md) |
+| [m-of-n backlog](https://m-of-n.github.io/mofn/project/BACKLOG-0001/) | `BACKLOG-0001` | draft ⚠️ | 0.12.5 | 2026-11-04 | [source](https://github.com/m-of-n/mofn/blob/main/project/BACKLOG-0001.md) |
 | [Open decision register — everything waiting on a human](https://m-of-n.github.io/mofn/project/DECISIONS-0001/) | `DECISIONS-0001` | active | 0.4.3 | 2026-11-03 | [source](https://github.com/m-of-n/mofn/blob/main/project/DECISIONS-0001.md) |
 | [Glossary — terms that mean more than one thing](https://m-of-n.github.io/mofn/project/GLOSSARY-0001/) | `GLOSSARY-0001` | draft ⚠️ | 0.3.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/project/GLOSSARY-0001.md) |
 | [Project plan — semester execution, repo, library, and team](https://m-of-n.github.io/mofn/project/PLAN-0001-project-plan/) | `PLAN-0001` | draft ⚠️ | 0.6.2 | 2026-11-01 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0001-project-plan.md) |

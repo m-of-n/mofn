@@ -161,7 +161,7 @@ def world(request, tmp_path_factory):
 )
 def test_golden_verdicts(world, case, code):
     p = world[case]
-    assert p.stdout == (GOLDEN / f"{case}.txt").read_text()
+    assert p.stdout == (GOLDEN / f"{case}.txt").read_text(encoding="utf-8")
     assert p.returncode == code, p.stderr
 
 
@@ -215,6 +215,11 @@ def test_passphrase_never_leaves_the_prompt(world):
             assert PASS.encode() not in f.read_bytes()
 
 
+@pytest.mark.skipif(
+    sys.platform == "win32",
+    reason="NTFS has no POSIX mode bits; on Windows the key is protected by "
+    "Argon2id + SecretBox at rest and by the profile's ACL",
+)
 def test_key_permissions(world):
     keys = list((world["root"] / "issuer" / "personas").glob("*/keys"))
     assert len(keys) == 1
