@@ -7,7 +7,7 @@ description: "Every open decision across both repos, ranked by what it blocks. T
 type: process
 category: process
 status: active
-version: "0.4.2"
+version: "0.4.3"
 version_policy: "semver; MINOR = decisions added or closed"
 date: "2026-09-22"
 updated: "2026-11-03"
@@ -17,13 +17,23 @@ decision_makers:
   - role: student
     id: ndewedo-newbury
     authority: >
-      Delegated by the sponsor on 2026-10-25 to accept, by ADR under
-      ARCH-0001 §9.2, the open decisions recorded in ARCH-0001 §7 (Tier 1 items 2 and 4b). Relayed
-      verbally by ndewedo-newbury; the sponsor confirms on the PR that adds
-      this entry. Does not extend to ADR-0002 (DECISIONS-0001 item 4a).
-      Extended 2026-11-03, at ndewedo-newbury's instruction, to decisions
-      on SPEC-0002, SPEC-0003 and SPEC-0004, where they are now listed in
-      decision_makers (DL-0020); no sponsor confirmation is recorded.
+      Delegated by the sponsor on a Zoom call in October 2026 (date not
+      recorded): ndewedo-newbury may decide any question in this project, on the same
+      footing as the sponsor, and is accountable for what they decide.
+      Relayed by david-hsiao on 2026-11-03; no written confirmation from the
+      sponsor is recorded (DL-0021). Supersedes the 2026-10-25 delegation and
+      its exclusion of ADR-0002. Acceptance still follows ARCH-0001 §9: a
+      DEC-* is accepted only by an ADR.
+  - role: student
+    id: david-hsiao
+    authority: >
+      Delegated by the sponsor on a Zoom call in October 2026 (date not
+      recorded): david-hsiao may decide any question in this project, on the same
+      footing as the sponsor, and is accountable for what they decide.
+      Relayed by david-hsiao on 2026-11-03; no written confirmation from the
+      sponsor is recorded (DL-0021). Supersedes the 2026-10-25 delegation and
+      its exclusion of ADR-0002. Acceptance still follows ARCH-0001 §9: a
+      DEC-* is accepted only by an ADR.
 reviewers: []
 needs_review: false
 reviewed: false
@@ -261,6 +271,16 @@ supply-chain profile first (T1-A), then accept P7 or correct it.
 | **28** | **Wallet GUI framework — Tauri, tentative (MD-7).** Web frontend plus a Python sidecar; PySide6 is the fallback. **Confirm before GUI work begins** (`BACKLOG-0001` T-029c). | due Oct 14 |
 
 ---
+
+## What changed in v0.4.3 — 2026-11-03
+
+Process. **No item added, closed, or narrowed.** The sponsor's October 2026
+delegation, given on Zoom and relayed by `david-hsiao`, is recorded: the sponsor,
+`ndewedo-newbury` and `david-hsiao` may each decide any question, and whoever
+decides is accountable for it. It replaces the v0.3.4 delegation and the v0.4.2
+extension. Item **4a** (`ADR-0002`) is therefore no longer the sponsor's alone;
+it is still open. No written sponsor confirmation is recorded. Recorded in
+DL-0021, with the W-1 questions it lets us close.
 
 ## What changed in v0.4.2 — 2026-11-03
 

@@ -5,15 +5,25 @@ title: "ARCH-0001 changelog"
 type: changelog
 parent: ARCH-0001
 status: active
-version: "0.1.6"
+version: "0.1.7"
 date: "2026-09-15"
-updated: "2026-11-01"
+updated: "2026-11-03"
 canonical_path: spec/ARCH-0001-CHANGELOG.md
 ---
 
 # ARCH-0001 changelog
 
 Format: newest first. Versions match the architecture document.
+
+## 0.1.7 — 2026-11-03
+
+- Front matter only. `decision_makers` records the sponsor's October 2026
+  delegation, given on Zoom and relayed by `david-hsiao`: `ndewedo-newbury` and
+  `david-hsiao` may each decide any question in the project, and are
+  accountable for what they decide. It supersedes the 2026-10-25 delegation and
+  its ADR-0002 exclusion, and covers `ADR-0004` and `ADR-0005`. No written
+  sponsor confirmation is recorded (`DL-0021`). No DEC changed; §9 unchanged:
+  a DEC-* is still accepted only by an ADR.
 
 ## 0.1.6 — 2026-11-01
 

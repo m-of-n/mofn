@@ -7,7 +7,7 @@ description: "The KSA statement: its data model, deterministic encoding, signed 
 type: specification
 category: security
 status: draft
-version: "0.4.1"
+version: "0.5.0"
 version_policy: "semver; MAJOR = any change to signed or hashed bytes; MINOR = additive registry entries or requirements; PATCH = editorial"
 date: "2026-10-14"
 updated: "2026-11-03"
@@ -17,10 +17,23 @@ decision_makers:
   - role: student
     id: ndewedo-newbury
     authority: >
-      Added 2026-11-03 at ndewedo-newbury's instruction (DL-0020): to
-      accept changes to this specification under its version policy,
-      alongside the sponsor. The sponsor's 2026-10-25 delegation covered
-      ARCH-0001 §7 only; no sponsor confirmation of this one is recorded.
+      Delegated by the sponsor on a Zoom call in October 2026 (date not
+      recorded): ndewedo-newbury may decide any question in this project, on the same
+      footing as the sponsor, and is accountable for what they decide.
+      Relayed by david-hsiao on 2026-11-03; no written confirmation from the
+      sponsor is recorded (DL-0021). Supersedes the 2026-10-25 delegation and
+      its exclusion of ADR-0002. Acceptance still follows ARCH-0001 §9: a
+      DEC-* is accepted only by an ADR.
+  - role: student
+    id: david-hsiao
+    authority: >
+      Delegated by the sponsor on a Zoom call in October 2026 (date not
+      recorded): david-hsiao may decide any question in this project, on the same
+      footing as the sponsor, and is accountable for what they decide.
+      Relayed by david-hsiao on 2026-11-03; no written confirmation from the
+      sponsor is recorded (DL-0021). Supersedes the 2026-10-25 delegation and
+      its exclusion of ADR-0002. Acceptance still follows ARCH-0001 §9: a
+      DEC-* is accepted only by an ADR.
 reviewers: []
 needs_review: true
 reviewed: false
@@ -36,7 +49,7 @@ related_rfcs: [RFC2119, RFC8174, RFC8032, RFC8610, RFC8949]
 
 # KSA Core — statements, data model, canonical encoding and cipher suites
 
-**Specification SPEC-0002 · version 0.4.1 · draft**
+**Specification SPEC-0002 · version 0.5.0 · draft**
 
 ## Abstract
 
@@ -66,6 +79,10 @@ change, and every published vector keeps its result.
 **0.4.1 (2026-11-03):** process. `ndewedo-newbury` is added to
 `decision_makers`, at their instruction, and accepts 0.4.0 the same day
 (DL-0020); nothing normative changes.
+**0.5.0 (2026-11-03):** §6.1 says when a suite becomes immutable: once this
+specification leaves `0.x`. Until then a suite's entry may be revised, as suite
+1's verification rules were in 0.4.0. `decision_makers` records the sponsor's
+October delegation (DL-0021). No signed or hashed bytes change.
 Nothing in this draft is final until its version leaves `0.x`.
 
 ---
@@ -275,7 +292,10 @@ statement digest is computed over `tbs` only.
 
 ### 6.1 What a suite defines
 
-A cipher suite is an immutable registry entry (§12.3). Each entry MUST define:
+A cipher suite is a registry entry (§12.3), and it is immutable once this
+specification leaves `0.x`. Until then an entry MAY be revised, and each
+revision is recorded in this document's status section; 0.4.0 revised suite 1's
+verification rules (§6.3). Each entry MUST define:
 
 | item | meaning |
 |---|---|
