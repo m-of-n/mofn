@@ -5,7 +5,7 @@ R-M-12 says a name should be a pair: (defining key, label). For every identifier
   signature   does the signature still check? (cryptography, over a Sig_structure or PAE rebuilt from the message)
   consumer    does a real library accept the message? (pycose for COSE, in-toto-attestation for the in-toto Statement)
 
-The key-relative form here is a placeholder, not a proposal. DEC-002, DEC-004 and DEC-005 are open. In CBOR it is the array [key id, label]; in JSON it is the string "key:<key id>:<label>". The key id is the SHA-256 of the raw public key.
+The key-relative form here is a placeholder, not a proposal. DEC-004 and DEC-005 are open. In CBOR it is the array [key id, label]; in JSON it is the string "key:<key id>:<label>". The key id is the SHA-256 of the raw public key.
 
 The real SLSA provenance from sample 3 is not used: it was signed by a Fulcio key we do not hold, so any change breaks its signature.
 

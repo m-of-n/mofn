@@ -1,6 +1,6 @@
 # lane-a — what do the bytes look like? (mofn#13)
 
-Throwaway experiment. Never ships; decides nothing (DEC-002, DEC-005 stay open).
+Throwaway experiment. Never ships; decides nothing (DEC-004, DEC-005 stay open).
 
 ## The question
 

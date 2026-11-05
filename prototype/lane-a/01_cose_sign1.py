@@ -2,7 +2,7 @@
 
 Ed25519 / alg -8, CBOR payload. Deterministic: the bytes are reproducible.
 
-The payload is deliberately uninteresting. DEC-002 is open and ARCH-0001 §9.4 applies: nothing here may imply a native encoding. What we are looking at is the *envelope*, not the statement inside it.
+The payload is deliberately uninteresting. ADR-0004 decided DEC-002: the native encoding is KSA-CBOR, and COSE is used only for export. So what we are looking at is the envelope, not the statement inside it.
 """
 
 import cbor2
