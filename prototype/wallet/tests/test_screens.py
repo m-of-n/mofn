@@ -66,6 +66,13 @@ async def set_(form, pilot, **values):
         await pilot.pause()
 
 
+LIST = ["key", "list", "--format", "json"]
+
+
+def ran(spy) -> list[list[str]]:
+    return [a for a, _ in spy if a != LIST]
+
+
 def runs(form) -> str:
     return str(form.query_one(f"#{form.NAME}-runs", Static).content)
 
@@ -109,7 +116,8 @@ def test_first_run_makes_the_wallet_your_key_and_the_example(here, spy):
         "artifact.bin",
         "dv-1.def",
     ]
-    assert [a for a, _ in spy] == [
+    assert LIST in [a for a, _ in spy]
+    assert ran(spy) == [
         ["init"],
         ["key", "gen", "me", "-o", "me.pub.stmt"],
         ["key", "import", "example/alice.pub.stmt", "--label", "Alice (definer)"],
@@ -168,8 +176,8 @@ def test_the_runs_line_is_the_command_that_runs(here, spy):
         shown = runs(t)
         await pilot.click("#trust-go")
         await pilot.pause()
-        assert shown == "Runs   " + runner.shown(spy[-1][0])
-        assert spy[-1][0] == [
+        assert shown == "Runs   " + runner.shown(ran(spy)[-1])
+        assert ran(spy)[-1] == [
             "root",
             "add",
             "Alice (definer)",
@@ -204,8 +212,8 @@ def test_check_shows_six_lines_and_marks_the_deciding_one(here, spy):
         assert "▶ 4 authorization  fail" in out
         assert "answer: no" in out
         assert "it does not establish that it is true" in out
-        assert spy[-1][0][:3] == ["check", "example/alice.stmt", "example/alice-define.stmt"]
-        assert spy[-1][0][-2:] == ["--format", "json"]
+        assert ran(spy)[-1][:3] == ["check", "example/alice.stmt", "example/alice-define.stmt"]
+        assert ran(spy)[-1][-2:] == ["--format", "json"]
 
     drive(script)
 
@@ -233,6 +241,7 @@ def test_open_a_file(here):
         await pilot.pause()
         show = app.screen.query_one(forms.Show)
         await set_(show, pilot, file="example/dv-1.def")
+        assert runs(show) == "Runs   mofn show example/dv-1.def"
         await pilot.click("#show-go")
         await pilot.pause()
         assert str(show.query_one("#show-result", Static).content).startswith("definition ")
@@ -304,10 +313,9 @@ def test_learn_runs_nothing(here, monkeypatch):
     def refuse(*a, **k):
         raise AssertionError("Learn ran a command")
 
-    monkeypatch.setattr(runner, "run", refuse)
-    monkeypatch.setattr(cli, "main", refuse)
-
     async def script(app, pilot):
+        monkeypatch.setattr(runner, "run", refuse)
+        monkeypatch.setattr(cli, "main", refuse)
         await tab(app, pilot, "learn")
         pages = app.query_one("#learn-list", ListView)
         for i in range(len(learn.pages())):
@@ -421,3 +429,53 @@ def test_only_the_tab_scrolls_and_the_key_line_stays(here):
                 assert any(w.max_scroll_y > 0 for w in pane.query("VerticalScroll")), name
 
     drive(script, size=(80, 24))
+
+
+def test_the_keys_table_is_key_list(here, spy):
+    async def script(app, pilot):
+        await first_run(app, pilot)
+        await tab(app, pilot, "keys")
+        table = app.query_one("#key-table")
+        listed = json.loads(runner.run(LIST).out)["keys"]
+        rows = [table.get_row_at(i) for i in range(table.row_count)]
+        assert [r[0] for r in rows] == [k["label"] for k in listed] == ["me", "Alice (definer)"]
+        assert [r[2] for r in rows] == ["yours", "known"]
+        assert rows[1][4].startswith("example/alice.pub.stmt, ")
+
+    drive(script)
+    assert LIST in [a for a, _ in spy]
+
+
+def test_export_sends_your_key_again(here, spy):
+    async def script(app, pilot):
+        await first_run(app, pilot)
+        await tab(app, pilot, "keys")
+        e = app.query_one(forms.KeyExport)
+        assert e.v("as") == "me" and e.v("save") == "me.pub.stmt"
+        await set_(e, pilot, save="again.pub.stmt")
+        shown = runs(e)
+        e.query_one("#keyexport-go").press()
+        await pilot.pause()
+        assert shown == "Runs   " + runner.shown(ran(spy)[-1])
+        assert ran(spy)[-1] == ["key", "export", "me", "-o", "again.pub.stmt"]
+        assert all(pp is None for a, pp in spy if a[:2] == ["key", "export"])
+
+    drive(script)
+    assert (here / "again.pub.stmt").read_bytes() == (here / "me.pub.stmt").read_bytes()
+
+
+def test_open_hashes_a_file_that_is_not_a_statement(here, spy):
+    async def script(app, pilot):
+        await first_run(app, pilot)
+        app.action_open_file()
+        await pilot.pause()
+        show = app.screen.query_one(forms.Show)
+        await set_(show, pilot, file="example/artifact.bin")
+        assert runs(show) == "Runs   mofn hash example/artifact.bin --format json"
+        show.query_one("#show-go").press()
+        await pilot.pause()
+        out = str(show.query_one("#show-result", Static).content)
+        assert out.startswith("sha-256:48dfc39586b0c4f9e905b3b60f59a30b7c0c7408e44f7cb4df2a09fbf3e67ba7")
+
+    drive(script)
+    assert ["hash", "example/artifact.bin", "--format", "json"] in ran(spy)

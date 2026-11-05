@@ -76,3 +76,19 @@ Examples:
   ...
 Report problems at https://github.com/m-of-n/mofn/issues
 ```
+
+## Update, 2026-11-05: `key list`, `key export`, `hash`
+
+| where | what |
+|---|---|
+| `cli.py` | `cmd_key_list`, `cmd_key_export` and `cmd_hash`, their parsers (each with `--format text\|json`), and three menu rows in the issue's words |
+| `cli.py` `key list` | from `Wallet.personas()`, yours first: label (else fingerprint), yours or known, kind (else `—`), fingerprint, and for an imported key `from FILE on DATE` from the provenance `key import` already records. An empty wallet says so and exits 0. JSON: `{"keys": [{label, kid, fingerprint, yours, kind, from, when}]}` |
+| `cli.py` `key export` | `w.find(LABEL)`, which must be owned. It runs every `statements/*.stmt` through `verify(envelope, {})`, the path `key import` uses, and keeps the key-publish whose `says` is the key's kid, the latest `issued` if several. It writes `codec.dump(envelope)` to `-o`, else `LABEL.pub{suffix}`. No passphrase |
+| `cli.py` `hash` | `statement.digest_target(data)`: `sha-256:<64 hex>  FILE`. JSON: `{"file", "this": {"digest": {"alg", "value": "0x…"}}}`, the shape of `this:` in the `.stmt.yaml` form |
+| `screens/` | the Keys table is `key list --format json`; a `KeyExport` form; Open a file runs `hash … --format json` for a file that is not `.stmt`, `.stmt.yaml` or `.def`; Learn's Keys and Sign pages mention the three |
+| tests | `test_cli.py` under both codecs: key list text and JSON, key list changes no file, key export byte-equal to `key gen`'s file, key export refuses a known key and an unknown label, `hash` equal to TV-4's `this`. `test_menu.py`: the three rows. `test_screens.py`: the Keys table, Export, Open → hash |
+| `README.md`, `CHANGELOG.md` 0.2.0, `BACKLOG-0001` 0.12.8 | follow |
+
+The six check goldens are unchanged, and the four from `main` are
+byte-identical.
+

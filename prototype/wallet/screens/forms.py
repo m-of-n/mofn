@@ -255,6 +255,37 @@ class KeyImport(Form):
         return ["key", "import", f] + (["--label", label] if label else [])
 
 
+class KeyExport(Form):
+    NAME = "keyexport"
+    TITLE = "Send your key again"
+    GO = "Export"
+    MAIN = "as"
+
+    def fields(self) -> ComposeResult:
+        yield from self.row("Your key", "as", Select([], prompt="one of your keys", classes="field", compact=True))
+        yield from self.row("Save as", "save", Input(placeholder="LABEL.pub.stmt", classes="field", compact=True))
+
+    def reload(self, view):
+        offer(self.w("as"), data.choices(view.owned), only=True)
+        self.depend("as")
+        super().reload(view)
+
+    def depend(self, key):
+        if key == "as" and self.v("as"):
+            save = self.w("save")
+            if not save.value or getattr(self, "auto_save", "") == save.value:
+                self.auto_save = f"{self.v('as')}.pub{self.place.suffix}"
+                save.value = self.auto_save
+
+    def argv(self):
+        if not self.v("as"):
+            return None
+        return ["key", "export", self.v("as")] + (["-o", self.v("save")] if self.v("save") else [])
+
+
+SHOWN = (".stmt", ".stmt.yaml", ".def")
+
+
 class Vocabulary(Form):
     def vocab_field(self) -> ComposeResult:
         start = ""
@@ -489,15 +520,18 @@ class Check(Vocabulary):
 
 class Show(Form):
     NAME = "show"
-    TITLE = "Open a statement or a .def file"
+    TITLE = "Open a statement, a .def file, or any file to hash"
     GO = "Open"
     MAIN = "file"
 
     def fields(self) -> ComposeResult:
-        yield from self.row("File", "file", FileField("show-file", "a .stmt or .def file"))
+        yield from self.row("File", "file", FileField("show-file", "a .stmt, a .def, or any file"))
 
     def argv(self):
-        return ["show", self.v("file")] if self.v("file") else None
+        f = self.v("file")
+        if not f:
+            return None
+        return ["show", f] if f.endswith(SHOWN) else ["hash", f, "--format", "json"]
 
     def execute(self, argv, passphrase):
         r = runner.run(argv, passphrase)
@@ -505,4 +539,17 @@ class Show(Form):
         if r.code:
             self.show_error(r.error)
             return
-        self.query_one(f"#{self.NAME}-result", Static).update(Text(r.out.rstrip()))
+        self.query_one(f"#{self.NAME}-result", Static).update(self.result(r))
+
+    def result(self, r):
+        if r.argv[-2:] != ["--format", "json"]:
+            return Text(r.out.rstrip())
+        d = json.loads(r.out)["this"]["digest"]
+        out = Text()
+        out.append(f"{d['alg']}:{d['value'][2:]}\n", "bold")
+        out.append(
+            "\nThis is the file's SHA-256. A statement about this file carries it as "
+            "its this; verdict sentences print its first 16 digits.\n",
+            "dim",
+        )
+        return out

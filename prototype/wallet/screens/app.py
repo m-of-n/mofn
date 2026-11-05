@@ -5,6 +5,8 @@ else `./wallet`. With no wallet there yet, first run asks the questions that
 make one.
 """
 
+import json
+
 from rich.text import Text
 from textual.app import App, ComposeResult
 from textual.binding import Binding
@@ -78,18 +80,30 @@ class WalletPane(VerticalScroll):
 
 
 class KeyTable(DataTable):
+    """Your keys and the keys you know, as `key list --format json` gives them."""
+
+    def __init__(self, place, **kw):
+        super().__init__(**kw)
+        self.place = place
+
     def on_mount(self) -> None:
-        self.add_columns("name", "fingerprint", "", "kind")
+        self.add_columns("name", "fingerprint", "", "kind", "from")
         self.cursor_type = "row"
 
     def reload(self, view: data.View) -> None:
         self.clear()
-        for p in view.owned + view.known:
+        if not view.wallet:
+            return
+        r = runner.run(self.place.argv("key", "list", "--format", "json"))
+        if r.code:
+            return
+        for k in json.loads(r.out)["keys"]:
             self.add_row(
-                data.name(p),
-                fingerprint(p.kid),
-                "yours" if p.owned else "known",
-                p.controller or "",
+                k["label"] or k["fingerprint"],
+                k["fingerprint"],
+                "yours" if k["yours"] else "known",
+                k["kind"] or "",
+                f"{k['from']}, {k['when'][:10]}" if k["from"] else "",
             )
 
 
@@ -290,9 +304,10 @@ class WalletApp(App):
                 yield WalletPane(self.place)
             with TabPane("Keys", id="keys"):
                 with VerticalScroll():
-                    yield KeyTable(id="key-table")
+                    yield KeyTable(self.place, id="key-table")
                     yield forms.KeyGen(self.place)
                     yield forms.KeyImport(self.place)
+                    yield forms.KeyExport(self.place)
             with TabPane("Trust", id="trust"):
                 with VerticalScroll():
                     yield forms.Trust(self.place)

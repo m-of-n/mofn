@@ -28,6 +28,9 @@ def test_menu_names_every_command():
         "make",
         "check",
         "show",
+        "key list",
+        "key export",
+        "hash",
     ):
         assert f"\n  {command} " in menu, command
 

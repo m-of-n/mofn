@@ -57,6 +57,60 @@ program is built from. Rejected:
   in use, after `--wallet` and `$MOFN_WALLET`. That is the closest analogue,
   and it uses the project's term.
 
+## The `gpg` commands, 2026-11-05: three added, the rest mapped or left out
+
+The issue gives the table; the reasons are restated here as the record.
+
+| `gpg` | in mofn | why |
+|---|---|---|
+| `-k`, `-K`, `--fingerprint` | **added: `key list`** | Paul asked for key listing |
+| `--export` | **added: `key export`** | sending your key again after the first time |
+| `--print-md` | **added: `hash`** | comparing a file by reading its hash aloud |
+| `--detach-sign`, `-s`, `-u` | `make --as` | a statement is always separate from its file |
+| `--verify` | `check` | |
+| `--generate-key` and its variants | `key gen`, or first run | |
+| `--import` | `key import` | |
+| `--lsign-key` | `root add` | a local, unexported decision is an anchor |
+| `--edit-key` | the Keys and Trust screens | |
+| `-o`, `--armor` | `-o`; `--codec review-yaml` | the text form |
+| `-e`, `-d`, `-c`, `-r` | **left out** | mofn says who said what; it does not keep secrets |
+| `--clear-sign` | **left out** | a statement names a file by hash and does not carry it |
+| `--sign-key`, `--quick-sign-key` | **left out** | vouching for a key is delegation (W-3, #67) or naming |
+| `--update-trustdb`, `--tofu-policy` | **left out** | ownertrust; anchors replace it (R-0002 §7.3) |
+| `--generate-revocation`, `--quick-revoke-*` | **left out** | short expiry is the revocation mechanism (W-3) |
+| `--send-keys`, `--receive-keys`, `--search-keys`, `--refresh-keys`, `--auto-key-locate` | **left out** | no network (#65) |
+| `--card-status`, `--edit-card`, `--change-pin` | **left out** | hardware keys are out of scope (PLAN-0004 §6.1) |
+| `--delete-keys`, `--change-passphrase`, `--quick-set-expire` | **left out** | key management is out of scope (PLAN-0002 §4.3) |
+| `--auto-key-import` | **left out** | authenticity passes only for a key you already hold |
+| `--quick-add-uid`, `--group` | **left out** | a mofn key has no user IDs; its name is your own label |
+
+The agent's own choices in building them, and what it rejected:
+
+- **`key export` exports only your own keys.** Of a statement you import,
+  the wallet keeps the key and the statement's digest, not the statement
+  (README, "What the wallet keeps"). *Rejected:* building a new key-publish
+  statement around a known key's public key. That would mean signing in
+  someone else's name, and only they can.
+- **`key export` writes the stored statement.** *Rejected:* signing a fresh
+  key-publish, which would need the passphrase; the issue says it asks for
+  none.
+- **`key export` writes to `LABEL.pub{suffix}`** unless `-o` says otherwise,
+  and overwrites, exactly as `key gen` does. *Rejected:* a different rule for
+  the same file.
+- **`hash` prints all 64 hex digits.** *Rejected:* the 16-digit form verdict
+  sentences use, which is too short to compare a file by. The README and
+  Learn say the sentence shows the first 16.
+- **`hash` takes one file**, as the issue writes it. *Rejected:* a
+  multi-file form like `sha256sum`.
+- **Open a file picks `show` or `hash` by suffix** (`.stmt`, `.stmt.yaml`,
+  `.def`). *Rejected:* trying `show` and falling back to `hash` on an error,
+  which would hide a real decode error in a damaged statement.
+- **The Keys table runs `key list --format json` on every reload.** It is
+  read-only, so the Learn test lets it run at start-up and refuses any
+  command only once Learn is open. *Rejected:* filling the table from the
+  wallet directly, which would leave `key list` unused by the screen it
+  belongs to (#127 §2 names it).
+
 ## Choices the agent made, and the alternatives it rejected
 
 - **argparse's own `action="version"`.** Rejected: it runs while the arguments

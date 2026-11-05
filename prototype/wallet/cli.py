@@ -23,6 +23,7 @@ statement was invalid.
 """
 
 import argparse
+import json
 import os
 import sys
 from pathlib import Path
@@ -49,7 +50,7 @@ from engine.errors import (
     WalletError,
 )
 from engine.reduce import Anchor
-from engine.schema import STATEMENT, SUITES
+from engine.schema import DIGEST_ALGS as SCHEMA_DIGESTS, STATEMENT, SUITES
 from engine.store import CONTROLLERS, Wallet, locate
 from engine.verifier import verify
 
@@ -61,11 +62,14 @@ COMMANDS = [
     ("init", "create an empty wallet"),
     ("key gen LABEL", "create a persona with one key"),
     ("key import FILE", "know a key, without trusting it"),
+    ("key list", "your keys and the keys you know, with fingerprints"),
+    ("key export LABEL", "write your public key again, to send to someone"),
     ("root add KEY --as YOU ...", "trust a key about one kind of claim"),
     ("root list", "print your anchors in words"),
     ("make --as LABEL --subject FILE", "make and sign one attestation"),
     ("check STMT... --artifact FILE", "check the statements you were handed"),
     ("show FILE", "print a statement or definition, decoded"),
+    ("hash FILE", "print a file's SHA-256, as a statement names it"),
 ]
 OPTIONS = [
     ("-h, --help", "show this menu (same as mofn with no command)"),
@@ -131,6 +135,103 @@ def cmd_key_import(a):
     )
     name = f" ({p.label})" if p.label else ""
     print(f"known: {short(p.kid)}{name} — not trusted for anything")
+
+
+def key_rows(w: Wallet) -> list[dict]:
+    ps = w.personas()
+    return [
+        {
+            "label": p.label,
+            "kid": p.kid.hex(),
+            "fingerprint": render.fingerprint(p.kid),
+            "yours": p.owned,
+            "kind": p.controller,
+            "from": p.provenance.get("from"),
+            "when": p.provenance.get("when"),
+        }
+        for p in [p for p in ps if p.owned] + [p for p in ps if not p.owned]
+    ]
+
+
+def cmd_key_list(a):
+    rows = key_rows(Wallet.open(locate(a.wallet)))
+    if a.format == "json":
+        sys.stdout.write(json.dumps({"keys": rows}, indent=2, ensure_ascii=False) + "\n")
+        return
+    if not rows:
+        print("no keys in this wallet: make one with key gen")
+    width = max([len(r["label"] or r["fingerprint"]) for r in rows] + [4])
+    for r in rows:
+        line = (
+            f"{r['label'] or r['fingerprint']:<{width}}  "
+            f"{'yours' if r['yours'] else 'known':<5}  {r['kind'] or '—':<12}  "
+            f"{r['fingerprint']}"
+        )
+        if r["from"]:
+            line += f"  from {r['from']} on {r['when']}"
+        print(line)
+
+
+def key_publish_of(w: Wallet, kid: bytes):
+    found = []
+    for f in sorted((w.root / "statements").glob("*.stmt")):
+        try:
+            v = verify(f.read_bytes(), {})
+        except (EncodingError, Rejected, StructureError):
+            continue
+        if v.kind == 1 and v.says == kid:
+            found.append(v)
+    return max(found, key=lambda v: v.statement[5][3], default=None)
+
+
+def cmd_key_export(a):
+    w = Wallet.open(locate(a.wallet))
+    codec = CODECS[a.codec]
+    p = w.find(a.label)
+    if not p.owned:
+        raise WalletError(
+            f"{a.label} is a key you know, not one of yours; mofn keeps only "
+            "the digest of a statement you import"
+        )
+    v = key_publish_of(w, p.kid)
+    if v is None:
+        raise WalletError(f"no key-publish statement for {a.label} in this wallet")
+    out = Path(a.out or f"{p.label or p.kid.hex()[:16]}.pub{codec.suffix}")
+    out.write_bytes(codec.dump(v.envelope))
+    if a.format == "json":
+        sys.stdout.write(
+            json.dumps(
+                {
+                    "wrote": str(out),
+                    "label": p.label,
+                    "kid": p.kid.hex(),
+                    "statement": v.digest.hex(),
+                },
+                indent=2,
+                ensure_ascii=False,
+            )
+            + "\n"
+        )
+        return
+    print(
+        f"wrote {out} — the key-publish statement for {p.label} "
+        f"({render.fingerprint(p.kid)}), to hand to others"
+    )
+
+
+def cmd_hash(a):
+    t = statement.digest_target(Path(a.file).read_bytes())
+    alg = SCHEMA_DIGESTS[t[1]]
+    if a.format == "json":
+        sys.stdout.write(
+            json.dumps(
+                {"file": a.file, "this": {"digest": {"alg": alg, "value": "0x" + t[2].hex()}}},
+                indent=2,
+            )
+            + "\n"
+        )
+        return
+    print(f"{alg}:{t[2].hex()}  {a.file}")
 
 
 def anchor_line(an: Anchor, labels: dict[bytes, str]) -> str:
@@ -385,6 +486,16 @@ def parser() -> argparse.ArgumentParser:
     imp.add_argument("file")
     imp.add_argument("--label")
     imp.set_defaults(run=cmd_key_import)
+    kl = key.add_parser("list", help="your keys and the keys you know, with fingerprints")
+    kl.add_argument("--format", choices=("text", "json"), default="text")
+    kl.set_defaults(run=cmd_key_list)
+    ke = key.add_parser(
+        "export", help="write your key-publish statement again, to send to someone"
+    )
+    ke.add_argument("label")
+    ke.add_argument("-o", dest="out", metavar="OUT")
+    ke.add_argument("--format", choices=("text", "json"), default="text")
+    ke.set_defaults(run=cmd_key_export)
 
     root = sub.add_parser("root", help="anchors").add_subparsers(
         dest="root_command", required=True
@@ -431,6 +542,13 @@ def parser() -> argparse.ArgumentParser:
     )
     show.add_argument("file")
     show.set_defaults(run=cmd_show)
+
+    hsh = sub.add_parser(
+        "hash", help="print a file's SHA-256, in the form a statement's this carries"
+    )
+    hsh.add_argument("file")
+    hsh.add_argument("--format", choices=("text", "json"), default="text")
+    hsh.set_defaults(run=cmd_hash)
     return top
 
 

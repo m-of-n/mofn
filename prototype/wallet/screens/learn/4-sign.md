@@ -14,6 +14,10 @@ What is signed holds no names and no file contents:
 | `body.has` | the claim, named by the vocabulary's id and the type's label, and its value |
 | `valid` | when it holds: from now, for 30 days unless you say otherwise |
 
+**Comparing a file without mofn's help.** *hash* prints a file's SHA-256,
+exactly as a statement's `this` names it. Two people can read the hash to
+each other, and a verdict's sentence shows its first 16 digits.
+
 **What you send** is the statement file, the file it is about, and, if they
 do not have it yet, your `NAME.pub.stmt`. The person who checks it still has
 to decide to trust you, as you decided about Alice. A statement that has run

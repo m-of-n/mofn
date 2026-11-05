@@ -33,6 +33,10 @@ wallet as a terminal app. The eight-step guide it replaced, and why, is in
 | `ci.yml` | the `run --check` step removed. pytest runs the pilot tests on all three OS |
 | `CHANGELOG.md` 0.2.0, `README.md`, `BACKLOG-0001` 0.12.7 | follow |
 
+Later on 2026-11-05: the Keys table is `key list --format json`, Keys has an
+Export form (`key export`), and Open a file runs `hash` for a file that is
+not a statement or `.def`. Those commands are in DL-0022.
+
 ## What the tests drive
 
 All of them run headless, through `App.run_test()`, on a temporary wallet.

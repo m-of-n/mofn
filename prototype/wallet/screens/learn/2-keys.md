@@ -16,5 +16,14 @@ sender chose: a statement holds no names, only key ids and hashes.
 signature is that key's. It says nothing about whether the key may say what
 it said. That is the next page.
 
+**Seeing and sending your keys.** *key list* prints every key in your
+wallet, yours and the ones you know, with your name for each, its kind and
+its fingerprint, and for a key you were sent, the file and the date you
+imported it. It changes nothing. *key export* writes your key-publish
+statement again, from the copy *key gen* kept, so you can send your key to
+someone you meet later. It signs nothing and asks for no passphrase. It
+exports only your own keys: of a key you were sent, mofn keeps the key, not
+the statement it came in.
+
 A key has a **kind**: person, organisation, service, agent, software or
 device. Only a person or an organisation may decide to trust another key.

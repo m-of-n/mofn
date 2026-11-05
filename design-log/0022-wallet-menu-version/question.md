@@ -6,7 +6,7 @@ title: "W-6 (mofn#127), wallet 0.1.0: the menu, --version, the CHANGELOG and the
 date: "2026-11-04"
 model: "claude-opus-5-5"
 human: davidhsiaotw
-outcome: "A bare mofn prints the menu (= mofn -h), mofn --version, a one-line missing-dependency message, UTF-8/LF output and wallet files, CHANGELOG 0.1.0, ci.yml on Linux, macOS and Windows. No spec change, no DEC-* touched."
+outcome: "A bare mofn prints the menu (= mofn -h), mofn --version, a one-line missing-dependency message, UTF-8/LF output and wallet files, CHANGELOG 0.1.0, ci.yml on Linux, macOS and Windows; then key list, key export and hash from gpg, with every other gpg command mapped or left out. No spec change, no DEC-* touched."
 status: open
 ---
 
@@ -49,3 +49,29 @@ The agent was held to these constraints:
 - R-0002 §7.2–7.3;
 - the branch protection of `main`, which shows that only `docs` and `dco` are
   required checks.
+
+## Update, 2026-11-05: three commands from `gpg`
+
+David edited #127 once more and told the agent: "sorry, I update issue
+again, but I don't know what's the different this time / may be additional
+features copied from `gpg`".
+
+The agent diffed the issue's two last versions through GitHub's edit history
+(`userContentEdits`, 02:19 against 02:42, 2026-11-05). Only one thing changed:
+
+- **Three new commands:** `key list` (like `gpg -k`, `-K`,
+  `--fingerprint`; "Paul asked for key listing"), `key export LABEL` (like
+  `--export`) and `hash FILE` (like `--print-md SHA256`). Each prints text
+  and takes `--format json`.
+- **Their menu rows.**
+- **`mofn run`:** the Keys screen gains *Export* and runs `key list` and
+  `key export`; Open a file runs `hash` for any other file.
+- **A table of every other `gpg` command**, mapped to an existing mofn
+  command or left out, each with its reason.
+- **Version:** they belong to 0.2.0.
+- **Acceptance:** "work from the CLI and from `mofn run`, with tests for
+  each"; the design log names the `gpg` commands left out, and why.
+
+In the same session David also asked that only the inner frame of
+`mofn run` scroll; that is in DL-0023.
+

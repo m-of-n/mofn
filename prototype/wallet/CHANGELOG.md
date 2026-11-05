@@ -34,6 +34,17 @@ Prototype: DEC-004 and DEC-005 are open; do not use real keys.
 - The example vocabulary ships with mofn: DV-1, Alice's key, her `define`
   statement, her attestation and its file. First run offers to copy them to
   `example/` and to know Alice's key.
+- Three commands from `gpg`, each with `--format json`:
+  - `key list`: your keys and the keys you know, with fingerprints, and where
+    a known key came from;
+  - `key export LABEL`: your key-publish statement written again, with no
+    passphrase;
+  - `hash FILE`: a file's SHA-256 as a statement names it.
+
+  The Keys tab's table is `key list`, it has an Export form, and Open a file
+  hashes any file that is not a statement or `.def`.
+- The header and the key line stay on screen; only a tab's own content
+  scrolls.
 - Two new goldens, `statement-changed` and `expired`, for Learn. The four
   earlier ones are unchanged.
 - With no terminal, `mofn run` refuses with exit 2.

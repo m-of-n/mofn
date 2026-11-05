@@ -41,8 +41,8 @@ command behind each one.
 | tab | you fill in | it runs |
 |---|---|---|
 | first run | where to keep the wallet, a name for your key, a passphrase, whether to get the example vocabulary | `init`, `key gen`, `key import` (Alice) |
-| Wallet | — | — : your keys, the keys you know, your anchors. `o` opens a file (`show`) |
-| Keys | a name and a kind; or a `.pub.stmt` you were sent and your name for it | `key gen`, `key import` |
+| Wallet | — | — : your keys, the keys you know, your anchors. `o` opens a file (`show`, or `hash` for any file that is not a statement or `.def`) |
+| Keys | a name and a kind; or a `.pub.stmt` you were sent and your name for it; which of your keys to send again | `key list` (the table), `key gen`, `key import`, `key export` |
 | Trust | whose key, as which of yours, the vocabulary, the claim, the values, the context | `root add` |
 | Sign | as which key, the file, the vocabulary, the claim, the value, how long, where to save | `make` |
 | Check | the statements you were handed, the file, the vocabulary, the context, the time | `check --format json` |
@@ -191,6 +191,20 @@ to say build-provenance is reproducible or attested, about any file.*
 | `accepted at` | when you decided; a record, not an expiry |
 
 Anchors are never sent to anyone (SPEC-0004 §4.2).
+
+### Keys and hashes
+
+Three commands come from `gpg`, which #127 takes as the reference for the
+shape of the tool. Each prints text, or JSON with `--format json`.
+
+| mofn | like | does |
+|---|---|---|
+| `mofn key list` | `gpg -k`, `-K`, `--fingerprint` | one row per key: your name for it, yours or known, its kind, its fingerprint, and for a key you imported, the file and the date. Changes nothing |
+| `mofn key export LABEL [-o FILE]` | `gpg --export` | writes your key's key-publish statement again, from the copy `key gen` kept in `statements/`. Signs nothing, asks for no passphrase, and refuses a key you only know |
+| `mofn hash FILE` | `gpg --print-md SHA256` | `sha-256:<64 hex>  FILE`, the file's SHA-256 as a statement's `this` names it. Verdict sentences print its first 16 digits |
+
+The other `gpg` commands are mapped to mofn's, or left out, in #127 and in
+`design-log/0022-wallet-menu-version/review.md`.
 
 ## What the wallet keeps
 
