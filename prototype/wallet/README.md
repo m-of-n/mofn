@@ -28,53 +28,56 @@ no keychain. It gives the issuer, the key-holder and the relying party one
 wallet each, and compares every verdict with `fixtures/golden/` under both
 codecs.
 
-## The guided screen
+## `mofn run`: the wallet as a terminal app
 
 ```sh
 .venv/bin/python mofn run               # start here
 ```
 
-`mofn run` walks through the cases below in eight steps. It shows every
-command before it runs it, spelled as you would type it, so you can run any of
-them again in a shell from the folder it names.
+`mofn run` opens **your wallet**, the same one the commands use: `--wallet`,
+else `$MOFN_WALLET`, else `./wallet`. You fill in forms, and it runs the mofn
+command behind each one.
 
-**One wallet: yours.** The guide's folder holds your wallet, `./wallet`, and
-five files Alice sent you, copied from `fixtures/`:
+| tab | you fill in | it runs |
+|---|---|---|
+| first run | where to keep the wallet, a name for your key, a passphrase, whether to get the example vocabulary | `init`, `key gen`, `key import` (Alice) |
+| Wallet | — | — : your keys, the keys you know, your anchors. `o` opens a file (`show`) |
+| Keys | a name and a kind; or a `.pub.stmt` you were sent and your name for it | `key gen`, `key import` |
+| Trust | whose key, as which of yours, the vocabulary, the claim, the values, the context | `root add` |
+| Sign | as which key, the file, the vocabulary, the claim, the value, how long, where to save | `make` |
+| Check | the statements you were handed, the file, the vocabulary, the context, the time | `check --format json` |
+| Learn | — | **nothing** |
+
+- **Choices come from what you have.** Every key in a list is one your wallet
+  holds, and every claim and value is one the chosen vocabulary defines.
+- **Every form shows its command** on a *Runs* line, as you type. Running it
+  in a shell gives the same result.
+- **An engine error appears under the field** it is about, and what you typed
+  stays.
+- **The passphrase** goes into a masked field and reaches the engine in the
+  same process, never on a command line or in the environment.
+- **Learn** is the tutorial: what each tab does, what the six lines mean, and
+  what each failing case looks like. It runs no command and opens no wallet.
+  Its tables are this README's own sections, and its example output is
+  `fixtures/golden/`, read when the page opens, so neither can drift.
+- With no terminal, `mofn run` refuses with exit 2. `?` opens Learn from any
+  tab, and `q` or `ctrl+q` quits.
+
+**The example vocabulary.** First run offers to copy DV-1 into `example/`,
+next to your wallet, and to know Alice's key as `Alice (definer)`:
 
 | file | fixture |
 |---|---|
-| `alice.pub.stmt` | TV-1, her key |
-| `dv-1.def` | DV-1, her vocabulary |
+| `dv-1.def` | DV-1, a supply-chain vocabulary |
+| `alice.pub.stmt` | TV-1, its author Alice's key |
 | `alice-define.stmt` | TV-3, the statement that says DV-1 is hers |
 | `alice.stmt` | TV-4, her attestation that `artifact.bin` was built reproducibly |
 | `artifact.bin` | the file |
 
-Alice's statement was valid from 2026-10-06 until 2026-11-01, so the checks
-run `--at 2026-10-15T00:00:00Z`. Step 4 checks once more as of now, to show
-that it has run out.
-
-| step | you | the line that decides |
-|---|---|---|
-| 0 your wallet | `init`, `key gen me` | — |
-| 1 what Alice sent | `show alice.stmt` | — |
-| 2 a key you lack | `check`, before importing her key | authenticity |
-| 3 not trusted yet | `key import`, `check` | authorization |
-| 4 trust, check again | `root add`, `root list`, `check`; `check` now | all six pass; authorization (not-valid-at-time) |
-| 5 change the file | `check` a copy with one byte changed | integrity |
-| 6 change the stmt | `check` her statement with one bit flipped | integrity, invalid at V4, exit 3 |
-| 7 sign your own | `make`, `show mine.stmt` | — |
-
-**Its folder.** It works in its own folder: `mofn/run` in your user cache
-(`~/.cache`, `~/Library/Caches` or `%LOCALAPPDATA%`), or `--dir DIR`.
-`$MOFN_WALLET` is set aside while the guide runs. Progress is kept there, so
-quitting and coming back resumes; `r` starts again.
-
-**The passphrase.** It is typed into a masked field and handed to the engine
-in the same process.
-
-`mofn run --check` runs every step with no screen, in a temporary folder, and
-exits 0 when each check decides the line in the table. With no terminal,
-`mofn run` refuses with exit 2.
+With it, a downloaded mofn can sign and check with no clone. Check adds
+`alice-define.stmt` to the statements by itself when the vocabulary is DV-1,
+because semantics fails without it. Alice's statement was valid from
+2026-10-06 until 2026-11-01, so check it `--at 2026-10-15T00:00:00Z`.
 
 ## Try it
 
@@ -216,9 +219,10 @@ on Windows.
 |---|---|
 | `mofn` | finds the engine; one line if PyNaCl or PyYAML is missing |
 | `cli.py` | arguments, printing, exit codes — nothing else |
-| `guide/steps.py` | the eight steps of `mofn run`, as data: text, commands, the line each check must decide |
-| `guide/session.py` | copies in Alice's files, runs the commands through `cli.main` in process, checks the deciding line, keeps progress |
-| `guide/screen.py`, `guide/check.py` | the Textual screen, and `run --check` without one |
+| `screens/app.py`, `forms.py`, `picker.py` | `mofn run`: tabs, first run, one form per command, the file and passphrase dialogs |
+| `screens/runner.py` | runs a form's argv through `cli.main` in process, and spells it as a shell would |
+| `screens/data.py`, `example.py` | the choices, read from the wallet and the vocabulary; the bundled DV-1 |
+| `screens/learn.py`, `screens/learn/` | the Learn pages; they run nothing |
 | `engine/encoding/ksa_cbor.py` | KSA-CBOR and the validating decoder (SPEC-0002 §4) |
 | `engine/encoding/review_yaml.py` | the human-review form (SPEC-0002 §11) |
 | `engine/codecs.py` | the two codecs by name |

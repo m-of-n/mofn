@@ -152,12 +152,37 @@ def world(request, tmp_path_factory):
     out["json"] = chk("rp", "app.pyz", "--format", "json")
     (hand / "bad.pyz").write_bytes(b"X" + ARTIFACT[1:])
     out["tampered"] = chk("rp", "bad.pyz")
+    out["expired"] = chk("rp", "app.pyz", "--at", "2099-01-01T00:00:00Z")
+    data = (hand / "prov.stmt").read_bytes()
+    if codec == "ksa-cbor":
+        data = data[:-1] + bytes([data[-1] ^ 0x01])
+    else:
+        data = data.replace(b"value: reproducible", b"value: attested")
+    (hand / "changed.stmt").write_bytes(data)
+    out["statement-changed"] = m(
+        "rp",
+        "check",
+        "changed.stmt",
+        FIXTURES / f"tv-3-define{suffix}",
+        "--artifact",
+        "app.pyz",
+        "--def",
+        DV1,
+        cwd=hand,
+    )
     return out
 
 
 @pytest.mark.parametrize(
     "case,code",
-    [("green", 0), ("unauthorized", 1), ("unknown-key", 1), ("tampered", 1)],
+    [
+        ("green", 0),
+        ("unauthorized", 1),
+        ("unknown-key", 1),
+        ("tampered", 1),
+        ("statement-changed", 3),
+        ("expired", 1),
+    ],
 )
 def test_golden_verdicts(world, case, code):
     p = world[case]

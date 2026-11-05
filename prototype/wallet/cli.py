@@ -57,7 +57,7 @@ import engine
 
 ISSUES = "https://github.com/m-of-n/mofn/issues"
 COMMANDS = [
-    ("run", "open the guided screen (start here)"),
+    ("run", "open the wallet as a terminal app (start here)"),
     ("init", "create an empty wallet"),
     ("key gen LABEL", "create a persona with one key"),
     ("key import FILE", "know a key, without trusting it"),
@@ -74,7 +74,7 @@ OPTIONS = [
     ("    --codec NAME", "statement file form: ksa-cbor (default), review-yaml"),
 ]
 EXAMPLES = [
-    ("mofn run", "learn it step by step"),
+    ("mofn run", "use your wallet through forms"),
     ("mofn key gen me", "make your own key (asks for a passphrase)"),
     (
         "mofn check prov.stmt --artifact app.bin --def dv-1.def",
@@ -233,18 +233,10 @@ def cmd_check(a):
 
 
 def cmd_run(a):
-    from guide import session
-
-    if a.check:
-        from guide import check
-
-        return check.run_all()
     if not (sys.stdin.isatty() and sys.stdout.isatty()):
-        raise WalletError(
-            "run needs a terminal; mofn run --check runs every step without one"
-        )
+        raise WalletError("run needs a terminal")
     try:
-        from guide import screen
+        from screens import app
     except ModuleNotFoundError as e:
         if (e.name or "").split(".")[0] not in ("textual", "rich"):
             raise
@@ -252,7 +244,7 @@ def cmd_run(a):
             f"mofn run needs Textual; install the requirements: {sys.executable} "
             f"-m pip install -r {Path(__file__).resolve().parent / 'requirements.txt'}"
         )
-    return screen.main(Path(a.dir) if a.dir else session.default_folder())
+    return app.main(a.wallet, a.codec)
 
 
 def cmd_show(a):
@@ -370,19 +362,11 @@ def parser() -> argparse.ArgumentParser:
 
     run = sub.add_parser(
         "run",
-        help="the guided screen, over a throwaway pair of wallets",
-        description="Open the guided screen: seven steps, each showing the mofn "
-        "commands it runs. It uses its own folder, never --wallet.",
-    )
-    run.add_argument(
-        "--check",
-        action="store_true",
-        help="run every step without a screen, in a temporary folder; exit 0 if all match",
-    )
-    run.add_argument(
-        "--dir",
-        metavar="DIR",
-        help="the guide's folder (default: a mofn/run folder in your user cache)",
+        help="open the wallet as a terminal app",
+        description="Open your wallet as a terminal app: forms for keys, trust, "
+        "signing and checking, each showing the mofn command it runs, and Learn, "
+        "which explains each and runs nothing. The wallet is --wallet, else "
+        "$MOFN_WALLET, else ./wallet.",
     )
     run.set_defaults(run=cmd_run)
 

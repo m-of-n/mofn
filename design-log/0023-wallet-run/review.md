@@ -11,6 +11,68 @@ date: "2026-11-04"
 screen. Below are what the agent rejected and why; record David's verdict on
 each here.
 
+## Rejected by David, 2026-11-05: the executing tutorial
+
+- **What was rejected.** `mofn run` as a guide that ran its own commands: the
+  eight steps, each a fixed command run in a throwaway folder, with
+  `run --check`. David: "current mofn is like a pure tutorial, I think that's
+  a good stuff but not I really expect … mofn should use blocks, questions,
+  etc to guide user to use the wallet … original tutorial is great to keep,
+  but don't execute command".
+- **Why.** Watching mofn run its own commands teaches what they do, but
+  nobody gets their own wallet out of it. The user should be guided through
+  using *their* wallet: choosing, filling in, and deciding.
+- **Withdrawn:**
+  - `guide/` (`steps.py`, `session.py`, `check.py`, `screen.py`) and
+    `tests/test_guide.py`;
+  - `run --check` and its CI step;
+  - `run --dir`, the folder in the user cache, and `progress.json`.
+- **Kept:**
+  - `cli.main(argv, passphrase=)` and `unlock.passphrase(given=)`;
+  - the in-process runner, now `screens/runner.py`;
+  - `shown()`;
+  - the guide's prose, now in the Learn pages.
+- **Reversed:** "withdrawn: the three goldens". `statement-changed` and
+  `expired` come back as new files, because Learn shows those cases from
+  goldens (David's choice). `vocabulary-unsigned` stays out: Learn does not
+  list it.
+
+## Choices the agent made for the terminal app, and what it rejected
+
+- **Learn reads, at load time, the README sections it explains** ("What the
+  six lines mean", "The cases", "What the wallet keeps") **and the golden
+  files.** *Rejected:* copying the text into Learn, which would be two
+  explanations that drift. A test checks each section and each golden
+  appears, and that Learn imports neither `cli` nor `runner`.
+- **The example vocabulary is copied into `example/`, next to the wallet.**
+  *Rejected:* pointing the forms at the bundled files where they sit. In a
+  one-file build that is a temporary folder, so the *Runs* line would name a
+  path that is gone after mofn exits. *Rejected:* copying them into the
+  wallet directory, whose layout is ARCH-0003's.
+- **Check adds `alice-define.stmt` by itself** when the vocabulary is DV-1,
+  and lists it as "(added: who published the vocabulary)". *Rejected:*
+  leaving the user to know that semantics needs it.
+- **Claims and values are dropdowns**, filled from the vocabulary; *rejected:*
+  a free-text field the engine would refuse. **Keys are dropdowns** filled
+  from the wallet. "As which of yours" offers only a person or organisation,
+  as `root add` requires. A sole key of your own is preselected; *whose key*
+  never is, because trusting a key must be a choice.
+- **Where an error goes.** It goes under the field whose value appears in the
+  message. Otherwise it goes under the form's main field (the file, for
+  import and open), or else under *Runs*. *Rejected:* a per-message table,
+  which the engine's wording would outgrow.
+- **Commands run on the event loop**, through `cli.main` with
+  `redirect_stdout`. *Rejected:* a worker thread, because `redirect_stdout`
+  is global to the process.
+- **`q` does nothing while a field has focus**, because a passphrase or a
+  label may contain it. `ctrl+q` always quits, and `escape` leaves first run
+  without making anything.
+
+## History: the guided screen this replaced
+
+The sections below record the eight-step guide, which the section above
+withdrew. They are kept because they are the record of what was tried.
+
 ## Rejected by David
 
 - **"Two wallets"** (the first version of step 0). The guide gave each party a

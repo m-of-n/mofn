@@ -15,32 +15,31 @@ The wallet engine and its `mofn` command line, `prototype/wallet/` (#65, #127).
 Every release is a prototype: DEC-004 and DEC-005 are open; do not use real
 keys.
 
-## 0.2.0 — 2026-11-04
+## 0.2.0 — 2026-11-05
 
 Prototype: DEC-004 and DEC-005 are open; do not use real keys.
 
-- `mofn run` opens a guided screen with eight steps. You have one wallet,
-  `./wallet` in the guide's folder. Everything from someone else is the
-  published fixtures, as files Alice sent you: her key, her vocabulary and its
-  `define` statement, her attestation, and the file it is about. The steps:
-  your wallet, what Alice sent, a key you lack, not trusted yet, trust and
-  check again, change the file, change the statement, sign your own.
-- Every command is a plain `mofn …`, shown before it runs. The checks run
-  `--at 2026-10-15T00:00:00Z`, while Alice's statement was valid, and step 4
-  also checks now to show expiry.
-- It all lives in its own folder in the user cache, or `--dir DIR`, and
-  `$MOFN_WALLET` is set aside, so it never touches a real wallet. Progress
-  survives quitting.
+- `mofn run` opens your wallet as a terminal app: the wallet the commands use
+  (`--wallet`, else `$MOFN_WALLET`, else `./wallet`). The tabs are Wallet,
+  Keys, Trust, Sign, Check and Learn, and `o` opens a file. With no wallet
+  yet, first run asks where to keep it, a name for your key and a passphrase.
+- Each form runs the mofn command behind it, through the CLI in process, and
+  shows that command on its Runs line as you type. Choices come from the
+  wallet and the chosen vocabulary. Engine errors appear under the field they
+  are about, and the form keeps what you typed.
 - The passphrase goes into a masked field and reaches the engine in process,
   never on a command line or in the environment.
-- `mofn run --check` runs every step without a screen. Each check must decide
-  the line written next to its step, with the exit code given there. With no
-  terminal, `mofn run` refuses with exit 2.
-- The goldens are unchanged.
+- Learn is the tutorial and runs nothing. Its tables are the README's own
+  sections, and its example output is `fixtures/golden/`.
+- The example vocabulary ships with mofn: DV-1, Alice's key, her `define`
+  statement, her attestation and its file. First run offers to copy them to
+  `example/` and to know Alice's key.
+- Two new goldens, `statement-changed` and `expired`, for Learn. The four
+  earlier ones are unchanged.
+- With no terminal, `mofn run` refuses with exit 2.
 - The CLI moved into `cli.py`. `mofn` only finds it, and still says in one
   line what to install.
-- Requires Textual 8.2.8 for the screen. `run --check` and every other
-  command run without it.
+- Requires Textual 8.2.8 for `mofn run`. Every other command runs without it.
 
 ## 0.1.0 — 2026-11-04
 

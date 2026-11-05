@@ -29,11 +29,12 @@ verdict on each here, accepted or rejected, with the reason.
   - *The agent's own error.* The question gave both options short labels that
     did not say whose PRs they were. It should have named the branches.
 
-- **No `run` row and no `mofn run` example in the 0.1.0 menu.** The mock-up in
-  #127 §1 shows them. `run` arrives in 0.2.0 (DL-0023), and a menu that lists
-  a command which then fails with `invalid choice` is worse than one row
-  missing. The first example is `mofn init` until then. A test runs `-h` on
-  each command the menu lists, so a row cannot get ahead of the parser again.
+- **No `run` row and no `mofn run` example in the 0.1.0 menu**: moot. The
+  agent left them out because `run` arrived only in 0.2.0. David's half is one
+  PR, so `run` exists whenever the menu does, and the menu now carries the
+  issue's own wording: `open the wallet as a terminal app (start here)` and
+  `mofn run  use your wallet through forms`. A test still runs `-h` on each
+  command the menu lists, so no row can get ahead of the parser.
 - **The slice is not run on Windows.** The issue says "where bash runs", and
   bash does run on `windows-latest`. But `slice.sh` locks the other roles'
   wallets with `chmod 000`, which NTFS ignores, so a pass there would not show

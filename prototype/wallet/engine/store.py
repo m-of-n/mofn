@@ -268,6 +268,17 @@ class Wallet:
     def labels(self) -> dict[bytes, str]:
         return {p.kid: p.label for p in self.personas() if p.label}
 
+    def contexts(self) -> list[str]:
+        """The contexts in which any of this wallet's own personas has an
+        anchor, from the names of their trusts/ files."""
+        return sorted(
+            {
+                f.stem
+                for f in (self.root / "personas").glob("*/trusts/*.yaml")
+                if CONTEXT.fullmatch(f.stem)
+            }
+        )
+
     def anchors(self, context: str) -> list[Anchor]:
         _context(context)
         out = []

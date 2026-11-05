@@ -2,11 +2,11 @@
 schema: "design-log/v1"
 id: DL-0023
 part: question
-title: "W-6 (mofn#127), wallet 0.2.0: mofn run, the guided screen, and run --check"
+title: "W-6 (mofn#127), wallet 0.2.0: mofn run, the wallet as a terminal app, with Learn"
 date: "2026-11-04"
 model: "claude-opus-5-5"
 human: davidhsiaotw
-outcome: "mofn run (Textual): one wallet, the files Alice sent, eight steps, each check's deciding line written next to it; run --check in CI; goldens unchanged; the CLI moved into cli.py and takes the passphrase in process. No spec change, no DEC-* touched."
+outcome: "mofn run opens your own wallet as forms (first run, Wallet, Keys, Trust, Sign, Check, Open), each running the mofn command it shows; Learn is the tutorial and runs nothing; DV-1 ships as the example vocabulary; goldens statement-changed and expired added, the four earlier ones unchanged; the executing guide and run --check withdrawn. No spec change, no DEC-* touched."
 status: open
 ---
 
@@ -69,3 +69,44 @@ Asked by the agent, David chose three things:
 - remove the three goldens the first version had added;
 - ask "which line fails first?" at both step 2 and step 3. The issue's table
   puts it at step 2, and its mock-up at step 3.
+
+## Second update, 2026-11-05: the wallet as a terminal app
+
+After trying the eight-step guide, David rewrote #127 §2 again and told the
+agent:
+
+> I updated the issue
+>
+> current mofn is like a pure tutorial, I think that's a good stuff but not I
+> really expect
+> mofn should use blocks, questions, etc to guide user to use the wallet
+> original tutorial is great to keep, but don't execute command
+>
+> I hope these matches the issue, if not tell me
+
+The new §2 says:
+
+- **`mofn run` opens the user's own wallet**, the one the CLI opens.
+- **Screens with forms, tables and questions**: first run, Wallet, Keys,
+  Trust, Sign, Check, and Open a file. The user fills in what they want;
+  `mofn run` runs the command behind it.
+- **Choices come from what you already have.** Every form shows its command
+  on a *Runs* line, and an engine error appears next to its field.
+- **The passphrase** goes in a masked field, in process.
+- **Nothing is reimplemented.**
+- **No terminal**: `mofn run` exits 2.
+- **CI** drives every screen with the pilot.
+- **Learn**: the tutorial, reading not doing. It runs no command and touches
+  no wallet. Its example output is the goldens, its words are the README's,
+  and every page links to its screen.
+
+The agent's answer was that the issue matches the message, with two gaps. It
+asked about both, and David chose:
+
+- **Re-add `statement-changed` and `expired`** as new goldens, because Learn
+  shows those cases and only four goldens existed. The four existing goldens
+  stay byte for byte.
+- **Ship DV-1 inside mofn** as the example vocabulary. A downloaded mofn
+  otherwise has no vocabulary, and the acceptance hand-off between David and
+  Chip would fail semantics.
+
