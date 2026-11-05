@@ -3,8 +3,10 @@ commands through the CLI in this process, compare each check with its
 golden, and remember how far the reader got.
 
 The commands are the CLI's own `main`, so nothing here signs, verifies or
-reduces. The passphrase is handed to `main` directly; it is never put in
-argv or in the environment.
+reduces. Each runs in its own folder, `sender/` or `receiver/`, with the
+wallet that folder holds, so `$MOFN_WALLET` is set aside while it runs. The
+passphrase is handed to `main` directly; it is never put in argv or in the
+environment.
 """
 
 import contextlib
@@ -19,7 +21,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import cli
-from guide.steps import ACTIONS, FILES, STEPS, Action
+from guide.steps import ACTIONS, FILES, RECEIVER, SENDER, STEPS, Action
 
 WALLET = Path(__file__).resolve().parents[1]
 FIXTURES = WALLET / "fixtures"
@@ -80,10 +82,15 @@ class Session:
         self.passphrase = passphrase
 
     def prepare(self) -> None:
-        self.folder.mkdir(parents=True, exist_ok=True)
-        for name in FILES:
-            if not (self.folder / name).exists():
-                shutil.copyfile(FIXTURES / name, self.folder / name)
+        for where, names in FILES.items():
+            (self.folder / where).mkdir(parents=True, exist_ok=True)
+            for name in names:
+                if not (self.folder / where / name).exists():
+                    shutil.copyfile(FIXTURES / name, self.folder / where / name)
+
+    @property
+    def started(self) -> bool:
+        return any((self.folder / w / "wallet").exists() for w in FILES)
 
     @property
     def done(self) -> int:
@@ -118,25 +125,31 @@ class Session:
     def needs_passphrase(self, step: int) -> bool:
         return self.passphrase is None and any(a.secret for a in self.pending(step))
 
-    def run(self, argv) -> tuple[int, str, str]:
+    def run(self, argv, where: str = RECEIVER) -> tuple[int, str, str]:
         out, err = io.StringIO(), io.StringIO()
-        with contextlib.chdir(self.folder), contextlib.redirect_stdout(
-            out
-        ), contextlib.redirect_stderr(err):
-            try:
-                code = cli.main(list(argv), passphrase=self.passphrase)
-            except SystemExit as e:
-                code = e.code if isinstance(e.code, int) else 2
+        aside = os.environ.pop("MOFN_WALLET", None)
+        try:
+            with contextlib.chdir(self.folder / where), contextlib.redirect_stdout(
+                out
+            ), contextlib.redirect_stderr(err):
+                try:
+                    code = cli.main(list(argv), passphrase=self.passphrase)
+                except SystemExit as e:
+                    code = e.code if isinstance(e.code, int) else 2
+        finally:
+            if aside is not None:
+                os.environ["MOFN_WALLET"] = aside
         return code, out.getvalue(), err.getvalue()
 
     def edit(self, kind: str) -> None:
+        mine = self.folder / RECEIVER
         if kind == "file":
-            data = (self.folder / "artifact.bin").read_bytes()
-            (self.folder / "changed.bin").write_bytes(b"X" + data[1:])
+            data = (mine / "artifact.bin").read_bytes()
+            (mine / "changed.bin").write_bytes(b"X" + data[1:])
         elif kind == "statement":
-            data = bytearray((self.folder / "prov.stmt").read_bytes())
+            data = bytearray((self.folder / SENDER / "prov.stmt").read_bytes())
             data[-1] ^= 0x01
-            (self.folder / "changed.stmt").write_bytes(bytes(data))
+            (mine / "changed.stmt").write_bytes(bytes(data))
         else:
             raise ValueError(kind)
 
@@ -145,7 +158,7 @@ class Session:
         if action.edit:
             self.edit(action.edit)
             return o
-        o.code, o.out, o.err = self.run(action.argv)
+        o.code, o.out, o.err = self.run(action.argv, action.where)
         if not action.golden:
             if o.code != 0:
                 o.problems.append(f"exit {o.code}: {o.err.strip()}")
@@ -182,7 +195,7 @@ class Session:
 
     def key_files(self) -> list[str]:
         rows = []
-        for f in sorted(self.folder.glob("w/*/personas/*/keys/*.key")):
+        for f in sorted(self.folder.glob("*/wallet/personas/*/keys/*.key")):
             rel = re.sub(
                 r"[0-9a-f]{64}",
                 lambda m: m.group()[:8] + "…",

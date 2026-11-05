@@ -23,7 +23,7 @@ def run_all(out=None) -> int:
         s.prepare()
         for n, action in ACTIONS:
             o = s.advance()
-            what = action.note if action.edit else shown(action.argv)
+            what = action.note if action.edit else f"{action.where}$ {shown(action.argv)}"
             against = f" — golden {action.golden}.txt, exit {o.code}" if action.golden else ""
             if o.ok:
                 out.write(f"[ok] {n} {STEPS[n].title}: {what}{against}\n")

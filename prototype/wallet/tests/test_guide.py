@@ -39,6 +39,25 @@ def test_no_command_or_environment_holds_the_passphrase(tmp_path):
             assert PASS not in f.read_bytes()
 
 
+def test_every_command_is_plain_mofn_in_its_own_folder():
+    for _, a in steps.ACTIONS:
+        assert "--wallet" not in a.argv, a.argv
+        assert a.where in (steps.SENDER, steps.RECEIVER)
+
+
+def test_mofn_wallet_is_set_aside(tmp_path, monkeypatch):
+    real = tmp_path / "real-wallet"
+    monkeypatch.setenv("MOFN_WALLET", str(real))
+    s = Session(tmp_path / "guide", passphrase=PASS)
+    s.prepare()
+    while s.step < 3:
+        assert s.advance().ok
+    assert not real.exists()
+    assert os.environ["MOFN_WALLET"] == str(real)
+    assert (tmp_path / "guide" / "sender" / "wallet").is_dir()
+    assert (tmp_path / "guide" / "receiver" / "wallet").is_dir()
+
+
 def test_each_check_names_a_golden_that_exists():
     for _, a in steps.ACTIONS:
         if a.golden:
@@ -72,7 +91,8 @@ def test_progress_survives_a_new_session(tmp_path):
     assert again.advance().ok
     again.reset()
     assert Session(tmp_path).done == 0
-    assert (tmp_path / "artifact.bin").exists()
+    assert (tmp_path / "receiver" / "artifact.bin").exists()
+    assert (tmp_path / "sender" / "artifact.bin").exists()
 
 
 def test_a_resume_before_signing_asks_again(tmp_path):

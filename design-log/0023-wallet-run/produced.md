@@ -43,15 +43,18 @@ Model: Claude Opus 5.5. No primitive was added, and no spec text changed.
 
 | step | runs | compared with |
 |---|---|---|
-| 0 two wallets | `init` and `key gen` for the sender and for `me`; import Alice as `Alice (definer)`. The screen then lists each `.key` with its mode and its `kdf` + `cipher` | exit 0 |
-| 1 sign a file | `make … -o prov.stmt`, `show prov.stmt`, import the sender as `release machine` | exit 0 |
+| 0 sender and you | in `sender/`: `init`, `key gen sender`; in `receiver/`: `init`, `key gen me`, import Alice as `Alice (definer)`. The screen then lists each `.key` with its mode and its `kdf` + `cipher` | exit 0 |
+| 1 sign a file | in `sender/`: `make … -o prov.stmt`, `show prov.stmt`; in `receiver/`: `key import ../sender/sender.pub.stmt` as `release machine` | exit 0 |
 | 2 not trusted yet | asks which line fails first, then `check` | `unauthorized`, 1; the answer, 4, comes from the golden |
 | 3 trust, check again | `root add`, `root list`, `check` | `green`, 0 |
 | 4 change the file | writes `changed.bin` (first byte `X`), then `check --artifact changed.bin` | `tampered`, 1 |
 | 5 change the stmt | writes `changed.stmt` (last bit flipped), then `check changed.stmt` | `statement-changed`, 3 |
 | 6 vocabulary, expiry | `check` without `tv-3-define.stmt`; `check --at 2099-01-01T00:00:00Z` | `vocabulary-unsigned`, 1; `expired`, 1 |
 
-The labels are the goldens' labels, so the comparison needs no substitution.
+Every command is a plain `mofn …`, with no `--wallet`, run in `sender/` or
+`receiver/`; each folder holds its own `./wallet`. Steps 2–6 run in
+`receiver/`, reading the sender's files as `../sender/prov.stmt`. The labels
+are the goldens' labels, so the comparison needs no substitution.
 
 ## The new goldens
 

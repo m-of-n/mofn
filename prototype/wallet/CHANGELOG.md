@@ -20,10 +20,13 @@ keys.
 Prototype: DEC-004 and DEC-005 are open; do not use real keys.
 
 - `mofn run` opens a guided screen with seven steps over the README's cases:
-  two wallets, sign a file, not trusted yet, trust and check again, change the
-  file, change the statement, vocabulary and expiry. It shows every command
-  before it runs it. It uses its own folder in the user cache, or `--dir DIR`,
-  so it never touches a real wallet. Progress survives quitting.
+  the sender and you, sign a file, not trusted yet, trust and check again,
+  change the file, change the statement, vocabulary and expiry. mofn keeps one
+  wallet per folder, so the sender is mofn in `sender/` and you are
+  `receiver/`. Every command is a plain `mofn …` in one of them, shown before
+  it runs. It all lives in its own folder in the user cache, or `--dir DIR`,
+  and `$MOFN_WALLET` is set aside, so it never touches a real wallet.
+  Progress survives quitting.
 - The passphrase goes into a masked field and reaches the engine in process,
   never on a command line or in the environment.
 - `mofn run --check` runs every step without a screen and compares each check

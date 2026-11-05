@@ -81,7 +81,7 @@ class Run(App):
 
     def on_mount(self) -> None:
         self.session.prepare()
-        if self.session.done and not (self.session.folder / "w").exists():
+        if self.session.done and not self.session.started:
             self.session.reset()
         self.view = min(self.session.step, len(STEPS) - 1)
         self.refresh_all()
@@ -109,10 +109,16 @@ class Run(App):
         if self.outputs.get(n):
             parts.extend(self.outputs[n])
         else:
-            parts.append(Text("This will run, from this folder:", "dim"))
-            parts.append(Text(f"  cd {self.session.folder}"))
+            parts.append(Text("This will run:", "dim"))
+            where = None
             for a in self.session.pending(n) or step.actions:
-                parts.append(Text("  " + (f"({a.note})" if a.edit else shown(a.argv))))
+                if a.edit:
+                    parts.append(Text(f"  ({a.note})"))
+                    continue
+                if a.where != where:
+                    where = a.where
+                    parts.append(Text(f"  cd {self.session.folder / where}"))
+                parts.append(Text("    " + shown(a.argv)))
             parts.append(Text(""))
         if n == self.session.step and step.question and n not in self.answers:
             parts.append(Text(step.question, "bold"))
@@ -180,7 +186,7 @@ class Run(App):
         while self.session.step == n:
             o = self.session.advance()
             a = o.action
-            out.append(Text("· " + a.note if a.edit else "$ " + shown(a.argv), "bold"))
+            out.append(Text("· " + a.note if a.edit else f"{a.where}$ " + shown(a.argv), "bold"))
             if o.verdict is not None:
                 out.extend(verdict_rows(o))
             elif o.out.strip():

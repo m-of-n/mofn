@@ -11,6 +11,23 @@ date: "2026-11-04"
 screen. Below are what the agent rejected and why; record David's verdict on
 each here.
 
+## Rejected by David
+
+- **"Two wallets"** (the first version of step 0). The guide gave each party a
+  wallet with `--wallet w/sender` and `--wallet w/receiver`, titled the step
+  "two wallets", and the agent explained it as if mofn held two wallets.
+  David rejected that, on 2026-11-04: mofn has one wallet, and another party is
+  "just mofn opened in a different directory".
+  - **What changed.** Step 0 is now "sender and you". Every command is a plain
+    `mofn …` run in `sender/` or `receiver/`, each with its own `./wallet`.
+    Handed files are read as `../sender/…`. A test fails if any action carries
+    `--wallet`.
+  - **The goldens did not change**, so the verdicts are the same either way.
+    The framing was the defect, not the engine.
+  - **A consequence the agent added.** With no `--wallet`, a `$MOFN_WALLET` in
+    the reader's shell would point the guide at their real wallet. The session
+    sets it aside for each command and restores it, and a test checks both.
+
 ## The options #127 §6 already rejected, confirmed
 
 - **curses**: missing on Windows.

@@ -39,9 +39,12 @@ command before it runs it, spelled as you would type it, so you can run any of
 them again in a shell from the folder it names.
 
 **Its folder.** It works in its own folder: `mofn/run` in your user cache
-(`~/.cache`, `~/Library/Caches` or `%LOCALAPPDATA%`), or `--dir DIR`. It never
-uses `--wallet` or `$MOFN_WALLET`. Progress is kept there, so quitting and
-coming back resumes; `r` starts again.
+(`~/.cache`, `~/Library/Caches` or `%LOCALAPPDATA%`), or `--dir DIR`. mofn
+keeps one wallet, `./wallet` in the folder it runs from. So inside the guide's
+folder the sender is `sender/` and you are `receiver/`, each with its own
+`wallet/`. The sender's files reach you as `../sender/…`. `$MOFN_WALLET` is
+set aside while the guide runs. Progress is kept there, so quitting and coming
+back resumes; `r` starts again.
 
 **The passphrase.** It is typed into a masked field and handed to the engine
 in the same process.
