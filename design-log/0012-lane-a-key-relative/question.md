@@ -6,8 +6,8 @@ title: "LANE A — what breaks when registry identifiers are key-relative (R-M-1
 date: "2026-10-19"
 model: "claude-opus-5-5"
 human: davidhsiaotw
-outcome: "prototype/lane-a/04_key_relative.py + README findings. The signature never breaks; the reader does. No ADR — DEC-002, DEC-004, DEC-005 untouched."
-status: open
+outcome: "prototype/lane-a/04_key_relative.py + README findings, merged in mofn#109 and reviewed 2026-11-05. The signature never breaks; the reader does. No ADR from this entry; DEC-004 and DEC-005 untouched. Library records and the namespace-governance answer still to come, in the library repo."
+status: complete
 ---
 
 # DL-0012 — question

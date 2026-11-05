@@ -19,7 +19,9 @@ change. Model: Claude Opus 5.5.
 | `01`–`03`, `common.py` | "artifact" → "sample" / "output"; `01`'s `build_eddsa` docstring tidied, meaning kept |
 
 The key-relative form is a placeholder: `[sha256(public key), label]` in CBOR,
-`"key:<hex>:<label>"` in JSON. It is not a proposal.
+`"key:<hex>:<label>"` in JSON. It is not a proposal. The first half equals
+`ADR-0005`'s `kid` for Ed25519 (raw 32 octets, RFC 8032 §5.1.2); the
+`[kid, label]` pair form is still not decided.
 
 `04` checks itself against `01` and `02`: its unchanged COSE message must be
 byte-identical to `01`'s, and its unchanged Statement to `02`'s.
@@ -50,6 +52,7 @@ Two full `run-all.sh` runs gave identical `SHA256SUMS` (32 files).
 
 The signature never breaks: it covers bytes, not meaning. What breaks is the
 reader, and only for identifiers the reader must act on — the algorithm, the
-content format, the COSE tag, the in-toto `_type`. A label the reader can
+content format, the in-toto `_type`. The COSE tag breaks only because pycose
+demands it; RFC 9052 §2 allows untagged COSE_Sign1. A label the reader can
 skip is skipped without an error, so its meaning is lost quietly. This is
 evidence for, not a decision on, "COSE/DSSE for export only".
