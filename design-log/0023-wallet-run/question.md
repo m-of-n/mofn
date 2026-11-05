@@ -16,7 +16,7 @@ status: open
 
 The second half of David's share of mofn#127 (W-6), after DL-0022 (0.1.0).
 The brief, briefly: Paul's "there is no guide". David's words, his two choices
-(one PR, `feat/w-6`; commit locally, no push) and the context supplied are in
+(one PR, `feat/w6-tui`; commit locally, no push) and the context supplied are in
 DL-0022. This entry and DL-0022 are in the same PR.
 
 #127 §2 asks for the following:

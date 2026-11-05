@@ -23,7 +23,7 @@ Paul".
 and the `ci.yml` matrix. Chip owns `release.yml`, the builds and the README
 install section. The agent wrote a plan, and David chose two things on it:
 
-- **one PR, `feat/w-6`**, for David's whole half. The agent first asked
+- **one PR, `feat/w6-tui`**, for David's whole half. The agent first asked
   whether to plan "Both, as two PRs": 0.1.0, then 0.2.0 stacked on it. David
   picked it, reading "two PRs" as his and Chip's. Once he saw two branches, he
   corrected it to one. The work keeps two versions and two entries: this one

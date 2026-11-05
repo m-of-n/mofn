@@ -17,7 +17,7 @@ verdict on each here, accepted or rejected, with the reason.
 - **Rejected by David: two PRs.** The agent's question said "Both, as two
   PRs", meaning a stacked PR for each release. David took "two PRs" to mean
   his and Chip's. He rejected the stack once he saw it: "I though two PRs mean
-  my PR and chip's PR". So his half is one branch, `feat/w-6`.
+  my PR and chip's PR". So his half is one branch, `feat/w6-tui`.
   - *What it costs.* `main` squash-merges, so it never holds a commit where
     `__version__` is `0.1.0`. `release.yml` requires the tag to equal
     `__version__`, so `wallet-v0.1.0` cannot be cut from `main`. #127's
