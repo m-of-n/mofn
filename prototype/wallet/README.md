@@ -166,7 +166,8 @@ on Windows.
 
 | file | responsible for |
 |---|---|
-| `mofn` | arguments, printing, exit codes — nothing else |
+| `mofn` | finds the engine; one line if PyNaCl or PyYAML is missing |
+| `cli.py` | arguments, printing, exit codes — nothing else |
 | `engine/encoding/ksa_cbor.py` | KSA-CBOR and the validating decoder (SPEC-0002 §4) |
 | `engine/encoding/review_yaml.py` | the human-review form (SPEC-0002 §11) |
 | `engine/codecs.py` | the two codecs by name |
