@@ -11,7 +11,7 @@ import pytest
 import cli
 from conftest import WALLET, run_mofn
 from guide import check, session, steps
-from guide.session import Session, expected
+from guide.session import LINES, Session
 
 PASS = b"guide test passphrase"
 
@@ -39,10 +39,9 @@ def test_no_command_or_environment_holds_the_passphrase(tmp_path):
             assert PASS not in f.read_bytes()
 
 
-def test_every_command_is_plain_mofn_in_its_own_folder():
+def test_every_command_is_plain_mofn():
     for _, a in steps.ACTIONS:
         assert "--wallet" not in a.argv, a.argv
-        assert a.where in (steps.SENDER, steps.RECEIVER)
 
 
 def test_mofn_wallet_is_set_aside(tmp_path, monkeypatch):
@@ -54,30 +53,40 @@ def test_mofn_wallet_is_set_aside(tmp_path, monkeypatch):
         assert s.advance().ok
     assert not real.exists()
     assert os.environ["MOFN_WALLET"] == str(real)
-    assert (tmp_path / "guide" / "sender" / "wallet").is_dir()
-    assert (tmp_path / "guide" / "receiver" / "wallet").is_dir()
+    assert (tmp_path / "guide" / "wallet").is_dir()
 
 
-def test_each_check_names_a_golden_that_exists():
-    for _, a in steps.ACTIONS:
-        if a.golden:
-            assert (session.GOLDEN / f"{a.golden}.txt").exists()
+def test_each_check_names_the_line_it_decides():
+    checks = [a for _, a in steps.ACTIONS if a.check]
+    assert checks
+    for a in checks:
+        assert a.decides in LINES + ("",), a
+        assert (a.code == 0) == (a.decides == ""), a
 
 
-def test_the_question_is_answered_by_the_golden():
-    assert expected("unauthorized").deciding == 4
-    assert expected("green").deciding == 0
+def test_the_questions_come_before_a_check():
+    for step in steps.STEPS:
+        if step.question:
+            assert any(a.check and a.decides for a in step.actions), step.title
+    assert [n for n, s in enumerate(steps.STEPS) if s.question] == [2, 3]
 
 
-def test_a_wrong_golden_is_caught(tmp_path):
+def test_the_files_are_alices_fixtures(tmp_path):
+    s = Session(tmp_path)
+    s.prepare()
+    for name, fixture in steps.FILES.items():
+        assert (tmp_path / name).read_bytes() == (session.FIXTURES / fixture).read_bytes()
+
+
+def test_a_wrong_expectation_is_caught(tmp_path):
     s = Session(tmp_path, passphrase=PASS)
     s.prepare()
     while s.step < 2:
         assert s.advance().ok
     n, a = steps.ACTIONS[s.done]
-    o = s.do(dataclasses.replace(a, golden="green", code=0))
+    o = s.do(dataclasses.replace(a, decides="", code=0))
     assert not o.ok
-    assert any(p.startswith("authorization: fail") for p in o.problems)
+    assert any("first line to fail is authenticity" in p for p in o.problems)
     assert any("exit 1, expected 0" in p for p in o.problems)
 
 
@@ -91,22 +100,24 @@ def test_progress_survives_a_new_session(tmp_path):
     assert again.advance().ok
     again.reset()
     assert Session(tmp_path).done == 0
-    assert (tmp_path / "receiver" / "artifact.bin").exists()
-    assert (tmp_path / "sender" / "artifact.bin").exists()
+    assert (tmp_path / "artifact.bin").exists()
+    assert not (tmp_path / "wallet").exists()
 
 
 def test_a_resume_before_signing_asks_again(tmp_path):
     s = Session(tmp_path, passphrase=PASS)
     s.prepare()
-    while s.step < 1:
-        s.advance()
-    assert Session(tmp_path).needs_passphrase(1)
+    while s.step < 7:
+        assert s.advance().ok
+    again = Session(tmp_path)
+    assert again.needs_passphrase(7)
+    assert not again.needs_passphrase(4)
 
 
 def test_run_check(capsys):
     assert check.run_all() == 0
     out = capsys.readouterr().out
-    assert out.endswith(f"run --check: 7 steps, {len(steps.ACTIONS)} actions passed\n")
+    assert out.endswith(f"run --check: 8 steps, {len(steps.ACTIONS)} actions passed\n")
     assert "[FAILED]" not in out
 
 
@@ -134,7 +145,7 @@ def test_the_menu_lists_run_first():
     assert "\n  mofn run " in menu
 
 
-def test_the_screen_walks_three_steps(tmp_path):
+def test_the_screen_walks_four_steps(tmp_path):
     pytest.importorskip("textual")
     from guide.screen import Run
 
@@ -152,13 +163,19 @@ def test_the_screen_walks_three_steps(tmp_path):
             assert app.session.step == 2
             await pilot.press("enter", "enter")
             assert app.asking == "answer"
-            await pilot.press("4", "enter")
+            await pilot.press("2", "enter")
             await pilot.pause()
             assert app.session.step == 3
+            assert 3 not in app.answers
+            await pilot.press("enter", "enter")
+            assert app.asking == "answer"
+            await pilot.press("4", "enter")
+            await pilot.pause()
+            assert app.session.step == 4
             await pilot.press("q")
 
     asyncio.run(walk())
-    assert Session(tmp_path).step == 3
+    assert Session(tmp_path).step == 4
     for f in tmp_path.rglob("*"):
         if f.is_file():
             assert b"typed here" not in f.read_bytes()

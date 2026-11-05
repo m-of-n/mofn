@@ -6,7 +6,7 @@ title: "W-6 (mofn#127), wallet 0.2.0: mofn run, the guided screen, and run --che
 date: "2026-11-04"
 model: "claude-opus-5-5"
 human: davidhsiaotw
-outcome: "mofn run (Textual) over seven steps; run --check in CI; three new goldens; the CLI moved into cli.py and takes the passphrase in process. No spec change, no DEC-* touched."
+outcome: "mofn run (Textual): one wallet, the files Alice sent, eight steps, each check's deciding line written next to it; run --check in CI; goldens unchanged; the CLI moved into cli.py and takes the passphrase in process. No spec change, no DEC-* touched."
 status: open
 ---
 
@@ -44,3 +44,28 @@ DL-0022. This entry and DL-0022 are in the same PR.
   `tests/test_cli.py`);
 - `demo/slice.sh`;
 - PyPI's release dates for Textual.
+
+## Updated brief, 2026-11-05
+
+David rewrote #127 §2 and told the agent: "I updated the issue, make changes
+according to it". The new §2 says:
+
+- **one reader, one wallet**, in a throwaway folder;
+- **what comes from someone else is already made**: the existing fixtures,
+  presented as files Alice sent you. These are TV-1, DV-1 with TV-3, TV-4,
+  and `artifact.bin`;
+- **eight steps**: your wallet, what Alice sent, a key you lack, not trusted
+  yet, trust and check again, change the file, change the statement, sign
+  your own;
+- **checks run `--at 2026-10-15T00:00:00Z`**, while TV-4 was valid. Step 4
+  also checks now, to show not-valid-at-time;
+- **the deciding line each step expects is written next to the step**, and the
+  files are the fixtures `demo/slice.sh` already uses.
+
+Asked by the agent, David chose three things:
+
+- overwrite an uncommitted change to `guide/steps.py`; a copy of it was kept
+  outside the repo;
+- remove the three goldens the first version had added;
+- ask "which line fails first?" at both step 2 and step 3. The issue's table
+  puts it at step 2, and its mock-up at step 3.

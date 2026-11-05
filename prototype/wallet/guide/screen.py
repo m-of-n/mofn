@@ -15,8 +15,8 @@ from textual.containers import Horizontal, VerticalScroll
 from textual.widgets import Input, Label, ListItem, ListView, Static
 
 import engine
-from guide.session import LINES, Outcome, Session, expected
-from guide.steps import STEPS, shown
+from guide.session import LINES, Outcome, Session, deciding
+from guide.steps import STEPS, expected, shown
 
 KEYS = " enter run · h hint · r reset · l list · q quit"
 
@@ -29,11 +29,11 @@ def bar(done: int, total: int, width: int = 14) -> str:
 def verdict_rows(o: Outcome) -> list[Text]:
     rows = []
     v = o.verdict["verdict"]
-    deciding = next((n for n in LINES if v[n]["result"] != "pass"), None)
+    first = deciding(o.verdict)
     for i, name in enumerate(LINES, 1):
         result = v[name]["result"].replace("-", " ")
-        mark = "▶" if name == deciding else " "
-        style = "bold" if name == deciding else ""
+        mark = "▶" if name == first else " "
+        style = "bold" if name == first else ""
         rows.append(
             Text(f" {mark} {i} {name:<14} {result:<14} {v[name]['sentence']}", style)
         )
@@ -110,20 +110,14 @@ class Run(App):
             parts.extend(self.outputs[n])
         else:
             parts.append(Text("This will run:", "dim"))
-            where = None
+            parts.append(Text(f"  cd {self.session.folder}"))
             for a in self.session.pending(n) or step.actions:
-                if a.edit:
-                    parts.append(Text(f"  ({a.note})"))
-                    continue
-                if a.where != where:
-                    where = a.where
-                    parts.append(Text(f"  cd {self.session.folder / where}"))
-                parts.append(Text("    " + shown(a.argv)))
+                parts.append(Text("  " + (f"({a.note})" if a.edit else shown(a.argv))))
             parts.append(Text(""))
         if n == self.session.step and step.question and n not in self.answers:
             parts.append(Text(step.question, "bold"))
         elif self.session.step >= len(STEPS) and n == len(STEPS) - 1:
-            parts.append(Text("All seven steps done. r starts again.", "bold"))
+            parts.append(Text("All eight steps done. r starts again.", "bold"))
         elif done_here:
             parts.append(Text("enter: next step", "dim"))
         else:
@@ -138,7 +132,7 @@ class Run(App):
             field.password = True
             field.restrict = None
             field.max_length = 0
-            field.placeholder = "passphrase for the two demo wallets"
+            field.placeholder = "passphrase for your key, me"
         else:
             field.password = False
             field.restrict = r"[1-6]"
@@ -186,7 +180,7 @@ class Run(App):
         while self.session.step == n:
             o = self.session.advance()
             a = o.action
-            out.append(Text("· " + a.note if a.edit else f"{a.where}$ " + shown(a.argv), "bold"))
+            out.append(Text("· " + a.note if a.edit else "$ " + shown(a.argv), "bold"))
             if o.verdict is not None:
                 out.extend(verdict_rows(o))
             elif o.out.strip():
@@ -197,24 +191,26 @@ class Run(App):
                 out.extend(Text(f"  not as expected: {p}", "red") for p in o.problems)
                 out.append(Text("  r resets the guide and starts again", "red"))
                 break
-            if a.golden:
-                out.append(Text(f"  matches golden {a.golden}.txt, exit {o.code}", "green"))
+            if a.check:
+                out.append(Text(f"  as expected: {expected(a)}, exit {o.code}", "green"))
             out.append(Text(""))
         if n == 0 and self.session.step > 0:
-            out.append(Text("Private keys:", "bold"))
+            out.append(Text("Your wallet:", "bold"))
+            out.extend(Text("  " + r) for r in self.session.folders())
+            out.append(Text("Your private key:", "bold"))
             out.extend(Text("  " + r) for r in self.session.key_files())
         if n in self.answers:
             self.answers_line(n, out)
         self.refresh_all()
 
     def answers_line(self, n: int, out: list) -> None:
-        golden = next(a.golden for a in STEPS[n].actions if a.golden)
-        first, guess = expected(golden).deciding, self.answers[n]
+        name = next(a.decides for a in STEPS[n].actions if a.check)
+        first, guess = LINES.index(name) + 1, self.answers[n]
         right = guess == first
         out.append(
             Text(
                 f"You said {guess}. The first line that fails is {first}, "
-                f"{LINES[first - 1]}." + (" Right." if right else ""),
+                f"{name}." + (" Right." if right else ""),
                 "green" if right else "yellow",
             )
         )

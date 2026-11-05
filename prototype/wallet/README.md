@@ -34,26 +34,47 @@ codecs.
 .venv/bin/python mofn run               # start here
 ```
 
-`mofn run` walks through the cases below in seven steps. It shows every
+`mofn run` walks through the cases below in eight steps. It shows every
 command before it runs it, spelled as you would type it, so you can run any of
 them again in a shell from the folder it names.
 
+**One wallet: yours.** The guide's folder holds your wallet, `./wallet`, and
+five files Alice sent you, copied from `fixtures/`:
+
+| file | fixture |
+|---|---|
+| `alice.pub.stmt` | TV-1, her key |
+| `dv-1.def` | DV-1, her vocabulary |
+| `alice-define.stmt` | TV-3, the statement that says DV-1 is hers |
+| `alice.stmt` | TV-4, her attestation that `artifact.bin` was built reproducibly |
+| `artifact.bin` | the file |
+
+Alice's statement was valid from 2026-10-06 until 2026-11-01, so the checks
+run `--at 2026-10-15T00:00:00Z`. Step 4 checks once more as of now, to show
+that it has run out.
+
+| step | you | the line that decides |
+|---|---|---|
+| 0 your wallet | `init`, `key gen me` | — |
+| 1 what Alice sent | `show alice.stmt` | — |
+| 2 a key you lack | `check`, before importing her key | authenticity |
+| 3 not trusted yet | `key import`, `check` | authorization |
+| 4 trust, check again | `root add`, `root list`, `check`; `check` now | all six pass; authorization (not-valid-at-time) |
+| 5 change the file | `check` a copy with one byte changed | integrity |
+| 6 change the stmt | `check` her statement with one bit flipped | integrity, invalid at V4, exit 3 |
+| 7 sign your own | `make`, `show mine.stmt` | — |
+
 **Its folder.** It works in its own folder: `mofn/run` in your user cache
-(`~/.cache`, `~/Library/Caches` or `%LOCALAPPDATA%`), or `--dir DIR`. mofn
-keeps one wallet, `./wallet` in the folder it runs from. So inside the guide's
-folder the sender is `sender/` and you are `receiver/`, each with its own
-`wallet/`. The sender's files reach you as `../sender/…`. `$MOFN_WALLET` is
-set aside while the guide runs. Progress is kept there, so quitting and coming
-back resumes; `r` starts again.
+(`~/.cache`, `~/Library/Caches` or `%LOCALAPPDATA%`), or `--dir DIR`.
+`$MOFN_WALLET` is set aside while the guide runs. Progress is kept there, so
+quitting and coming back resumes; `r` starts again.
 
 **The passphrase.** It is typed into a masked field and handed to the engine
 in the same process.
 
-**What it checks against.** Each check is compared with its golden in
-`fixtures/golden/`, the same files `demo/slice.sh` uses.
-
 `mofn run --check` runs every step with no screen, in a temporary folder, and
-exits 0 when all match. With no terminal, `mofn run` refuses with exit 2.
+exits 0 when each check decides the line in the table. With no terminal,
+`mofn run` refuses with exit 2.
 
 ## Try it
 
@@ -195,8 +216,8 @@ on Windows.
 |---|---|
 | `mofn` | finds the engine; one line if PyNaCl or PyYAML is missing |
 | `cli.py` | arguments, printing, exit codes — nothing else |
-| `guide/steps.py` | the seven steps of `mofn run`, as data: text, commands, the golden each check must match |
-| `guide/session.py` | runs those commands through `cli.main` in process, compares with the goldens, keeps progress |
+| `guide/steps.py` | the eight steps of `mofn run`, as data: text, commands, the line each check must decide |
+| `guide/session.py` | copies in Alice's files, runs the commands through `cli.main` in process, checks the deciding line, keeps progress |
 | `guide/screen.py`, `guide/check.py` | the Textual screen, and `run --check` without one |
 | `engine/encoding/ksa_cbor.py` | KSA-CBOR and the validating decoder (SPEC-0002 §4) |
 | `engine/encoding/review_yaml.py` | the human-review form (SPEC-0002 §11) |

@@ -1,6 +1,7 @@
 """`mofn run --check`: every step of the guide, with no screen, in a folder
-that is thrown away afterwards. Each check must match its golden verdict and
-exit code. Exit 0 when every step passes, 1 otherwise.
+that is thrown away afterwards. Each check must decide the line its step
+expects, with the exit code it expects. Exit 0 when every step passes, 1
+otherwise.
 
 It does not import Textual, so it runs wherever the engine runs.
 """
@@ -10,7 +11,7 @@ import tempfile
 from pathlib import Path
 
 from guide.session import Session
-from guide.steps import ACTIONS, STEPS, shown
+from guide.steps import ACTIONS, STEPS, expected, shown
 
 PASSPHRASE = b"mofn run --check, not a secret"
 
@@ -23,8 +24,8 @@ def run_all(out=None) -> int:
         s.prepare()
         for n, action in ACTIONS:
             o = s.advance()
-            what = action.note if action.edit else f"{action.where}$ {shown(action.argv)}"
-            against = f" — golden {action.golden}.txt, exit {o.code}" if action.golden else ""
+            what = action.note if action.edit else shown(action.argv)
+            against = f" — {expected(action)}, exit {o.code}" if action.check else ""
             if o.ok:
                 out.write(f"[ok] {n} {STEPS[n].title}: {what}{against}\n")
                 continue

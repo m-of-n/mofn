@@ -28,6 +28,47 @@ each here.
     the reader's shell would point the guide at their real wallet. The session
     sets it aside for each command and restores it, and a test checks both.
 
+## Changed by the updated issue, 2026-11-05
+
+The sender/receiver form above was itself replaced when David rewrote #127 §2.
+The guide no longer plays a second party: the reader has one wallet, and
+Alice's published fixtures stand for everything someone else sent.
+
+- **Withdrawn: the `sender/` and `receiver/` folders**, and the sender's own
+  key, statement and `prov.stmt`. There is no second wallet to make, so
+  nothing in the guide signs on anyone else's behalf. The step that does sign,
+  7, signs as you.
+- **Withdrawn: the three goldens** `statement-changed`, `vocabulary-unsigned`
+  and `expired`, with their `test_cli.py` cases. They existed only for the
+  guide, and the issue says the check goldens stay unchanged.
+  `fixtures/golden/` is now byte-identical to `main`.
+- **Withdrawn: comparing the guide with goldens.** The goldens use the
+  slice's names (`release machine`, `prov.stmt`); the guide's checks are about
+  Alice's files and run at a fixed date, so its output cannot match those
+  bytes. Each check instead names the line it is expected to decide, its exit
+  code, and for steps 4 and 6 a word the sentence must contain. Byte
+  comparison stays with `test_cli.py` and the slice, which are unchanged.
+- **Reversed: "the answer to step 2 written into `steps.py`"**, rejected
+  below in the first version. The issue now asks for exactly that: "the
+  deciding line each step expects is written next to the step". It is still a
+  single source, the step.
+- **Kept from David's change:** plain `mofn …` commands with no `--wallet`,
+  `$MOFN_WALLET` set aside, and its test.
+
+Three choices the agent made under the update:
+
+- **"Deciding" is the first line whose result is `fail`**, not the first line
+  that is not `pass`. In step 2, integrity is *not evaluated*, because there is
+  no verified attestation to compare the file with. The line that fails, and
+  that the step is about, is authenticity. The screen's ▶ mark follows the
+  same rule.
+- **The question at steps 2 and 3**, as David chose. Each has one deciding
+  line: authenticity (the key is not yours) and authorization (the key is
+  yours, but not trusted). Together they teach the difference.
+- **Step 7 uses `outcome` / `approve`**, DV-1's reviewer type, because a
+  person reviewing a file is what the reader would sign. Rejected: re-using
+  `build-provenance`, which is a build machine's claim.
+
 ## The options #127 §6 already rejected, confirmed
 
 - **curses**: missing on Windows.
@@ -51,14 +92,10 @@ build may want a lock file.
   own output, or race it. Each command runs on the event loop, and the screen
   pauses for Argon2id (well under a second per key).
 - **Rendering the text verdict in the guide.** Rejected as reimplementing.
-  The guide reads `check --format json` and lays out its six rows. The golden
-  is parsed only for comparison: the six fixed-width rows and `answer:`.
-  `run --check` compares those, not the bytes. The byte comparison is still
-  `test_cli.py`'s and the slice's, so the two kinds of check cannot drift
-  apart without a test failing.
-- **The answer to step 2 written into `steps.py`.** Rejected: it would be a
-  second source. It is read from the golden as the first line that is not
-  `pass`.
+  The guide reads `check --format json` and lays out its six rows.
+- **The answer to step 2 written into `steps.py`.** Rejected in the first
+  version as a second source, next to the goldens. *Reversed on 2026-11-05*;
+  see above.
 - **A wallet in the current directory**, as the README's "Try it" does.
   Rejected: run from a clone, it would land in the repo. The folder is in the
   user cache, or `--dir`.
@@ -68,12 +105,11 @@ build may want a lock file.
   leave a wallet that `init` refuses to overwrite. Progress counts actions, so
   a resume continues exactly where it stopped. A resume before `make` asks for
   the passphrase again, because it is never stored.
-- **The file edits in steps 4 and 5 shown as shell one-liners.** Rejected: no
+- **The file edits in steps 5 and 6 shown as shell one-liners.** Rejected: no
   one-liner is the same on bash, PowerShell and cmd. They are said in words,
   "(write changed.bin: … first byte replaced by X)", and run by the guide.
 - **Running the review-yaml codec in the guide.** Rejected for v0: one codec
-  keeps the commands short. The new goldens are the same under both codecs,
-  and `test_cli.py` tests both.
+  keeps the commands short. `test_cli.py` and the slice test both codecs.
 - **`q`, `h`, `r` and `l` while the field is focused.** Rejected as typing:
   while a field is open, those letters go into the field, because a
   passphrase may contain them.
@@ -82,10 +118,10 @@ build may want a lock file.
 
 - **Windows and macOS**: nothing was pushed, so neither the screen nor
   `run --check` has run there.
-- **A person at the keyboard**: nobody has driven the full seven steps. The
-  pilot test drives steps 0–2, and `run --check` covers all seven without a
+- **A person at the keyboard**: nobody has driven all eight steps. The
+  pilot test drives steps 0–3, and `run --check` covers all eight without a
   screen.
 - **PyInstaller**: the screen reads `fixtures/` next to `guide/`. A one-file
   build must include `fixtures/{artifact.bin,dv-1.def,tv-1-alice.pub.stmt,
-  tv-3-define.stmt}` and `fixtures/golden/`. That is Chip's to add to the build
-  spec.
+  tv-3-define.stmt,tv-4-attestation.stmt}`. The guide no longer reads
+  `fixtures/golden/`. That is Chip's to add to the build spec.
