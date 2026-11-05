@@ -49,6 +49,8 @@ jobs:
         run: |
           python prototype/wallet/mofn --version
           python prototype/wallet/mofn
+      - name: mofn run --check, every step of the guide (mofn#127)
+        run: python prototype/wallet/mofn run --check
       - name: demo slice, both codecs (demo/slice.sh, mofn#65, mofn#68)
         # slice.sh locks wallets with chmod 000, which NTFS ignores.
         if: runner.os != 'Windows'

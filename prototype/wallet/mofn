@@ -28,4 +28,5 @@ except ModuleNotFoundError as e:
     sys.exit(2)
 
 if __name__ == "__main__":
+    cli.plain_streams()
     sys.exit(cli.main())

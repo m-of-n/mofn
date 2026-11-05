@@ -28,6 +28,30 @@ no keychain. It gives the issuer, the key-holder and the relying party one
 wallet each, and compares every verdict with `fixtures/golden/` under both
 codecs.
 
+## The guided screen
+
+```sh
+.venv/bin/python mofn run               # start here
+```
+
+`mofn run` walks through the cases below in seven steps. It shows every
+command before it runs it, spelled as you would type it, so you can run any of
+them again in a shell from the folder it names.
+
+**Its folder.** It works in its own folder: `mofn/run` in your user cache
+(`~/.cache`, `~/Library/Caches` or `%LOCALAPPDATA%`), or `--dir DIR`. It never
+uses `--wallet` or `$MOFN_WALLET`. Progress is kept there, so quitting and
+coming back resumes; `r` starts again.
+
+**The passphrase.** It is typed into a masked field and handed to the engine
+in the same process.
+
+**What it checks against.** Each check is compared with its golden in
+`fixtures/golden/`, the same files `demo/slice.sh` uses.
+
+`mofn run --check` runs every step with no screen, in a temporary folder, and
+exits 0 when all match. With no terminal, `mofn run` refuses with exit 2.
+
 ## Try it
 
 A sender signs a file, and you, the receiver, check it. Each has their own
@@ -168,6 +192,9 @@ on Windows.
 |---|---|
 | `mofn` | finds the engine; one line if PyNaCl or PyYAML is missing |
 | `cli.py` | arguments, printing, exit codes — nothing else |
+| `guide/steps.py` | the seven steps of `mofn run`, as data: text, commands, the golden each check must match |
+| `guide/session.py` | runs those commands through `cli.main` in process, compares with the goldens, keeps progress |
+| `guide/screen.py`, `guide/check.py` | the Textual screen, and `run --check` without one |
 | `engine/encoding/ksa_cbor.py` | KSA-CBOR and the validating decoder (SPEC-0002 §4) |
 | `engine/encoding/review_yaml.py` | the human-review form (SPEC-0002 §11) |
 | `engine/codecs.py` | the two codecs by name |
@@ -180,7 +207,7 @@ on Windows.
 | `engine/reduce.py` | coverage over one context's anchors |
 | `engine/check.py`, `render.py` | the six-line verdict, text and JSON |
 | `engine/store.py`, `unlock.py` | the wallet directory, key store, anchors, passphrase |
-| `fixtures/` | copies of the published vectors (`sync.py`; never edit by hand) and the goldens |
+| `fixtures/` | copies of the published vectors (`sync.py`; never edit by hand) and the goldens, which are `check` outputs pinned by `test_cli.py` |
 
 ## Where v0 departs from the documents, and why
 

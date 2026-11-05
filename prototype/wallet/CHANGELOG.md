@@ -15,6 +15,26 @@ The wallet engine and its `mofn` command line, `prototype/wallet/` (#65, #127).
 Every release is a prototype: DEC-004 and DEC-005 are open; do not use real
 keys.
 
+## 0.2.0 — 2026-11-04
+
+Prototype: DEC-004 and DEC-005 are open; do not use real keys.
+
+- `mofn run` opens a guided screen with seven steps over the README's cases:
+  two wallets, sign a file, not trusted yet, trust and check again, change the
+  file, change the statement, vocabulary and expiry. It shows every command
+  before it runs it. It uses its own folder in the user cache, or `--dir DIR`,
+  so it never touches a real wallet. Progress survives quitting.
+- The passphrase goes into a masked field and reaches the engine in process,
+  never on a command line or in the environment.
+- `mofn run --check` runs every step without a screen and compares each check
+  with its golden. With no terminal, `mofn run` refuses with exit 2.
+- Three new goldens: `statement-changed`, `vocabulary-unsigned` and
+  `expired`. The four earlier ones are unchanged.
+- The CLI moved into `cli.py`. `mofn` only finds it, and still says in one
+  line what to install.
+- Requires Textual 8.2.8 for the screen. `run --check` and every other
+  command run without it.
+
 ## 0.1.0 — 2026-11-04
 
 Prototype: DEC-004 and DEC-005 are open; do not use real keys.

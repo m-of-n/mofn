@@ -57,6 +57,7 @@ import engine
 
 ISSUES = "https://github.com/m-of-n/mofn/issues"
 COMMANDS = [
+    ("run", "open the guided screen (start here)"),
     ("init", "create an empty wallet"),
     ("key gen LABEL", "create a persona with one key"),
     ("key import FILE", "know a key, without trusting it"),
@@ -73,7 +74,7 @@ OPTIONS = [
     ("    --codec NAME", "statement file form: ksa-cbor (default), review-yaml"),
 ]
 EXAMPLES = [
-    ("mofn init", "make an empty wallet in ./wallet"),
+    ("mofn run", "learn it step by step"),
     ("mofn key gen me", "make your own key (asks for a passphrase)"),
     (
         "mofn check prov.stmt --artifact app.bin --def dv-1.def",
@@ -94,7 +95,7 @@ def cmd_init(a):
 def cmd_key_gen(a):
     w = Wallet.open(locate(a.wallet))
     codec = CODECS[a.codec]
-    passphrase = unlock.passphrase(a.passphrase_stdin, confirm=True)
+    passphrase = unlock.passphrase(a.passphrase_stdin, confirm=True, given=a.given)
     seed, pub = suite.generate()
     p = w.add_owned(a.label, a.controller, seed, pub, passphrase)
     envelope = signer.sign(
@@ -190,7 +191,7 @@ def cmd_make(a):
         ksatime.add_days(now, a.valid_days),
         now,
     )
-    seed = w.unlock(p, unlock.passphrase(a.passphrase_stdin))
+    seed = w.unlock(p, unlock.passphrase(a.passphrase_stdin, given=a.given))
     envelope = signer.sign(seed, s)
     v = verify(envelope, w.keystore())
     w.put_statement(v.digest, envelope)
@@ -229,6 +230,29 @@ def cmd_check(a):
         else render.verdict_text(answer)
     )
     return answer.exit_code
+
+
+def cmd_run(a):
+    from guide import session
+
+    if a.check:
+        from guide import check
+
+        return check.run_all()
+    if not (sys.stdin.isatty() and sys.stdout.isatty()):
+        raise WalletError(
+            "run needs a terminal; mofn run --check runs every step without one"
+        )
+    try:
+        from guide import screen
+    except ModuleNotFoundError as e:
+        if (e.name or "").split(".")[0] not in ("textual", "rich"):
+            raise
+        raise WalletError(
+            f"mofn run needs Textual; install the requirements: {sys.executable} "
+            f"-m pip install -r {Path(__file__).resolve().parent / 'requirements.txt'}"
+        )
+    return screen.main(Path(a.dir) if a.dir else session.default_folder())
 
 
 def cmd_show(a):
@@ -344,6 +368,24 @@ def parser() -> argparse.ArgumentParser:
     )
     sub = top.add_subparsers(dest="command")
 
+    run = sub.add_parser(
+        "run",
+        help="the guided screen, over a throwaway pair of wallets",
+        description="Open the guided screen: seven steps, each showing the mofn "
+        "commands it runs. It uses its own folder, never --wallet.",
+    )
+    run.add_argument(
+        "--check",
+        action="store_true",
+        help="run every step without a screen, in a temporary folder; exit 0 if all match",
+    )
+    run.add_argument(
+        "--dir",
+        metavar="DIR",
+        help="the guide's folder (default: a mofn/run folder in your user cache)",
+    )
+    run.set_defaults(run=cmd_run)
+
     sub.add_parser("init", help="create an empty wallet").set_defaults(run=cmd_init)
 
     key = sub.add_parser("key", help="personas and keys").add_subparsers(
@@ -414,9 +456,12 @@ def plain_streams() -> None:
             s.reconfigure(encoding="utf-8", newline="\n")
 
 
-def main(argv=None) -> int:
-    plain_streams()
+def main(argv=None, passphrase: bytes | None = None) -> int:
+    """Run one command. `passphrase` is for a caller in the same process,
+    such as `mofn run`, so it never goes on a command line or in the
+    environment."""
     a = parser().parse_args(argv)
+    a.given = passphrase
     if a.version:
         sys.stdout.write(version(a))
         return 0
