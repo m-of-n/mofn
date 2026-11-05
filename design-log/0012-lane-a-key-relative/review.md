@@ -65,7 +65,8 @@ are the ones the human answered.
    them.
 5. The `payloadType` row stays *not tested*.
 6. Key-relative names fit inside the payload; the envelope keeps registry
-   identifiers.
+   identifiers. Since accepted in ADR-0004 ("COSE/DSSE for export only"); this
+   table is now evidence behind it, not a guess.
 
 ### Accepted with a change
 
