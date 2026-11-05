@@ -37,6 +37,27 @@ each here.
   goldens (David's choice). `vocabulary-unsigned` stays out: Learn does not
   list it.
 
+## Rejected by David, 2026-11-05: the whole screen scrolled
+
+- **What was rejected.** At a usual terminal size, a tall form (Keys, Trust,
+  Check) pushed the key line ("tab next field …") below the window, so the
+  whole screen had to scroll to reach it. David: "the termial UI is great,
+  but I need to scroll to see "tab next field...." => so, only content
+  (inner frame) can be scrollable, outer frame should not".
+- **Cause.** `TabbedContent` kept its default `height: auto` and grew with
+  the form inside it.
+- **Fix, in CSS only:**
+  - the screen does not scroll;
+  - the header is docked top and the key line docked bottom;
+  - the tabs, their switcher and each pane take the height that is left;
+  - each tab's own scroll container scrolls.
+  - In the first-run and Open dialogs, the button is docked to the bottom of
+    the dialog's scroll box, and first run's fields are one line high, so its
+    button is reachable at 80×24.
+- **Test.** At 80×24, on every tab: the key line is the last row, the screen
+  has nothing to scroll, and on Keys, Check and Learn the tab's own content
+  does scroll.
+
 ## Choices the agent made for the terminal app, and what it rejected
 
 - **Learn reads, at load time, the README sections it explains** ("What the

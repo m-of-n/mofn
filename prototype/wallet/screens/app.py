@@ -127,10 +127,12 @@ class FirstRun(ModalScreen[bool]):
     FirstRun { align: center middle; }
     #first { width: 90%; height: auto; max-height: 95%; border: thick $primary; background: $surface; padding: 1 2; }
     #first .row { height: auto; }
-    #first .label { width: 26; padding: 1 1 0 0; }
-    #first Input { width: 1fr; }
+    #first .row { margin: 0 0 1 0; }
+    #first .label { width: 26; padding: 0 1 0 0; }
+    #first Input { width: 1fr; background: $background; }
     #first-err { color: $error; height: auto; }
     #first-runs { color: $text-muted; height: auto; padding: 1 0; }
+    #first-go { dock: bottom; }
     """
 
     def __init__(self, place: runner.Place):
@@ -141,10 +143,10 @@ class FirstRun(ModalScreen[bool]):
         with VerticalScroll(id="first"):
             yield Label(Text("There is no wallet here yet. A few questions make one.", "bold"))
             for label, fid, widget in (
-                ("Where to keep it", "first-where", Input(str(self.place.wallet), id="first-where")),
-                ("A name for your key", "first-name", Input("me", id="first-name")),
-                ("Passphrase", "first-pass", Input(password=True, id="first-pass")),
-                ("The same again", "first-again", Input(password=True, id="first-again")),
+                ("Where to keep it", "first-where", Input(str(self.place.wallet), id="first-where", compact=True)),
+                ("A name for your key", "first-name", Input("me", id="first-name", compact=True)),
+                ("Passphrase", "first-pass", Input(password=True, id="first-pass", compact=True)),
+                ("The same again", "first-again", Input(password=True, id="first-again", compact=True)),
             ):
                 with Horizontal(classes="row"):
                     yield Label(label, classes="label")
@@ -230,6 +232,7 @@ class ShowScreen(ModalScreen[None]):
     DEFAULT_CSS = """
     ShowScreen { align: center middle; }
     #show-box { width: 90%; height: 90%; border: thick $primary; background: $surface; }
+    #show-close { dock: bottom; }
     """
 
     def __init__(self, place):
@@ -255,10 +258,16 @@ class ShowScreen(ModalScreen[None]):
 class WalletApp(App):
     TITLE = "mofn"
     CSS = """
+    Screen { overflow: hidden; }
     #top, #help { height: 1; }
-    #top { background: $primary; color: $text; }
-    #learn-list { width: 26; }
-    #learn-page { padding: 0 1; }
+    #top { dock: top; background: $primary; color: $text; }
+    #help { dock: bottom; }
+    TabbedContent { height: 1fr; }
+    TabbedContent ContentSwitcher { height: 1fr; }
+    TabPane { height: 1fr; padding: 0; }
+    TabPane > VerticalScroll, #wallet-pane, #learn-pane { height: 1fr; }
+    #learn-list { width: 26; height: 1fr; }
+    #learn-page { height: 1fr; padding: 0 1; }
     .row { height: auto; }
     """
     BINDINGS = [

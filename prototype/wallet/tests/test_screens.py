@@ -404,3 +404,20 @@ def test_the_menu_lists_run_first():
     rows = menu.split("Commands:\n")[1]
     assert rows.startswith("  run                              open the wallet as a terminal app (start here)\n")
     assert "\n  mofn run                                    use your wallet through forms\n" in menu
+
+
+def test_only_the_tab_scrolls_and_the_key_line_stays(here):
+    async def script(app, pilot):
+        await first_run(app, pilot)
+        for name in TABS:
+            await tab(app, pilot, name)
+            await pilot.pause()
+            help_line = app.query_one("#help")
+            assert help_line.region.bottom <= app.screen.size.height, name
+            assert help_line.region.height == 1, name
+            assert app.screen.max_scroll_y == 0, name
+            if name in ("keys", "check", "learn"):
+                pane = app.query_one(TabbedContent).active_pane
+                assert any(w.max_scroll_y > 0 for w in pane.query("VerticalScroll")), name
+
+    drive(script, size=(80, 24))
