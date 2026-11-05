@@ -107,7 +107,3 @@ are the ones the human answered.
   asked why it could not simply be run. The real reason was technical, not a
   preference: it cannot read self-signed samples at all (item 12). The model
   should have said so the first time instead of handing it over as a choice.
-- **A stricter reader the model suggested was not taken up.**
-  `cosign verify-blob-attestation --key … --type …` would read our DSSE
-  samples with a key we hold and check `payloadType` and `predicateType`. The
-  human did not choose it in this review, so items 4 and 5 stand as they are.
