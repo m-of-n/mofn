@@ -51,8 +51,9 @@ Same lesson as DL-0007: a check that passes by accident is not evidence.
 
 ## Review of the results (2026-11-05)
 
-The model listed fourteen items for the human to accept or reject. Numbers
-are the ones the human answered.
+The model listed fourteen items for the human to accept or reject; the human
+raised one more, `cosign` (item 13), so the model's items 13–14 are 14–15
+here.
 
 ### Accepted as written
 
@@ -95,11 +96,14 @@ are the ones the human answered.
     provenance, so on our self-signed samples it would fail at the certificate
     before reading `predicateType` or `builder.id` — a failure for the wrong
     reason. The README now gives this reason in place of "has not been run".
+13. **A `cosign` sentence the model added to the README.** Rejected: nobody
+    asked for it, it was never run, and the export point is already made under
+    item 10. Removed.
 
 ### Housekeeping
 
-13. The note that mofn#109 merged on 2026-10-20 is added under session 1.
-14. DL-0012 is closed: `question.md` is `status: complete`.
+14. The note that mofn#109 merged on 2026-10-20 is added under session 1.
+15. DL-0012 is closed: `question.md` is `status: complete`.
 
 ### Model errors in this review
 
