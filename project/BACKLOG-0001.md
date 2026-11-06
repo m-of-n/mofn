@@ -7,7 +7,7 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.12.10"
+version: "0.12.11"
 date: "2026-09-16"
 updated: "2026-11-06"
 needs_review: true
