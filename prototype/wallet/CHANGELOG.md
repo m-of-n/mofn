@@ -56,6 +56,8 @@ Prototype: DEC-004 and DEC-005 are open; do not use real keys.
 
 Prototype: DEC-004 and DEC-005 are open; do not use real keys.
 
+Not tagged: it reached `main` together with 0.2.0, in one PR.
+
 The engine as #122 and #125 merged it (W-1), plus a way in:
 
 - `init`, `key gen`, `key import`, `root add`, `root list`, `make`, `check`
