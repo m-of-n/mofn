@@ -23,6 +23,11 @@ PASS = "pilot passphrase, not a secret"
 GOLDENS = ("green", "unauthorized", "unknown-key", "tampered", "statement-changed", "expired")
 
 
+def native(path: str) -> str:
+    """A path the app makes itself, as this OS writes it."""
+    return str(Path(path))
+
+
 def drive(script, size=(130, 60)):
     async def go():
         app = WalletApp(None, None)
@@ -120,7 +125,7 @@ def test_first_run_makes_the_wallet_your_key_and_the_example(here, spy):
     assert ran(spy) == [
         ["init"],
         ["key", "gen", "me", "-o", "me.pub.stmt"],
-        ["key", "import", "example/alice.pub.stmt", "--label", "Alice (definer)"],
+        ["key", "import", native("example/alice.pub.stmt"), "--label", "Alice (definer)"],
     ]
 
 
@@ -184,7 +189,7 @@ def test_the_runs_line_is_the_command_that_runs(here, spy):
             "--as",
             "me",
             "--def",
-            "example/dv-1.def",
+            native("example/dv-1.def"),
             "--type",
             "build-provenance",
             "--values",
@@ -212,7 +217,7 @@ def test_check_shows_six_lines_and_marks_the_deciding_one(here, spy):
         assert "▶ 4 authorization  fail" in out
         assert "answer: no" in out
         assert "it does not establish that it is true" in out
-        assert ran(spy)[-1][:3] == ["check", "example/alice.stmt", "example/alice-define.stmt"]
+        assert ran(spy)[-1][:3] == ["check", "example/alice.stmt", native("example/alice-define.stmt")]
         assert ran(spy)[-1][-2:] == ["--format", "json"]
 
     drive(script)
@@ -440,7 +445,7 @@ def test_the_keys_table_is_key_list(here, spy):
         rows = [table.get_row_at(i) for i in range(table.row_count)]
         assert [r[0] for r in rows] == [k["label"] for k in listed] == ["me", "Alice (definer)"]
         assert [r[2] for r in rows] == ["yours", "known"]
-        assert rows[1][4].startswith("example/alice.pub.stmt, ")
+        assert rows[1][4].startswith(native("example/alice.pub.stmt") + ", ")
 
     drive(script)
     assert LIST in [a for a, _ in spy]
