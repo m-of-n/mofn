@@ -7,9 +7,9 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.12.8"
+version: "0.12.9"
 date: "2026-09-16"
-updated: "2026-11-05"
+updated: "2026-11-06"
 needs_review: true
 reviewed: false
 canonical_path: project/BACKLOG-0001.md
@@ -115,7 +115,7 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-029a | Schema scenarios (3–5, incl. email delegation) and Product Spec personas, GAP-1 (MD-1) | D3 | S1+S2 | M | todo — was due Oct 5 |
 | T-029b | Product Spec, PLAN-0002 v0.2 — GAP-4 real sketches (Ndewedo, Oct 14), GAP-6 course dates (PL) | — | PL+S2 | M | doing |
 | T-029c | Confirm Tauri for the wallet GUI (MD-7) before GUI work starts | D8 | S2 | S | todo — Oct 14 |
-| T-029d | ADR-0002: accept P2, P3, P5, P6 provisionally (MD-2) — **drafted** (#83, `proposed`); condition 6(b) **met** by ARCH-0002 v0.7.0, condition 6(a) **met** 2026-10-16 (v0.7.1 carries a reviewer, `reviewed: true`). **`SPEC-0003` §7.1 cites P5 by name inside the Definition Publisher conformance class** (ADR-0002 §6a), so a governing spec rests on a draft principle. What is left is the sponsor's call: accept P5 **as amended**, or accept P2/P3/P6 and P5 **as drafted**, holding P5.1/P5.2 for a reader who did not write them | — | ~~Claude~~→**PL** | M | **review** — waiting on the sponsor |
+| T-029d | ADR-0002: accept P2, P3, P5, P6 provisionally (MD-2) — **drafted** (#83, `proposed`); condition 6(b) **met** by ARCH-0002 v0.7.0, condition 6(a) **met** 2026-10-16 (v0.7.1 carries a reviewer, `reviewed: true`). **`SPEC-0003` §7.1 cites P5 by name inside the Definition Publisher conformance class** (ADR-0002 §6a), so a governing spec rests on a draft principle. What is left is the sponsor's call: accept P5 **as amended**, or accept P2/P3/P6 and P5 **as drafted**, holding P5.1/P5.2 for a reader who did not write them | — | ~~Claude~~→**PL** | M | **done** — accepted 2026-11-06 by `ndewedo-newbury`, P5 as amended (`ADR-0002` §9, `DL-0024`); second reader for P5.1/P5.2 still owed |
 | T-029e | ~~Close T1-A in DECISIONS-0001 citing MD-1~~ — done 2026-10-10 in DECISIONS-0001 v0.2.0; PLAN-0002 §2 carries MD-1. The row, not the work, was stale | — | Claude | S | done |
 
 ## I2 — Schema + DEC-002 · Oct 15–28 · D4 D5

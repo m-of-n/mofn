@@ -8,10 +8,10 @@ description: "Canonical working architecture for a native model that is not X.50
 type: architecture
 category: security
 status: draft
-version: "0.1.7"
+version: "0.1.8"
 version_policy: "semver; PATCH = editorial; MINOR = additive requirements; MAJOR = breaking model change"
 date: "2026-09-15"
-updated: "2026-11-03"
+updated: "2026-11-06"
 authors:
   - role: architect
     id: conversation-brainpool256
@@ -98,7 +98,7 @@ agent_notes: >
 
 # ARCH-0001 — Authorization, local names, and artifact attestation
 
-**Status:** draft · **Version:** 0.1.7 · **Date:** 2026-09-15 · **Updated:** 2026-11-03  
+**Status:** draft · **Version:** 0.1.8 · **Date:** 2026-09-15 · **Updated:** 2026-11-06  
 **Canonical file:** `spec/ARCH-0001-authorization-attestation.md`  
 **Changelog:** `spec/ARCH-0001-CHANGELOG.md`
 
@@ -219,6 +219,13 @@ Logical types. Encoding is DEC-002.
 | `Predicate` | Typed payload whose schema is identified by `PredicateType` |
 
 ### 4.2 Certificate and statement kinds
+
+> **Pointer, 2026-11-06.** `ADR-0002` accepted `ARCH-0002` P2 and P6: the
+> signed kinds below are **functions over one statement form**, distinguished
+> by predicate type, and `AclEntry` — unsigned, so no speaker — is local
+> policy, not a statement. §4.3's three procedures stay separate. The table is
+> unchanged until the rewrite lands in v0.2.0 (`DECISIONS-0001` item 4); until
+> then read it through the ADR.
 
 | Kind | Binds | Signed by | Reduction role |
 |------|-------|-----------|----------------|

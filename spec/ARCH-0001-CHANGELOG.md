@@ -5,15 +5,24 @@ title: "ARCH-0001 changelog"
 type: changelog
 parent: ARCH-0001
 status: active
-version: "0.1.7"
+version: "0.1.8"
 date: "2026-09-15"
-updated: "2026-11-03"
+updated: "2026-11-06"
 canonical_path: spec/ARCH-0001-CHANGELOG.md
 ---
 
 # ARCH-0001 changelog
 
 Format: newest first. Versions match the architecture document.
+
+## 0.1.8 — 2026-11-06
+
+- **`ADR-0002` accepted** — `ARCH-0002` P2, P3, P5 (with P5.1, P5.2) and P6 are
+  normative; P4 and P7 stay draft. Not a DEC-\*: `open_decisions` unchanged
+  (DEC-001, DEC-004, DEC-005). Decided by `ndewedo-newbury` under the
+  delegation in 0.1.7 (mofn#6, `DL-0024`).
+- §4.2 gains a pointer note: the kinds are functions over one form (P6). The
+  table itself is unchanged; the rewrite is owed to v0.2.0 (register item 4).
 
 ## 0.1.7 — 2026-11-03
 
