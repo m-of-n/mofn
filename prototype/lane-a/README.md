@@ -20,12 +20,12 @@ So, for each format: **list every registry identifier, replace each with a key-r
 
 Arguments go to 03 only. 04 reads 01's output, so it runs after 01. For `--github`, `FILE` must be downloaded first: 03 hashes it and asks GitHub for provenance of that hash. A file has provenance only if a workflow signed it (`actions/attest-build-provenance`). If gh fails: `unknown command "attestation"` → upgrade gh; anything else (404, no attestations) → that file was never attested; use `--npm`.
 
-| script | builds | checked by |
-|---|---|---|
-| `01_cose_sign1.py` | COSE_Sign1, Ed25519 | `cryptography` over a Sig_structure rebuilt from the message |
-| `02_dsse_intoto.py` | in-toto Statement in DSSE | Ed25519 over a PAE rebuilt from the envelope |
-| `03_slsa_provenance.py` | real SLSA provenance | leaf-certificate key over the PAE; chain and Rekor **not** checked |
-| `04_key_relative.py` | one message per identifier, with only that identifier made key-relative | the signature, **and** a real library reading the message (pycose 1.1.0; `in-toto-attestation` 0.9.3) |
+| script                  | builds                                                                  | checked by                                                                                            |
+| ----------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `01_cose_sign1.py`      | COSE_Sign1, Ed25519                                                     | `cryptography` over a Sig_structure rebuilt from the message                                          |
+| `02_dsse_intoto.py`     | in-toto Statement in DSSE                                               | Ed25519 over a PAE rebuilt from the envelope                                                          |
+| `03_slsa_provenance.py` | real SLSA provenance                                                    | leaf-certificate key over the PAE; chain and Rekor **not** checked                                    |
+| `04_key_relative.py`    | one message per identifier, with only that identifier made key-relative | the signature, **and** a real library reading the message (pycose 1.1.0; `in-toto-attestation` 0.9.3) |
 
 `04` writes `out/key_relative.json`: one row per identifier, with the library's own error text.
 
@@ -37,15 +37,15 @@ Arguments go to 03 only. 04 reads 01's output, so it runs after 01. For `--githu
 2. **The signature layer does not care about meaning.** Each row of `04` is signed *after* its swap, and all 15 still verify. That only says a signature covers bytes; what breaks is the reader.
 3. **COSE (pycose 1.1.0).**
 
-   | made key-relative | pycose |
-   |---|---|
-   | header label 1 (alg) | fails: finds no algorithm (`'NoneType' object has no attribute 'verify'`) |
-   | alg value −8 | rejects: `Unknown COSE attribute` |
-   | content format value 60 | rejects: `CONTENT TYPE should be an unsigned integer or string` |
-   | tag 18 | cannot be key-relative (a tag is one integer); left off, pycose rejects: `Message was not tagged`. That is pycose's choice: RFC 9052 §2 allows untagged COSE_Sign1 when the protocol says what the message is |
-   | header label 3 (content type) | verifies, but the header is kept and **not understood** |
-   | header label 4 (kid) | verifies, but the header is kept and **not understood** |
-   | a payload map key | verifies |
+   | made key-relative             | pycose                                                                                                                                                                                                        |
+   | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+   | header label 1 (alg)          | fails: finds no algorithm (`'NoneType' object has no attribute 'verify'`)                                                                                                                                     |
+   | alg value −8                  | rejects: `Unknown COSE attribute`                                                                                                                                                                             |
+   | content format value 60       | rejects: `CONTENT TYPE should be an unsigned integer or string`                                                                                                                                               |
+   | tag 18                        | cannot be key-relative (a tag is one integer); left off, pycose rejects: `Message was not tagged`. That is pycose's choice: RFC 9052 §2 allows untagged COSE_Sign1 when the protocol says what the message is |
+   | header label 3 (content type) | verifies, but the header is kept and **not understood**                                                                                                                                                       |
+   | header label 4 (kid)          | verifies, but the header is kept and **not understood**                                                                                                                                                       |
+   | a payload map key             | verifies                                                                                                                                                                                                      |
 
    So: wherever pycose uses or type-checks a value (algorithm, content format), the swap breaks. Leaving the tag off breaks only because pycose demands the tag; COSE itself does not. An unknown label is skipped, and its meaning is lost without an error. RFC 9052 allows only `int / tstr` as a label, so an array label is not valid COSE at all — pycose is lenient to accept it.
 4. **in-toto (`in-toto-attestation` 0.9.3).** Only `_type` is rejected (`Wrong statement type`). `predicateType` and the digest name `sha256` pass: `validate()` only checks that `predicateType` is not empty and that a digest exists. `buildType` and `builder.id` pass because `validate()` never reads the predicate — those two rows show nothing yet. `payloadType` is not tested — this library does not read DSSE envelopes.
