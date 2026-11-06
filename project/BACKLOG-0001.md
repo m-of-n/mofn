@@ -95,7 +95,10 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-009 | ~~`library` wired as submodule; `bin/lib-sync` working~~ — done | D0 | S1 | S | done |
 | T-010 | ~~`bin/wt` worktree helper; document in CONTRIBUTING~~ — done | D0 | S1 | S | done |
 | T-011 | ~~Publish draft planning docs to Pages~~ — done | D0 | S2 | S | done |
-| T-012 | **Architecture development** — market research, technology background, bibliography, base design of both protocols and the application. **Scope extends beyond the student project.** Deliverable: the architecture specification. Iterated in-issue. Inputs so far: ARCH-0002, survey R-001, wallet survey R-002, cipher suite R-0003 (mofn#60) | — | PL | XL | doing |
+| T-012 | ~~**Architecture development** — umbrella~~ — **split 2026-11-06** (mofn#6 closed). Its three questions were answered by ARCH-0002 P6, MD-1 and PROC-0004 §8b; strands 1–3 continue as T-027, T-026 and the library. ADR-0002 accepted (T-029d). The remainder is T-012a/b/c | — | PL | XL | done (split) |
+| T-012a | ARCH-0001 v0.2.0: land the proposal; rewrite §4.2 as one form, five functions (ADR-0002 P2/P6); correct ARCH to the SPECs (ADR-0003) — mofn#134 | — | Claude→PL | L | todo — after #133, #129 |
+| T-012b | ARCH-0001 target section: supply chain + archives/library (MD-1); AI agents as motivation only — mofn#135 | — | S1+S2 | L | todo — after T-012a |
+| T-012c | Delegation: reconcile R-M-10 (boolean) with SPEC-0004 (integer depth + ranges); `may-speak` vs `trust … about` — mofn#136 | — | PL | M | **decision owed** |
 | T-012x | ~~`design-log/` opened~~ — done; DL-0001 and DL-0002 written | D0 | PL | S | done |
 | T-013 | Agree and commit the cut order (PLAN-0001 §12) — mofn#7, no discussion yet | D0 | all | S | todo |
 
