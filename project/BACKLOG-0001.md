@@ -7,7 +7,7 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.12.10"
+version: "0.12.11"
 date: "2026-09-16"
 updated: "2026-11-06"
 needs_review: true
@@ -79,7 +79,7 @@ summary bar). Accept or keep #32's rule — L-035.
 
 | id | task | del | own | sz | status |
 |---|---|---|---|---|---|
-| T-001 | ~~Create GitHub org `m-of-n`~~ — done; DEC-001 accepted | D0 | PL | S | done |
+| T-001 | ~~Create GitHub org `m-of-n`~~ — done; DEC-001 accepted 2026-11-06 by `ADR-0006` (it was marked accepted here since 2026-09-21, without an ADR) | D0 | PL | S | done |
 | T-002 | ~~Create `mofn` and `library` repos~~ — done, both public and pushed | D0 | PL | S | done |
 | T-003 | **Fall 2026 deliverables — definition of done.** `PROC-0004`, aligned to D0–D10. Parent issue mofn#28 with sub-issues | D0–D10 | all | L | doing |
 | T-003x | ~~Branch protection~~ — done; residual settings are T-006c | D0 | S1 | S | done |

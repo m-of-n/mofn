@@ -55,6 +55,7 @@ vectors, and tooling.
 | `0022-wallet-menu-version` | W-6 (mofn#127) wallet 0.1.0: a bare `mofn` prints the menu, `--version`, the one-line dependency message, UTF-8/LF output, CHANGELOG, `ci.yml` on three OS; then `key list`, `key export`, `hash` from `gpg`, and the `gpg` commands left out | **open** — reviewed by David 2026-11-05; Windows and macOS not yet run; no DEC-* touched |
 | `0023-wallet-run` | W-6 (mofn#127) wallet 0.2.0: `mofn run` is the wallet as a terminal app — forms that run the command they show, and Learn, which runs nothing; DV-1 ships as the example vocabulary; two goldens added; David rejected the executing tutorial | **open** — reviewed by David 2026-11-05; Windows and macOS not yet run; no DEC-* touched |
 | `0024-adr-0002-accept` | `ADR-0002` accepted (mofn#6): P2, P3, P5 as amended, P6 normative; P4, P7 draft; the agent recommended *split* and the human overruled it | **open** — second reader for P5.1/P5.2 owed; no DEC-* touched |
+| `0025-adr-0006-dec-001` | `ADR-0006`: DEC-001 accepted, `m-of-n` / `mofn`; ratifies names in use since 2026-09-17; all five listed options rejected; the agent's first offer (leave it open) declined | **open**: second reader owed; held behind mofn#129 |
 
 **Two ids are shared: `0007` and `0012`.** `0007-library-harness-role` and
 `0007-rejecting-decoder-spike`, and later `0012-d3-context-and-mechanism`

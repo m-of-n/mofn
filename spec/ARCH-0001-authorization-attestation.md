@@ -8,7 +8,7 @@ description: "Canonical working architecture for a native model that is not X.50
 type: architecture
 category: security
 status: draft
-version: "0.1.8"
+version: "0.1.9"
 version_policy: "semver; PATCH = editorial; MINOR = additive requirements; MAJOR = breaking model change"
 date: "2026-09-15"
 updated: "2026-11-06"
@@ -68,7 +68,6 @@ related_drafts:
   - in-toto-attestation-v1
   - slsa-provenance-v1
 open_decisions:
-  - DEC-001
   - DEC-004
   - DEC-005
 constraints:
@@ -98,7 +97,7 @@ agent_notes: >
 
 # ARCH-0001 — Authorization, local names, and artifact attestation
 
-**Status:** draft · **Version:** 0.1.8 · **Date:** 2026-09-15 · **Updated:** 2026-11-06  
+**Status:** draft · **Version:** 0.1.9 · **Date:** 2026-09-15 · **Updated:** 2026-11-06  
 **Canonical file:** `spec/ARCH-0001-authorization-attestation.md`  
 **Changelog:** `spec/ARCH-0001-CHANGELOG.md`
 
@@ -365,6 +364,8 @@ Legend: **I** import, **E** export, **—** out of scope this version, **P** par
 Do not treat any option below as selected.
 
 ### DEC-001 — Working title / repo slug
+
+**Status: accepted 2026-11-06 — org and working title `m-of-n`, repository, package and CLI `mofn`, by [`ADR-0006`](ADR-0006-dec-001-slug.md).** None of the options below was chosen. The text is kept as the record of what was decided between. NG3 still holds: the slug is accepted, not frozen.
 
 Options: `spki3`, `open-sdsi`, `kofn-certs`, `localnames`, `sudsy`.  
 Blocked on: none.  
