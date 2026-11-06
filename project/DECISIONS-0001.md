@@ -7,10 +7,10 @@ description: "Every open decision across both repos, ranked by what it blocks. T
 type: process
 category: process
 status: active
-version: "0.4.3"
+version: "0.5.0"
 version_policy: "semver; MINOR = decisions added or closed"
 date: "2026-09-22"
-updated: "2026-11-03"
+updated: "2026-11-06"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -77,7 +77,7 @@ Ordered by **what it unblocks**, not by importance.
 | ~~2~~ | **DECIDED 2026-10-25 — option 5, `ADR-0004`.** Was: **DEC-002 — the encoding. NARROWED 2026-09-28 by MD-3 to option 5** (CBOR data model, no IANA tags, COSE export only; YAML as the human form). **Still open: a narrowing is not an acceptance, and no ADR exists.** Option 2 is retained only as the comparison fixture. See the standing note below — the library's evidence now cuts against the narrowing. | ARCH-0001 §7, proposal §3.3, mofn#8 | Everything downstream. WP1 is encoding-neutral by design, but D5 needs a target by **Oct 28**. |
 | ~~3~~ | ~~**Who drives the agent lanes — students or sponsor?**~~ **ANSWERED 2026-09-28 by MD-4** — students drive, with named lanes: David #13 → option-5 encoder fixtures and #23 → D3 mechanism; Ndewedo #14 → D3 and the archives domain. The teaching reading was taken over the throughput one. | PROC-0002 §8.1 | closed |
 | **4** | **Accept the proposal as ARCH-0001 v0.2.0?** DEC-007 filed, DEC-006 withdrawn, R-M-11, R-O-05, R-O-06, RFC 9943 citation. **Not on any agenda to date.** | proposal | Until accepted, ARCH-0001 still cites a draft that became an RFC in June 2026, and R-M-11/R-O-05/R-O-06 have no force — while roughly thirty library records already name them in `bears_on`. See the standing note below. |
-| **4a** | **Accept `ADR-0002`?** MD-2 granted P2, P3, P5, P6 *provisionally* and said each becomes final "only through an ADR after review". `ADR-0002` has landed at `status: proposed` (#83). **Both acceptance conditions are now met:** §6(b) by `ARCH-0002` v0.7.0 carrying the amended P5 (#72), and §6(a) by the review of **2026-10-16** — v0.7.1 carries a reviewer and `reviewed: true`. **Sharpened 2026-10-14, corrected 2026-10-16:** the citation that binds is `SPEC-0003` §7.1, which cites `ARCH-0002` P5 by name *inside the Definition Publisher conformance class*; `SPEC-0002` §13.5 is the louder quote but sits in Security Considerations, which no conformance class requires. The SPECs are themselves `draft` — what is accepted is `ADR-0003`, whose consequences make them govern (ADR-0002 §6a). **What is left is a judgement, not a condition:** the reviewer wrote P5.1 and P5.2, so the sponsor accepts either P5 **as amended**, or P2/P3/P6 plus P5 **as drafted** with the two clauses held for a second reader. Then acceptance is a status flip plus a name. | ADR-0002 | `prototype/`, `APP-0001` and three answered library topics already build on P2 and P3. |
+| ~~4a~~ | **DONE 2026-11-06 — `ADR-0002` accepted, P5 as amended**, by `ndewedo-newbury` under the October 2026 delegation (mofn#6, `DL-0024`). P2, P3, P5 (with P5.1, P5.2) and P6 are normative; P4 and P7 stay draft. Residue accepted knowingly: the decision maker wrote P5.1/P5.2, so a second reader is still owed (`ADR-0002` §9). Was: **Accept `ADR-0002`?** MD-2 granted the four provisionally, final only through an ADR after review. | ADR-0002 | Unblocks item 4 (ARCH-0001 v0.2.0, §4.2 rewrite) and 5d. |
 | ~~4b~~ | **DONE 2026-10-25 — `ADR-0004` (DEC-002) and `ADR-0005` (DEC-003), both accepted, both `reviewed: false`.** Was: **The DEC-002 ADR.** Item 2's instrument. Scoring input is in `library/topics/canonical-encoding.yaml` (`status: answered`) and summarised on mofn#8. | mofn#8 | **Oct 28.** Nothing downstream of D5 can freeze until it is accepted. |
 
 ### Standing note on item 2 — `ADR-0003` D2, and what it did not do
@@ -239,7 +239,7 @@ supply-chain profile first (T1-A), then accept P7 or correct it.
 
 | # | Decision | Where |
 |---|---|---|
-| ~~6a~~ | ~~Five *kinds* or one *form*?~~ **ANSWERED 2026-09-22 by ARCH-0002 P6** — a name is an attested string, so the five are functions over one form. §4.3's three *procedures* stay separate; that was never about object kinds. `AclEntry` is the informative outlier: unsigned, so no speaker, so not a statement — it is the fixed floor DEC-008 needs. **`ARCH-0001` §4.2 still lists five kinds; carrying the answer into it is part of register item 4.** | ~~ARCH-0001 §4.2~~ |
+| ~~6a~~ | ~~Five *kinds* or one *form*?~~ **ANSWERED 2026-09-22 by ARCH-0002 P6** — a name is an attested string, so the five are functions over one form. §4.3's three *procedures* stay separate; that was never about object kinds. `AclEntry` is the informative outlier: unsigned, so no speaker, so not a statement — it is the fixed floor DEC-008 needs. **`ARCH-0001` §4.2 still lists five kinds; carrying the answer into it is part of register item 4.** P6 accepted by `ADR-0002` on 2026-11-06; §4.2 carries a pointer note since `ARCH-0001` v0.1.8. | ~~ARCH-0001 §4.2~~ |
 | ~~6b~~ | ~~"Topic" collides~~ · ~~6c~~ ~~"Tag" collides~~ — **WITHDRAWN 2026-09-22.** Neither survives the collision test now stated in `GLOSSARY-0001`: two senses collide only when both can be live in the same context. Both are homonyms across separated repos and documents. Raising them was over-correction after three genuine collisions. | GLOSSARY-0001 |
 
 ## Tier 3 — process, decide when convenient
@@ -271,6 +271,15 @@ supply-chain profile first (T1-A), then accept P7 or correct it.
 | **28** | **Wallet GUI framework — Tauri, tentative (MD-7).** Web frontend plus a Python sidecar; PySide6 is the fallback. **Confirm before GUI work begins** (`BACKLOG-0001` T-029c). | due Oct 14 |
 
 ---
+
+## What changed in v0.5.0 — 2026-11-06
+
+**One decision closed.** Item **4a**: `ADR-0002` accepted by `ndewedo-newbury`,
+P5 **as amended** — P2, P3, P5 (with P5.1, P5.2) and P6 are normative; P4 and P7
+stay draft. Decided in the mofn#6 (T-012) thread; recorded in `DL-0024`. The
+T1-B outcome column below is the 2026-09-28 record and is left as written.
+Owed, not closed: a second reader for P5.1/P5.2, item 4 (the §4.2 rewrite) and
+5d (DEC-007 re-stated in P3's terms). No DEC-\* touched.
 
 ## What changed in v0.4.3 — 2026-11-03
 

@@ -7,10 +7,10 @@ description: "Type names, constraints, types-as-schemas, hash-identified domains
 type: architecture
 category: security
 status: draft
-version: "0.9.1"
+version: "0.10.0"
 version_policy: "semver; PATCH = editorial; MINOR = additive principle; MAJOR = breaking"
 date: "2026-09-22"
-updated: "2026-11-02"
+updated: "2026-11-06"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -36,13 +36,14 @@ agent_notes: >
   ARCH-0001 remains the source of truth for the information model. This
   document holds the principles that constrain it. Where the two appear to
   conflict, ARCH-0001's §4 model governs and this document is wrong.
-  P1 is accepted (ADR-0001). P2-P7 are drafted from sponsor direction of
-  2026-09-22 and are not accepted. The CBOR note is an observation, not a
+  P1 is accepted (ADR-0001). P2, P3, P5 (with P5.1, P5.2) and P6 are
+  accepted (ADR-0002, 2026-11-06). P4 and P7 are drafted from sponsor
+  direction of 2026-09-22 and are not accepted. The CBOR note is an observation, not a
   principle. DEC-008 and DEC-009 are open.
-  P5 gained two clauses in v0.7.0 (P5.1, P5.2 - mofn#72). P5 REMAINS DRAFT:
-  ADR-0002 is the instrument that would make it normative, and it is proposed,
-  not accepted. The clauses are an INPUT to DEC-002 and DEC-005 and select
-  neither.
+  P5 gained two clauses in v0.7.0 (P5.1, P5.2 - mofn#72), accepted with P5
+  by ADR-0002. needs_review stays true: no reader who did not write P5.1/P5.2
+  has read them (ADR-0002 §9). The clauses are an INPUT to DEC-002 and
+  DEC-005 and select neither.
   P1.1 added in v0.8.0 (mofn#112) is DRAFT and does not amend accepted P1.
   v0.9.0: its import rule is reject, not report (ADR-0005, Interchange).
   It postdates the v0.7.1 review pass and has not been read by a reviewer.
@@ -50,8 +51,10 @@ agent_notes: >
 
 # ARCH-0002 — Key-relative naming and processing
 
-**Status: draft.** P1 is accepted via `ADR-0001`. **P2–P7 are drafted from
-sponsor direction of 2026-09-22 and are not accepted.** The CBOR note is an
+**Status: draft.** P1 is accepted via `ADR-0001`. **P2, P3, P5 (with P5.1 and
+P5.2) and P6 are accepted via `ADR-0002`** (2026-11-06). **P4 and P7 are
+drafted from sponsor direction of 2026-09-22 and are not accepted.** P1.1 is
+draft. The CBOR note is an
 observation recorded as context, not a principle.
 
 ARCH-0001 defines *what the objects are*. This defines *whose meanings they
@@ -126,7 +129,7 @@ is rejected on import.
 
 ---
 
-## P2 — The statement form: *A says B has C* **[draft]**
+## P2 — The statement form: *A says B has C* **[accepted]**
 
 Statements have various structures and perform various functions. They share one
 shape:
@@ -193,7 +196,7 @@ author never agreed.
 
 ---
 
-## P3 — A type is a schema **[draft]**
+## P3 — A type is a schema **[accepted]**
 
 A type is not a bare label. It is a **schema** that carries, together:
 
@@ -297,7 +300,7 @@ prior art we take ideas from, and fidelity to its formalism is not a goal.
 
 ---
 
-## P6 — A name is an attested string **[draft]**
+## P6 — A name is an attested string **[accepted]**
 
 Sponsor direction, 2026-09-22: *"a 'name' is just a type of attested string."*
 
@@ -375,7 +378,7 @@ rather than decorative.
 
 ---
 
-## P5 — Validity is checked, never assumed **[draft]**
+## P5 — Validity is checked, never assumed **[accepted]**
 
 RFC 8949 gives a three-level hierarchy that this model adopts wholesale:
 
@@ -399,7 +402,7 @@ authorization bypass. COSE's `crit` (RFC 9052 §3.1) exists precisely to say
 silently accepts authorization it never evaluated. **We invert the default so
 that forgetting is safe:** unknown is critical unless declared otherwise.
 
-### P5.1 — A non-canonical serialisation of known content is also a rejection **[draft]**
+### P5.1 — A non-canonical serialisation of known content is also a rejection **[accepted]**
 
 Everything above speaks to **content**: a field we do not recognise, a
 constraint we can state. It does not reach bytes that decode to content we
@@ -479,7 +482,7 @@ decides canonicality only where the format makes non-canonicality visible.
 
 ---
 
-### P5.2 — Where P5 stops: the interchange boundary **[draft]**
+### P5.2 — Where P5 stops: the interchange boundary **[accepted]**
 
 P5 inverts a default that a foreign envelope inverts back, and **no document of
 ours says which reading holds at the boundary.** DSSE's `envelope.md` requires

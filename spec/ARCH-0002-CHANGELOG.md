@@ -5,9 +5,9 @@ title: "ARCH-0002 changelog"
 type: changelog
 parent: ARCH-0002
 status: active
-version: "0.9.1"
+version: "0.10.0"
 date: "2026-10-15"
-updated: "2026-11-02"
+updated: "2026-11-06"
 canonical_path: spec/ARCH-0002-CHANGELOG.md
 ---
 
@@ -23,6 +23,16 @@ Format: newest first. Versions match the principle document.
 >
 > The 0.6.0 entry below is written **from its own merge commit and PR (#102)**,
 > not reconstructed from the diff, and says so for the same reason.
+
+## 0.10.0 — 2026-11-06
+
+- **P2, P3, P5 (with P5.1 and P5.2) and P6 accepted — `ADR-0002`.** Headings
+  flipped from `[draft]` to `[accepted]`; status line and `agent_notes`
+  updated. No principle text changed. Decided by `ndewedo-newbury` under the
+  sponsor's October 2026 delegation (mofn#6, `DL-0024`).
+- P4, P7 and P1.1 stay `[draft]`.
+- `needs_review` stays `true`: P5.1 and P5.2 were accepted by their author,
+  knowingly (`ADR-0002` §9). A second reader is still owed.
 
 ## 0.9.1 — 2026-11-02
 

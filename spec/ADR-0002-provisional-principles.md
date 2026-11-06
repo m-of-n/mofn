@@ -6,14 +6,20 @@ short_title: "ADR-0002 provisional principles"
 description: "Records MD-2's provisional grant over P2, P3, P5 and P6, and proposes the finalisation it deferred. P4 and P7 stay held."
 type: decision
 category: security
-status: proposed
-version: "0.1.4"
+status: accepted
+version: "1.0.0"
 version_policy: "semver; on acceptance this becomes 1.0.0 and thereafter changes only by superseding"
 date: "2026-10-10"
-updated: "2026-10-26"
-decision_makers: []
+updated: "2026-11-06"
+decision_makers:
+  - role: student
+    id: ndewedo-newbury
+    authority: >
+      Delegated by the sponsor (paul-lambert) on a Zoom call in October 2026;
+      ARCH-0001 v0.1.7 front matter. No written sponsor confirmation is
+      recorded (DL-0021).
 reviewers: []
-needs_review: true
+needs_review: false
 reviewed: false
 canonical_path: spec/ADR-0002-provisional-principles.md
 defers_to: ARCH-0001
@@ -23,7 +29,11 @@ companion:
   - project/meetings/2026-09-28.md
 supersedes: []
 agent_notes: >
-  STATUS IS PROPOSED. `decision_makers` is deliberately EMPTY. MD-2 granted
+  ACCEPTED 2026-11-06 by ndewedo-newbury: P2, P3, P5 AS AMENDED (P5.1, P5.2)
+  and P6 are normative; P4 and P7 stay draft. No DEC-* accepted. §9 records
+  the decision and the self-review residue, accepted knowingly. The note below
+  is the proposal-era text, kept as history:
+  STATUS WAS PROPOSED. `decision_makers` is deliberately EMPTY. MD-2 granted
   P2/P3/P5/P6 provisional standing and said each becomes final "only through
   an ADR after review". As of 2026-10-16 that review has HAPPENED for the
   document as its author drafted it: ARCH-0002 v0.7.1 carries a reviewer and
@@ -36,7 +46,11 @@ agent_notes: >
 
 # ADR-0002 — P2, P3, P5 and P6
 
-**Status: proposed. Nothing here is accepted.**
+**Status: accepted** — 2026-11-06, by `ndewedo-newbury` under the sponsor's
+October 2026 delegation (`ARCH-0001` v0.1.7). P2, P3, P5 **as amended** (P5.1,
+P5.2) and P6 are normative; P4 and P7 stay draft. **No DEC-\* is accepted.**
+The decision and its one residue are in §9. §1–§8 are the proposal as it stood,
+kept unchanged; where they say "proposed" or "the sponsor's act", §9 governs.
 
 This file exists because there is currently **no normative home for the four
 principles the project is already building on.** `prototype/statements/`,
@@ -360,3 +374,48 @@ cell, and ARCH-0002 is the home the project chose for exactly this.
 - `design-log/0007-rejecting-decoder-spike/` and `prototype/statements/` —
   `mofn#73`, the falsifier that did not fire. The measurement behind P5.1.
 - CVE-2025-59420 — Authlib `crit` handling (§3).
+
+---
+
+## 9. Decision — 2026-11-06
+
+**Accepted, P5 as amended.** Decided by `ndewedo-newbury` in the mofn#6 thread
+(T-012), under the sponsor's October 2026 delegation recorded in `ARCH-0001`
+v0.1.7 front matter, which supersedes the 2026-10-25 delegation and its
+exclusion of this ADR.
+
+| principle | standing |
+|---|---|
+| P2 — *A says B has C* | **accepted** |
+| P3 — a type is a schema | **accepted** |
+| P5 — validity checked, never assumed, **with P5.1 and P5.2** (`ARCH-0002` v0.7.0) | **accepted** |
+| P6 — a name is an attested string | **accepted** |
+| P4, P7 | **draft** — unchanged, §4 |
+| P1.1 | **draft** — not in this ADR's scope; it postdates the v0.7.1 review |
+
+**The §6(a) residue, accepted knowingly.** The decision maker is also the
+v0.7.1 reviewer and the author of P5.1 and P5.2 (mofn#97). Choosing *as amended*
+means those two clauses become normative without a reader who did not write
+them. The alternative — P2, P3, P6 and P5 as drafted, holding P5.1/P5.2 — was
+rejected because:
+
+1. `SPEC-0002` §4.1 and §4.3 already state P5.1's rule normatively inside the
+   Producer and Verifier classes (§6a(1)). Holding the principle would not hold
+   the rule; it would only leave it unattributed.
+2. P5.1 rests on a measurement, not an argument: the falsifier of mofn#73 did
+   not fire across 60 fixtures, 36 negative (DL-0007).
+3. Splitting P5 leaves the principle the prototype's reject-don't-repair
+   behaviour depends on as the one still unwritable-against — the §6(b)
+   sequencing note's reason, unchanged.
+
+**A second reader for P5.1 and P5.2 is still owed** and is not a condition of
+this acceptance. If that reader finds a defect, the remedy is a superseding ADR,
+not an edit here. `ARCH-0002` keeps `needs_review: true` until then.
+
+**Consequences.** §5's table is now owed work, not proposed work. The largest
+item — `ARCH-0001` §4.2 rewritten as five functions over one form (register
+item 4) — goes to the ARCH-0001 v0.2.0 change. DEC-002, DEC-004, DEC-005,
+DEC-007, DEC-008 and DEC-009 are untouched; DEC-007's re-statement in P3's
+terms (register 5d) is owed, not done.
+
+Recorded in `design-log/0024-adr-0002-accept/`.
