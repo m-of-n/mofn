@@ -7,9 +7,8 @@ date: "2026-11-04"
 
 # DL-0023 — review
 
-**Human review: pending.** David has not yet read this diff or driven the
-screen. Below are what the agent rejected and why; record David's verdict on
-each here.
+**Human review: David, 2026-11-05.** He reviewed this entry and accepted
+what is below. Below are what the agent rejected and why.
 
 ## Rejected by David, 2026-11-05: the executing tutorial
 
@@ -94,26 +93,9 @@ each here.
 The sections below record the eight-step guide, which the section above
 withdrew. They are kept because they are the record of what was tried.
 
-## Rejected by David
-
-- **"Two wallets"** (the first version of step 0). The guide gave each party a
-  wallet with `--wallet w/sender` and `--wallet w/receiver`, titled the step
-  "two wallets", and the agent explained it as if mofn held two wallets.
-  David rejected that, on 2026-11-04: mofn has one wallet, and another party is
-  "just mofn opened in a different directory".
-  - **What changed.** Step 0 is now "sender and you". Every command is a plain
-    `mofn …` run in `sender/` or `receiver/`, each with its own `./wallet`.
-    Handed files are read as `../sender/…`. A test fails if any action carries
-    `--wallet`.
-  - **The goldens did not change**, so the verdicts are the same either way.
-    The framing was the defect, not the engine.
-  - **A consequence the agent added.** With no `--wallet`, a `$MOFN_WALLET` in
-    the reader's shell would point the guide at their real wallet. The session
-    sets it aside for each command and restores it, and a test checks both.
-
 ## Changed by the updated issue, 2026-11-05
 
-The sender/receiver form above was itself replaced when David rewrote #127 §2.
+The guide's sender/receiver form was replaced when David rewrote #127 §2.
 The guide no longer plays a second party: the reader has one wallet, and
 Alice's published fixtures stand for everything someone else sent.
 

@@ -7,27 +7,10 @@ date: "2026-11-04"
 
 # DL-0022 — review
 
-**Human review: pending.** David chose the scope and the hand-off (commit
-locally, no push). He has not yet read the diff. Below are what the
-agent rejected and why. Each item is open to David's reversal; record his
-verdict on each here, accepted or rejected, with the reason.
+**Human review: David, 2026-11-05.** He reviewed this entry and accepted
+what is below. Below are what the agent rejected and why.
 
 ## Departures from the issue
-
-- **Rejected by David: two PRs.** The agent's question said "Both, as two
-  PRs", meaning a stacked PR for each release. David took "two PRs" to mean
-  his and Chip's. He rejected the stack once he saw it: "I though two PRs mean
-  my PR and chip's PR". So his half is one branch, `feat/w6-tui`.
-  - *What it costs.* `main` squash-merges, so it never holds a commit where
-    `__version__` is `0.1.0`. `release.yml` requires the tag to equal
-    `__version__`, so `wallet-v0.1.0` cannot be cut from `main`. #127's
-    acceptance asks for both pre-releases.
-  - *What is kept.* The `0.1.0` entry stays in `CHANGELOG.md`, as the record
-    of what the first half added. The first tag is `wallet-v0.2.0`.
-  - *Still open, for David and Chip:* drop the `wallet-v0.1.0` line from
-    #127's acceptance, or tag 0.1.0 another way.
-  - *The agent's own error.* The question gave both options short labels that
-    did not say whose PRs they were. It should have named the branches.
 
 - **No `run` row and no `mofn run` example in the 0.1.0 menu**: moot. The
   agent left them out because `run` arrived only in 0.2.0. David's half is one
@@ -61,28 +44,28 @@ program is built from. Rejected:
 
 The issue gives the table; the reasons are restated here as the record.
 
-| `gpg` | in mofn | why |
-|---|---|---|
-| `-k`, `-K`, `--fingerprint` | **added: `key list`** | Paul asked for key listing |
-| `--export` | **added: `key export`** | sending your key again after the first time |
-| `--print-md` | **added: `hash`** | comparing a file by reading its hash aloud |
-| `--detach-sign`, `-s`, `-u` | `make --as` | a statement is always separate from its file |
-| `--verify` | `check` | |
-| `--generate-key` and its variants | `key gen`, or first run | |
-| `--import` | `key import` | |
-| `--lsign-key` | `root add` | a local, unexported decision is an anchor |
-| `--edit-key` | the Keys and Trust screens | |
-| `-o`, `--armor` | `-o`; `--codec review-yaml` | the text form |
-| `-e`, `-d`, `-c`, `-r` | **left out** | mofn says who said what; it does not keep secrets |
-| `--clear-sign` | **left out** | a statement names a file by hash and does not carry it |
-| `--sign-key`, `--quick-sign-key` | **left out** | vouching for a key is delegation (W-3, #67) or naming |
-| `--update-trustdb`, `--tofu-policy` | **left out** | ownertrust; anchors replace it (R-0002 §7.3) |
-| `--generate-revocation`, `--quick-revoke-*` | **left out** | short expiry is the revocation mechanism (W-3) |
-| `--send-keys`, `--receive-keys`, `--search-keys`, `--refresh-keys`, `--auto-key-locate` | **left out** | no network (#65) |
-| `--card-status`, `--edit-card`, `--change-pin` | **left out** | hardware keys are out of scope (PLAN-0004 §6.1) |
-| `--delete-keys`, `--change-passphrase`, `--quick-set-expire` | **left out** | key management is out of scope (PLAN-0002 §4.3) |
-| `--auto-key-import` | **left out** | authenticity passes only for a key you already hold |
-| `--quick-add-uid`, `--group` | **left out** | a mofn key has no user IDs; its name is your own label |
+| `gpg`                                                                                   | in mofn                     | why                                                    |
+| --------------------------------------------------------------------------------------- | --------------------------- | ------------------------------------------------------ |
+| `-k`, `-K`, `--fingerprint`                                                             | **added: `key list`**       | Paul asked for key listing                             |
+| `--export`                                                                              | **added: `key export`**     | sending your key again after the first time            |
+| `--print-md`                                                                            | **added: `hash`**           | comparing a file by reading its hash aloud             |
+| `--detach-sign`, `-s`, `-u`                                                             | `make --as`                 | a statement is always separate from its file           |
+| `--verify`                                                                              | `check`                     |                                                        |
+| `--generate-key` and its variants                                                       | `key gen`, or first run     |                                                        |
+| `--import`                                                                              | `key import`                |                                                        |
+| `--lsign-key`                                                                           | `root add`                  | a local, unexported decision is an anchor              |
+| `--edit-key`                                                                            | the Keys and Trust screens  |                                                        |
+| `-o`, `--armor`                                                                         | `-o`; `--codec review-yaml` | the text form                                          |
+| `-e`, `-d`, `-c`, `-r`                                                                  | **left out**                | mofn says who said what; it does not keep secrets      |
+| `--clear-sign`                                                                          | **left out**                | a statement names a file by hash and does not carry it |
+| `--sign-key`, `--quick-sign-key`                                                        | **left out**                | vouching for a key is delegation (W-3, #67) or naming  |
+| `--update-trustdb`, `--tofu-policy`                                                     | **left out**                | ownertrust; anchors replace it (R-0002 §7.3)           |
+| `--generate-revocation`, `--quick-revoke-*`                                             | **left out**                | short expiry is the revocation mechanism (W-3)         |
+| `--send-keys`, `--receive-keys`, `--search-keys`, `--refresh-keys`, `--auto-key-locate` | **left out**                | no network (#65)                                       |
+| `--card-status`, `--edit-card`, `--change-pin`                                          | **left out**                | hardware keys are out of scope (PLAN-0004 §6.1)        |
+| `--delete-keys`, `--change-passphrase`, `--quick-set-expire`                            | **left out**                | key management is out of scope (PLAN-0002 §4.3)        |
+| `--auto-key-import`                                                                     | **left out**                | authenticity passes only for a key you already hold    |
+| `--quick-add-uid`, `--group`                                                            | **left out**                | a mofn key has no user IDs; its name is your own label |
 
 The agent's own choices in building them, and what it rejected:
 
