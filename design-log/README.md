@@ -42,7 +42,7 @@ vectors, and tooling.
 | `0010-uptake-report` | D3 *uptake & applications* report `R-0004`; two original measurements; the SPKI/PICS failure analysis turned on our own design | **open** — human review pending on mofn#84 |
 | `0011-dco-merge-commits` | exempting merge commits from the `dco` check | **rejected** — mofn#92 closed unmerged; check stays strict, contributors rebase, `dco` now required |
 | `0012-d3-context-and-mechanism` | D3 *context* `R-0005` and *mechanism* `R-0006` reports (T-025, T-026); four claims retracted against `ADR-0003` | **open** — human review pending on mofn#99/#100; merged in mofn#103 |
-| `0012-lane-a-key-relative` | LANE A (mofn#13): what breaks when registry identifiers are key-relative — the signature never does, the reader does | **open** — human review pending; library records not yet written |
+| `0012-lane-a-key-relative` | LANE A (mofn#13): what breaks when registry identifiers are key-relative — the signature never does, the reader does | complete — reviewed 2026-11-05; library records and the topic `answer` still to come, in the library repo |
 | `0013-publish-research-reports` | research reports reach the validator — mofn#88. The publishing half shipped separately in mofn#103 | **open** — human review pending |
 | `0014-cbor-cose-handover` | mofn#112 — the CBOR/COSE extraction checked against DEC-002, DEC-003, the acceptance test and P1; ARCH-0001 v0.1.3, ARCH-0002 P1.1, proposal rev.5 | **open** — human review pending; no DEC-* accepted |
 | `0015-dec-002-dec-003-adrs` | DEC-002 → option 5 (`ADR-0004`), DEC-003 → `kid` (`ADR-0005`), P1.1 → reject; under the sponsor's delegation (mofn#116) | **open** — ADR text review pending; T-031 in `0019` |

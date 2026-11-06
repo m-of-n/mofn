@@ -5,7 +5,7 @@ R-M-12 says a name should be a pair: (defining key, label). For every identifier
   signature   does the signature still check? (cryptography, over a Sig_structure or PAE rebuilt from the message)
   consumer    does a real library accept the message? (pycose for COSE, in-toto-attestation for the in-toto Statement)
 
-The key-relative form here is a placeholder, not a proposal. DEC-002, DEC-004 and DEC-005 are open. In CBOR it is the array [key id, label]; in JSON it is the string "key:<key id>:<label>". The key id is the SHA-256 of the raw public key.
+The key-relative form here is a placeholder, not a proposal. DEC-004 and DEC-005 are open. In CBOR it is the array [key id, label]; in JSON it is the string "key:<key id>:<label>". The key id is the SHA-256 of the raw public key.
 
 The real SLSA provenance from sample 3 is not used: it was signed by a Fulcio key we do not hold, so any change breaks its signature.
 
@@ -49,13 +49,48 @@ def cose_variants(k: bytes) -> dict:
     payload = {"subject": "urn:example:thing", "claim": "reviewed"}
     return {
         "baseline": ({1: -8, 3: 60}, {4: b"lane-a-ed25519"}, payload, True),
-        "header label 1 (alg)": ({(k, 1): -8, 3: 60}, {4: b"lane-a-ed25519"}, payload, True),
-        "alg value -8 (EdDSA)": ({1: (k, -8), 3: 60}, {4: b"lane-a-ed25519"}, payload, True),
-        "header label 3 (content type)": ({1: -8, (k, 3): 60}, {4: b"lane-a-ed25519"}, payload, True),
-        "content format 60 (application/cbor)": ({1: -8, 3: (k, 60)}, {4: b"lane-a-ed25519"}, payload, True),
-        "header label 4 (kid)": ({1: -8, 3: 60}, {(k, 4): b"lane-a-ed25519"}, payload, True),
-        "tag 18 (COSE_Sign1), left off": ({1: -8, 3: 60}, {4: b"lane-a-ed25519"}, payload, False),
-        "payload key (not a registry name)": ({1: -8, 3: 60}, {4: b"lane-a-ed25519"}, {(k, 1): "urn:example:thing", "claim": "reviewed"}, True),
+        "header label 1 (alg)": (
+            {(k, 1): -8, 3: 60},
+            {4: b"lane-a-ed25519"},
+            payload,
+            True,
+        ),
+        "alg value -8 (EdDSA)": (
+            {1: (k, -8), 3: 60},
+            {4: b"lane-a-ed25519"},
+            payload,
+            True,
+        ),
+        "header label 3 (content type)": (
+            {1: -8, (k, 3): 60},
+            {4: b"lane-a-ed25519"},
+            payload,
+            True,
+        ),
+        "content format 60 (application/cbor)": (
+            {1: -8, 3: (k, 60)},
+            {4: b"lane-a-ed25519"},
+            payload,
+            True,
+        ),
+        "header label 4 (kid)": (
+            {1: -8, 3: 60},
+            {(k, 4): b"lane-a-ed25519"},
+            payload,
+            True,
+        ),
+        "tag 18 (COSE_Sign1), left off": (
+            {1: -8, 3: 60},
+            {4: b"lane-a-ed25519"},
+            payload,
+            False,
+        ),
+        "payload key (not a registry name)": (
+            {1: -8, 3: 60},
+            {4: b"lane-a-ed25519"},
+            {(k, 1): "urn:example:thing", "claim": "reviewed"},
+            True,
+        ),
     }
 
 
@@ -72,7 +107,9 @@ def check_cose(encoded: bytes, pub: bytes, cose_key) -> tuple:
     """Signature: rebuild the Sig_structure from the message bytes. Consumer: pycose decode, then verify. pycose keeps a header label it does not know as a plain value instead of one of its header classes; those are counted as "kept but not understood"."""
     obj = cbor2.loads(encoded)
     protected, _uhdr, body, sig = obj.value if isinstance(obj, cbor2.CBORTag) else obj
-    sig_ok = signature_checks(pub, sig, cbor2.dumps(["Signature1", protected, b"", body]))
+    sig_ok = signature_checks(
+        pub, sig, cbor2.dumps(["Signature1", protected, b"", body])
+    )
     try:
         msg = Sign1Message.decode(encoded)
         msg.key = cose_key
@@ -98,10 +135,22 @@ def run_cose() -> list:
         encoded = build_cose(sk, phdr, uhdr, payload, tagged)
         emit(f"key_relative.cose.{i}", encoded, cbor=True)
         sig_ok, accepted, said = check_cose(encoded, pub, cose_key)
-        rows.append({"format": "COSE_Sign1", "file": f"key_relative.cose.{i}.bin", "identifier": what, "signature": sig_ok, "consumer": "pycose", "accepted": accepted, "said": said})
+        rows.append(
+            {
+                "format": "COSE_Sign1",
+                "file": f"key_relative.cose.{i}.bin",
+                "identifier": what,
+                "signature": sig_ok,
+                "consumer": "pycose",
+                "accepted": accepted,
+                "said": said,
+            }
+        )
 
     baseline = (OUT / "key_relative.cose.0.bin").read_bytes()
-    assert baseline == (OUT / "cose_sign1_eddsa.bin").read_bytes(), "hand-built baseline differs from sample 1; run 01 first"
+    assert baseline == (OUT / "cose_sign1_eddsa.bin").read_bytes(), (
+        "hand-built baseline differs from sample 1; run 01 first"
+    )
     return rows
 
 
@@ -120,11 +169,31 @@ def dsse_variants(doc: dict, k: str) -> dict:
     return {
         "baseline": (dsse_sample.PAYLOAD_TYPE, doc),
         "payloadType": (k + ":payloadType", doc),
-        "_type": (dsse_sample.PAYLOAD_TYPE, changed(lambda d: d.update(_type=k + ":Statement"))),
-        "predicateType": (dsse_sample.PAYLOAD_TYPE, changed(lambda d: d.update(predicateType=k + ":provenance"))),
+        "_type": (
+            dsse_sample.PAYLOAD_TYPE,
+            changed(lambda d: d.update(_type=k + ":Statement")),
+        ),
+        "predicateType": (
+            dsse_sample.PAYLOAD_TYPE,
+            changed(lambda d: d.update(predicateType=k + ":provenance")),
+        ),
         "digest name sha256": (dsse_sample.PAYLOAD_TYPE, changed(rename_digest)),
-        "buildType": (dsse_sample.PAYLOAD_TYPE, changed(lambda d: d["predicate"]["buildDefinition"].update(buildType=k + ":buildType"))),
-        "builder.id": (dsse_sample.PAYLOAD_TYPE, changed(lambda d: d["predicate"]["runDetails"]["builder"].update(id=k + ":builder"))),
+        "buildType": (
+            dsse_sample.PAYLOAD_TYPE,
+            changed(
+                lambda d: d["predicate"]["buildDefinition"].update(
+                    buildType=k + ":buildType"
+                )
+            ),
+        ),
+        "builder.id": (
+            dsse_sample.PAYLOAD_TYPE,
+            changed(
+                lambda d: d["predicate"]["runDetails"]["builder"].update(
+                    id=k + ":builder"
+                )
+            ),
+        ),
     }
 
 
@@ -134,7 +203,9 @@ def check_dsse(envelope: dict, pub: bytes) -> tuple:
     sig = base64.b64decode(envelope["signatures"][0]["sig"])
     sig_ok = signature_checks(pub, sig, pae(envelope["payloadType"], body))
     try:
-        stmt = Statement.copy_from_pb(json_format.Parse(body, statement_pb2.Statement()))
+        stmt = Statement.copy_from_pb(
+            json_format.Parse(body, statement_pb2.Statement())
+        )
         stmt.validate()
         accepted, said = True, "validate() passed"
     except Exception as e:
@@ -157,14 +228,33 @@ def run_dsse() -> list:
             "payloadType": payload_type,
             "signatures": [{"keyid": "", "sig": base64.b64encode(sig).decode()}],
         }
-        emit(f"key_relative.dsse.{i}", json.dumps(envelope, indent=2).encode() + b"\n", pretty_json=True)
+        emit(
+            f"key_relative.dsse.{i}",
+            json.dumps(envelope, indent=2).encode() + b"\n",
+            pretty_json=True,
+        )
         sig_ok, accepted, said = check_dsse(envelope, pub)
         if payload_type != dsse_sample.PAYLOAD_TYPE:
-            accepted, said = None, "not tested: in-toto-attestation does not read payloadType"
-        rows.append({"format": "DSSE + in-toto", "file": f"key_relative.dsse.{i}.json", "identifier": what, "signature": sig_ok, "consumer": "in-toto-attestation", "accepted": accepted, "said": said})
+            accepted, said = (
+                None,
+                "not tested: in-toto-attestation does not read payloadType",
+            )
+        rows.append(
+            {
+                "format": "DSSE + in-toto",
+                "file": f"key_relative.dsse.{i}.json",
+                "identifier": what,
+                "signature": sig_ok,
+                "consumer": "in-toto-attestation",
+                "accepted": accepted,
+                "said": said,
+            }
+        )
 
     baseline = json.loads((OUT / "key_relative.dsse.0.json").read_bytes())
-    assert base64.b64decode(baseline["payload"]) == dsse_sample.statement(), "baseline Statement differs from sample 2"
+    assert base64.b64decode(baseline["payload"]) == dsse_sample.statement(), (
+        "baseline Statement differs from sample 2"
+    )
     return rows
 
 
@@ -176,7 +266,9 @@ def main():
     print(f"  {'format':<15} {'identifier':<38} {'sig':<4} {'consumer':<9} said")
     for r in rows:
         accepted = {True: "yes", False: "NO", None: "-"}[r["accepted"]]
-        print(f"  {r['format']:<15} {r['identifier']:<38} {'yes' if r['signature'] else 'NO':<4} {accepted:<9} {r['said'][:90]}")
+        print(
+            f"  {r['format']:<15} {r['identifier']:<38} {'yes' if r['signature'] else 'NO':<4} {accepted:<9} {r['said'][:90]}"
+        )
     print("  wrote out/key_relative.json")
 
 

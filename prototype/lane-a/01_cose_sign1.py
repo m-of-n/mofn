@@ -2,7 +2,7 @@
 
 Ed25519 / alg -8, CBOR payload. Deterministic: the bytes are reproducible.
 
-The payload is deliberately uninteresting. DEC-002 is open and ARCH-0001 §9.4 applies: nothing here may imply a native encoding. What we are looking at is the *envelope*, not the statement inside it.
+The payload is deliberately uninteresting. ADR-0004 decided DEC-002: the native encoding is KSA-CBOR, and COSE is used only for export. So what we are looking at is the envelope, not the statement inside it.
 """
 
 import cbor2
@@ -21,7 +21,7 @@ ED25519_SEED = bytes.fromhex(
 
 
 def build_eddsa():
-    """Encode a CBOR map as the payload. Build a COSE_Sign1: encode the protected header, sign the two headers and the payload, then CBOR-encode the two headers, the payload and the signature as one array. Write the COSE message and the payload to separate .bin/.hex/.edn files."""
+    """Encode a CBOR map as the payload. Build a COSE_Sign1: encode the protected header, sign the protected header and the payload, then CBOR-encode the two headers, the payload and the signature as one array. Write the COSE message and the payload to separate .bin/.hex/.edn files."""
     name = "cose_sign1_eddsa"
 
     sk = ed25519.Ed25519PrivateKey.from_private_bytes(ED25519_SEED)
