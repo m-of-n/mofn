@@ -5,7 +5,7 @@ title: "ARCH-0001 changelog"
 type: changelog
 parent: ARCH-0001
 status: active
-version: "0.1.8"
+version: "0.1.9"
 date: "2026-09-15"
 updated: "2026-11-06"
 canonical_path: spec/ARCH-0001-CHANGELOG.md
@@ -14,6 +14,20 @@ canonical_path: spec/ARCH-0001-CHANGELOG.md
 # ARCH-0001 changelog
 
 Format: newest first. Versions match the architecture document.
+
+## 0.1.9 — 2026-11-06
+
+- **§3.4 added: OpenPGP mechanisms read against this model** (mofn#128,
+  `DL-0026`). Additive research inputs (§9.1); six rows. Four confirm items
+  already accepted or drafted (`ADR-0004`/P3, `ADR-0001`, §4.3, `ARCH-0003`
+  §3.2), one cross-references `R-0007` P3, and one is new evidence on DEC-003's
+  open `kid`-preimage sub-question: the v6 fingerprint hashes algorithm and
+  creation time. No requirement or DEC changed. A revocation certificate at
+  key creation was declined by the owner; `R-0007` P5 stays open. PATCH, not
+  MINOR: no requirement is added, and 0.2.0 is `ARCH-0001-PROPOSAL-v0.2.0`'s
+  target (the same choice 0.1.3 made). Drafted as 0.1.8; renumbered on
+  rebase after `ADR-0002` (mofn#133) took 0.1.8.
+- `RFC9580` added to `related_rfcs` and §10.
 
 ## 0.1.8 — 2026-11-06
 

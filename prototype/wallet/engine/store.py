@@ -252,9 +252,18 @@ class Wallet:
             memlimit=d["memlimit"],
         )
         try:
-            return bytearray(nacl.secret.SecretBox(key).decrypt(_unhex(d["box"])))
+            seed = bytearray(nacl.secret.SecretBox(key).decrypt(_unhex(d["box"])))
         except nacl.exceptions.CryptoError:
             raise WalletError("wrong passphrase") from None
+        # The box authenticates the seed, not whose seed it is. RFC 9580 binds
+        # the public key into the AEAD; v0 checks the same thing after opening
+        # (#128), so a .key file copied under another persona is refused here.
+        if suite.kid(suite.public_key(seed)) != persona.kid:
+            seed[:] = bytes(len(seed))
+            raise WalletError(
+                f"the private key in {persona.kid.hex()}.key belongs to another key"
+            )
+        return seed
 
     def keystore(self) -> dict[tuple[int, bytes], bytes]:
         out = {}
