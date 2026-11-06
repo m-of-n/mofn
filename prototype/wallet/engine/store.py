@@ -72,13 +72,14 @@ def _trusts(persona_dir: Path, context: str) -> Path:
 
 
 def _read(path: Path):
-    return yaml.safe_load(path.read_text())
+    return yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
 def _write(path: Path, data, mode: int = 0o644) -> None:
     text = yaml.safe_dump(data, sort_keys=False, allow_unicode=True)
-    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, mode)
-    with os.fdopen(fd, "w") as f:
+    flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC | getattr(os, "O_BINARY", 0)
+    fd = os.open(path, flags, mode)
+    with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as f:
         f.write(text)
     os.chmod(path, mode)
 
@@ -266,6 +267,17 @@ class Wallet:
 
     def labels(self) -> dict[bytes, str]:
         return {p.kid: p.label for p in self.personas() if p.label}
+
+    def contexts(self) -> list[str]:
+        """The contexts in which any of this wallet's own personas has an
+        anchor, from the names of their trusts/ files."""
+        return sorted(
+            {
+                f.stem
+                for f in (self.root / "personas").glob("*/trusts/*.yaml")
+                if CONTEXT.fullmatch(f.stem)
+            }
+        )
 
     def anchors(self, context: str) -> list[Anchor]:
         _context(context)

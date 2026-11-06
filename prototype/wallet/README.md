@@ -14,14 +14,70 @@ decisions posted on it; the design record is `design-log/0016-wallet-engine-v0/`
 cd prototype/wallet
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/pytest -q                     # vectors, codecs, engine, CLI goldens
-.venv/bin/python mofn --help
+.venv/bin/python mofn                   # the menu; the same as mofn -h
+.venv/bin/python mofn --version         # what this mofn is built from
 ```
+
+Each command has its own help: `mofn check -h`. Without PyNaCl or PyYAML,
+`mofn` prints one line saying what to install, and exits 2. Changes are in
+[`CHANGELOG.md`](CHANGELOG.md); the version lives in `engine/__init__.py`.
 
 `demo/slice.sh`, from the repo root, needs only that venv (or `$MOFN_PYTHON`, or
 a `python3` with the requirements). It installs nothing and uses no network and
 no keychain. It gives the issuer, the key-holder and the relying party one
 wallet each, and compares every verdict with `fixtures/golden/` under both
 codecs.
+
+## `mofn run`: the wallet as a terminal app
+
+```sh
+.venv/bin/python mofn run               # start here
+```
+
+`mofn run` opens **your wallet**, the same one the commands use: `--wallet`,
+else `$MOFN_WALLET`, else `./wallet`. You fill in forms, and it runs the mofn
+command behind each one.
+
+| tab | you fill in | it runs |
+|---|---|---|
+| first run | where to keep the wallet, a name for your key, a passphrase, whether to get the example vocabulary | `init`, `key gen`, `key import` (Alice) |
+| Wallet | — | — : your keys, the keys you know, your anchors. `o` opens a file (`show`, or `hash` for any file that is not a statement or `.def`) |
+| Keys | a name and a kind; or a `.pub.stmt` you were sent and your name for it; which of your keys to send again | `key list` (the table), `key gen`, `key import`, `key export` |
+| Trust | whose key, as which of yours, the vocabulary, the claim, the values, the context | `root add` |
+| Sign | as which key, the file, the vocabulary, the claim, the value, how long, where to save | `make` |
+| Check | the statements you were handed, the file, the vocabulary, the context, the time | `check --format json` |
+| Learn | — | **nothing** |
+
+- **Choices come from what you have.** Every key in a list is one your wallet
+  holds, and every claim and value is one the chosen vocabulary defines.
+- **Every form shows its command** on a *Runs* line, as you type. Running it
+  in a shell gives the same result.
+- **An engine error appears under the field** it is about, and what you typed
+  stays.
+- **The passphrase** goes into a masked field and reaches the engine in the
+  same process, never on a command line or in the environment.
+- **Learn** is the tutorial: what each tab does, what the six lines mean, and
+  what each failing case looks like. It runs no command and opens no wallet.
+  Its tables are this README's own sections, and its example output is
+  `fixtures/golden/`, read when the page opens, so neither can drift.
+- With no terminal, `mofn run` refuses with exit 2. `?` opens Learn from any
+  tab, and `q` or `ctrl+q` quits.
+
+**The example vocabulary.** First run offers to copy DV-1 into `example/`,
+next to your wallet, and to know Alice's key as `Alice (definer)`:
+
+| file | fixture |
+|---|---|
+| `dv-1.def` | DV-1, a supply-chain vocabulary |
+| `alice.pub.stmt` | TV-1, its author Alice's key |
+| `alice-define.stmt` | TV-3, the statement that says DV-1 is hers |
+| `alice.stmt` | TV-4, her attestation that `artifact.bin` was built reproducibly |
+| `artifact.bin` | the file |
+
+With it, a downloaded mofn can sign and check with no clone. Check adds
+`alice-define.stmt` to the statements by itself when the vocabulary is DV-1,
+because semantics fails without it. Alice's statement was valid from
+2026-10-06 until 2026-11-01, so check it `--at 2026-10-15T00:00:00Z`.
 
 ## Try it
 
@@ -63,15 +119,15 @@ lines, the answer and the limit line; the table gives the line that decides.
 | ③ file changed | check a copy of the file with one byte changed | integrity fail: your file is not the one described | 1 |
 | ④ statement changed | flip one bit of `prov.stmt`, or change one word of `prov.stmt.yaml` | integrity fail: invalid at V4 (signature) | 3 |
 | vocabulary unsigned | leave out `tv-3-define.stmt` | semantics and authorization fail (unattributed-definition) | 1 |
-| expired | add `--at 2027-01-01T00:00:00Z` | authorization fail (not-valid-at-time) | 1 |
+| expired | add `--at 2099-01-01T00:00:00Z` | authorization fail (not-valid-at-time) | 1 |
 
 In ④ the changed statement is thrown out at once, so authorization and
 acceptance are *not evaluated* and no sentence is printed. `root add` for a
 key the wallet does not know is refused before anything is checked:
 `no persona '…' in this wallet`, exit 2.
 
-Exit codes: `0` answer yes, `1` answer no, `2` usage or wallet error, `3` a
-handed statement was invalid.
+Exit codes: `0` answer yes, or done (a bare `mofn` too), `1` answer no, `2`
+usage or wallet error, `3` a handed statement was invalid.
 
 ### What the six lines mean
 
@@ -136,6 +192,20 @@ to say build-provenance is reproducible or attested, about any file.*
 
 Anchors are never sent to anyone (SPEC-0004 §4.2).
 
+### Keys and hashes
+
+Three commands come from `gpg`, which #127 takes as the reference for the
+shape of the tool. Each prints text, or JSON with `--format json`.
+
+| mofn | like | does |
+|---|---|---|
+| `mofn key list` | `gpg -k`, `-K`, `--fingerprint` | one row per key: your name for it, yours or known, its kind, its fingerprint, and for a key you imported, the file and the date. Changes nothing |
+| `mofn key export LABEL [-o FILE]` | `gpg --export` | writes your key's key-publish statement again, from the copy `key gen` kept in `statements/`. Signs nothing, asks for no passphrase, and refuses a key you only know |
+| `mofn hash FILE` | `gpg --print-md SHA256` | `sha-256:<64 hex>  FILE`, the file's SHA-256 as a statement's `this` names it. Verdict sentences print its first 16 digits |
+
+The other `gpg` commands are mapped to mofn's, or left out, in #127 and in
+`design-log/0022-wallet-menu-version/review.md`.
+
 ## What the wallet keeps
 
 | | kept | how |
@@ -152,11 +222,21 @@ wallet remembers keys and decisions, not evidence. Holding received
 statements and definitions (ARCH-0003 §3.8) is what multiple definitions and
 presentations would build on.
 
+On Windows the 0600 and 0700 modes are not enforced: NTFS has no POSIX mode
+bits. There the private key is protected by the encryption at rest (Argon2id
+and SecretBox) and by the user profile's ACL. The test of the modes is skipped
+on Windows.
+
 ## Layout
 
 | file | responsible for |
 |---|---|
-| `mofn` | arguments, printing, exit codes — nothing else |
+| `mofn` | finds the engine; one line if PyNaCl or PyYAML is missing |
+| `cli.py` | arguments, printing, exit codes — nothing else |
+| `screens/app.py`, `forms.py`, `picker.py` | `mofn run`: tabs, first run, one form per command, the file and passphrase dialogs |
+| `screens/runner.py` | runs a form's argv through `cli.main` in process, and spells it as a shell would |
+| `screens/data.py`, `example.py` | the choices, read from the wallet and the vocabulary; the bundled DV-1 |
+| `screens/learn.py`, `screens/learn/` | the Learn pages; they run nothing |
 | `engine/encoding/ksa_cbor.py` | KSA-CBOR and the validating decoder (SPEC-0002 §4) |
 | `engine/encoding/review_yaml.py` | the human-review form (SPEC-0002 §11) |
 | `engine/codecs.py` | the two codecs by name |
@@ -169,7 +249,7 @@ presentations would build on.
 | `engine/reduce.py` | coverage over one context's anchors |
 | `engine/check.py`, `render.py` | the six-line verdict, text and JSON |
 | `engine/store.py`, `unlock.py` | the wallet directory, key store, anchors, passphrase |
-| `fixtures/` | copies of the published vectors (`sync.py`; never edit by hand) and the goldens |
+| `fixtures/` | copies of the published vectors (`sync.py`; never edit by hand) and the goldens, which are `check` outputs pinned by `test_cli.py` |
 
 ## Where v0 departs from the documents, and why
 

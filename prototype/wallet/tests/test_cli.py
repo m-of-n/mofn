@@ -9,6 +9,7 @@ import subprocess
 import sys
 
 import pytest
+import yaml
 
 from conftest import FIXTURES, VECTORS, WALLET, run_mofn
 
@@ -152,16 +153,41 @@ def world(request, tmp_path_factory):
     out["json"] = chk("rp", "app.pyz", "--format", "json")
     (hand / "bad.pyz").write_bytes(b"X" + ARTIFACT[1:])
     out["tampered"] = chk("rp", "bad.pyz")
+    out["expired"] = chk("rp", "app.pyz", "--at", "2099-01-01T00:00:00Z")
+    data = (hand / "prov.stmt").read_bytes()
+    if codec == "ksa-cbor":
+        data = data[:-1] + bytes([data[-1] ^ 0x01])
+    else:
+        data = data.replace(b"value: reproducible", b"value: attested")
+    (hand / "changed.stmt").write_bytes(data)
+    out["statement-changed"] = m(
+        "rp",
+        "check",
+        "changed.stmt",
+        FIXTURES / f"tv-3-define{suffix}",
+        "--artifact",
+        "app.pyz",
+        "--def",
+        DV1,
+        cwd=hand,
+    )
     return out
 
 
 @pytest.mark.parametrize(
     "case,code",
-    [("green", 0), ("unauthorized", 1), ("unknown-key", 1), ("tampered", 1)],
+    [
+        ("green", 0),
+        ("unauthorized", 1),
+        ("unknown-key", 1),
+        ("tampered", 1),
+        ("statement-changed", 3),
+        ("expired", 1),
+    ],
 )
 def test_golden_verdicts(world, case, code):
     p = world[case]
-    assert p.stdout == (GOLDEN / f"{case}.txt").read_text()
+    assert p.stdout == (GOLDEN / f"{case}.txt").read_text(encoding="utf-8")
     assert p.returncode == code, p.stderr
 
 
@@ -215,6 +241,11 @@ def test_passphrase_never_leaves_the_prompt(world):
             assert PASS.encode() not in f.read_bytes()
 
 
+@pytest.mark.skipif(
+    sys.platform == "win32",
+    reason="NTFS has no POSIX mode bits; on Windows the key is protected by "
+    "Argon2id + SecretBox at rest and by the profile's ACL",
+)
 def test_key_permissions(world):
     keys = list((world["root"] / "issuer" / "personas").glob("*/keys"))
     assert len(keys) == 1
@@ -567,3 +598,53 @@ def test_check_refuses_a_context_that_is_not_a_name(tmp_path):
         "../x",
     )
     assert p.returncode == 2 and "is not a name" in p.stderr
+
+
+def test_key_list(world):
+    m = world["m"]
+    p = ok(m("rp", "key", "list"))
+    rows = p.stdout.splitlines()
+    assert rows[0].startswith("rp ") and " yours " in rows[0] and "person" in rows[0]
+    known = {r.split("  ")[0]: r for r in rows[1:]}
+    assert set(known) == {"Alice (definer)", "release machine"}
+    assert all(" known " in r and " from " in r for r in known.values())
+    j = json.loads(ok(m("rp", "key", "list", "--format", "json")).stdout)["keys"]
+    assert [k["label"] for k in j][0] == "rp" and j[0]["yours"] is True
+    assert {k["label"] for k in j if not k["yours"]} == set(known)
+    assert all(k["from"] and k["when"] for k in j if not k["yours"])
+    assert all(k["fingerprint"] == "key:" + k["kid"][:16] for k in j)
+
+
+def test_key_list_changes_nothing(world):
+    root = world["root"] / "rp"
+    before = {f: f.read_bytes() for f in root.rglob("*") if f.is_file()}
+    ok(world["m"]("rp", "key", "list"))
+    assert {f: f.read_bytes() for f in root.rglob("*") if f.is_file()} == before
+
+
+def test_key_export_writes_the_key_gen_file_again(world, tmp_path):
+    out = tmp_path / "again.pub"
+    p = ok(world["m"]("rp", "key", "export", "rp", "-o", out))
+    assert p.stdout.startswith(f"wrote {out} — the key-publish statement for rp (key:")
+    assert out.read_bytes() == (world["root"] / "rp.pub").read_bytes()
+    j = json.loads(
+        ok(world["m"]("rp", "key", "export", "rp", "-o", out, "--format", "json")).stdout
+    )
+    assert j["label"] == "rp" and j["wrote"] == str(out)
+
+
+def test_key_export_refuses_a_key_you_only_know(world, tmp_path):
+    p = world["m"]("rp", "key", "export", "release machine", "-o", tmp_path / "x")
+    assert p.returncode == 2 and "is a key you know, not one of yours" in p.stderr
+    p = world["m"]("rp", "key", "export", "nobody", "-o", tmp_path / "x")
+    assert p.returncode == 2 and "no persona 'nobody'" in p.stderr
+    assert not (tmp_path / "x").exists()
+
+
+def test_hash_is_what_a_statement_names():
+    p = ok(run_mofn("hash", FIXTURES / "artifact.bin"))
+    value = "48dfc39586b0c4f9e905b3b60f59a30b7c0c7408e44f7cb4df2a09fbf3e67ba7"
+    assert p.stdout == f"sha-256:{value}  {FIXTURES / 'artifact.bin'}\n"
+    j = json.loads(ok(run_mofn("hash", FIXTURES / "artifact.bin", "--format", "json")).stdout)
+    tv4 = yaml.safe_load((FIXTURES / "tv-4-attestation.stmt.yaml").read_text(encoding="utf-8"))
+    assert j["this"] == tv4["this"]

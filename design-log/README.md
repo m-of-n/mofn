@@ -52,6 +52,8 @@ vectors, and tooling.
 | `0019-threshold-fixture` | T-031 — threshold and `NameCert` vectors for DEC-002's acceptance test; `n = len(members)` holds by construction, so V8 owns only the range; no defect in option 5 | **open** — human review pending |
 | `0020-w-1-decisions-slice` | W-1 decisions A1, C1, C4 and DL-0016's open items; `demo/slice.sh`; SPEC-0002 0.4.0, SPEC-0003 0.1.1, SPEC-0004 0.2.0 | **open** — spec diffs accepted by ndewedo-newbury 2026-11-03; code review pending; C2, C3, C5 unidentified; no DEC-* touched |
 | `0021-sponsor-delegation-w1-close` | the sponsor's October delegation recorded (all three decide, the decider carries it); A2, A3 and the six-line rule decided; SPEC-0002 0.5.0 §6.1, SPEC-0004 0.3.0 §10.2; W-3 next | **open** — written sponsor confirmation not recorded; no DEC-* touched |
+| `0022-wallet-menu-version` | W-6 (mofn#127) wallet 0.1.0: a bare `mofn` prints the menu, `--version`, the one-line dependency message, UTF-8/LF output, CHANGELOG, `ci.yml` on three OS; then `key list`, `key export`, `hash` from `gpg`, and the `gpg` commands left out | **open** — reviewed by David 2026-11-05; Windows and macOS not yet run; no DEC-* touched |
+| `0023-wallet-run` | W-6 (mofn#127) wallet 0.2.0: `mofn run` is the wallet as a terminal app — forms that run the command they show, and Learn, which runs nothing; DV-1 ships as the example vocabulary; two goldens added; David rejected the executing tutorial | **open** — reviewed by David 2026-11-05; Windows and macOS not yet run; no DEC-* touched |
 
 **Two ids are shared: `0007` and `0012`.** `0007-library-harness-role` and
 `0007-rejecting-decoder-spike`, and later `0012-d3-context-and-mechanism`
@@ -65,7 +67,7 @@ merged, when `0014` and `0015` reached `main` first, and
 `0016-proc-0002-v0-3`, for mofn#121, was renumbered `0017` before it merged,
 when `0016-wallet-engine-v0` reached `main` first. `0018-delegation-models`
 was held for mofn#118, so `0019-threshold-fixture` skipped it. `0020-w-1-decisions-slice`
-skipped `0018` and `0019`. The next new entry takes `0022`.
+skipped `0018` and `0019`. The next new entry takes `0024`.
 
 `DL-0001` is the argument for the rule: **write the entry in the same change.**
 The prompts, and what the human rejected, were not recoverable a week later —

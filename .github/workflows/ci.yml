@@ -30,7 +30,13 @@ jobs:
           git diff --exit-code -- mkdocs.nav.yml project/PUBLISHING.md || {
             echo "::error::tracked nav/manifest is stale — run bin/build-site (or: library views, then bin/manifest) and commit"; exit 1; }
   wallet:
-    runs-on: ubuntu-latest
+    # Three OS (mofn#127): Windows is where the 0600 key mode, the passphrase
+    # prompt and bash break first. Only docs and dco are required checks, so
+    # the matrix names (wallet (ubuntu-latest), ...) need no protection change.
+    strategy:
+      fail-fast: false
+      matrix: {os: [ubuntu-latest, macos-latest, windows-latest]}
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -39,7 +45,13 @@ jobs:
         run: |
           pip install -q -r prototype/wallet/requirements.txt
           pytest -q prototype/wallet
+      - name: menu and version (mofn#127)
+        run: |
+          python prototype/wallet/mofn --version
+          python prototype/wallet/mofn
       - name: demo slice, both codecs (demo/slice.sh, mofn#65, mofn#68)
+        # slice.sh locks wallets with chmod 000, which NTFS ignores.
+        if: runner.os != 'Windows'
         run: bash demo/slice.sh
   dco:
     runs-on: ubuntu-latest

@@ -30,7 +30,7 @@ STATEMENTS = {
 
 
 def wanted() -> dict[str, bytes]:
-    v = json.loads(VECTORS.read_text())
+    v = json.loads(VECTORS.read_text(encoding="utf-8"))
     out = {
         "dv-1.def": bytes.fromhex(v["definitions"]["DV-1"]["body"]),
         "artifact.bin": ARTIFACT,

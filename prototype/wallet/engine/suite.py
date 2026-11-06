@@ -16,6 +16,7 @@ point check, so N-4 could only be met by writing one by hand (design-log
 
 import hashlib
 
+import nacl
 import nacl.bindings
 import nacl.exceptions
 import nacl.signing
@@ -26,6 +27,10 @@ KEY_ALG = 1
 DS = b"KSA-STMT-SIG-v1\x00"
 PUB_LEN = 32
 SIG_LEN = 64
+
+
+def library() -> str:
+    return f"PyNaCl {nacl.__version__}"
 
 
 def kid(pub: bytes) -> bytes:
