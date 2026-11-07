@@ -8,7 +8,7 @@ description: "Canonical working architecture for a native model that is not X.50
 type: architecture
 category: security
 status: draft
-version: "0.1.8"
+version: "0.1.9"
 version_policy: "semver; PATCH = editorial; MINOR = additive requirements; MAJOR = breaking model change"
 date: "2026-09-15"
 updated: "2026-11-06"
@@ -63,6 +63,7 @@ related_rfcs:
   - RFC8949
   - RFC9052
   - RFC9804
+  - RFC9580
 related_drafts:
   - draft-ietf-scitt-architecture
   - in-toto-attestation-v1
@@ -98,7 +99,7 @@ agent_notes: >
 
 # ARCH-0001 — Authorization, local names, and artifact attestation
 
-**Status:** draft · **Version:** 0.1.8 · **Date:** 2026-09-15 · **Updated:** 2026-11-06  
+**Status:** draft · **Version:** 0.1.9 · **Date:** 2026-09-15 · **Updated:** 2026-11-06  
 **Canonical file:** `spec/ARCH-0001-authorization-attestation.md`  
 **Changelog:** `spec/ARCH-0001-CHANGELOG.md`
 
@@ -196,6 +197,31 @@ X.509 appears in this stack only as: (a) existing signer identity some tools sti
 2. Modern gap: in-toto / SCITT / SLSA have strong artifact statements and weak *local-name + threshold authorization* languages.
 3. Composition target: **SPKI-shaped rights and names** + **PICS/in-toto-shaped artifact predicates** + **COSE or DSSE envelope for bytes on the wire** (envelope is interchange, not the information model).
 4. PGP remains useful as an **introducer graph import**, mapped onto name certs or weighted endorsements — not as the reducer.
+
+### 3.4 OpenPGP mechanisms read against this model
+
+Additive, 0.1.9 (mofn#128, `DL-0026`). These are inputs, not decisions. Each
+row says which item the mechanism bears on and whether that item is still
+open. Most rows **confirm** something already decided or drafted. They are
+recorded so the next reader does not re-derive them, and so that WP4 starts
+from them. One row is new evidence on a question still open: the `kid`
+preimage.
+
+| OpenPGP mechanism (RFC 9580) | Bears on | Item's state | Reading |
+|---|---|---|---|
+| Critical bit on signature subpackets (§5.2.3.7; §5.2.5): an unknown critical subpacket in the hashed area makes the signature unusable for validation; an unknown non-critical one is ignored | `ARCH-0002` P3, `SPEC-0002` V7 (closed map) | accepted (`ADR-0004`) | Our profile is **stricter**: every unknown field is rejected, so nothing is "non-critical". OpenPGP pays for its split: a verifier that ignores a non-critical field may not see a meaning the issuer intended. Under our profile a new field is a new definition (`ARCH-0003` W-12), not a field that old verifiers ignore. No change. |
+| Notation Data (§5.2.3.24): user names are `tag@domain`; names without `@` are the IETF namespace | R-M-03, `ADR-0001` (key-relative naming) | accepted | A **counter-example**. Notation names are scoped by DNS domain or by IETF registry: both are global namespaces, and `ADR-0001` rejected both. It is prior art for *namespacing* types, not for *key-relative* types. No change. |
+| v6 fingerprint (§5.5.4.3): SHA-256 over `0x9B`, a 4-octet length, and the public-key packet from the version field on. That covers version, creation time, algorithm and key material | DEC-003 (`ADR-0005`); the open sub-question in §7 DEC-003, "whether a future suite … needs the suite in the preimage" | DEC-003 accepted; sub-question **open** | **New evidence for the open sub-question.** OpenPGP puts the algorithm inside the preimage, so one set of key octets under two algorithms yields two fingerprints. That is the opposite of `SPEC-0002` §4.5. It also puts in the **creation time**, so one key yields different fingerprints at different times. `ADR-0005` avoids that, and this row records the avoidance as deliberate. Evidence only; the sub-question stays with `ADR-0005`. |
+| Trust Signature depth (§5.2.3.21): an integer, minimised along the chain in GnuPG | R-M-10 (delegation boolean) vs `SPEC-0004` (integer depth) | open, as `R-0007` P3 | Nothing new. `R-0007` §3.3 and P3 already carry it; cross-referenced here so WP4 does not raise it a second time. |
+| Ownertrust vs validity (GnuPG trustdb; RFC 9580 §5.10 leaves Trust packets to the implementation) | §4.3 (local ACL `Self` kept apart from reduction); `ARCH-0003` W-07, W-14 | drafted | A **confirmation**. OpenPGP keeps "I trust this key to introduce" (local, unsigned) apart from "this key is valid" (computed). We make the same separation, and unlike OpenPGP we specify the computation (G3). No change. |
+| Key flags and subkey binding (§5.2.3.29): certify (`0x01`) and sign (`0x02`) on separate keys; the primary can be held offline | `ARCH-0003` §3.2 identity and operational keys; `capabilities` | drafted | A **confirmation** of `ARCH-0003` §3.2: there, a delegation does the work of a subkey binding. The engine consequences are in `PLAN-0004` §6.2. No change here. |
+
+**Not proposed.** No requirement is added, amended or withdrawn. No DEC-* is
+opened, ranked or accepted. Neither the OpenPGP packet format nor its
+algorithm registry enters the native model (R-M-01 spirit; `ARCH-0002` P1).
+**Revocation certificates generated at key creation were considered and
+declined by the owner on 2026-11-05.** That is consistent with R-O-02 and
+leaves `R-0007` P5 (escrowed revocation) open.
 
 ---
 
@@ -526,6 +552,7 @@ Options: DSSE (in-toto world), COSE_Sign1 (SCITT world), both with a single unsi
 - SLSA provenance v1  
 - W3C PICS (label format, signed labels, content checksum)  
 - Ellison, “SPKI/SDSI and the Web of Trust” comparison notes  
-- OpenPGP / GnuPG trust-signature model (meta-introducers)
+- OpenPGP / GnuPG trust-signature model (meta-introducers)  
+- RFC 9580 — OpenPGP (2024): §3.7, §5.2.3.7, §5.2.3.21, §5.2.3.24, §5.2.3.29, §5.2.5, §5.5.3, §5.5.4.3 (read for §3.4)
 
 End of ARCH-0001 v0.1.0

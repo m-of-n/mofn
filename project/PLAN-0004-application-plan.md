@@ -7,9 +7,9 @@ description: "Whether APP-0001 is complete, and the plan that fills the gaps. Dr
 type: plan
 category: product
 status: draft
-version: "0.1.1"
+version: "0.2.0"
 date: "2026-10-02"
-updated: "2026-10-02"
+updated: "2026-11-05"
 needs_review: true
 reviewed: false
 canonical_path: project/PLAN-0004-application-plan.md
@@ -156,6 +156,48 @@ engine. It does not close DEC-002.
   unlocked key.
 - Hardware-backed non-exportable keys are out of scope for the CLI
   engine milestone. The private key would no longer be a file.
+
+### 6.2 What OpenPGP already does here (#128)
+
+**Proposed, 2026-11-05.** It reads §6.1 against OpenPGP (RFC 9580 and
+GnuPG, as R-0002 §10 records them) and against wallet engine v0
+(`prototype/wallet`, DL-0016). It borrows ideas only. It does not adopt the
+OpenPGP packet format or generate a primitive, and it closes no DEC-*.
+Whether ADR-0004 governs the key file as well as statements is not decided
+here.
+
+| OpenPGP | §6.1 / ARCH-0003 | engine v0 | this change |
+|---|---|---|---|
+| Secret key encrypted with a passphrase KDF (Argon2, S2K id 4) and AEAD (usage octet 253), RFC 9580 §3.7, §5.5.3 | "encrypted at rest", candidates in R-0002 §10.1 | **done.** Argon2id + libsodium SecretBox, files 0600 and directory 0700 (`engine/store.py`) | none |
+| The AEAD's additional data is the public-key packet fields (§5.5.3), so secret material moved under another key fails to decrypt | not stated | **gap.** The box authenticates the seed but not whose seed it is. A `.key` file copied under another persona with the same passphrase opened, and the mismatch was caught only later, at the post-sign verify | **fixed.** `unlock` derives the kid from the opened seed and refuses a mismatch before any signing. Test: `test_key_file_swapped_between_personas` |
+| `gpg-agent` `PKSIGN`: the caller passes a key and a hash and gets a signature back, never the secret key. The cache defaults to 600 s and is capped at 7200 s (R-0002 §10.2) | "callers do not hold the unlocked key" | **met in-process.** Unlocks for one operation, no cache, seed wiped in `signer.sign` (best effort in Python) | none yet: see rule 1 |
+| Primary key certifies, subkeys sign; key flags limit each key; the primary can be kept offline (GnuPG exports subkeys with a stub in place of the secret primary) | ARCH-0003 §3.2: the identity key delegates operational keys by scoped delegation; `capabilities` play the role of key flags | **absent.** v0 has no delegation (`engine/reduce.py`); W-3 (#67) adds it | rules 2–3, after W-3 |
+
+Rules proposed for the engine:
+
+1. **No unlocked key in the UI process.** When the GUI (W-5, #69) lands,
+   it asks the engine to sign, as `PKSIGN` does, and never receives the
+   seed. Default: no passphrase cache. If one is added later, it has a hard
+   maximum lifetime and the wallet shows it. A cache that only resets
+   when used is the gpg-agent behaviour R-0002 §10.2 calls too long.
+2. **Operational keys under an identity key.** Once W-3 can reduce a
+   delegation, the engine can make a key whose authority comes from an
+   ordinary ARCH-0003 §3.2 delegation by the persona's identity key, with
+   a narrow scope and a short expiry. This adds no new object kind, and
+   ARCH-0001 R-M-10 and ARCH-0003 W-03 already cover it. CI signs with
+   the operational key.
+3. **The identity key may be offline.** A persona stays `owned` when its
+   identity `.key` file has been moved to offline media, as long as an
+   operational key is still present. The wallet signs with the operational
+   keys and says that the identity key is not present. Making or renewing
+   a delegation needs the identity key back.
+
+**Compromise is handled by expiry, not revocation.** A leaked operational key
+is bounded by the scope and expiry its identity key gave it (ARCH-0003 §3.2,
+ARCH-0001 R-O-02). **Declined by the owner, 2026-11-05: a revocation
+certificate generated with every key** (OpenPGP's practice). R-0007 P5,
+escrowed revocation, is a separate proposal and stays open; this decline does
+not decide it.
 
 ## 7. Schedule
 

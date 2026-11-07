@@ -315,6 +315,48 @@ def test_wrong_passphrase(wallet):
     assert p.returncode == 2 and "wrong passphrase" in p.stderr
 
 
+def test_key_file_swapped_between_personas(wallet):
+    # #128: same passphrase, so the box opens; the seed must still be refused.
+    tmp, w = wallet
+    ok(
+        run_mofn(
+            "--wallet",
+            w,
+            "key",
+            "gen",
+            "other",
+            "--passphrase-stdin",
+            "-o",
+            tmp / "other.pub",
+            stdin=PASS + "\n",
+        )
+    )
+    keys = list((w / "personas").glob("*/keys/*.key"))
+    me_key = next(
+        p for p in keys if "label: me" in (p.parents[1] / "persona.yaml").read_text()
+    )
+    other_key = next(p for p in keys if p != me_key)
+    me_key.write_bytes(other_key.read_bytes())
+    p = run_mofn(
+        "--wallet",
+        w,
+        "make",
+        "--as",
+        "me",
+        "--subject",
+        tmp / "file",
+        "--def",
+        DV1,
+        "--type",
+        "build-provenance",
+        "--value",
+        "reproducible",
+        "--passphrase-stdin",
+        stdin=PASS + "\n",
+    )
+    assert p.returncode == 2 and "belongs to another key" in p.stderr
+
+
 def test_make_refuses_a_typo(wallet):
     tmp, w = wallet
     p = run_mofn(
