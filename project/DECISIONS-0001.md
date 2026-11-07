@@ -7,10 +7,10 @@ description: "Every open decision across both repos, ranked by what it blocks. T
 type: process
 category: process
 status: active
-version: "0.5.0"
+version: "0.5.1"
 version_policy: "semver; MINOR = decisions added or closed"
 date: "2026-09-22"
-updated: "2026-11-06"
+updated: "2026-11-07"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -272,6 +272,12 @@ supply-chain profile first (T1-A), then accept P7 or correct it.
 
 ---
 
+## What changed in v0.5.1 — 2026-11-07
+
+Pointer only. **No item added, closed, or narrowed.** "Decided and merged:
+DEC-001" now cites `ADR-0006`. Until then the line had no ADR behind it, and
+`ARCH-0001` §7 still listed DEC-001 as open (`DL-0027`).
+
 ## What changed in v0.5.0 — 2026-11-06
 
 **One decision closed.** Item **4a**: `ADR-0002` accepted by `ndewedo-newbury`,
@@ -386,7 +392,7 @@ ADRs that would.
 
 ## What is *not* waiting on you
 
-Decided and merged: DEC-001 (`m-of-n`) · `summary.md` primary, `distilled/` for
+Decided and merged: DEC-001 (`m-of-n`, `ADR-0006`) · `summary.md` primary, `distilled/` for
 FX-1 extraction · stubs allowed · hierarchical `records/<body>/<id>/` ·
 version folding · `usefulness` verdicts replacing caps · no record caps ·
 NIST summarised not stubbed (L-011) · skills partitioned by what they act on ·
