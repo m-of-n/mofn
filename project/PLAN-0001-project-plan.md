@@ -7,9 +7,9 @@ description: "Execution plan for the CS690 project. Subordinate to ARCH-0001 for
 type: plan
 category: process
 status: draft
-version: "0.6.2"
+version: "0.6.3"
 date: "2026-09-16"
-updated: "2026-11-01"
+updated: "2026-11-07"
 authors:
   - role: planner
     id: conversation-claude-opus-5
@@ -129,7 +129,7 @@ else.
 ## 3. Repository structure
 
 ### Organization
-A GitHub **Organization**. DEC-001 is **accepted: `m-of-n`**; the org exists and
+A GitHub **Organization**. DEC-001 is **accepted: `m-of-n`** (`ADR-0006`, 2026-11-06; short form `mofn`); the org exists and
 both repos are live.
 
 **Access model.**

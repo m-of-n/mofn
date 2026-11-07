@@ -5,15 +5,25 @@ title: "ARCH-0001 changelog"
 type: changelog
 parent: ARCH-0001
 status: active
-version: "0.1.9"
+version: "0.1.10"
 date: "2026-09-15"
-updated: "2026-11-06"
+updated: "2026-11-07"
 canonical_path: spec/ARCH-0001-CHANGELOG.md
 ---
 
 # ARCH-0001 changelog
 
 Format: newest first. Versions match the architecture document.
+
+## 0.1.10 — 2026-11-07
+
+- **DEC-001 accepted by `ADR-0006`**: org and working title `m-of-n`; repository,
+  Python package and CLI `mofn`. It ratifies the names in use since 2026-09-17,
+  and none of the five listed options was chosen. `open_decisions` is now
+  DEC-004, DEC-005. Decided by `ndewedo-newbury` under the delegation in 0.1.7
+  (`DL-0027`). It corrects `PLAN-0001`, `BACKLOG-0001` T-001 and
+  `DECISIONS-0001`, which had called DEC-001 accepted since 2026-09-21 with no
+  ADR. NG3 unchanged: accepted, not frozen.
 
 ## 0.1.9 — 2026-11-06
 

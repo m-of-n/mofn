@@ -24,8 +24,9 @@ USF CS690 Master's Project, Fall 2026. Sponsor: Paul Lambert.
 
 ## Status
 
-Pre-implementation. The architecture is at v0.1.0 draft with **DEC-001 … DEC-005
-and DEC-007 open**. No encoding, tag language, or envelope is selected. Do not
+Pre-implementation. The architecture is a v0.1.x draft. DEC-001 (`ADR-0006`),
+DEC-002 (`ADR-0004`) and DEC-003 (`ADR-0005`) are accepted; **DEC-004, DEC-005
+and DEC-007 are open**. No tag language or envelope is selected. Do not
 infer a decision from code that does not exist yet.
 
 ## The library
