@@ -6,11 +6,11 @@ short_title: "ARCH-0001 v0.2.0 proposal"
 description: "Prose proposal for the next MINOR version of ARCH-0001. Additive only. Open for review; nothing accepted."
 type: proposal
 category: security
-status: proposed
-version: "0.2.0-proposed.6"
+status: superseded
+version: "0.2.0-proposed.7"
 version_policy: "target is a MINOR bump of ARCH-0001; all changes additive. This proposal's own revisions tracked in §10."
 date: "2026-09-16"
-updated: "2026-10-25"
+updated: "2026-11-07"
 authors:
   - role: proposer
     id: conversation-claude-opus-5
@@ -19,11 +19,11 @@ reviewers:
   - role: sponsor
     id: paul-lambert
     pass: "rev.1 reviewed 2026-09-16; three corrections applied in rev.2"
-needs_review: true
+needs_review: false
 reviewed: false
 iteration_of: ARCH-0001
 supersedes: []
-superseded_by: null
+superseded_by: ARCH-0001 v0.2.0
 canonical_path: spec/ARCH-0001-PROPOSAL-v0.2.0.md
 target: spec/ARCH-0001-authorization-attestation.md
 tags:
@@ -51,7 +51,7 @@ agent_notes: >
 
 # Proposed ARCH-0001 v0.2.0
 
-**Status: proposed. Nothing in this document is accepted.**
+**Status: superseded, 2026-11-07.** Folded into `ARCH-0001` v0.2.0 (mofn#134, `DL-0028`): R-M-11, R-O-05 and R-O-06 adopted as written, DEC-006 recorded as withdrawn, DEC-007 filed and accepted as option 2 (`ADR-0007`), citations corrected. Option 5 was accepted earlier by `ADR-0004`, and R-M-12 by `ADR-0001`. **§8's open questions are answered in `ARCH-0001`:** `locator` survives as non-authoritative evidence (R-M-11), and a locator alone does not satisfy R-M-07 (mofn#144). R-M-11 is in v0.2.0. Both export losses are in §6. Kept, not deleted, because library records and `ADR-0003` cite it. The text below is unchanged.
 
 A prose proposal against ARCH-0001 v0.1.0, offered under its §9.4 — *"propose a
 diff against this file."* All changes are additive, so the target is **v0.2.0**
@@ -530,6 +530,8 @@ what is actually accepted.
 ---
 
 ## 10. Revision history of this proposal
+
+**0.2.0-proposed.7 — 2026-11-07.** Superseded by `ARCH-0001` v0.2.0. Status line and front matter only.
 
 **0.2.0-proposed.6 — 2026-10-25.** Option 5 (§3.3) **accepted by `ADR-0004`**
 and folded into `ARCH-0001` §7 v0.1.5; it is no longer proposed here. The rest

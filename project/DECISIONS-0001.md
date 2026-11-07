@@ -7,7 +7,7 @@ description: "Every open decision across both repos, ranked by what it blocks. T
 type: process
 category: process
 status: active
-version: "0.5.1"
+version: "0.6.0"
 version_policy: "semver; MINOR = decisions added or closed"
 date: "2026-09-22"
 updated: "2026-11-07"
@@ -76,7 +76,7 @@ Ordered by **what it unblocks**, not by importance.
 | ~~1~~ | ~~**Does R-M-12 stand?**~~ **DECIDED 2026-09-22 — yes.** `ADR-0001`; now `ARCH-0002` P1. | ADR-0001 | closed |
 | ~~2~~ | **DECIDED 2026-10-25 — option 5, `ADR-0004`.** Was: **DEC-002 — the encoding. NARROWED 2026-09-28 by MD-3 to option 5** (CBOR data model, no IANA tags, COSE export only; YAML as the human form). **Still open: a narrowing is not an acceptance, and no ADR exists.** Option 2 is retained only as the comparison fixture. See the standing note below — the library's evidence now cuts against the narrowing. | ARCH-0001 §7, proposal §3.3, mofn#8 | Everything downstream. WP1 is encoding-neutral by design, but D5 needs a target by **Oct 28**. |
 | ~~3~~ | ~~**Who drives the agent lanes — students or sponsor?**~~ **ANSWERED 2026-09-28 by MD-4** — students drive, with named lanes: David #13 → option-5 encoder fixtures and #23 → D3 mechanism; Ndewedo #14 → D3 and the archives domain. The teaching reading was taken over the throughput one. | PROC-0002 §8.1 | closed |
-| **4** | **Accept the proposal as ARCH-0001 v0.2.0?** DEC-007 filed, DEC-006 withdrawn, R-M-11, R-O-05, R-O-06, RFC 9943 citation. **Not on any agenda to date.** | proposal | Until accepted, ARCH-0001 still cites a draft that became an RFC in June 2026, and R-M-11/R-O-05/R-O-06 have no force — while roughly thirty library records already name them in `bears_on`. See the standing note below. |
+| ~~4~~ | **DONE 2026-11-07 — `ARCH-0001` v0.2.0** (mofn#134, `DL-0028`). The proposal is folded in and superseded: R-M-11, R-O-05 and R-O-06 adopted; DEC-006 withdrawn; DEC-007 filed and accepted (`ADR-0007`); RFC 9943 cited; §4.2 rewritten as one form. Was: **Accept the proposal as ARCH-0001 v0.2.0?** | proposal | — |
 | ~~4a~~ | **DONE 2026-11-06 — `ADR-0002` accepted, P5 as amended**, by `ndewedo-newbury` under the October 2026 delegation (mofn#6, `DL-0024`). P2, P3, P5 (with P5.1, P5.2) and P6 are normative; P4 and P7 stay draft. Residue accepted knowingly: the decision maker wrote P5.1/P5.2, so a second reader is still owed (`ADR-0002` §9). Was: **Accept `ADR-0002`?** MD-2 granted the four provisionally, final only through an ADR after review. | ADR-0002 | Unblocks item 4 (ARCH-0001 v0.2.0, §4.2 rewrite) and 5d. |
 | ~~4b~~ | **DONE 2026-10-25 — `ADR-0004` (DEC-002) and `ADR-0005` (DEC-003), both accepted, both `reviewed: false`.** Was: **The DEC-002 ADR.** Item 2's instrument. Scoring input is in `library/topics/canonical-encoding.yaml` (`status: answered`) and summarised on mofn#8. | mofn#8 | **Oct 28.** Nothing downstream of D5 can freeze until it is accepted. |
 
@@ -228,8 +228,8 @@ supply-chain profile first (T1-A), then accept P7 or correct it.
 | **5e** | **DEC-009 — what is the contract form?** A third statement function beside attestation and delegation; the sponsor's note is incomplete. Deliberately unspecified rather than guessed. | ARCH-0002 |
 | **5b** | **DEC-008 — can all processing be key-local?** Proposed: yes above a fixed core, never below it. A key that may define its own validity may define itself valid. | ARCH-0002 |
 | **5c** | **Is a domain of discourse itself a statement by a key**, inheriting authorization and revocation — or a bare hashed artifact any key may cite? First composes; second allows vocabularies nobody owns. **Held with P4.** | ARCH-0002 P4 |
-| **5d** | **Does DEC-007 survive?** P3 and P4 arguably *answer* it rather than constrain it. Re-state in their terms, or close as answered. **Now partly live:** MD-2 made P3 provisional, so DEC-007's premise has moved while DEC-007 has not. The library's `scitt` topic adds that RFC 9943's shape — mandatory `iss`/`sub`, opaque tagged payload — is "worth copying". | ARCH-0002 |
-| 6 | **Does `locator` survive R-M-12?** Proposed as non-authoritative evidence; the strict reading excludes global locators from the native model entirely. | proposal §7 |
+| ~~5d~~ | **CLOSED 2026-11-07 — DEC-007 accepted, option 2, by `ADR-0007`** as `SPEC-0003` implements it. Was: **Does DEC-007 survive?** P3 and P4 arguably answer it. | ARCH-0002 |
+| ~~6~~ | **ANSWERED 2026-11-07 — yes, as non-authoritative evidence** (R-M-11). A locator alone does not satisfy R-M-07; `SPEC-0002` §7.2 owes the rule (mofn#144). Was: **Does `locator` survive R-M-12?** | ~~proposal §7~~ |
 | 7 | **Which records get PROC-0002 stage 8** (generate code from spec)? Proposed: only where a spec defines an algorithm or wire format we intend to implement or map. | PROC-0002 §8.2 |
 | 8 | **Does `versions/` hold a full record per version, or metadata plus a delta note?** | scope §7.1 |
 | 9 | **Should `cites` be extracted automatically from converted PDFs, or always reviewed?** Automatic is noisy; manual does not scale. | references §5.1 |
@@ -271,6 +271,17 @@ supply-chain profile first (T1-A), then accept P7 or correct it.
 | **28** | **Wallet GUI framework — Tauri, tentative (MD-7).** Web frontend plus a Python sidecar; PySide6 is the fallback. **Confirm before GUI work begins** (`BACKLOG-0001` T-029c). | due Oct 14 |
 
 ---
+
+## What changed in v0.6.0 — 2026-11-07
+
+**Three items closed** by `ndewedo-newbury` in the mofn#134 thread (`DL-0028`):
+- item **4**: `ARCH-0001` v0.2.0;
+- item **5d**: DEC-007 accepted, option 2, `ADR-0007`;
+- item **6**: the locator survives as non-authoritative evidence.
+
+Two ARCH/SPEC gaps are kept against `ADR-0003`'s SPEC-governs default and are
+owed by the SPECs: SDSI names (mofn#143) and locator-only subjects (mofn#144).
+Open DEC-* items are unchanged: DEC-004, DEC-005, DEC-008, DEC-009.
 
 ## What changed in v0.5.1 — 2026-11-07
 
