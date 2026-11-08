@@ -61,6 +61,7 @@ vectors, and tooling.
 | `0030-locator-digest` | T-048 (mofn#144): `SPEC-0002` 0.6.0 withdraws target type 5, so every target binds a digest (R-M-07); a locator is an attribute; N-11; `ARCH-0001` 0.2.1 closes the §5.5 row; aliases, second target and body field rejected | **open**: second reader owed; `ARCH-0003` §3.7 owed to the sponsor; no DEC-* touched |
 | `0028-arch-0001-v0-2-0` | ARCH-0001 v0.2.0 (mofn#134): proposal folded in, §4.2 one form, R-M-10/11, R-O-05/06, §5.5 gaps; DEC-007 accepted (`ADR-0007`); the agent recommended leaving DEC-007 open and the human closed it | **open** — second reader owed; mofn#143, #144 owed by SPECs |
 | `0029-weekly-slice` | weekly `demo/slice.sh` run posted on mofn#68 by cron CI; verdict notes kept human | **open** — human review pending |
+| `0031-delegation-vectors` | T-012c/T-049 (mofn#136): SPEC-0002 0.7.0 TV-14…20 and evaluations E-1…E-4 (`depth`, `widening`); SPEC-0004 0.4.0 Appendix A asks 3–6; TV-13 sentence test | **open** |
 
 **Two ids are shared: `0007` and `0012`.** `0007-library-harness-role` and
 `0007-rejecting-decoder-spike`, and later `0012-d3-context-and-mechanism`
@@ -74,7 +75,7 @@ merged, when `0014` and `0015` reached `main` first, and
 `0016-proc-0002-v0-3`, for mofn#121, was renumbered `0017` before it merged,
 when `0016-wallet-engine-v0` reached `main` first. `0018-delegation-models`
 was held for mofn#118, so `0019-threshold-fixture` skipped it. `0020-w-1-decisions-slice`
-skipped `0018` and `0019`. `0022-openpgp-transfer`, for mofn#129, was renumbered `0026` before it merged, when `0022-wallet-menu-version` reached `main` first. `0025-adr-0006-dec-001`, for this ADR, was renumbered `0027` before it merged, when `0025-delegation-depth` reached `main` first. `0027-arch-0001-v0-2-0`, for mofn#145, was renumbered `0028` (and its `ADR-0006` to `ADR-0007`) before it merged, when mofn#142 reached `main` first. The next new entry takes `0030`.
+skipped `0018` and `0019`. `0022-openpgp-transfer`, for mofn#129, was renumbered `0026` before it merged, when `0022-wallet-menu-version` reached `main` first. `0025-adr-0006-dec-001`, for this ADR, was renumbered `0027` before it merged, when `0025-delegation-depth` reached `main` first. `0027-arch-0001-v0-2-0`, for mofn#145, was renumbered `0028` (and its `ADR-0006` to `ADR-0007`) before it merged, when mofn#142 reached `main` first. `0029-delegation-vectors`, for mofn#148, was renumbered `0031` before it merged, when `0029-weekly-slice` reached `main` first and `0030` was held by mofn#149. The next new entry takes `0032`.
 
 `DL-0001` is the argument for the rule: **write the entry in the same change.**
 The prompts, and what the human rejected, were not recoverable a week later —

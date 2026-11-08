@@ -7,10 +7,10 @@ description: "How a relying party decides whether to believe a verified statemen
 type: specification
 category: security
 status: draft
-version: "0.3.0"
+version: "0.4.0"
 version_policy: "semver; MAJOR = any change to an evaluation result; MINOR = additive; PATCH = editorial"
 date: "2026-10-14"
-updated: "2026-11-03"
+updated: "2026-11-07"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -84,6 +84,9 @@ it was **yes** beside a failed authenticity line, and is now **no**. A change to
 an evaluation result is MAJOR under the version policy; for the reason given at
 0.2.0 the draft stays in `0.x`. `decision_makers` records the sponsor's October
 delegation.
+**0.4.0 (2026-11-07):** Appendix A's Ask 3, a hypothetical, becomes asks over
+real vectors: E-1…E-4 (SPEC-0002 TV-14…20) cover `widening` and `depth`
+(mofn#136, DL-0031). No rule changes and no existing answer changes.
 
 ---
 
@@ -565,8 +568,17 @@ verdict:
   authorization: fail  # "Alice withdrew this attestation on 2026-10-21."
 ```
 
-**Ask 3** — had Alice delegated to Bob with `about: [attested]`, a Bob attestation
-of `reproducible` would not be covered: TV-5's `may-delegate.ranges` is
-`[reproducible]`, so the delegation `[attested]` is not within it and the edge is
-not followed (§6.3 item 4) — reason `widening`. A delegation of `[reproducible]`
-would be followed, and Bob's `reproducible` attestation covered.
+**Asks 3–6: delegation** (§6.3). Same context and anchor; ask: is the artifact's
+`build-provenance` the value shown, at 2026-10-10T12:00:00Z. TV-5 gives Alice
+`may-delegate {depth: 1, ranges: [reproducible]}`. Statements: SPEC-0002
+TV-14…20; machine-readable as `evaluations` in `vectors.json`.
+
+| ask | statements | value | answer | reason | why |
+|---|---|---|---|---|---|
+| 3 (E-1) | TV-14, TV-15 | attested | **no** | `widening` at TV-14 | Alice→Bob `about [attested]` is not within TV-5's `ranges [reproducible]` (item 4) |
+| 4 (E-2) | TV-16, TV-17 | reproducible | **yes** | — | Alice→Bob `about [reproducible]`, no `may-delegate`: one hop within ranges; Bob may attest |
+| 5 (E-3) | TV-16, TV-18, TV-19 | reproducible | **no** | `depth` at TV-18 | TV-16 passed Bob no delegation, so Bob→Dave is not followed (item 3) |
+| 6 (E-4) | TV-20, TV-17 | reproducible | **no** | `widening` at TV-20 | TV-20 asks `depth 1` where at most 0 remains (item 6). The hop fails; it is not clipped to 0 |
+
+E-4 is the reason R-M-10 (ARCH-0001) says a widening is reported, not
+intersected silently: clipping TV-20 to depth 0 would have answered **yes**.
