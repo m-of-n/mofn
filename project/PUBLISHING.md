@@ -2,7 +2,7 @@
 
 # Publishing manifest
 
-41 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
+42 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
 
 A document is published because it **exists and declares a status** in its
 front matter — not because someone remembered to add it to a nav list. Set
@@ -18,9 +18,10 @@ front matter — not because someone remembered to add it to a nav list. Set
 | [DEC-002 accepted: option 5 — reduced deterministic CBOR (KSA-CBOR) is the native encoding](https://m-of-n.github.io/mofn/architecture/ADR-0004-dec-002-encoding/) | `ADR-0004` | accepted | 1.0.0 | 2026-10-25 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ADR-0004-dec-002-encoding.md) |
 | [DEC-003 accepted: a principal is identified on the wire by kid = SHA-256 of its suite public-key encoding](https://m-of-n.github.io/mofn/architecture/ADR-0005-dec-003-key-identifier/) | `ADR-0005` | accepted | 1.0.0 | 2026-10-25 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ADR-0005-dec-003-key-identifier.md) |
 | [DEC-001 accepted: the working title and slug are m-of-n, the short form mofn](https://m-of-n.github.io/mofn/architecture/ADR-0006-dec-001-slug/) | `ADR-0006` | accepted | 1.0.0 | 2026-11-06 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ADR-0006-dec-001-slug.md) |
-| [ARCH-0001 changelog](https://m-of-n.github.io/mofn/architecture/ARCH-0001-CHANGELOG/) | `ARCH-0001-CHANGELOG` | active | 0.1.10 | 2026-11-07 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-CHANGELOG.md) |
-| [Proposed ARCH-0001 v0.2.0 — key-relative extension points, predicate rendering, subject identity, citation corrections](https://m-of-n.github.io/mofn/architecture/ARCH-0001-PROPOSAL-v0.2.0/) | `ARCH-0001-PROPOSAL-v0.2.0` | proposed ⚠️ | 0.2.0-proposed.6 | 2026-10-25 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-PROPOSAL-v0.2.0.md) |
-| [Authorization, local names, and artifact attestation — architecture checkpoint](https://m-of-n.github.io/mofn/architecture/ARCH-0001-authorization-attestation/) | `ARCH-0001` | draft ⚠️ | 0.1.10 | 2026-11-07 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-authorization-attestation.md) |
+| [DEC-007 accepted: option 2 — a predicate's meaning comes from a signed, hash-identified definition by the key that defines the type](https://m-of-n.github.io/mofn/architecture/ADR-0007-dec-007-predicate-rendering/) | `ADR-0007` | accepted | 1.0.0 | 2026-11-07 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ADR-0007-dec-007-predicate-rendering.md) |
+| [ARCH-0001 changelog](https://m-of-n.github.io/mofn/architecture/ARCH-0001-CHANGELOG/) | `ARCH-0001-CHANGELOG` | active | 0.2.0 | 2026-11-07 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-CHANGELOG.md) |
+| [Proposed ARCH-0001 v0.2.0 — key-relative extension points, predicate rendering, subject identity, citation corrections](https://m-of-n.github.io/mofn/architecture/ARCH-0001-PROPOSAL-v0.2.0/) | `ARCH-0001-PROPOSAL-v0.2.0` | superseded | 0.2.0-proposed.7 | 2026-11-07 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-PROPOSAL-v0.2.0.md) |
+| [Authorization, local names, and artifact attestation — architecture checkpoint](https://m-of-n.github.io/mofn/architecture/ARCH-0001-authorization-attestation/) | `ARCH-0001` | draft ⚠️ | 0.2.0 | 2026-11-07 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-authorization-attestation.md) |
 | [ARCH-0002 changelog](https://m-of-n.github.io/mofn/architecture/ARCH-0002-CHANGELOG/) | `ARCH-0002-CHANGELOG` | active | 0.10.0 | 2026-11-06 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0002-CHANGELOG.md) |
 | [Key-relative naming, types, and domains of discourse](https://m-of-n.github.io/mofn/architecture/ARCH-0002-key-relative-naming/) | `ARCH-0002` | draft ⚠️ | 0.10.0 | 2026-11-06 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0002-key-relative-naming.md) |
 | [Wallet, persona, key and definition — the object model above the statement](https://m-of-n.github.io/mofn/architecture/ARCH-0003-wallet-object-model/) | `ARCH-0003` | draft ⚠️ | 0.3.1 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0003-wallet-object-model.md) |
@@ -36,8 +37,8 @@ front matter — not because someone remembered to add it to a nav list. Set
 | document | id | status | version | updated | |
 |---|---|---|---|---|---|
 | [The application — what we are actually building for the demo](https://m-of-n.github.io/mofn/project/APP-0001-application-design/) | `APP-0001` | draft ⚠️ | 0.3.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/project/APP-0001-application-design.md) |
-| [m-of-n backlog](https://m-of-n.github.io/mofn/project/BACKLOG-0001/) | `BACKLOG-0001` | draft ⚠️ | 0.12.12 | 2026-11-07 | [source](https://github.com/m-of-n/mofn/blob/main/project/BACKLOG-0001.md) |
-| [Open decision register — everything waiting on a human](https://m-of-n.github.io/mofn/project/DECISIONS-0001/) | `DECISIONS-0001` | active | 0.5.1 | 2026-11-07 | [source](https://github.com/m-of-n/mofn/blob/main/project/DECISIONS-0001.md) |
+| [m-of-n backlog](https://m-of-n.github.io/mofn/project/BACKLOG-0001/) | `BACKLOG-0001` | draft ⚠️ | 0.12.13 | 2026-11-07 | [source](https://github.com/m-of-n/mofn/blob/main/project/BACKLOG-0001.md) |
+| [Open decision register — everything waiting on a human](https://m-of-n.github.io/mofn/project/DECISIONS-0001/) | `DECISIONS-0001` | active | 0.6.0 | 2026-11-07 | [source](https://github.com/m-of-n/mofn/blob/main/project/DECISIONS-0001.md) |
 | [Glossary — terms that mean more than one thing](https://m-of-n.github.io/mofn/project/GLOSSARY-0001/) | `GLOSSARY-0001` | draft ⚠️ | 0.3.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/project/GLOSSARY-0001.md) |
 | [Project plan — semester execution, repo, library, and team](https://m-of-n.github.io/mofn/project/PLAN-0001-project-plan/) | `PLAN-0001` | draft ⚠️ | 0.6.3 | 2026-11-07 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0001-project-plan.md) |
 | [Product Specification — Key-centric Semantic Attestations](https://m-of-n.github.io/mofn/project/PLAN-0002-product-spec/) | `PLAN-0002` | draft ⚠️ | 0.3.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0002-product-spec.md) |
@@ -66,7 +67,7 @@ front matter — not because someone remembered to add it to a nav list. Set
 
 ## Status
 
-⚠️ **31 of 41 published documents are draft or proposed.**
+⚠️ **30 of 42 published documents are draft or proposed.**
 They are public and marked as such. Nothing here is accepted; an open
 `DEC-*` is not settled because it appears on a website.
 

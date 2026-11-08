@@ -5,7 +5,7 @@ title: "ARCH-0001 changelog"
 type: changelog
 parent: ARCH-0001
 status: active
-version: "0.1.10"
+version: "0.2.0"
 date: "2026-09-15"
 updated: "2026-11-07"
 canonical_path: spec/ARCH-0001-CHANGELOG.md
@@ -14,6 +14,42 @@ canonical_path: spec/ARCH-0001-CHANGELOG.md
 # ARCH-0001 changelog
 
 Format: newest first. Versions match the architecture document.
+
+## 0.2.0 — 2026-11-07
+
+MINOR. T-012a (mofn#134). `ARCH-0001-PROPOSAL-v0.2.0` is folded in and
+**superseded**. Decisions by `ndewedo-newbury` under the October delegation; the
+agent drafted the text. Recorded in `DL-0028`.
+
+- **§4.2 rewritten: one statement form, several functions** (`ADR-0002` P2, P6).
+  The v0.1 kinds map to `SPEC-0002` kinds. `AclEntry` becomes local policy, not a
+  statement. `Endorse` is import-only. The KSA lifecycle kinds are listed. The
+  `AuthzCert.delegate: bool` field becomes `may_delegate` constraints.
+- **§4.1** gains a KSA-form column. `ArtifactId` has three modes plus aliases
+  (R-M-11). `PredicateType` is a key-relative `type-ref`, not a URI (P1,
+  `ADR-0003` D1, `ADR-0007`).
+- **§4.3**: "two procedures" corrected to three. Name resolution is **kept** by
+  decision, though no SPEC specifies it yet. Template conformance is added to
+  acceptance.
+- **R-M-10 rewritten**: integer depth, ranges and key lists. RFC 2693 §4.1.4 is
+  carried as a stated limit (mofn#136, `DL-0025`).
+- **R-M-07 kept as MUST** by decision. A bare locator does not satisfy it.
+- **R-M-08 generalised** to every constrained type (`ADR-0002` §5).
+- **Added:** R-M-11 (subject modes), R-O-05 (sign the bytes; no
+  canonicalisation during verification), R-O-06 (separate results). R-M-12
+  pointer to `ARCH-0002` P1. R-O-05 repairs a citation defect: `ADR-0003` and
+  `SPEC-0002` already cited it as accepted.
+- **New §5.5**: every known ARCH/SPEC gap and which side owes the change. Two
+  go against `ADR-0003`'s default by decision: SDSI names (`SPEC-0004`,
+  mofn#143) and locator-only subjects (`SPEC-0002` §7.2, mofn#144).
+- **§7**: DEC-006 recorded as withdrawn. **DEC-007 filed and accepted, option 2**
+  (`ADR-0007`). The rule that DEC-004 and DEC-007 must not be collapsed is
+  stated. `open_decisions` unchanged: DEC-004, DEC-005.
+- **Citations**: RFC 9943 replaces `draft-ietf-scitt-architecture` (moved to
+  `related_rfcs`). RFC 9804 is recorded as historical. C2PA 2.4 and CDDL
+  (RFC 8610/9165/9682) are added. The agent-action-capsule draft is §3.3's
+  evidence.
+- **§6**: in-toto and COSE export losses recorded (R-I-01).
 
 ## 0.1.10 — 2026-11-07
 

@@ -8,7 +8,7 @@ description: "Canonical working architecture for a native model that is not X.50
 type: architecture
 category: security
 status: draft
-version: "0.1.10"
+version: "0.2.0"
 version_policy: "semver; PATCH = editorial; MINOR = additive requirements; MAJOR = breaking model change"
 date: "2026-09-15"
 updated: "2026-11-07"
@@ -64,8 +64,8 @@ related_rfcs:
   - RFC9052
   - RFC9804
   - RFC9580
+  - RFC9943
 related_drafts:
-  - draft-ietf-scitt-architecture
   - in-toto-attestation-v1
   - slsa-provenance-v1
 open_decisions:
@@ -91,14 +91,17 @@ scope:
 agent_checkpoint: true
 agent_notes: >
   Other agents: treat this file as the source of truth for architecture
-  state as of v0.1.0. Do not invent accepted decisions. Open items are
+  state as of v0.2.0. v0.2.0 folded ARCH-0001-PROPOSAL-v0.2.0 in (now
+  superseded) and carried ADR-0002, ADR-0003, ADR-0007 and the T-012c
+  delegation decision into §4-§7. Where SPEC-0001..0005 and this file differ,
+  §5.5 lists every known gap and which side owes the change. Do not invent accepted decisions. Open items are
   listed under Open decisions. Iterate by bumping version and appending
   CHANGELOG. Do not rewrite history in this file; use CHANGELOG.
 ---
 
 # ARCH-0001 — Authorization, local names, and artifact attestation
 
-**Status:** draft · **Version:** 0.1.10 · **Date:** 2026-09-15 · **Updated:** 2026-11-07  
+**Status:** draft · **Version:** 0.2.0 · **Date:** 2026-09-15 · **Updated:** 2026-11-07  
 **Canonical file:** `spec/ARCH-0001-authorization-attestation.md`  
 **Changelog:** `spec/ARCH-0001-CHANGELOG.md`
 
@@ -173,7 +176,7 @@ Reduction (RFC 2693 §6.3, paraphrase): two 5-tuples compose when the subject of
 
 SDSI basic name: `(name fred)` in *George’s* space. Compound: `(name fred sam)` meaning George’s Fred’s Sam. Fully qualified: key (or key hash) followed by the name chain.
 
-RFC 9804 restates canonical S-expressions as a living encoding option. It is **not** selected here (see DEC-002).
+RFC 9804 restates canonical S-expressions. It is an Informational restatement of a 1990s encoding, and it is recorded here as **historical**: a reference for the WP2 mapping, not a contender. DEC-002 is accepted as option 5 (`ADR-0004`). What the SPKI lineage contributes is key-centricity (G1, R-M-02), not its syntax.
 
 ### 3.2 Modern statement / envelope stack
 
@@ -183,7 +186,7 @@ RFC 9804 restates canonical S-expressions as a living encoding option. It is **n
 | DSSE | signature envelope over a payload type | JSON | Used by Cosign / SLSA generators; PAE signing |
 | COSE_Sign1 | signature envelope | CBOR | SCITT signed statements |
 | CWT claims | `iss`, `sub`, `exp`, `nbf`, `iat`, … in COSE protected header 15 | CBOR | RFC 8392; SCITT profile |
-| SCITT | signed statement + optional transparency receipt | COSE | Payload may be SPDX, CycloneDX, in-toto, SLSA, CoSWID |
+| SCITT (RFC 9943, Proposed Standard, June 2026) | signed statement + optional transparency receipt | COSE | Payload may be SPDX, CycloneDX, in-toto, SLSA, CoSWID. `iss`/`sub` mandatory, payload opaque |
 | SLSA provenance | how an artifact was built | in-toto predicate | Not a name system |
 | W3C VC / DID | issuer, subject, claims | JSON-LD / various | Parallel identity track; interchange candidate |
 | OpenPGP signatures | identity and data signatures | OpenPGP packets | Introducer import candidate |
@@ -193,7 +196,7 @@ X.509 appears in this stack only as: (a) existing signer identity some tools sti
 ### 3.3 Implications for the native model
 
 1. Historic gap: SPKI/SDSI never standardized a first-class **artifact statement** type; PICS did, without a strong principal/delegation model.
-2. Modern gap: in-toto / SCITT / SLSA have strong artifact statements and weak *local-name + threshold authorization* languages.
+2. Modern gap: in-toto / SCITT / SLSA have strong artifact statements and weak *local-name + threshold authorization* languages. SCITT is ratified (RFC 9943), so this gap is in a published standard, not a moving draft. Vocabularies are still re-invented ad hoc *inside* SCITT: `draft-mih-scitt-agent-action-capsule-02` declares a disposition vocabulary in prose, and nothing can dereference it. That is the PICS rating-system pattern, unspecified. DEC-007 (`ADR-0007`) answers it.
 3. Composition target: **SPKI-shaped rights and names** + **PICS/in-toto-shaped artifact predicates** + **COSE or DSSE envelope for bytes on the wire** (envelope is interchange, not the information model).
 4. PGP remains useful as an **introducer graph import**, mapped onto name certs or weighted endorsements — not as the reducer.
 
@@ -211,7 +214,7 @@ preimage.
 | Critical bit on signature subpackets (§5.2.3.7; §5.2.5): an unknown critical subpacket in the hashed area makes the signature unusable for validation; an unknown non-critical one is ignored | `ARCH-0002` P3, `SPEC-0002` V7 (closed map) | accepted (`ADR-0004`) | Our profile is **stricter**: every unknown field is rejected, so nothing is "non-critical". OpenPGP pays for its split: a verifier that ignores a non-critical field may not see a meaning the issuer intended. Under our profile a new field is a new definition (`ARCH-0003` W-12), not a field that old verifiers ignore. No change. |
 | Notation Data (§5.2.3.24): user names are `tag@domain`; names without `@` are the IETF namespace | R-M-03, `ADR-0001` (key-relative naming) | accepted | A **counter-example**. Notation names are scoped by DNS domain or by IETF registry: both are global namespaces, and `ADR-0001` rejected both. It is prior art for *namespacing* types, not for *key-relative* types. No change. |
 | v6 fingerprint (§5.5.4.3): SHA-256 over `0x9B`, a 4-octet length, and the public-key packet from the version field on. That covers version, creation time, algorithm and key material | DEC-003 (`ADR-0005`); the open sub-question in §7 DEC-003, "whether a future suite … needs the suite in the preimage" | DEC-003 accepted; sub-question **open** | **New evidence for the open sub-question.** OpenPGP puts the algorithm inside the preimage, so one set of key octets under two algorithms yields two fingerprints. That is the opposite of `SPEC-0002` §4.5. It also puts in the **creation time**, so one key yields different fingerprints at different times. `ADR-0005` avoids that, and this row records the avoidance as deliberate. Evidence only; the sub-question stays with `ADR-0005`. |
-| Trust Signature depth (§5.2.3.21): an integer, minimised along the chain in GnuPG | R-M-10 (delegation boolean) vs `SPEC-0004` (integer depth) | open, as `R-0007` P3 | Nothing new. `R-0007` §3.3 and P3 already carry it; cross-referenced here so WP4 does not raise it a second time. |
+| Trust Signature depth (§5.2.3.21): an integer, minimised along the chain in GnuPG | R-M-10 (delegation boolean) vs `SPEC-0004` (integer depth) | open, as `R-0007` P3 — **decided 0.2.0**: integer depth (R-M-10, `DL-0025`) | Nothing new. `R-0007` §3.3 and P3 already carry it; cross-referenced here so WP4 does not raise it a second time. |
 | Ownertrust vs validity (GnuPG trustdb; RFC 9580 §5.10 leaves Trust packets to the implementation) | §4.3 (local ACL `Self` kept apart from reduction); `ARCH-0003` W-07, W-14 | drafted | A **confirmation**. OpenPGP keeps "I trust this key to introduce" (local, unsigned) apart from "this key is valid" (computed). We make the same separation, and unlike OpenPGP we specify the computation (G3). No change. |
 | Key flags and subkey binding (§5.2.3.29): certify (`0x01`) and sign (`0x02`) on separate keys; the primary can be held offline | `ARCH-0003` §3.2 identity and operational keys; `capabilities` | drafted | A **confirmation** of `ARCH-0003` §3.2: there, a delegation does the work of a subkey binding. The engine consequences are in `PLAN-0004` §6.2. No change here. |
 
@@ -226,61 +229,65 @@ leaves `R-0007` P5 (escrowed revocation) open.
 
 ## 4. Information model (working; not frozen)
 
-Logical types. Encoding is DEC-002.
+Logical types. Encoding is DEC-002, accepted as KSA-CBOR (`ADR-0004`). The right-hand column gives the KSA form that `SPEC-0002` specifies (`ADR-0003`: where the two differ, the SPEC governs, unless §5.5 records the gap as owed by the SPEC).
 
 ### 4.1 Primitive values
 
-| Type | Meaning |
-|------|---------|
-| `Key` | Public key material + algorithm identifier |
-| `KeyId` | Digest of a canonical key encoding (algorithm of digest is parameterized) — **narrowed by `ADR-0005`:** SHA-256 of the key's public-key encoding under its suite (`SPEC-0002` §4.5) |
-| `Principal` | `Key` \| `KeyId` \| `Name` \| `Threshold` \| `Group` |
-| `Name` | `{ issuer: Principal, labels: [string, ...] }` — SDSI compound name |
-| `Threshold` | `{ k: int, n: int, members: [Principal, ...] }` with `1 ≤ k ≤ n` and `n = len(members)` |
-| `Tag` | Authorization language value; opaque at this layer except for defined intersection |
-| `Validity` | `{ not_before?, not_after?, online_check? }` |
-| `ArtifactId` | `{ uri?: string, digest: { alg, hex } }` |
-| `PredicateType` | URI naming a statement vocabulary |
-| `Predicate` | Typed payload whose schema is identified by `PredicateType` |
+| Type | Meaning | KSA form (`SPEC-0002`) |
+|------|---------|------------------------|
+| `Key` | Public key material + algorithm identifier | `public-key = { alg, pub }` (§8.2), suite per §6 |
+| `KeyId` | Digest of a canonical key encoding — **narrowed by `ADR-0005`:** SHA-256 of the key's public-key encoding under its suite | `kid` (§4.5) |
+| `Principal` | `Key` \| `KeyId` \| `Name` \| `Threshold` \| `Group` | `kid`; threshold form of `trust` (§8.6). **`Name` and `Group` have no KSA form yet** (§5.5) |
+| `Name` | `{ issuer: Principal, labels: [string, ...] }` — SDSI compound name | **owed by `SPEC-0004`** (mofn#143). A one-label binding is an `attestation` about a key under a names definition (`ARCH-0002` P6; TV-13) |
+| `Threshold` | `{ k: int, n: int, members: [Principal, ...] }` with `1 ≤ k ≤ n` and `n = len(members)` | `trust` with `trusts: [2* kid]`, `threshold: k`; `n` is the array length (§8.6) |
+| `Tag` | Authorization scope; opaque at this layer except for defined intersection | `attribute-range` (§7.4). Its *within* relation is the type's base kind (`SPEC-0003` §6). DEC-004 still open |
+| `Validity` | `{ not_before?, not_after?, online_check? }` | `valid = { not-before, not-on-or-after, issued }` (§7.3); no online check |
+| `ArtifactId` | A subject, identified by **one of three modes** (R-M-11): `digest` for bytes in hand; `locator` for a subject with an external name (**non-authoritative**, a hint, never a definition); `description`, the canonical digest of a structured description, for subjects that cannot be hashed (a physical object, a work, an event, a role). Plus an `aliases` set binding several identifiers to one subject. At least one content digest is bound in every case (R-M-07) | target types 2 digest, 5 locator, 6 description (§7.2). **A bare locator target conflicts with R-M-07** (§5.5, mofn#144). Aliases: no KSA form yet |
+| `PredicateType` | The type a statement assigns, identified **relative to its defining key** (`ARCH-0002` P1), never by URI. Its meaning (names, descriptions and rendering in a language map) is carried by a signed definition (DEC-007, `ADR-0007`) | `type-ref = { definition: DefinitionId, label }` (§7.4; `SPEC-0003`) |
+| `Predicate` | Typed payload whose schema is identified by `PredicateType` | `attribute = { type: type-ref, value }` (§7.4) |
 
-### 4.2 Certificate and statement kinds
+### 4.2 One statement form, several functions
 
-> **Pointer, 2026-11-06.** `ADR-0002` accepted `ARCH-0002` P2 and P6: the
-> signed kinds below are **functions over one statement form**, distinguished
-> by predicate type, and `AclEntry` — unsigned, so no speaker — is local
-> policy, not a statement. §4.3's three procedures stay separate. The table is
-> unchanged until the rewrite lands in v0.2.0 (`DECISIONS-0001` item 4); until
-> then read it through the ADR.
+**Rewritten in 0.2.0** under `ADR-0002`, which accepted `ARCH-0002` P2 (*A says
+B has C*) and P6 (*a name is an attested string*). v0.1 listed five object
+*kinds*. They are **functions over one signed statement form**, distinguished by
+what the statement asserts. KSA spells the form as `SPEC-0002` §7: `kind`,
+`suite`, `says` (the speaker, *A*), `this` (the target, *B*), `valid`, and a
+kind-specific `body` (*C*).
 
-| Kind | Binds | Signed by | Reduction role |
-|------|-------|-----------|----------------|
-| `NameCert` | name labels → principal | naming key | Name resolution only |
-| `AuthzCert` | principal → tag + delegation flag | issuer key | SPKI 5-tuple reduction |
-| `AclEntry` | same as AuthzCert | unsigned; issuer = `Self` | Local policy root |
-| `ArtifactStatement` | artifact id(s) → predicate | issuer key | Attestation; may *require* an AuthzCert to be accepted by a verifier policy |
-| `Endorse` | “issuer treats subject as introducer at weight w” | issuer key | Optional PGP-shaped import; not required for AuthzCert reduction |
+| v0.1 kind | Function | KSA kind (`SPEC-0002` §8) | Notes |
+|---|---|---|---|
+| `NameCert` | **naming**: bind a local name to a principal | `attestation` (4) about a key, assigning a name-typed attribute (TV-13, DV-2) | One label today. **Compound names and their resolution are owed by `SPEC-0004`** (§5.5, mofn#143). G2 and R-M-04 still hold: naming and delegation are different functions with different verifier procedures |
+| `AuthzCert` | **delegation**: extend authority to a principal over a scope | `trust` (5): `about` is the scope; `may-delegate` constrains onward delegation | Replaces `delegate: bool` (R-M-10, below) |
+| `AclEntry` | **local policy**: the relying party's own root | not a statement. An unsigned local anchor in a context (`SPEC-0004` §4). A signed `trust` becomes an anchor only by a local act of acceptance (`ADR-0003` D3) | The anchor list is unsigned, so it has no speaker and is not a statement (P6). It is the fixed floor that `ARCH-0002` DEC-008 says cannot be key-local |
+| `ArtifactStatement` | **attestation**: assert that a subject has attributes | `attestation` (4) about a digest, locator or description target; `review` (9), `approve` (10) and `aggregate` (11) about a statement or object | Acceptance may still require a delegation (§4.3 step 3). An `approve` counts only if its speaker reduces to a delegation for approval; a `review` never does |
+| `Endorse` | **introducer weight**, PGP-shaped | none native. Import only (R-I-04, WP4) | An imported introducer becomes a `trust` only under an explicit import profile; otherwise it is evidence |
+| — | **key lifecycle and vocabulary** | `key-publish` (1), `self` (2), `speaks` (3), `revoke` (6), `rotate` (7), `define` (8) | New in 0.2.0, from `SPEC-0002`. `define` publishes the definitions that DEC-007 relies on |
 
-`AuthzCert` fields (logical):
+Delegation fields (logical), replacing v0.1's `AuthzCert`:
 
 ```
-issuer:       Principal     # must be Key or KeyId at signature time
-subject:      Principal     # may be Name, Threshold, Key, KeyId
-delegate:     bool
-tag:          Tag
+issuer:        Principal            # says; a KeyId at signature time (R-O-01)
+subject:       Principal            # this = [1, kid], or the threshold form
+scope:         [attribute-range]    # about; never empty. Was `tag`
+may_delegate?: { depth?: uint,      # absent: one hop, no onward delegation
+                 ranges?: [attribute-range],   # onward scope allow-list
+                 allow_keys?, exclude_keys?,   # who may be delegated to
+                 not_on_or_after? }            # earlier bound wins
+validity:      Validity
+```
+
+Attestation fields (logical), replacing v0.1's `ArtifactStatement`:
+
+```
+issuer:       Principal            # says
+subject:      ArtifactId | Key | Statement | Definition    # this
+has:          [attribute]          # each attribute's type is a PredicateType
+template?:    type-ref
 validity:     Validity
 ```
 
-`ArtifactStatement` fields (logical):
-
-```
-issuer:       Principal
-subjects:     [ArtifactId, ...]
-predicate_type: PredicateType
-predicate:    Predicate
-validity:     Validity
-```
-
-This is the PICS analogue: issuer ≈ rating service; subjects ≈ labeled objects; predicate ≈ rating tuple; validity ≈ label lifetime; content binding is the artifact digest.
+This is the PICS analogue: issuer ≈ rating service; subjects ≈ labeled objects; predicate ≈ rating tuple; validity ≈ label lifetime; content binding is the artifact digest. The rating system, which v0.1 left out, is the definition (DEC-007).
 
 ### 4.3 Verifier inputs
 
@@ -289,16 +296,16 @@ A decision procedure takes:
 - a request (`who` wants `tag` on `resource`, or “is statement S acceptable under policy P”);
 - a set of certs/statements;
 - a local ACL (`Self`);
-- configured trust for *artifact services* (which issuers may assert which `PredicateType`s);
+- configured trust for *artifact services* (which issuers may assert which `PredicateType`s), held as per-context anchors (`SPEC-0004` §4; `ADR-0003` D4);
 - current time and optional online validity checks.
 
-Two procedures, kept separate:
+Three procedures, kept separate (v0.1 said "two" and listed three):
 
-1. **Name resolution** — rewrite `Name` to `KeyId` via `NameCert` chains.
-2. **Authorization reduction** — SPKI-style composition after names are resolved.
-3. **Statement acceptance** — signature valid ∧ issuer authorized for that `PredicateType` ∧ subject digest matches the artifact under consideration.
+1. **Name resolution** — rewrite `Name` to `KeyId` via chains of naming statements. **Kept in 0.2.0 by decision** (`DL-0028`), although `SPEC-0004` does not yet specify it; owed there (mofn#143).
+2. **Authorization reduction** — SPKI-style composition after names are resolved. In KSA: delegation paths (`SPEC-0004` §6), scope narrowing by typed range, depth by `may-delegate`.
+3. **Statement acceptance** — signature valid ∧ issuer authorized for that `PredicateType` ∧ subject digest matches the artifact under consideration ∧ every named template is conformed to (`SPEC-0003` §7.1).
 
-(3) may call (2). They must not be collapsed into one graph walk in v0.1.
+(3) may call (2). They must not be collapsed into one graph walk. That held for v0.1 and still holds; `ADR-0002` §5 makes it explicit. Their results are reported separately (R-O-06), as `SPEC-0004` §10.4's `names`, `authorization` and `acceptance` lines.
 
 ---
 
@@ -326,10 +333,12 @@ Priority: **M**ust / **S**hould / **C**ould. Open decisions do not silently sati
 | R-M-04 | M | Name bindings and authorization bindings SHALL be distinct object kinds. |
 | R-M-05 | M | Authorization composition SHALL be deterministic given an ordered cert set and ACL. |
 | R-M-06 | M | Threshold principals SHALL be representable without encoding them as a CA hierarchy. |
-| R-M-07 | M | Artifact statements SHALL bind at least one content digest. |
-| R-M-08 | M | Tag intersection semantics SHALL be defined for every tag profile the implementation claims. |
+| R-M-07 | M | Artifact statements SHALL bind at least one content digest. *0.2.0: kept as MUST by decision (`DL-0028`); a description digest (R-M-11) satisfies it, a locator alone does not. `SPEC-0002` §7.2 owes the rule (§5.5, mofn#144).* |
+| R-M-08 | M | Intersection (*within*) semantics SHALL be defined for every tag profile the implementation claims, and for every constrained type it accepts. *0.2.0: generalised from tags to every constrained object (`ADR-0002` §5, P2); `SPEC-0003` §6 base kinds meet it for the types they cover.* |
 | R-M-09 | S | Validity intersection SHALL be defined (time window ∩ optional online checks). |
-| R-M-10 | S | Delegation SHALL be an explicit boolean (or equivalent) on `AuthzCert`. |
+| R-M-10 | S | Delegation SHALL be explicit and bounded on the delegation statement: absent means one hop with no onward delegation; present, it SHALL state an integer `depth` and MAY state an onward scope allow-list (`ranges`), key allow/exclude lists, and a validity cap. Each hop's scope SHALL be within the previous hop's, and a widening SHALL be reported as such, not intersected silently to empty. *0.2.0: was "an explicit boolean (or equivalent)". Rewritten to match `SPEC-0002` §8.6 and `SPEC-0004` §6.3 by decision on mofn#136 (`DL-0025`). **Stated limit:** RFC 2693 §4.1.3–§4.1.4 rejected integer depth because the right depth cannot be predicted ("one can always need to go one more level down, by creating a temporary signing key") and because depth does not bound the width of the delegation tree. Both points stand. Depth is therefore **not a security bound**: it limits what a relying party will follow, not what a key holder can do. Width is limited by `ranges` and the key lists, which SPKI did not have. OpenPGP trust-signature levels (RFC 9580 §5.2.3.21) are the deployed precedent.* |
+| R-M-11 | M | An `ArtifactId` SHALL support identification by content digest, by external locator, or by the canonical digest of a structured description. At least one content digest SHALL be bound in all cases, per R-M-07. A locator SHALL be treated as non-authoritative evidence about a subject, not as its definition. *Added 0.2.0 from the proposal. `SPEC-0002` §7.2 targets 2, 5, 6 implement the three modes.* |
+| R-M-12 | — | *Relocated: native extension points are key-relative. Accepted as `ARCH-0002` P1 by `ADR-0001`; not restated here.* |
 
 ### 5.2 Interchange
 
@@ -350,7 +359,9 @@ Priority: **M**ust / **S**hould / **C**ould. Open decisions do not silently sati
 | R-O-01 | M | Every signed object SHALL have an issuer key that can be specified as `KeyId`. |
 | R-O-02 | S | Short-lived validity preferred over revocation-heavy design; revocation still representable. |
 | R-O-03 | S | Canonicalization algorithm for each concrete encoding SHALL be cited, not invented silently. |
-| R-O-04 | C | Optional registration of statements with a SCITT-like transparency service. |
+| R-O-04 | C | Optional registration of statements with a SCITT-like transparency service (RFC 9943). |
+| R-O-05 | M | The signed payload SHALL be the canonical encoding verbatim, carried with an authenticated type indicator. A verifier SHALL verify the signature before decoding and SHALL NOT canonicalize input as part of verification. Any human-facing form SHALL be regenerated from verified canonical bytes. *Added 0.2.0. Extends R-O-03: R-O-03 governs which algorithm, R-O-05 when it runs. `ADR-0003` and `SPEC-0002` §5 already cited it as accepted before this version carried it. That is a citation defect this version repairs.* |
+| R-O-06 | S | Verifier output SHALL report name resolution, authorization reduction, and statement acceptance as distinct results, per §4.3, rather than a single combined outcome. *Added 0.2.0. `SPEC-0004` §10.4's six-line verdict meets it.* |
 
 ### 5.4 Documentation / process
 
@@ -359,6 +370,21 @@ Priority: **M**ust / **S**hould / **C**ould. Open decisions do not silently sati
 | R-D-01 | M | Architecture lives in this file (or a numbered successor). |
 | R-D-02 | M | Accepted decisions move from “Open decisions” to an ADR file; this document then references them. |
 | R-D-03 | M | Version bumps recorded in `ARCH-0001-CHANGELOG.md`. |
+
+### 5.5 Where this document and the specifications differ
+
+`ADR-0003`: where a SPEC and an ARCH document differ, the SPEC governs and the
+ARCH document is corrected. 0.2.0 makes those corrections in §4 and §5. Two
+differences go the **other** way by decision (`DL-0028`). In those cases this
+document keeps its requirement, and the SPEC owes the change.
+
+| Gap | ARCH-0001 | SPEC | Owed by | Issue |
+|---|---|---|---|---|
+| SDSI names | §1 item 2, G1, R-M-03, §4.3 step 1: compound names resolve to a key | no `Name` principal, no compound names, no resolution step | `SPEC-0004` (and `SPEC-0002` if a form is needed) | mofn#143 |
+| Locator-only subject | R-M-07, R-M-11: a content digest is always bound; a locator is a hint | `SPEC-0002` §7.2 allows `this = [5, text]` alone | `SPEC-0002` §7.2 | mofn#144 |
+| `Group` principal | §4.1 | no form | open; no consumer yet | — |
+| `aliases` set | §4.1, R-M-11 | no form | `SPEC-0002`, when a consumer needs it | — |
+| Online validity check | §4.1 `Validity.online_check`, R-M-09 | none; `valid` is time only | open; R-O-02 prefers short validity | — |
 
 ---
 
@@ -372,14 +398,14 @@ Legend: **I** import, **E** export, **—** out of scope this version, **P** par
 | OpenPGP key + UIDs + sigs | I | P | Key, NameCert, Endorse | No tag language; trust values are local to importer |
 | X.509 EE / CA cert | I | — | Key + NameCert (DN as labels under a `x509:` namespace of the *importer*, not of the CA) + provenance | Do not treat CA bit as AuthzCert |
 | X.509 attribute certificate | I | P | AuthzCert (tag profile TBD) | Attributes ≠ SPKI tags |
-| in-toto Statement | I | E | ArtifactStatement | Subjects = artifacts; predicate_type preserved |
+| in-toto Statement | I | E | attestation | Subjects = artifacts. **Export loss:** a `description` subject (R-M-11) has no in-toto digest-set form. `predicateType` URI ↔ `type-ref` is a lossy mapping (`ARCH-0002` P1) |
 | DSSE envelope | I | E | wire only | Not an information-model type |
-| COSE_Sign1 + CWT | I | E | wire + issuer/sub/exp | Align `iss`/`sub` with KeyId profile (DEC-003) |
+| COSE_Sign1 + CWT | I | E | wire + issuer/sub/exp | `kid` per `ADR-0005`. **Export loss:** key-relative identifiers map to registry-allocated COSE labels and CWT claim keys only lossily (`ADR-0004`; `ARCH-0002` P1) |
 | SLSA provenance v1 | I | E | ArtifactStatement predicate | |
 | SPDX / CycloneDX | I | E | ArtifactStatement predicate | |
 | PICS label | I | — | ArtifactStatement | Historic; import profile only if needed |
 | W3C VC | I | C | ArtifactStatement or NameCert depending on type | Context must be pinned |
-| SCITT receipt | I | C | evidence attached to ArtifactStatement | Does not change meaning of statement |
+| SCITT receipt (RFC 9943) | I | C | evidence attached to an attestation | Does not change meaning of statement |
 
 **Forbidden native mapping:** X.509 certificate path validation as the native reducer.
 
@@ -513,6 +539,46 @@ v0.1 may ship **tag as opaque byte string** plus one profile (`urn:…:tag:bytes
 
 Options: DSSE (in-toto world), COSE_Sign1 (SCITT world), both with a single unsigned payload schema.
 
+### DEC-006 — withdrawn before filing
+
+Drafted in `ARCH-0001-PROPOSAL-v0.2.0` rev.1 as "authoring and display surface".
+Withdrawn on sponsor review, 2026-09-16: no human authoring format is
+required, since statements are produced by tools. Display was folded into
+DEC-007. Recorded so the number is not reused.
+
+### DEC-007 — Predicate rendering, vocabulary resolution, and display
+
+**Status: accepted 2026-11-07 — option 2, by [`ADR-0007`](ADR-0007-dec-007-predicate-rendering.md),
+as `SPEC-0003` implements it.** Filed and accepted in the same version (0.2.0).
+The text below is the record of what was decided between.
+
+Question: how does a `PredicateType` convey the human-readable meaning of the
+values a `Predicate` carries, so that a user interface can render a statement
+without type-specific code?
+
+Options:
+
+1. Out of scope. `PredicateType` identifies a schema; display is an application concern.
+2. A signed, versioned, dereferenceable **vocabulary statement**, itself a
+   statement by the key that defines the type, declaring categories, permitted
+   values, scales and a human-readable rendering for each value. Statements cite
+   it by identifier and digest.
+3. As option 2, with rendering strings carried inline in each statement.
+4. Reuse an existing vocabulary mechanism (SKOS, JSON-LD contexts, SHACL).
+
+Acceptance test: two unrelated predicate types, one build-provenance and one
+non-software, render legible statements through a single renderer with no
+type-specific code. Under option 2, changing a rendering must not invalidate
+existing signatures and must be detectable as a vocabulary version change.
+`ADR-0007` records which clauses are met and which are owed.
+
+**DEC-007 and DEC-004 must not be collapsed.** A tag language (DEC-004) needs an
+intersection operation, because that is what reduction composes; it need not be
+legible. A rendering vocabulary needs legibility and versioning; it has no
+intersection semantics, and asking for one is a category error. Both are
+key-relative under `ARCH-0002` P1, and both are *types* in the P3 sense. That is
+their common principle. It is not a reason to merge them.
+
 ---
 
 ## 8. Work packages (not scheduled)
@@ -548,12 +614,15 @@ Options: DSSE (in-toto world), COSE_Sign1 (SCITT world), both with a single unsi
 - RFC 8392 — CWT  
 - RFC 8949 — CBOR  
 - RFC 9052 — COSE  
-- draft-ietf-scitt-architecture — SCITT  
+- RFC 9943 — SCITT architecture (Proposed Standard, June 2026); was `draft-ietf-scitt-architecture`  
 - in-toto Attestation Framework v1  
 - SLSA provenance v1  
 - W3C PICS (label format, signed labels, content checksum)  
 - Ellison, “SPKI/SDSI and the Web of Trust” comparison notes  
 - OpenPGP / GnuPG trust-signature model (meta-introducers)  
+- C2PA 2.4 (April 2026) — where C2PA is cited downstream  
+- CDDL, if reached: RFC 8610 as updated by RFC 9165 and RFC 9682  
+- `draft-mih-scitt-agent-action-capsule-02` — ad hoc vocabulary inside SCITT (§3.3)  
 - RFC 9580 — OpenPGP (2024): §3.7, §5.2.3.7, §5.2.3.21, §5.2.3.24, §5.2.3.29, §5.2.5, §5.5.3, §5.5.4.3 (read for §3.4)
 
-End of ARCH-0001 v0.1.0
+End of ARCH-0001 v0.2.0
