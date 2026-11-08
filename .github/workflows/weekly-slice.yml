@@ -1,0 +1,81 @@
+name: weekly-slice
+# mofn#68 (W-4): run demo/slice.sh every Monday from a clean clone and post the
+# output on #68. The run is mechanical; the notes on what the verdict says stay
+# with the slice owner, who replies under the bot's comment (DL-0029).
+#
+# Clean clone: a fresh checkout, a new venv, an empty HOME, and the slice run
+# in a network namespace with no interfaces, so it cannot pass by fetching
+# anything. Dependencies are installed before the network is cut.
+on:
+  schedule:
+    - cron: '0 13 * * 1'   # Monday 13:00 UTC (08:00 US Eastern, winter)
+  workflow_dispatch:        # run by hand from the Actions tab
+  pull_request:             # dry run: builds the comment, posts nothing
+    paths: [.github/workflows/weekly-slice.yml]
+permissions:
+  contents: read
+  issues: write
+concurrency: {group: weekly-slice, cancel-in-progress: false}
+jobs:
+  slice:
+    if: github.repository == 'm-of-n/mofn'
+    runs-on: ubuntu-latest
+    env:
+      ISSUE: 68
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: new venv with the documented prerequisites
+        run: |
+          python -m venv prototype/wallet/.venv
+          prototype/wallet/.venv/bin/pip install -q -r prototype/wallet/requirements.txt
+      - name: demo slice, both codecs, no network, empty HOME
+        id: slice
+        run: |
+          home=$(mktemp -d)
+          set +e
+          sudo unshare --net -- sudo -u "$USER" env -i \
+            PATH=/usr/bin:/bin HOME="$home" LANG=C.UTF-8 \
+            bash demo/slice.sh > slice.out 2>&1
+          code=$?
+          set -e
+          cat slice.out
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          echo "summary=$(grep -E '^slice: ' slice.out | tail -1)" >> "$GITHUB_OUTPUT"
+      - name: post the run on mofn#68 (dry run on a PR)
+        if: always() && steps.slice.outputs.code != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CODE: ${{ steps.slice.outputs.code }}
+          SUMMARY: ${{ steps.slice.outputs.summary }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ "$CODE" = 0 ]; then result="**Result: green** — ${SUMMARY:-see output}"
+          else result="**Result: RED (exit $CODE)** — ${SUMMARY:-see output}. Goldens drifted or the slice broke; see the run log."; fi
+          {
+            echo "## Slice run, $(date -u +%F) (automated)"
+            echo
+            echo "\`demo/slice.sh\` at \`${GITHUB_SHA::7}\`, fresh checkout, new venv, empty \`HOME\`, network namespace with no interfaces. [Run log]($RUN_URL)."
+            echo
+            echo "$result"
+            echo
+            echo "**Notes on the verdict:** _to be added by the slice owner in a reply — are the six lines clear to a relying party, does authorization say why, is the limit line present? File findings against #65._"
+            echo
+            echo "<details><summary>Full output</summary>"
+            echo
+            echo '```'
+            cat slice.out
+            echo '```'
+            echo
+            echo "</details>"
+          } > comment.md
+          cat comment.md
+          if [ "$GITHUB_EVENT_NAME" = pull_request ]; then
+            echo "dry run on a pull request: not posting to #$ISSUE"
+          else
+            gh issue comment "$ISSUE" --body-file comment.md
+          fi
+      - name: fail the job when the slice failed
+        if: steps.slice.outputs.code != '0'
+        run: exit 1
