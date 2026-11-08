@@ -19,6 +19,7 @@ NEGATIVE = {
     "N-8": ("V8", "kind-rule"),
     "N-9": ("V7", "structure"),
     "N-10": ("V5", "encoding"),
+    "N-11": ("V7", "structure"),
 }
 
 

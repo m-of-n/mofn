@@ -229,7 +229,7 @@ supply-chain profile first (T1-A), then accept P7 or correct it.
 | **5b** | **DEC-008 — can all processing be key-local?** Proposed: yes above a fixed core, never below it. A key that may define its own validity may define itself valid. | ARCH-0002 |
 | **5c** | **Is a domain of discourse itself a statement by a key**, inheriting authorization and revocation — or a bare hashed artifact any key may cite? First composes; second allows vocabularies nobody owns. **Held with P4.** | ARCH-0002 P4 |
 | ~~5d~~ | **CLOSED 2026-11-07 — DEC-007 accepted, option 2, by `ADR-0007`** as `SPEC-0003` implements it. Was: **Does DEC-007 survive?** P3 and P4 arguably answer it. | ARCH-0002 |
-| ~~6~~ | **ANSWERED 2026-11-07 — yes, as non-authoritative evidence** (R-M-11). A locator alone does not satisfy R-M-07; `SPEC-0002` §7.2 owes the rule (mofn#144). Was: **Does `locator` survive R-M-12?** | ~~proposal §7~~ |
+| ~~6~~ | **ANSWERED 2026-11-07 — yes, as non-authoritative evidence** (R-M-11). A locator alone does not satisfy R-M-07; `SPEC-0002` 0.6.0 §7.2 meets it by withdrawing the locator target (mofn#144, `DL-0030`). Was: **Does `locator` survive R-M-12?** | ~~proposal §7~~ |
 | 7 | **Which records get PROC-0002 stage 8** (generate code from spec)? Proposed: only where a spec defines an algorithm or wire format we intend to implement or map. | PROC-0002 §8.2 |
 | 8 | **Does `versions/` hold a full record per version, or metadata plus a delta note?** | scope §7.1 |
 | 9 | **Should `cites` be extracted automatically from converted PDFs, or always reviewed?** Automatic is noisy; manual does not scale. | references §5.1 |
@@ -270,6 +270,11 @@ supply-chain profile first (T1-A), then accept P7 or correct it.
 | **28** | **Wallet GUI framework — Tauri, tentative (MD-7).** Web frontend plus a Python sidecar; PySide6 is the fallback. **Confirm before GUI work begins** (`BACKLOG-0001` T-029c). | due Oct 14 |
 
 ---
+
+## What changed in v0.6.1 — 2026-11-07
+
+PATCH. Item 6's note now points to `SPEC-0002` 0.6.0, which closes mofn#144
+(`DL-0030`). No item is added or closed.
 
 ## What changed in v0.6.0 — 2026-11-07
 

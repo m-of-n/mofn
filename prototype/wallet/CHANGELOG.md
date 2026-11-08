@@ -15,6 +15,14 @@ The wallet engine and its `mofn` command line, `prototype/wallet/` (#65, #127).
 Every release is a prototype: DEC-004 and DEC-005 are open; do not use real
 keys.
 
+## 0.2.1 — 2026-11-07
+
+Prototype: DEC-004 and DEC-005 are open; do not use real keys.
+
+- Follows SPEC-0002 0.6.0: target type 5, the locator, is withdrawn. A
+  statement about `[5, …]` is now invalid at V7 `structure` (vector N-11), and
+  `{locator: …}` is no longer a target in the review form (mofn#144).
+
 ## 0.2.0 — 2026-11-05
 
 Prototype: DEC-004 and DEC-005 are open; do not use real keys.
