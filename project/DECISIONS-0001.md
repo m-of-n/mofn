@@ -7,7 +7,7 @@ description: "Every open decision across both repos, ranked by what it blocks. T
 type: process
 category: process
 status: active
-version: "0.6.0"
+version: "0.6.1"
 version_policy: "semver; MINOR = decisions added or closed"
 date: "2026-09-22"
 updated: "2026-11-07"
@@ -267,7 +267,6 @@ supply-chain profile first (T1-A), then accept P7 or correct it.
 | 23 | **`enforce_admins`** is `false` on both repos. Set so a single member could bootstrap; three admins now exist, so the reason has expired. **Still off at 2026-10-05** (`BACKLOG-0001` T-006c). | ready to flip |
 | 24 | **Signed commits** — `CONTRIBUTING.md` asks for them; the requirement is off so students are not blocked on key setup. | deliberate |
 | 25 | **`~/cb/.claude/rules/usf-provenance.md`** written but uncommitted — `~/cb` has your in-flight manifest work. | yours to commit |
-| 26 | **Shelfmark convergence** — requirements first, then schema. No data merger. | split into T-023a/b/c (#137–#139) 2026-11-06; awaiting locator (T-023a) |
 | **28** | **Wallet GUI framework — Tauri, tentative (MD-7).** Web frontend plus a Python sidecar; PySide6 is the fallback. **Confirm before GUI work begins** (`BACKLOG-0001` T-029c). | due Oct 14 |
 
 ---

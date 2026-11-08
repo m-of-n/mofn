@@ -7,7 +7,7 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.12.13"
+version: "0.12.14"
 date: "2026-09-16"
 updated: "2026-11-07"
 needs_review: true
@@ -109,9 +109,6 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-020 | D1 v0.1 — construction best practice (`library/docs/construction.md`) — **at risk**: last edit 2026-09-16; FX-1 (`docs/extraction.md`) now carries much of it | D1 | S2 | L | doing |
 | T-021 | ~~Seed 10 records by hand to prove the schema~~ — done | D2 | S2 | M | done |
 | T-022 | Ingest adapters verified for each type: pdf, url, ietf, xlsx, md, book, repo, consortium, hierarchy | D2 | S2 | M | doing |
-| T-023 | ~~Shelfmark: converge requirements, then schema~~ — **split 2026-11-06** into T-023a/b/c (#137–#139); #10 closed. No data merger, unchanged | D2 | PL | M | done |
-| T-023a | Shelfmark: supply locator, schema version, requirements source, peer id, decider (#137) | D2 | S1 | S | todo |
-| T-023b | Shelfmark: requirements diff, `library/docs/shelfmark-convergence.md`: agree / differ / must differ. Blocked by T-023a (#138) | D2 | PL | M | todo |
 | T-024 | Library to ~40 records across the topics — **count met (280), quality not**: 16 written, 264 scaffolds. Fill tracked in library#45 | D2 | S2 | L | doing |
 | T-025 | Report: *context* — **drafted** as `R-0005` (research/0005-context). Synthesis pass over R-001 §1–§6/§11/§12 and R-0004 §8; **no retrieval pass**, stated as a limitation in its `searches.md` | D3 | S1 | L | review |
 | T-026 | Report: *mechanism* — **drafted** as `R-0006` (research/0006-mechanism), v0.3.0. The comparative anatomy of in-toto/DSSE, SCITT/COSE, SPKI, PICS and VC/DID in one frame (§2.2–§2.5; PICS and VC cells marked unsourced, `unverified.md`), the six conditions, all four DEC-002 candidates scored, DEC-004's meet-vs-accumulation evidence. Decides nothing; §3.9 states where the evidence sits relative to MD-3 **and `ADR-0003` D2**, and §3.13 reads conditions (5) and (6) against `SPEC-0002`/`SPEC-0003`. §4.6–§4.7: the accepted core's range algebra, and whether T-042 is subsumed by it — **raised for T-042's owner, not decided**. Owned jointly (#100 assigned to both, 2026-10-20) | D3 | S1+S2 | L | review |
@@ -273,5 +270,4 @@ in 2026 that has not read FIPS 204 and 205 will be asked why.
 | T-091 | WP5 — X.509 import | Out of scope this semester |
 | T-092 | Transparency service / receipts | R-O-04 is `Could`; not in the demo floor |
 | T-093 | Library federation across peers | Design and document only; do not build |
-| T-023c | Shelfmark schema convergence (#139) | After T-023b is accepted; PLAN-0001 §12 caps the library |
 | T-094 | Nested threshold subjects | v2 |

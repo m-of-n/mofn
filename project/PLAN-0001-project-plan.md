@@ -7,7 +7,7 @@ description: "Execution plan for the CS690 project. Subordinate to ARCH-0001 for
 type: plan
 category: process
 status: draft
-version: "0.6.3"
+version: "0.6.4"
 date: "2026-09-16"
 updated: "2026-11-07"
 authors:
@@ -269,16 +269,13 @@ Five points D1 must defend:
 - A library is a git repo. N libraries = N repos. Offline is free.
 - `MANIFEST.yaml` lists **federation peers** by ID and URL.
 - Record IDs are namespaced by library ID, so `usf-lp:rfc-9943` and
-  `shelfmark:rfc-9943` never collide and can merge.
+  `peer:rfc-9943` never collide and can merge.
 - Cross-library references resolve by `(library-id, record-id, content-hash)`.
   Hash mismatch is *detectable divergence*, not silent corruption.
 - **Designed-for, not built now:** a library publishes a signed
   `ArtifactStatement` over its own manifest digest — federation then inherits the
   system's own integrity guarantees, and the library becomes a worked example of
   the protocol instead of a side tool.
-
-> **Open question for Paul:** does `library/` converge with Shelfmark? Same
-> hash-as-identity model. Cheap to align now, expensive in November.
 
 ---
 
@@ -625,17 +622,16 @@ draft — correct to cite, wrong to depend on. CRA Art. 14 began 11 Sept 2026.
 **Open items for Paul** — each blocks or reshapes work below it:
 1. **DEC-001** (naming/slug) — blocks org creation, blocks D0. Take it first.
 2. Library standalone repo — yes/no (§3 recommends yes).
-3. Does `library/` converge with Shelfmark (§4)?
-4. Transparency log in the demo floor, or deferred (§12 risk 8)?
-5. **Does R-M-12 stand?** It is the load-bearing addition and it constrains
+3. Transparency log in the demo floor, or deferred (§12 risk 8)?
+4. **Does R-M-12 stand?** It is the load-bearing addition and it constrains
    DEC-002, DEC-004, and DEC-007 at once. If it is too strong, say so now.
-6. Does R-M-12 belong as a requirement row, or does it deserve **ARCH-0002**?
+5. Does R-M-12 belong as a requirement row, or does it deserve **ARCH-0002**?
    It is arguably the most novel claim available — SDSI localized principal
    names; nobody localized type names.
-7. Accept **DEC-007** (predicate rendering and display) as a filed open decision?
-8. Accept `ArtifactId.description` (§7.2) as an additive MINOR to §4.1, and does
+6. Accept **DEC-007** (predicate rendering and display) as a filed open decision?
+7. Accept `ArtifactId.description` (§7.2) as an additive MINOR to §4.1, and does
    `locator` survive R-M-12?
-9. Confirm WP4/WP5 out of scope this semester.
+8. Confirm WP4/WP5 out of scope this semester.
 
 ---
 
@@ -643,7 +639,7 @@ draft — correct to cite, wrong to depend on. CRA Art. 14 began 11 Sept 2026.
 
 **Paul, this week**
 1. **DEC-001.** Everything downstream waits on the slug.
-2. Answer open items 2–7 above.
+2. Answer open items 2–6 above.
 3. Bump ARCH-0001 to v0.2.0 if the proposal is accepted — per §9, changelog and
    `updated` together. The §9 entry is pre-drafted in the proposal.
 
