@@ -58,7 +58,8 @@ def awkward(value, this=None) -> bytes:
         1: 4,
         2: 1,
         3: alice,
-        4: this or [5, value],
+        # a description target: the locator target [5, text] was withdrawn (mofn#144)
+        4: this or [6, {1: bytes(32), 2: "label"}, value],
         6: {1: [{1: {1: bytes(32), 2: "x"}, 2: value}]},
     }
     return signer.sign(seed("alice"), s)

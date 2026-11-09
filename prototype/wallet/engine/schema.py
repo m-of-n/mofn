@@ -59,7 +59,7 @@ TARGETS = {
     2: "digest",
     3: "statement",
     4: "definition",
-    5: "locator",
+    # 5 is reserved: the locator target, withdrawn in SPEC-0002 0.6.0 (mofn#144)
     6: "description",
 }
 TARGET = {v: k for k, v in TARGETS.items()}
@@ -74,7 +74,7 @@ KIND_TARGETS = {
     8: {4},
     9: {2, 3},
     10: {2, 3},
-    11: {2, 3, 4, 5, 6},
+    11: {2, 3, 4, 6},
 }
 
 _DECIMAL = re.compile(r"0|-?[1-9][0-9]*")
@@ -489,8 +489,6 @@ class Target:
             VALUE.check(v[2], path)
         elif n != 2:
             fail(path, f"a {TARGETS[t]} target has two elements")
-        elif t == 5:
-            Tstr().check(v[1], path)
         else:
             Bstr(32).check(v[1], path)
 
@@ -500,8 +498,6 @@ class Target:
             inner = Flow(alg=Name(DIGEST_ALGS[v[1]]), value=Hex(v[2]))
         elif t == 6:
             inner = Flow(type=TYPE_REF.to_h(v[1]), value=VALUE.to_h(v[2]))
-        elif t == 5:
-            inner = Text(v[1])
         else:
             inner = Hex(v[1])
         return Flow({TARGETS[t]: inner})
@@ -524,8 +520,6 @@ class Target:
                 Field(1, "type", TYPE_REF, True), Field(2, "value", VALUE, True)
             ).from_h(x, path)
             v = [6, m[1], m[2]]
-        elif t == 5:
-            v = [5, _text(x, path)]
         else:
             v = [t, _bytes(x, path)]
         self.check(v, path)

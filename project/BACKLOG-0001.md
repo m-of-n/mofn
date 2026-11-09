@@ -137,7 +137,7 @@ summary bar). Accept or keep #32's rule — L-035.
 |---|---|---|---|---|---|
 | T-040 | Name resolution: `Name` → `KeyId` via `NameCert` chains (§4.3 step 1) | D6 | S1 | L | todo |
 | T-040s | SPEC-0004: specify SDSI name resolution — `Name` principals, compound names (ARCH-0001 §5.5) — mofn#143. Blocks T-040 | D6 | S1 | L | todo |
-| T-048 | SPEC-0002 §7.2: a locator target must travel with a digest or description (R-M-07) — mofn#144 | D6 | S2 | S | todo |
+| T-048 | ~~SPEC-0002 §7.2: a locator target must travel with a digest or description (R-M-07)~~ — done: SPEC-0002 0.6.0 withdraws target type 5; N-11; DL-0030 — mofn#144 | D6 | S2 | S | done |
 | T-049 | Wallet test: DV-2/TV-13 rendered sentence — the clause `ADR-0007`'s acceptance test still owes | D6 | S2 | S | todo |
 | T-041 | 5-tuple reduction: tag ∩, validity ∩, delegation (§4.3 step 2) | D6 | S1 | L | todo |
 | T-042 | Minimal tag profile — opaque bytes + `bytes-equal` (DEC-004 minimum). *Possibly subsumed by `SPEC-0003` `delegation: 1` — `R-0006` §4.7; owner's call* | D6 | S1 | M | todo |

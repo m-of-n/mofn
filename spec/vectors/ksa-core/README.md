@@ -36,5 +36,12 @@ For DEC-002's acceptance test: `ArtifactStatement` is TV-4, `AuthzCert` is TV-5
 and TV-9, and `NameCert` is TV-13 under DV-2 (`ARCH-0002` P6). Reasoning:
 `design-log/0019-threshold-fixture/`.
 
+## Locator target withdrawn
+
+**N-11** is TV-4's attestation with `this = [5, uri]`. SPEC-0002 0.6.0 withdrew
+target type 5, because a locator binds no digest (`ARCH-0001` R-M-07, R-M-11;
+mofn#144). It is well-formed and correctly signed, so only V7 `structure` can
+reject it. Reasoning: `design-log/0030-locator-digest/`.
+
 After regenerating, copy `vectors.md` into SPEC-0002 between the
 `VECTORS:BEGIN` / `VECTORS:END` markers.

@@ -5,7 +5,7 @@ title: "ARCH-0001 changelog"
 type: changelog
 parent: ARCH-0001
 status: active
-version: "0.2.0"
+version: "0.2.1"
 date: "2026-09-15"
 updated: "2026-11-07"
 canonical_path: spec/ARCH-0001-CHANGELOG.md
@@ -14,6 +14,15 @@ canonical_path: spec/ARCH-0001-CHANGELOG.md
 # ARCH-0001 changelog
 
 Format: newest first. Versions match the architecture document.
+
+## 0.2.1 — 2026-11-07
+
+PATCH. T-048 (mofn#144). No requirement changes. `SPEC-0002` 0.6.0 withdraws
+target type 5, so a locator is never a target and every target binds a digest.
+That meets R-M-07 as 0.2.0 kept it. The §5.5 row for locator-only subjects is
+closed and removed. The notes on R-M-07 and R-M-11 and the §4.1 `ArtifactId`
+and §4.2 `ArtifactStatement` rows now point to the rule. Decided by
+`ndewedo-newbury`; the agent drafted the text. Recorded in `DL-0030`.
 
 ## 0.2.0 — 2026-11-07
 

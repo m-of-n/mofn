@@ -8,7 +8,7 @@ description: "Canonical working architecture for a native model that is not X.50
 type: architecture
 category: security
 status: draft
-version: "0.2.0"
+version: "0.2.1"
 version_policy: "semver; PATCH = editorial; MINOR = additive requirements; MAJOR = breaking model change"
 date: "2026-09-15"
 updated: "2026-11-07"
@@ -101,7 +101,7 @@ agent_notes: >
 
 # ARCH-0001 — Authorization, local names, and artifact attestation
 
-**Status:** draft · **Version:** 0.2.0 · **Date:** 2026-09-15 · **Updated:** 2026-11-07  
+**Status:** draft · **Version:** 0.2.1 · **Date:** 2026-09-15 · **Updated:** 2026-11-07  
 **Canonical file:** `spec/ARCH-0001-authorization-attestation.md`  
 **Changelog:** `spec/ARCH-0001-CHANGELOG.md`
 
@@ -242,7 +242,7 @@ Logical types. Encoding is DEC-002, accepted as KSA-CBOR (`ADR-0004`). The right
 | `Threshold` | `{ k: int, n: int, members: [Principal, ...] }` with `1 ≤ k ≤ n` and `n = len(members)` | `trust` with `trusts: [2* kid]`, `threshold: k`; `n` is the array length (§8.6) |
 | `Tag` | Authorization scope; opaque at this layer except for defined intersection | `attribute-range` (§7.4). Its *within* relation is the type's base kind (`SPEC-0003` §6). DEC-004 still open |
 | `Validity` | `{ not_before?, not_after?, online_check? }` | `valid = { not-before, not-on-or-after, issued }` (§7.3); no online check |
-| `ArtifactId` | A subject, identified by **one of three modes** (R-M-11): `digest` for bytes in hand; `locator` for a subject with an external name (**non-authoritative**, a hint, never a definition); `description`, the canonical digest of a structured description, for subjects that cannot be hashed (a physical object, a work, an event, a role). Plus an `aliases` set binding several identifiers to one subject. At least one content digest is bound in every case (R-M-07) | target types 2 digest, 5 locator, 6 description (§7.2). **A bare locator target conflicts with R-M-07** (§5.5, mofn#144). Aliases: no KSA form yet |
+| `ArtifactId` | A subject, identified by **one of three modes** (R-M-11): `digest` for bytes in hand; `locator` for a subject with an external name (**non-authoritative**, a hint, never a definition); `description`, the canonical digest of a structured description, for subjects that cannot be hashed (a physical object, a work, an event, a role). Plus an `aliases` set binding several identifiers to one subject. At least one content digest is bound in every case (R-M-07) | target types 2 digest and 6 description (§7.2). **A locator is not a target:** type 5 was withdrawn in `SPEC-0002` 0.6.0 (mofn#144), and a locator travels as an attribute on a digest or description target. Aliases: no KSA form yet |
 | `PredicateType` | The type a statement assigns, identified **relative to its defining key** (`ARCH-0002` P1), never by URI. Its meaning (names, descriptions and rendering in a language map) is carried by a signed definition (DEC-007, `ADR-0007`) | `type-ref = { definition: DefinitionId, label }` (§7.4; `SPEC-0003`) |
 | `Predicate` | Typed payload whose schema is identified by `PredicateType` | `attribute = { type: type-ref, value }` (§7.4) |
 
@@ -260,7 +260,7 @@ kind-specific `body` (*C*).
 | `NameCert` | **naming**: bind a local name to a principal | `attestation` (4) about a key, assigning a name-typed attribute (TV-13, DV-2) | One label today. **Compound names and their resolution are owed by `SPEC-0004`** (§5.5, mofn#143). G2 and R-M-04 still hold: naming and delegation are different functions with different verifier procedures |
 | `AuthzCert` | **delegation**: extend authority to a principal over a scope | `trust` (5): `about` is the scope; `may-delegate` constrains onward delegation | Replaces `delegate: bool` (R-M-10, below) |
 | `AclEntry` | **local policy**: the relying party's own root | not a statement. An unsigned local anchor in a context (`SPEC-0004` §4). A signed `trust` becomes an anchor only by a local act of acceptance (`ADR-0003` D3) | The anchor list is unsigned, so it has no speaker and is not a statement (P6). It is the fixed floor that `ARCH-0002` DEC-008 says cannot be key-local |
-| `ArtifactStatement` | **attestation**: assert that a subject has attributes | `attestation` (4) about a digest, locator or description target; `review` (9), `approve` (10) and `aggregate` (11) about a statement or object | Acceptance may still require a delegation (§4.3 step 3). An `approve` counts only if its speaker reduces to a delegation for approval; a `review` never does |
+| `ArtifactStatement` | **attestation**: assert that a subject has attributes | `attestation` (4) about a digest or description target, a locator riding as an attribute; `review` (9), `approve` (10) and `aggregate` (11) about a statement or object | Acceptance may still require a delegation (§4.3 step 3). An `approve` counts only if its speaker reduces to a delegation for approval; a `review` never does |
 | `Endorse` | **introducer weight**, PGP-shaped | none native. Import only (R-I-04, WP4) | An imported introducer becomes a `trust` only under an explicit import profile; otherwise it is evidence |
 | — | **key lifecycle and vocabulary** | `key-publish` (1), `self` (2), `speaks` (3), `revoke` (6), `rotate` (7), `define` (8) | New in 0.2.0, from `SPEC-0002`. `define` publishes the definitions that DEC-007 relies on |
 
@@ -333,11 +333,11 @@ Priority: **M**ust / **S**hould / **C**ould. Open decisions do not silently sati
 | R-M-04 | M | Name bindings and authorization bindings SHALL be distinct object kinds. |
 | R-M-05 | M | Authorization composition SHALL be deterministic given an ordered cert set and ACL. |
 | R-M-06 | M | Threshold principals SHALL be representable without encoding them as a CA hierarchy. |
-| R-M-07 | M | Artifact statements SHALL bind at least one content digest. *0.2.0: kept as MUST by decision (`DL-0028`); a description digest (R-M-11) satisfies it, a locator alone does not. `SPEC-0002` §7.2 owes the rule (§5.5, mofn#144).* |
+| R-M-07 | M | Artifact statements SHALL bind at least one content digest. *0.2.0: kept as MUST by decision (`DL-0028`); a description digest (R-M-11) satisfies it, a locator alone does not. `SPEC-0002` 0.6.0 §7.2 meets it: every target type binds a digest, and the locator target is withdrawn (mofn#144, `DL-0030`).* |
 | R-M-08 | M | Intersection (*within*) semantics SHALL be defined for every tag profile the implementation claims, and for every constrained type it accepts. *0.2.0: generalised from tags to every constrained object (`ADR-0002` §5, P2); `SPEC-0003` §6 base kinds meet it for the types they cover.* |
 | R-M-09 | S | Validity intersection SHALL be defined (time window ∩ optional online checks). |
 | R-M-10 | S | Delegation SHALL be explicit and bounded on the delegation statement: absent means one hop with no onward delegation; present, it SHALL state an integer `depth` and MAY state an onward scope allow-list (`ranges`), key allow/exclude lists, and a validity cap. Each hop's scope SHALL be within the previous hop's, and a widening SHALL be reported as such, not intersected silently to empty. *0.2.0: was "an explicit boolean (or equivalent)". Rewritten to match `SPEC-0002` §8.6 and `SPEC-0004` §6.3 by decision on mofn#136 (`DL-0025`). **Stated limit:** RFC 2693 §4.1.3–§4.1.4 rejected integer depth because the right depth cannot be predicted ("one can always need to go one more level down, by creating a temporary signing key") and because depth does not bound the width of the delegation tree. Both points stand. Depth is therefore **not a security bound**: it limits what a relying party will follow, not what a key holder can do. Width is limited by `ranges` and the key lists, which SPKI did not have. OpenPGP trust-signature levels (RFC 9580 §5.2.3.21) are the deployed precedent.* |
-| R-M-11 | M | An `ArtifactId` SHALL support identification by content digest, by external locator, or by the canonical digest of a structured description. At least one content digest SHALL be bound in all cases, per R-M-07. A locator SHALL be treated as non-authoritative evidence about a subject, not as its definition. *Added 0.2.0 from the proposal. `SPEC-0002` §7.2 targets 2, 5, 6 implement the three modes.* |
+| R-M-11 | M | An `ArtifactId` SHALL support identification by content digest, by external locator, or by the canonical digest of a structured description. At least one content digest SHALL be bound in all cases, per R-M-07. A locator SHALL be treated as non-authoritative evidence about a subject, not as its definition. *Added 0.2.0 from the proposal. `SPEC-0002` §7.2 implements the modes as target 2 (digest), target 6 (description) and, for the locator, an attribute on either (0.6.0, mofn#144).* |
 | R-M-12 | — | *Relocated: native extension points are key-relative. Accepted as `ARCH-0002` P1 by `ADR-0001`; not restated here.* |
 
 ### 5.2 Interchange
@@ -375,13 +375,13 @@ Priority: **M**ust / **S**hould / **C**ould. Open decisions do not silently sati
 
 `ADR-0003`: where a SPEC and an ARCH document differ, the SPEC governs and the
 ARCH document is corrected. 0.2.0 makes those corrections in §4 and §5. Two
-differences go the **other** way by decision (`DL-0028`). In those cases this
-document keeps its requirement, and the SPEC owes the change.
+differences went the **other** way by decision (`DL-0028`). In those cases this
+document keeps its requirement, and the SPEC owes the change. One is closed:
+locator-only subjects, by `SPEC-0002` 0.6.0 (mofn#144, `DL-0030`).
 
 | Gap | ARCH-0001 | SPEC | Owed by | Issue |
 |---|---|---|---|---|
 | SDSI names | §1 item 2, G1, R-M-03, §4.3 step 1: compound names resolve to a key | no `Name` principal, no compound names, no resolution step | `SPEC-0004` (and `SPEC-0002` if a form is needed) | mofn#143 |
-| Locator-only subject | R-M-07, R-M-11: a content digest is always bound; a locator is a hint | `SPEC-0002` §7.2 allows `this = [5, text]` alone | `SPEC-0002` §7.2 | mofn#144 |
 | `Group` principal | §4.1 | no form | open; no consumer yet | — |
 | `aliases` set | §4.1, R-M-11 | no form | `SPEC-0002`, when a consumer needs it | — |
 | Online validity check | §4.1 `Validity.online_check`, R-M-09 | none; `valid` is time only | open; R-O-02 prefers short validity | — |
@@ -625,4 +625,4 @@ their common principle. It is not a reason to merge them.
 - `draft-mih-scitt-agent-action-capsule-02` — ad hoc vocabulary inside SCITT (§3.3)  
 - RFC 9580 — OpenPGP (2024): §3.7, §5.2.3.7, §5.2.3.21, §5.2.3.24, §5.2.3.29, §5.2.5, §5.5.3, §5.5.4.3 (read for §3.4)
 
-End of ARCH-0001 v0.2.0
+End of ARCH-0001 v0.2.1

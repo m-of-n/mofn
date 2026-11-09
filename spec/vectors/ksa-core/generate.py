@@ -279,6 +279,14 @@ lying = V["TV-9"]["tbs"].replace(head, b"\x03\x84\x58\x20")
 bad("N-10", envelope(kid("carol"), lying, sign("carol", lying)),
     "the array head of trusts says n = 4 and three members follow; not well-formed CBOR, correctly signed",
     "V5 canonical decode")
+# N-11: TV-4's attestation, but about a bare locator. Target type 5 was withdrawn in
+# SPEC-0002 0.6.0: a locator binds no digest (ARCH-0001 R-M-07, R-M-11; mofn#144).
+# Well-formed CBOR, correctly signed; only V7 can see it.
+s11 = dict(s4); s11[4] = [5, "https://example.org/releases/demo-1.0.tar.gz"]
+tb11 = enc(s11)
+bad("N-11", envelope(kid("alice"), tb11, sign("alice", tb11)),
+    "attestation whose target is a bare locator [5, uri]; target type 5 is reserved, so no digest is bound",
+    "V7 structure")
 
 # ---------------------------------------------------------------- output
 hx = lambda b: b.hex()

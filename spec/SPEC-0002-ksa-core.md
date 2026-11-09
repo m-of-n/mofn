@@ -7,10 +7,10 @@ description: "The KSA statement: its data model, deterministic encoding, signed 
 type: specification
 category: security
 status: draft
-version: "0.5.0"
+version: "0.6.0"
 version_policy: "semver; MAJOR = any change to signed or hashed bytes; MINOR = additive registry entries or requirements; PATCH = editorial"
 date: "2026-10-14"
-updated: "2026-11-03"
+updated: "2026-11-07"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -49,7 +49,7 @@ related_rfcs: [RFC2119, RFC8174, RFC8032, RFC8610, RFC8949]
 
 # KSA Core — statements, data model, canonical encoding and cipher suites
 
-**Specification SPEC-0002 · version 0.5.0 · draft**
+**Specification SPEC-0002 · version 0.6.0 · draft**
 
 ## Abstract
 
@@ -83,6 +83,13 @@ change, and every published vector keeps its result.
 specification leaves `0.x`. Until then a suite's entry may be revised, as suite
 1's verification rules were in 0.4.0. `decision_makers` records the sponsor's
 October delegation (DL-0021). No signed or hashed bytes change.
+**0.6.0 (2026-11-07):** target type 5, the locator, is **withdrawn** (§7.2;
+mofn#144, DL-0030). A locator alone binds no digest, and ARCH-0001 R-M-07 and
+R-M-11 require one. A statement whose target is `[5, …]` is now invalid at V7
+(N-11). A locator for a subject is carried as an attribute (§7.2). No signed or
+hashed bytes change and every published vector keeps its result, but a
+statement that verified under 0.5.0 can now fail: this is permitted only
+because the document is `0.x`.
 Nothing in this draft is final until its version leaves `0.x`.
 
 ---
@@ -415,11 +422,25 @@ a target type.
 | 2 digest | `[2, digest-alg, bytes]` | an object identified by its digest; `digest-alg` 1 = SHA-256 (32 octets) |
 | 3 statement | `[3, statement-digest]` | another statement |
 | 4 definition | `[4, DefinitionId]` | a definition |
-| 5 locator | `[5, text]` | a resource identified by a URI; weaker than a digest, and SHOULD be used only where no digest exists |
+| 5 | — | **reserved, never assigned.** Was the locator, `[5, text]`; withdrawn in 0.6.0 |
 | 6 description | `[6, type-ref, value]` | something identified by a typed description — the description's canonical encoding is its identity |
 
 Subjects are not limited to keys: a statement can concern a release, a record,
 a definition, or another statement.
+
+**Every target binds a digest** (ARCH-0001 R-M-07, R-M-11). Types 1, 3 and 4
+are digests; type 2 is a content digest; type 6 is identified by the canonical
+encoding of its description. A statement whose target is not one of the types
+above MUST be rejected at V7 (§9.2).
+
+**A locator is evidence, never a target.** A URI, URN, ISBN, serial number or
+file path names a *place* or a *label*, not content: what it resolves to can
+change while the name stays the same. Where a statement needs to say where its
+subject can be found, it targets the subject by digest (type 2) or by
+description (type 6) and carries the locator as an attribute whose type a
+definition defines (§7.4). A relying party MUST NOT treat content fetched from
+a locator as the subject unless that content matches the target (compare
+SPEC-0003 §4.4).
 
 ### 7.3 Validity
 
@@ -729,7 +750,7 @@ map keys are always sorted (§4.2).
   and MUST NOT alter the text. The statement stays valid in its binary form.
 - A target (§7.2) is a map with one key, the name of its type: `{key: '0x…'}`,
   `{digest: {alg: sha-256, value: '0x…'}}`, `{statement: '0x…'}`,
-  `{definition: '0x…'}`, `{locator: text}`, and
+  `{definition: '0x…'}`, and
   `{description: {type: {definition: '0x…', label: text}, value: …}}`.
 - Times are quoted text in the exact form of §4.4. A YAML loader MUST NOT resolve
   YAML timestamps.
@@ -754,6 +775,9 @@ bytes of any existing statement.
 
 ### 12.1 Statement kinds — §8.1
 ### 12.2 Target types — §7.2
+
+Code 5 is reserved, never assigned: the locator was withdrawn in 0.6.0 (§7.2).
+A new target type MUST bind a digest (ARCH-0001 R-M-07).
 
 ### 12.3 Cipher suites — §6.2
 
@@ -870,6 +894,16 @@ proof of possession bound to a presentation and a nonce (SPEC-0001 §8).
 
 Validity depends on the evaluator's clock. SPEC-0004 §8 says how a
 time is chosen.
+
+### 13.10 Locators as subjects
+
+A statement about a locator would be about whatever the locator resolves to
+when someone looks, so one signature could vouch for different content on
+different days. That is why type 5 was withdrawn (§7.2). A description target
+(type 6) whose value is only a URI does not reintroduce the problem: its
+identity is the description, so it is a statement about the name, not about
+content found under it. A definer SHOULD NOT define a description type that a
+reader would take for a statement about the content at a locator.
 
 ## 14. Privacy considerations
 
@@ -1251,6 +1285,13 @@ the array head of trusts says n = 4 and three members follow; not well-formed CB
 84015820c7b66369c87c115e8f8ab2fd27540d1a8a28cc475aab29b58ba0caf47910e20758f2a501050201035820c7b66369c87c115e8f8ab2fd27540d1a8a28cc475aab29b58ba0caf47910e20705a20119022d031a02de457006a30181a201a2015820517007656a617b3b5ab7cc376275a46ad88d14594f6846df88a34f2c8b3a717502706275696c642d70726f76656e616e636503826c726570726f64756369626c656861747465737465640384582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9582039f713d0a644253f04529421b9f51b9b08979d08295959c4f3990ee617f5139f5820d5f0b21718b21f79648f7f4a0325288209e6fd37fa2f90f9d29c4229e371f8c704025840d246f570ca29eae769b4ac250659a76cd5505bc5024542cbd2e3f93d8e499d84cbdaecf5af95e7253761325cb9ecb4e633353d20e8104c2f8a20c9d2a15b8d00
 ```
 
+#### N-11 — reject at V7 structure
+
+attestation whose target is a bare locator [5, uri]; target type 5 is reserved, so no digest is bound.
+```
+8401582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b958b3a60104020103582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9048205782c68747470733a2f2f6578616d706c652e6f72672f72656c65617365732f64656d6f2d312e302e7461722e677a05a30119022d02190261031a02de295006a10181a201a2015820517007656a617b3b5ab7cc376275a46ad88d14594f6846df88a34f2c8b3a717502706275696c642d70726f76656e616e6365026c726570726f64756369626c655840952ede3f1f82c70ee53a5e557691e652496e225771b5d5187a8e9035d395f94eb80087ca38ed9cfd7b7f2126f7f7ca9b9291fa245407135cd415aa2a89302606
+```
+
 <!-- VECTORS:END -->
 
 ## Appendix B. CDDL
@@ -1284,7 +1325,7 @@ target = [1, kid]                        ; key
        / [2, digest-alg, bstr]           ; object digest
        / [3, digest]                     ; statement
        / [4, definition-id]              ; definition
-       / [5, tstr]                       ; locator (URI)
+                                         ; 5: reserved (locator, withdrawn 0.6.0)
        / [6, type-ref, value]            ; description
 digest-alg = 1..3
 

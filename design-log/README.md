@@ -58,6 +58,7 @@ vectors, and tooling.
 | `0025-delegation-depth` | T-012c (mofn#136): integer depth kept (SPEC-0004), R-M-10 to be rewritten; `trust … about … may-delegate` named, `may-speak` retired; boolean rejected with RFC 2693 §4.1.4 carried as a stated limit | **open** — R-M-10 text owed to T-012a; no DEC-* touched |
 | `0026-openpgp-transfer` | what to take from OpenPGP (mofn#128): ARCH-0001 0.1.9 §3.4 research inputs, PLAN-0004 0.2.0 §6.2 engine rules, `unlock` binds the seed to its kid; revocation-at-creation declined | **open** — human review pending; no DEC-* touched |
 | `0027-adr-0006-dec-001` | `ADR-0006`: DEC-001 accepted, `m-of-n` / `mofn`; ratifies names in use since 2026-09-17; all five listed options rejected; the agent's first offer (leave it open) declined | **open**: second reader owed |
+| `0030-locator-digest` | T-048 (mofn#144): `SPEC-0002` 0.6.0 withdraws target type 5, so every target binds a digest (R-M-07); a locator is an attribute; N-11; `ARCH-0001` 0.2.1 closes the §5.5 row; aliases, second target and body field rejected | **open**: second reader owed; `ARCH-0003` §3.7 owed to the sponsor; no DEC-* touched |
 | `0028-arch-0001-v0-2-0` | ARCH-0001 v0.2.0 (mofn#134): proposal folded in, §4.2 one form, R-M-10/11, R-O-05/06, §5.5 gaps; DEC-007 accepted (`ADR-0007`); the agent recommended leaving DEC-007 open and the human closed it | **open** — second reader owed; mofn#143, #144 owed by SPECs |
 | `0029-weekly-slice` | weekly `demo/slice.sh` run posted on mofn#68 by cron CI; verdict notes kept human | **open** — human review pending |
 
