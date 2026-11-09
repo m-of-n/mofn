@@ -43,5 +43,21 @@ target type 5, because a locator binds no digest (`ARCH-0001` R-M-07, R-M-11;
 mofn#144). It is well-formed and correctly signed, so only V7 `structure` can
 reject it. Reasoning: `design-log/0030-locator-digest/`.
 
+## Delegation and the evaluations block
+
+TV-14…20 are trust and attestation statements under TV-5's
+`may-delegate {depth: 1, ranges: [reproducible]}`. `vectors.json` →
+`evaluations` gives E-1…E-4: the statement set, the ask, and the SPEC-0004
+answer, reason and failing statement. These are **declared**, not computed by
+this script; `prototype/wallet/tests/test_delegation.py` checks them
+(SPEC-0004 Appendix A asks 3–6; mofn#136).
+
+| eval | case | expected |
+|---|---|---|
+| E-1 | hop `about` outside `ranges` | no, `widening` |
+| E-2 | the same hop within `ranges` | yes |
+| E-3 | a second hop with no delegation left | no, `depth` |
+| E-4 | onward `depth` larger than what remains | no, `widening` (not clipped) |
+
 After regenerating, copy `vectors.md` into SPEC-0002 between the
 `VECTORS:BEGIN` / `VECTORS:END` markers.

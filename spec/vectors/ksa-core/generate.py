@@ -218,6 +218,49 @@ add("TV-13", "alice", statement("attestation", "alice", [T_KEY, kid("bob")],
     {1: t("2026-10-06T00:00:00Z"), 3: t("2026-10-06T13:00:00Z")}),
     "attestation about a KEY: Alice says Bob's key has name \"fred\" (the NameCert role, ARCH-0002 P6)")
 
+# Delegation (SPEC-0004 §6.3; ARCH-0001 R-M-10; mofn#136). TV-5 trusts Alice about
+# build-provenance in [reproducible, attested] with may-delegate depth 1 within
+# [reproducible]. These statements exercise the two ways a hop fails.
+BP_VALID = {1: t("2026-10-06T00:00:00Z"), 2: t("2026-11-01T00:00:00Z")}
+def bp_trust(signer, to, rng, issued, deleg=None):
+    body = {1: [{1: tref("build-provenance"), 3: rng}]}
+    if deleg is not None: body[2] = deleg
+    return statement("trust", signer, [T_KEY, kid(to)], body, {**BP_VALID, 3: t(issued)})
+def bp_attest(signer, value, issued):
+    return statement("attestation", signer, [T_DIGEST, SHA256, ARTIFACT],
+                     {1: [{1: tref("build-provenance"), 2: value}]}, {**BP_VALID, 3: t(issued)})
+
+add("TV-14", "alice", bp_trust("alice", "bob", ["attested"], "2026-10-07T09:00:00Z"),
+    "trust: Alice trusts Bob about build-provenance in {attested}; outside TV-5's may-delegate ranges, so widening (SPEC-0004 §6.3 item 4)")
+add("TV-15", "bob", bp_attest("bob", "attested", "2026-10-07T10:00:00Z"),
+    "attestation: Bob says the artifact's build-provenance is attested")
+add("TV-16", "alice", bp_trust("alice", "bob", ["reproducible"], "2026-10-07T09:30:00Z"),
+    "trust: Alice trusts Bob about build-provenance in {reproducible}, no may-delegate: within TV-5, one hop only")
+add("TV-17", "bob", bp_attest("bob", "reproducible", "2026-10-07T10:30:00Z"),
+    "attestation: Bob says the artifact's build-provenance is reproducible")
+add("TV-18", "bob", bp_trust("bob", "dave", ["reproducible"], "2026-10-07T11:00:00Z"),
+    "trust: Bob trusts Dave about build-provenance in {reproducible}; Bob holds no delegation, so depth (§6.3 item 3)")
+add("TV-19", "dave", bp_attest("dave", "reproducible", "2026-10-07T11:30:00Z"),
+    "attestation: Dave says the artifact's build-provenance is reproducible")
+add("TV-20", "alice", bp_trust("alice", "bob", ["reproducible"], "2026-10-07T12:00:00Z",
+                               deleg={1: 1}),
+    "trust: Alice trusts Bob about {reproducible} with may-delegate depth 1; TV-5 left Alice depth 1, so at most 0 may pass on: widening (§6.3 item 6)")
+
+# Expected SPEC-0004 answers over these statements. The anchor is TV-5 in Carol's
+# context `releases`; the ask is: is ARTIFACT build-provenance = <value> at the
+# time below. Declared, not computed: no evaluator is run here.
+ASK_AT = "2026-10-10T12:00:00Z"
+EVALS = [
+    ("E-1", ["TV-14", "TV-15"], "attested", "no", "widening", "TV-14",
+     "a hop's about [attested] is not within the delegator's may-delegate ranges [reproducible]"),
+    ("E-2", ["TV-16", "TV-17"], "reproducible", "yes", None, None,
+     "TV-5 → TV-16: one hop within ranges; Bob may attest"),
+    ("E-3", ["TV-16", "TV-18", "TV-19"], "reproducible", "no", "depth", "TV-18",
+     "TV-16 carries no may-delegate, so Bob's own trust statement is not followed"),
+    ("E-4", ["TV-20", "TV-17"], "reproducible", "no", "widening", "TV-20",
+     "TV-20 asks for depth 1 where at most 0 remains; widening fails the hop, it is not clipped to 0"),
+]
+
 # ---------------------------------------------------------------- negative vectors
 N = {}
 def bad(name, env, why, step):
@@ -299,6 +342,10 @@ out = {
     "positive": {n: {"note": v["note"], "signer": v["signer"], "tbs": hx(v["tbs"]), "sig": hx(v["sig"]),
                      "envelope": hx(v["envelope"]), "digest": hx(v["digest"]), "expect": "accept"} for n, v in V.items()},
     "negative": {n: {"why": v["why"], "step": v["step"], "envelope": hx(v["envelope"]), "expect": "reject"} for n, v in N.items()},
+    "evaluations": {e: {"anchor": "TV-5", "context": "releases", "statements": s,
+                        "ask": {"this": "artifact", "build-provenance": val}, "at": ASK_AT,
+                        "answer": ans, "reason": why, "at_statement": at_s, "note": note}
+                    for e, s, val, ans, why, at_s, note in EVALS},
 }
 (HERE / "vectors.json").write_text(json.dumps(out, indent=2) + "\n")
 
@@ -316,5 +363,9 @@ for n, v in V.items():
 md += ["### Negative vectors", ""]
 for n, v in N.items():
     md += [f"#### {n} — reject at {v['step']}", "", v["why"] + ".", "```", hx(v["envelope"]), "```", ""]
+md += ["### Delegation evaluations (SPEC-0004 Appendix A)", "",
+       f"Anchor TV-5 in context `releases`; ask: is the artifact's build-provenance the value shown, at {ASK_AT}.", "",
+       "| eval | statements | value | answer | reason | at |", "|---|---|---|---|---|---|"]
+md += [f"| {e} | {', '.join(s)} | {val} | **{ans}** | {why or '—'} | {at_s or '—'} |" for e, s, val, ans, why, at_s, _ in EVALS]
 (HERE / "vectors.md").write_text("\n".join(md) + "\n")
 print(f"{len(V)} positive, {len(N)} negative; DV-1 id {hx(DV1_ID)[:16]}…; encoders agree on all positive vectors")

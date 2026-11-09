@@ -7,9 +7,9 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.12.14"
+version: "0.12.15"
 date: "2026-09-16"
-updated: "2026-11-07"
+updated: "2026-11-08"
 needs_review: true
 reviewed: false
 canonical_path: project/BACKLOG-0001.md
@@ -98,7 +98,7 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-012 | ~~**Architecture development** — umbrella~~ — **split 2026-11-06** (mofn#6 closed). Its three questions were answered by ARCH-0002 P6, MD-1 and PROC-0004 §8b; strands 1–3 continue as T-027, T-026 and the library. ADR-0002 accepted (T-029d). The remainder is T-012a/b/c | — | PL | XL | done (split) |
 | T-012a | ARCH-0001 v0.2.0: proposal folded in; §4.2 one form; ARCH corrected to the SPECs, two gaps kept (§5.5) — mofn#134, `DL-0028`, `ADR-0007` | — | Claude→PL | L | **review** |
 | T-012b | ARCH-0001 target section: supply chain + archives/library (MD-1); AI agents as motivation only — mofn#135 | — | S1+S2 | L | todo — after T-012a |
-| T-012c | Delegation: reconcile R-M-10 (boolean) with SPEC-0004 (integer depth + ranges); `may-speak` vs `trust … about` — mofn#136 | — | PL | M | **decided** 2026-11-06 (1a integer depth, 2a `trust … about`; DL-0025); R-M-10 text landed in ARCH-0001 v0.2.0; depth/widening vector still owed |
+| T-012c | Delegation: reconcile R-M-10 (boolean) with SPEC-0004 (integer depth + ranges); `may-speak` vs `trust … about` — mofn#136 | — | PL | M | **decided** 2026-11-06 (1a integer depth, 2a `trust … about`; DL-0025); R-M-10 text landed in ARCH-0001 v0.2.0; **done** 2026-11-07: vectors TV-14…20, E-1…E-4 (DL-0031) |
 | T-012x | ~~`design-log/` opened~~ — done; DL-0001 and DL-0002 written | D0 | PL | S | done |
 | T-013 | Agree and commit the cut order (PLAN-0001 §12) — mofn#7, no discussion yet | D0 | all | S | todo |
 
@@ -138,7 +138,8 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-040 | Name resolution: `Name` → `KeyId` via `NameCert` chains (§4.3 step 1) | D6 | S1 | L | todo |
 | T-040s | SPEC-0004: specify SDSI name resolution — `Name` principals, compound names (ARCH-0001 §5.5) — mofn#143. Blocks T-040 | D6 | S1 | L | todo |
 | T-048 | ~~SPEC-0002 §7.2: a locator target must travel with a digest or description (R-M-07)~~ — done: SPEC-0002 0.6.0 withdraws target type 5; N-11; DL-0030 — mofn#144 | D6 | S2 | S | done |
-| T-049 | Wallet test: DV-2/TV-13 rendered sentence — the clause `ADR-0007`'s acceptance test still owes | D6 | S2 | S | todo |
+| T-049 | Wallet test: DV-2/TV-13 rendered sentence — the clause `ADR-0007`'s acceptance test still owes | D6 | S2 | S | **done** 2026-11-07 (`test_delegation.py`, DL-0031) |
+| T-065 | Wallet engine: delegation paths (SPEC-0004 §6.3); move E-1…E-4 from the test walker to the engine | D6 | S2 | M | todo |
 | T-041 | 5-tuple reduction: tag ∩, validity ∩, delegation (§4.3 step 2) | D6 | S1 | L | todo |
 | T-042 | Minimal tag profile — opaque bytes + `bytes-equal` (DEC-004 minimum). *Possibly subsumed by `SPEC-0003` `delegation: 1` — `R-0006` §4.7; owner's call* | D6 | S1 | M | todo |
 | T-043 | *k*-of-*n* threshold subjects, keys only, no nesting | D6 | S2 | L | todo |
