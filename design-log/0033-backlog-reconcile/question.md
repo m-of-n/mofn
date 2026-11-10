@@ -6,7 +6,7 @@ title: "BACKLOG-0001 0.13.0 — reconcile the backlog with the repos; close T-03
 date: "2026-11-09"
 model: "claude-opus-5-5"
 human: ndewedo-newbury
-outcome: "BACKLOG-0001 0.13.0: 26 rows marked done with evidence, T-030 and T-032 closed, T-029c decided (Python throughout; DECISIONS-0001 0.7.0 item 28, PLAN-0002 0.3.1, PLAN-0004 0.2.1), T-013 and L-035 searched and found unrecorded, T-066 and L-037…L-040 added. No spec change, no DEC-* touched."
+outcome: "BACKLOG-0001 0.13.0: 26 rows marked done with evidence, T-030 and T-032 closed, T-029c decided (Python throughout, the Textual app is the UI, W-5 rescoped; DECISIONS-0001 0.7.0 item 28, PLAN-0002 0.3.1, PLAN-0004 0.2.1), T-013 and L-035 searched and found unrecorded, T-066 and L-037…L-040 added. No spec change, no DEC-* touched."
 status: open
 ---
 

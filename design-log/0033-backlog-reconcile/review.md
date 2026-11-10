@@ -8,7 +8,8 @@ date: "2026-11-09"
 # DL-0033 — review
 
 **Human decisions:** T-030 and T-032 are closed. T-029c: keep everything
-Python (`DECISIONS-0001` item 28). The reasons on the rows are
+Python (`DECISIONS-0001` item 28); then, asked whether D8 needs a desktop
+window: *"We shall use the Textual app."* W-5 is rescoped into `mofn run`. The reasons on the rows are
 the agent's, and the human can reject them in PR review: T-030's neutral schema
 was the hedge for a deadlocked DEC-002 (`PLAN-0001` §12 risk 4), and
 `ADR-0004` made it unnecessary; T-032's comparison was already declared not
@@ -29,9 +30,12 @@ owed on T-031 (`DL-0019`).
 - **Tauri (T-029c option a).** Rejected by the human: keep everything Python.
   The agent's argument for it — small installers, a modern UI, a sidecar the
   engine's JSON output already supports — did not outweigh one language.
-- **Choosing between PySide6 and Textual for W-5.** The human's decision
-  excludes Tauri and leaves both. The agent did not pick one: that turns on
-  whether D8 needs a desktop window, which nobody has answered.
+- **PySide6 (option b).** Rejected by the human: the Textual app is the UI.
+  A windowed GUI would have been a second UI to keep in step with the engine,
+  four weeks before Dec 4.
+- **Cutting W-5 outright.** The agent rescoped it instead: #69's attribute
+  associations (signer, topic, digest, standing) are not yet in `mofn run`'s
+  Check tab, and they are the part of #69 that is not about a window.
 - **The agent's own "a second toolchain for a skin".** Withdrawn as stated: W-5
   asks for a desktop window, so the comparison was never Tauri against
   nothing.
@@ -43,7 +47,6 @@ owed on T-031 (`DL-0019`).
 
 ## Owed
 
-- W-5's form: PySide6 or Textual, once D8's window question is answered.
 - L-035: one line from the sponsor accepting library#42's rule.
 - T-013: a §12 PR all three approve, or a decision to drop it.
 - `spec/schema/README.md` and `spec/vectors/README.md` are stale; both are
