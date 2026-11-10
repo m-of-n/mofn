@@ -7,7 +7,7 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.12.16"
+version: "0.12.17"
 date: "2026-09-16"
 updated: "2026-11-09"
 needs_review: true
@@ -182,7 +182,8 @@ before it runs.**
 | id | task | issue | del | own | sz | status |
 |---|---|---|---|---|---|---|
 | W-1 | **Wallet engine v0** — `mofn` CLI over a local `wallet/` (`roots/ keys/ domains/ statements/`); `init`, `key gen` (private key `0600`, encrypted at rest, passphrase prompted, **never an argument**), `root add`, `make`, `check` printing the six-line verdict. **Signature checking moves inside reduction** — `reduce` stops trusting its inputs | #65 | D6 | S1 | XL | todo — Oct 28 |
-| W-2 | **Second domain** — one-page scenario per MD-1 target (supply chain, archives/library) incl. the fail-authorization case and three personas; archives domain file v0 (`record-review`, renderings table, `--lang es`); five-view sketches replacing Product Spec §6.5 | #66 | D6/D8 | PL | L | todo — Oct 14, then Nov 25 |
+| W-2 | **Second domain** — one-page scenario per MD-1 target (supply chain, archives/library) incl. the fail-authorization case and three personas; archives domain file v0 (`record-review`, renderings table, `--lang es`); five-view sketches replacing Product Spec §6.5 | #66 | D6/D8 | PL | L | review — APP-0002/0003 scenarios, `domains/archives/` through the same `make`/`check` with no engine change, `--lang` (wallet 0.4.0), APP-0004 sketches, PLAN-0002 0.4.0 §6.5 (DL-0032). Oct 14 part was 4 weeks late |
+| W-2b | **Converge the archives vocabularies — starts when W-3 merges.** DV-3 `library-review` (#152, vector) and `archives` v1 (#154, demo) become one published vocabulary (e.g. `library-review` v2 + `summarized`); the demo moves to it with its delegation path; `domains/archives/` retired or regenerated; APP-0003 § Setup/Steps and goldens updated (APP-0003 § *Two archives vocabularies*, DL-0033) | #66 | D6/D8 | PL | M | blocked — on W-3 (#67) |
 | W-3 | **Delegation with short expiry** — `may-speak` chains in `reduce`, intersecting topic *and* validity; expired or out-of-topic → `authorization FAIL` naming the broken link. **Short expiry is the revocation mechanism**; there is no revocation list | #67 | D6 | PL | L | todo — Nov 11 |
 | W-4 | **Weekly demo slice owner** — grow and run `demo/slice.sh` every Monday, post the output on the issue. Three cases minimum: green, `authorization FAIL`, `integrity FAIL` | #68 | D6 | S2 | M | doing — weekly |
 | W-5 | **Mac GUI** — local desktop app (not a web server) for signing and verify/validate display with attribute associations; calls the W-1 engine, reimplements no crypto. Sign and Verify screens first | #69 | D8 | S2 | L | todo — Dec |

@@ -54,6 +54,7 @@ BASE_KINDS = {
 DELEGATIONS = {0: "none", 1: "same", 2: "scoped"}
 LABEL_RE = r"[a-z][a-z0-9-]{0,62}"
 _LANG = re.compile(r"[a-z]{2,3}(-[A-Z][a-z]{3})?(-([A-Z]{2}|[0-9]{3}))?")
+LANG_TAG = _LANG  # also checks `mofn --lang`
 
 
 class LangMap:

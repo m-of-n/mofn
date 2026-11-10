@@ -24,6 +24,9 @@ nav:
       - "KSA Use Cases — scenarios traced to the specifications": architecture/UC-0001-ksa-use-cases.md
   - Planning:
       - "The application — what we are actually building for the demo": project/APP-0001-application-design.md
+      - "Scenario — supply chain: a release file, and a key with no standing": project/APP-0002-scenario-supply-chain.md
+      - "Scenario — archives: a library record, and an agent that may summarise but not review": project/APP-0003-scenario-archives.md
+      - "The five views — sketches driven by the two scenarios": project/APP-0004-five-views.md
       - "m-of-n backlog": project/BACKLOG-0001.md
       - "Open decision register — everything waiting on a human": project/DECISIONS-0001.md
       - "Glossary — terms that mean more than one thing": project/GLOSSARY-0001.md

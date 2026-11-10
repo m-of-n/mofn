@@ -15,6 +15,21 @@ The wallet engine and its `mofn` command line, `prototype/wallet/` (#65, #127).
 Every release is a prototype: DEC-004 and DEC-005 are open; do not use real
 keys.
 
+## 0.4.0 — 2026-11-09
+
+Prototype: DEC-004 and DEC-005 are open; do not use real keys.
+
+- `--lang TAG` picks the language of the vocabulary's own words: type and
+  value names, meanings, and template sentences, in `make` and `check`, text
+  and JSON (mofn#66). Lookup is RFC 4647 §3.4 (`es-MX` finds `es`); a word the
+  vocabulary has no translation for is English, else its first language. The
+  engine's own words, and every result and exit code, are unchanged. A tag
+  not in canonical case (`ES`) is refused, exit 2.
+- `domains/archives/`: the second domain (mofn#66, W-2). Vocabulary
+  `archives` v1, its definer's statements, an example library record and
+  three goldens, run by `tests/test_archives.py` under both codecs. It needed
+  no engine change.
+
 ## 0.3.0 — 2026-11-09
 
 Prototype: DEC-004 and DEC-005 are open; do not use real keys.

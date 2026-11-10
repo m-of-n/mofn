@@ -1,0 +1,12 @@
+integrity      pass           every statement verified, and your file is the one described
+authenticity   pass           every speaker's key is in your key store, and each envelope agrees with its statement
+names          pass           every key is shown by your own label for it
+authorization  pass           Reviewer is trusted in context library about record review (reviewed, summarized, unverified)
+acceptance     pass           no template is named
+semantics      pass           archives 1 is published by its definer, Archivist (definer)
+
+answer: yes
+
+Reviewer attests that the library record sha-256:538b22155838b2e4 was read against its source and confirmed.
+
+This establishes who said it and whether they were entitled to say it; it does not establish that it is true.
