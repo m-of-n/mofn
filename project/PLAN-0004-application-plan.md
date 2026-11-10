@@ -102,7 +102,8 @@ Personas, all three required by the product spec, mapped onto those two:
 **Python engine + CLI first. Thin local UI later.**
 
 **The UI is Python too** (`DECISIONS-0001` item 28, 2026-11-09; a
-Tauri/TypeScript shell was considered and withdrawn). Every cryptographic and
+Tauri/TypeScript shell was considered and withdrawn). The UI is the Textual
+app, `mofn run`; no windowed GUI is built this semester. Every cryptographic and
 reduction step stays in the engine; the UI only displays wallet state and
 verdicts. Do not put a knowledge graph behind that shell.
 Do not start the shell before the two scenarios in §3 can be run from the CLI.

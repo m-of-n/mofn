@@ -240,7 +240,7 @@ distribution.
 | Deployment | a downloadable desktop application from the project site (GitHub Pages) |
 | Languages | **Python throughout** — engine, CLI and UI (`DECISIONS-0001` item 28, 2026-11-09) |
 | Code frameworks | a vetted CBOR library; `cryptography` for signatures |
-| UI framework | **Textual** for `mofn run` (shipped, W-6); a windowed GUI, if D8 needs one, in **PySide6**. ~~Tauri~~ withdrawn 2026-11-09 |
+| UI framework | **Textual** — `mofn run` (W-6) is the application's UI, a terminal app, shipped as one PyInstaller build per OS. No windowed GUI this semester; ~~Tauri~~ withdrawn 2026-11-09 |
 | Database | **None, by design** — files in `~/.mofn` (§6.4) |
 | Why this stack | Python because the prototype exists and reduction logic changes weekly; one language, so the UI calls the engine in process and PyInstaller builds one file per OS; CBOR because DEC-002 selected option 5 (reduced CBOR, no IANA tags) for byte-exact hashing |
 

@@ -43,8 +43,8 @@ each row names its evidence.
 - **Closed 2026-11-09, not owed:** T-030 (ADR-0004 made the encoding concrete;
   `SPEC-0002` Appendix B CDDL is the schema) and T-032 (ADR-0004 closed MD-3's
   narrowing on P1; already stated on T-031).
-- **Decided:** T-029c — Python throughout, Tauri withdrawn (`DECISIONS-0001`
-  item 28). T-054 — #127 §6 had already rejected zipapp for PyInstaller.
+- **Decided:** T-029c — Python throughout, Tauri withdrawn, the Textual app
+  is the UI; W-5 rescoped into `mofn run` (`DECISIONS-0001` item 28). T-054 — #127 §6 had already rejected zipapp for PyInstaller.
 - **Searched, not found:** no record that T-013's cut order was ever agreed,
   and no explicit sponsor ruling on L-035. Both rows say what exists and what
   is owed.
@@ -142,7 +142,7 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-028 | Topic notes answered for `namespace-governance`, `canonical-encoding` — canonical-encoding answered; namespace-governance partial (library#128). **5 of 22 topics answered** (artifact-statements, canonical-encoding, delegation-models, sbom, scitt); 12 partial | D3 | PL/S1 | M | doing |
 | T-029a | ~~Schema scenarios (3–5, incl. email delegation) and Product Spec personas, GAP-1 (MD-1)~~ — done: `UC-0001`, eight scenarios each with personas, statements, evaluation and failure cases, incl. email delegation (mofn#104, 2026-10-16) | D3 | S1+S2 | M | done |
 | T-029b | Product Spec, PLAN-0002 v0.2 — GAP-4 real sketches (Ndewedo, Oct 14), GAP-6 course dates (PL) | — | PL+S2 | M | doing |
-| T-029c | ~~Confirm Tauri for the wallet GUI (MD-7)~~ — **decided 2026-11-09: Python throughout, Tauri withdrawn** (`DECISIONS-0001` item 28, `DL-0033`). MD-7 was never confirmed, and W-6 had already shipped Textual + PyInstaller (#127 §6). `PLAN-0002` §5.1 and `PLAN-0004` §4 updated. **Left for W-5:** a windowed PySide6 app, or the Textual app as the Fall 2026 UI — turns on whether D8 needs a desktop window | D8 | S2 | S | done |
+| T-029c | ~~Confirm Tauri for the wallet GUI (MD-7)~~ — **decided 2026-11-09: Python throughout, Tauri withdrawn** (`DECISIONS-0001` item 28, `DL-0033`). MD-7 was never confirmed, and W-6 had already shipped Textual + PyInstaller (#127 §6). `PLAN-0002` §5.1 and `PLAN-0004` §4 updated. **The Textual app is the UI** (`mofn run`); no windowed GUI, W-5 rescoped | D8 | S2 | S | done |
 | T-029d | ADR-0002: accept P2, P3, P5, P6 provisionally (MD-2) — **drafted** (#83, `proposed`); condition 6(b) **met** by ARCH-0002 v0.7.0, condition 6(a) **met** 2026-10-16 (v0.7.1 carries a reviewer, `reviewed: true`). **`SPEC-0003` §7.1 cites P5 by name inside the Definition Publisher conformance class** (ADR-0002 §6a), so a governing spec rests on a draft principle. What is left is the sponsor's call: accept P5 **as amended**, or accept P2/P3/P6 and P5 **as drafted**, holding P5.1/P5.2 for a reader who did not write them | — | ~~Claude~~→**PL** | M | **done** — accepted 2026-11-06 by `ndewedo-newbury`, P5 as amended (`ADR-0002` §9, `DL-0024`); second reader for P5.1/P5.2 still owed |
 | T-029e | ~~Close T1-A in DECISIONS-0001 citing MD-1~~ — done 2026-10-10 in DECISIONS-0001 v0.2.0; PLAN-0002 §2 carries MD-1. The row, not the work, was stale | — | Claude | S | done |
 
@@ -213,7 +213,7 @@ before it runs.**
 | W-2b | **Converge the archives vocabularies — starts when W-3 merges.** DV-3 `library-review` (#152, vector) and `archives` v1 (#154, demo) become one published vocabulary (e.g. `library-review` v2 + `summarized`); the demo moves to it with its delegation path; `domains/archives/` retired or regenerated; APP-0003 § Setup/Steps and goldens updated (APP-0003 § *Two archives vocabularies*, DL-0033) | #66 | D6/D8 | PL | M | blocked — on W-3 (#67) |
 | W-3 | **Delegation with short expiry** — `may-speak` chains in `reduce`, intersecting topic *and* validity; expired or out-of-topic → `authorization FAIL` naming the broken link. **Short expiry is the revocation mechanism**; there is no revocation list | #67 | D6 | PL | L | todo — Nov 11 |
 | W-4 | **Weekly demo slice owner** — grow and run `demo/slice.sh` every Monday, post the output on the issue. Three cases minimum: green, `authorization FAIL`, `integrity FAIL` | #68 | D6 | S2 | M | doing — weekly |
-| W-5 | **Mac GUI** — local desktop app (not a web server) for signing and verify/validate display with attribute associations; calls the W-1 engine, reimplements no crypto. Sign and Verify screens first | #69 | D8 | S2 | L | todo — Dec |
+| W-5 | ~~**Mac GUI** — local desktop app~~ **Rescoped 2026-11-09 into `mofn run`** (`DECISIONS-0001` item 28: Textual is the UI). What #69 adds beyond W-6: on every verdict in the Check tab, the **attribute associations** — who signed (key / named principal), topic (domain + type), the subject's digest, and standing (root → delegation → key, or "no standing"). Calls the engine; reimplements no crypto | #69 | D8 | S2 | M | todo — Dec |
 | W-6 | **A way in to the engine** — a bare `mofn` prints the menu (= `mofn -h`), `mofn --version`, one line for a missing dependency; `mofn run`, the wallet as a terminal app — forms for keys, trust, sign and check, each showing the command it runs, and a Learn tab that runs nothing; DV-1 ships as the example vocabulary (0.2.0, DL-0023); `key list`, `key export`, `hash` from `gpg`, the rest of `gpg` mapped or left out (DL-0022); `ci.yml` on Linux, macOS and Windows. Chip: `release.yml`, one self-contained build per OS, `SHA256SUMS`, pre-releases from `wallet-v0.2.0` (David's half lands as one PR, `feat/w6-tui`, so `main` never holds 0.1.0 and there is no `wallet-v0.1.0`). Prototype only; `src/` stays empty | #127 | D6 | S1 engine, S2 release | L | doing — Nov 11 |
 
 **Overlap to resolve.** W-1 and W-3 restate T-041/T-044/T-045 (reduction,
