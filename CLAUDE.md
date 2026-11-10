@@ -28,6 +28,17 @@ envelope has been selected. Do not write code or documents that assume one.
   tooling — never to primitives.
 - **Never commit a third-party PDF, spreadsheet or ebook.** Record the digest
   and locator; see `library/CLAUDE.md`.
+- **Never make a commit without `Signed-off-by`, and never merge `main` into
+  a branch.** `dco` is a required check on every commit in the PR, merge
+  commits included (CONTRIBUTING §9). Commit with `git commit -s`, including
+  for `--amend`, `-C` and `rebase --continue`. To catch up with `main`, run
+  `git fetch origin && git rebase origin/main && git push --force-with-lease`.
+  Do not use `git merge`, `git pull` without `--rebase`, or GitHub's
+  *Update branch* merge button. Before pushing, run
+  `git log origin/main..HEAD --format='%h %s%n%b' | grep -c Signed-off-by`.
+  The count must equal the number of commits.
+  If a merge commit has already landed, rebase onto `origin/main`, which drops
+  it. Then renumber any `design-log/` id that `main` took in the meantime.
 
 ## Layout
 
