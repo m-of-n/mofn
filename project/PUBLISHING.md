@@ -2,7 +2,7 @@
 
 # Publishing manifest
 
-42 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
+45 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
 
 A document is published because it **exists and declares a status** in its
 front matter — not because someone remembered to add it to a nav list. Set
@@ -37,11 +37,14 @@ front matter — not because someone remembered to add it to a nav list. Set
 | document | id | status | version | updated | |
 |---|---|---|---|---|---|
 | [The application — what we are actually building for the demo](https://m-of-n.github.io/mofn/project/APP-0001-application-design/) | `APP-0001` | draft ⚠️ | 0.3.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/project/APP-0001-application-design.md) |
+| [Scenario — supply chain: a release file, and a key with no standing](https://m-of-n.github.io/mofn/project/APP-0002-scenario-supply-chain/) | `APP-0002` | draft ⚠️ | 0.1.0 | 2026-11-09 | [source](https://github.com/m-of-n/mofn/blob/main/project/APP-0002-scenario-supply-chain.md) |
+| [Scenario — archives: a library record, and an agent that may summarise but not review](https://m-of-n.github.io/mofn/project/APP-0003-scenario-archives/) | `APP-0003` | draft ⚠️ | 0.1.0 | 2026-11-09 | [source](https://github.com/m-of-n/mofn/blob/main/project/APP-0003-scenario-archives.md) |
+| [The five views — sketches driven by the two scenarios](https://m-of-n.github.io/mofn/project/APP-0004-five-views/) | `APP-0004` | draft ⚠️ | 0.1.0 | 2026-11-09 | [source](https://github.com/m-of-n/mofn/blob/main/project/APP-0004-five-views.md) |
 | [m-of-n backlog](https://m-of-n.github.io/mofn/project/BACKLOG-0001/) | `BACKLOG-0001` | draft ⚠️ | 0.12.16 | 2026-11-09 | [source](https://github.com/m-of-n/mofn/blob/main/project/BACKLOG-0001.md) |
 | [Open decision register — everything waiting on a human](https://m-of-n.github.io/mofn/project/DECISIONS-0001/) | `DECISIONS-0001` | active | 0.6.1 | 2026-11-07 | [source](https://github.com/m-of-n/mofn/blob/main/project/DECISIONS-0001.md) |
 | [Glossary — terms that mean more than one thing](https://m-of-n.github.io/mofn/project/GLOSSARY-0001/) | `GLOSSARY-0001` | draft ⚠️ | 0.3.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/project/GLOSSARY-0001.md) |
 | [Project plan — semester execution, repo, library, and team](https://m-of-n.github.io/mofn/project/PLAN-0001-project-plan/) | `PLAN-0001` | draft ⚠️ | 0.6.4 | 2026-11-07 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0001-project-plan.md) |
-| [Product Specification — Key-centric Semantic Attestations](https://m-of-n.github.io/mofn/project/PLAN-0002-product-spec/) | `PLAN-0002` | draft ⚠️ | 0.3.0 | 2026-10-14 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0002-product-spec.md) |
+| [Product Specification — Key-centric Semantic Attestations](https://m-of-n.github.io/mofn/project/PLAN-0002-product-spec/) | `PLAN-0002` | draft ⚠️ | 0.4.0 | 2026-11-09 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0002-product-spec.md) |
 | [Key-centric Semantic Attestations — Fall 2026 plan](https://m-of-n.github.io/mofn/project/PLAN-0003-semester-plan/) | `PLAN-0003` | draft ⚠️ | 0.1.0 | 2026-09-28 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0003-semester-plan.md) |
 | [Application plan — local wallet, two domains, verdict first](https://m-of-n.github.io/mofn/project/PLAN-0004-application-plan/) | `PLAN-0004` | draft ⚠️ | 0.2.0 | 2026-11-05 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0004-application-plan.md) |
 | [Draft pitch — the application and the benefit](https://m-of-n.github.io/mofn/project/PLAN-0005-draft-pitch/) | `PLAN-0005` | draft ⚠️ | 0.1.0 | 2026-10-12 | [source](https://github.com/m-of-n/mofn/blob/main/project/PLAN-0005-draft-pitch.md) |
@@ -67,7 +70,7 @@ front matter — not because someone remembered to add it to a nav list. Set
 
 ## Status
 
-⚠️ **30 of 42 published documents are draft or proposed.**
+⚠️ **33 of 45 published documents are draft or proposed.**
 They are public and marked as such. Nothing here is accepted; an open
 `DEC-*` is not settled because it appears on a website.
 

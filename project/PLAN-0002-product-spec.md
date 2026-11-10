@@ -7,9 +7,9 @@ description: "The CS690 Fall 2026 Product Specification, in the course template'
 type: plan
 category: process
 status: draft
-version: "0.3.0"
+version: "0.4.0"
 date: "2026-09-25"
-updated: "2026-10-14"
+updated: "2026-11-09"
 needs_review: true
 reviewed: false
 canonical_path: project/PLAN-0002-product-spec.md
@@ -141,15 +141,20 @@ Ndewedo**; was due Oct 5, re-dated at the next weekly.
 | Issuer | "Say something about an artifact, within what I am entitled to say" |
 | Domain author | "Publish a vocabulary others can use without asking me" |
 
-**Scenarios** (proposed, one per domain; start-to-end):
-- *Supply chain.* Paul delegates to David's key the right to assert
-  `build-provenance` for the project's release. A CI key signs
-  `reproducible` about `dist/app.pyz`. A relying party runs `check`: signature
-  valid, **authorization fails** — the CI key was never delegated. Paul adds the
-  delegation; the check passes and prints the statement in plain English.
-- *Archives / library.* Ndewedo's key asserts `reviewed` about a library record.
-  A reader checks it against a trust root naming Ndewedo's key for the
-  `library-review` domain; the wallet renders "this record was reviewed by …".
+**Scenarios** (one per domain, start to end; written 2026-11-09, mofn#66).
+Each runs in wallet engine 0.4.0 and quotes pinned goldens:
+- *Supply chain* — **APP-0002.** A CI key signs `build-provenance =
+  reproducible` about a release file, and the relying party's anchor covers
+  it, so the answer is yes. A release engineer's key signs the same claim and
+  holds no anchor: integrity and authenticity pass, **authorization fails**.
+  The delegation version (a maintainer delegates, a link is missing) waits
+  for W-3, mofn#67.
+- *Archives / library* — **APP-0003.** A student's key and the ingestion
+  agent's key each sign `record-review = reviewed` about a library record,
+  by digest. The relying party trusts the agent only for `summarized` and
+  `unverified`, so the agent's statement fails **authorization on the
+  value**. This is the same engine with a different domain file, and it also
+  runs in Spanish (`--lang es`).
 - *Email delegation (schema scenario only, MD-1).* Alice may speak for
   `*@foo.com`; she delegates to Bob; Bob attests Carol's address; Dave's check
   reduces the chain — including the three cases that must fail
@@ -324,78 +329,23 @@ commands in §4.1; no network API.
 ### 6.5 User Interface
 - **Mechanism:** desktop GUI and CLI, same operations; the relying party mostly
   uses the GUI, issuers and domain authors mostly the CLI.
-- **Sketches** — draft wireframes; *Ndewedo replaces with real sketches by
-  Oct 14.*
+- **Views:** PLAN-0004 §5's five, sketched in **APP-0004** (2026-11-09,
+  mofn#66). Each is drawn for both scenarios, and every element is bound to
+  the engine output or definition field it shows. They replace the four
+  placeholder wireframes this section carried until 0.3.0.
 
-**① Verdict** — the product screen. The authorization line is the point.
-```
-┌─ Check statement ───────────────────────────── prov.stmt ─┐
-│  "The artifact sha256:8e1c… was built reproducibly         │
-│   from published sources."                                 │
-│   — asserted by key 9f2a…  (CI build key)                  │
-│                                                            │
-│  ✔ Integrity      subject digest re-derives                │
-│  ✔ Authenticity   signature valid under 9f2a…              │
-│  ✔ Names          no name chain to resolve                 │
-│  ✘ AUTHORIZATION  9f2a… is not entitled to assert          │
-│                   build-provenance about this subject      │
-│  – Acceptance     not evaluated                            │
-│  ✔ Semantics      domain supply-chain, value in range      │
-│                                                            │
-│  Signed, but NOT by a key with standing to say it.         │
-│  This proves origin and integrity. It does not prove truth.│
-│  [ Show chain ]   [ Why? ]   [ Language: EN ▾ ]            │
-└────────────────────────────────────────────────────────────┘
-```
+| view | shows | the scenarios' moment |
+|---|---|---|
+| ① Wallet | anchors (unsigned, mine), my keys, keys I know, vocabularies | the agent anchored for `summarized · unverified` only |
+| ② Domain | a definition's types, values, meanings, template, and which languages are complete | DV-1's missing Spanish is visible to its author |
+| ③ Make | a form generated from the chosen type, a preview sentence, the `mofn make` it runs | same form, two vocabularies |
+| ④ Present | which statements to hand over for one subject, and what the receiver also needs | the define statement, without which semantics fails |
+| ⑤ Verdict | the sentence, six lines, the answer, the limit line, Language | **authorization ✘** with every other line ✔ |
 
-**② Make a statement** — the form is generated from the domain's type, never
-hard-coded.
-```
-┌─ New statement ────────────────────────────────────────────┐
-│  Speak as     [ paul.key ▾ ]                               │
-│  About        ( ) artifact [ dist/app.pyz      ] [Browse]  │
-│               ( ) key      [                   ]           │
-│  Domain       [ supply-chain ▾ ]  Type [ build-provenance ▾]│
-│  Claim        (•) reproducible  built reproducibly from …  │
-│               ( ) attested      built by an attested …     │
-│               ( ) unverified    origin not verified        │
-│  Valid until  [ 2026-12-31 ]                               │
-│  Preview: "Paul says dist/app.pyz was built reproducibly…" │
-│                                     [ Cancel ] [ Sign ]    │
-└────────────────────────────────────────────────────────────┘
-```
-
-**③ Delegation** — who may speak for me, on what, and whether they may pass
-it on.
-```
-┌─ Delegations ──────────────────────────────────────────────┐
-│  Trust roots (mine, unsigned)                              │
-│    Paul  →  supply-chain / *            may delegate ✔     │
-│    Paul  →  library-review / *          may delegate ✘     │
-│  Chain for: "may CI key attest build-provenance?"          │
-│    Paul ──▶ David (build-provenance, delegate ✔)           │
-│         ──▶ CI key (build-provenance)   ✘ link missing     │
-│  [ + Delegate… ]   [ Revoke locally ]   [ Explain ]        │
-└────────────────────────────────────────────────────────────┘
-```
-
-**④ Domain browser** — the PICS-like layer: what statements in a domain can
-mean.
-```
-┌─ Domains ──────────────────────────────────────────────────┐
-│  supply-chain      id 2104d6d4…   defined by paul.key      │
-│    build-provenance  reproducible · attested · unverified  │
-│    reviewed-by       <key>                                 │
-│  library-review    id 7c11e0a2…   defined by ndewedo.key   │
-│    reviewed          yes · partial · no                    │
-│  Selected: build-provenance / reproducible                 │
-│    EN  built reproducibly from published sources           │
-│    ES  compilado de forma reproducible desde fuentes …     │
-│  [ Import domain… ]  [ New type… ]                         │
-└────────────────────────────────────────────────────────────┘
-```
-
----
+**The rule:** no view knows a domain. The two drawings of each view differ
+only in strings from the definition or the wallet (APP-0004 § *The rule every
+view follows*; metric M4). Delegation is not a sixth view in Fall 2026. It
+appears as anchors in ① and *Show anchors used* in ⑤ until W-3 (mofn#67).
 
 ## 7. Project Organization
 
