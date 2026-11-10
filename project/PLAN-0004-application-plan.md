@@ -7,7 +7,7 @@ description: "Whether APP-0001 is complete, and the plan that fills the gaps. Dr
 type: plan
 category: product
 status: draft
-version: "0.4.0"
+version: "0.4.1"
 date: "2026-10-02"
 updated: "2026-11-12"
 needs_review: true
@@ -101,9 +101,10 @@ Personas, all three required by the product spec, mapped onto those two:
 
 **Python engine + CLI first. Thin local UI later.**
 
-A Tauri/TypeScript shell is a reasonable October/November UI **if** every
-cryptographic and reduction step stays in the engine and the UI only displays
-wallet state and verdicts. Do not put a knowledge graph behind that shell.
+**The UI is Python too** (`DECISIONS-0001` item 28, 2026-11-09; a
+Tauri/TypeScript shell was considered and withdrawn). Every cryptographic and
+reduction step stays in the engine; the UI only displays wallet state and
+verdicts. Do not put a knowledge graph behind that shell.
 Do not start the shell before the two scenarios in §3 can be run from the CLI.
 
 DEC-002 stays open. The prototype's reduced CBOR must not become the shipping

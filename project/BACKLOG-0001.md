@@ -43,12 +43,11 @@ each row names its evidence.
 - **Closed 2026-11-09, not owed:** T-030 (ADR-0004 made the encoding concrete;
   `SPEC-0002` Appendix B CDDL is the schema) and T-032 (ADR-0004 closed MD-3's
   narrowing on P1; already stated on T-031).
-- **Overtaken, decision owed:** T-029c — MD-7's Tauri was never confirmed and
-  W-6 shipped Textual; see the row. T-054 — #127 §6 rejected zipapp for
-  PyInstaller.
-- **Still ambiguous:** T-013 — mofn#7 closed 2026-10-28 with no record of the
-  agreement; `PLAN-0001` §12 holds the table. Kept `todo` until someone records
-  that it was agreed.
+- **Decided:** T-029c — Python throughout, Tauri withdrawn (`DECISIONS-0001`
+  item 28). T-054 — #127 §6 had already rejected zipapp for PyInstaller.
+- **Searched, not found:** no record that T-013's cut order was ever agreed,
+  and no explicit sponsor ruling on L-035. Both rows say what exists and what
+  is owed.
 - **Newly tracked:** L-037…L-040 (library#89, #69, #110, #133); T-067
   (mofn#110).
 
@@ -127,7 +126,7 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-012b | ~~ARCH-0001 target section: supply chain + archives/library (MD-1); AI agents as motivation only~~ — done: ARCH-0001 0.3.0 §2.3 (mofn#152, DL-0032); #135 closed 2026-11-10 | — | S1+S2 | L | done |
 | T-012c | Delegation: reconcile R-M-10 (boolean) with SPEC-0004 (integer depth + ranges); `may-speak` vs `trust … about` — mofn#136 | — | PL | M | **decided** 2026-11-06 (1a integer depth, 2a `trust … about`; DL-0025); R-M-10 text landed in ARCH-0001 v0.2.0; **done** 2026-11-07: vectors TV-14…20, E-1…E-4 (DL-0031) |
 | T-012x | ~~`design-log/` opened~~ — done; DL-0001 and DL-0002 written | D0 | PL | S | done |
-| T-013 | Agree and commit the cut order (PLAN-0001 §12) — mofn#7, no discussion yet | D0 | all | S | todo |
+| T-013 | Agree and commit the cut order (PLAN-0001 §12) — **never agreed.** mofn#7's done-when was "all three have signed off in the PR"; no PR was opened and no one signed off. It was closed 2026-10-28 by Ndewedo-Newbury with one comment that records no agreement. The §12 table is unchanged since its first commit (2026-09-16, the sponsor's). **Owed:** a PR on §12 that all three approve, or a recorded decision to drop the task | D0 | all | S | todo — reopen #7 |
 
 ## I1 — Library & research · Oct 1–14 · D1 D2 D3
 
@@ -143,7 +142,7 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-028 | Topic notes answered for `namespace-governance`, `canonical-encoding` — canonical-encoding answered; namespace-governance partial (library#128). **5 of 22 topics answered** (artifact-statements, canonical-encoding, delegation-models, sbom, scitt); 12 partial | D3 | PL/S1 | M | doing |
 | T-029a | ~~Schema scenarios (3–5, incl. email delegation) and Product Spec personas, GAP-1 (MD-1)~~ — done: `UC-0001`, eight scenarios each with personas, statements, evaluation and failure cases, incl. email delegation (mofn#104, 2026-10-16) | D3 | S1+S2 | M | done |
 | T-029b | Product Spec, PLAN-0002 v0.2 — GAP-4 real sketches (Ndewedo, Oct 14), GAP-6 course dates (PL) | — | PL+S2 | M | doing |
-| T-029c | **Wallet GUI framework — confirm or replace MD-7 before W-5 starts.** MD-7 (2026-09-28) chose **Tauri, tentative** — web frontend, Python sidecar, PySide6 fallback — to be confirmed by Oct 14. **Nobody confirmed it, and the work moved past it.** W-6 (#127 §6, DL-0023) chose **Textual** for `mofn run`, a terminal app that already has Sign, Check, Keys, Trust and Learn and calls the engine in process; and **PyInstaller** for one-file builds per OS. `PLAN-0004` §4 still lists Tauri as "proposed, not accepted". Three documents still say Tauri tentative: `PLAN-0002` §stack table, `DECISIONS-0001` item 28, MD-7. The only consumer is W-5 (#69, Mac desktop GUI, Dec), not started. **Options:** (a) Tauri + sidecar as MD-7 — adds Rust and TypeScript toolchains, and the sidecar would be the PyInstaller binary; (b) PySide6 — one language, bundles with PyInstaller; (c) the Textual app is the Fall 2026 UI and W-5 is cut or narrowed to the verdict's attribute associations. **Record the choice** in `DECISIONS-0001` item 28 and the `PLAN-0002` stack table | D8 | S2 | S | todo — **overdue** (Oct 14); decision owed before W-5 |
+| T-029c | ~~Confirm Tauri for the wallet GUI (MD-7)~~ — **decided 2026-11-09: Python throughout, Tauri withdrawn** (`DECISIONS-0001` item 28, `DL-0033`). MD-7 was never confirmed, and W-6 had already shipped Textual + PyInstaller (#127 §6). `PLAN-0002` §5.1 and `PLAN-0004` §4 updated. **Left for W-5:** a windowed PySide6 app, or the Textual app as the Fall 2026 UI — turns on whether D8 needs a desktop window | D8 | S2 | S | done |
 | T-029d | ADR-0002: accept P2, P3, P5, P6 provisionally (MD-2) — **drafted** (#83, `proposed`); condition 6(b) **met** by ARCH-0002 v0.7.0, condition 6(a) **met** 2026-10-16 (v0.7.1 carries a reviewer, `reviewed: true`). **`SPEC-0003` §7.1 cites P5 by name inside the Definition Publisher conformance class** (ADR-0002 §6a), so a governing spec rests on a draft principle. What is left is the sponsor's call: accept P5 **as amended**, or accept P2/P3/P6 and P5 **as drafted**, holding P5.1/P5.2 for a reader who did not write them | — | ~~Claude~~→**PL** | M | **done** — accepted 2026-11-06 by `ndewedo-newbury`, P5 as amended (`ADR-0002` §9, `DL-0024`); second reader for P5.1/P5.2 still owed |
 | T-029e | ~~Close T1-A in DECISIONS-0001 citing MD-1~~ — done 2026-10-10 in DECISIONS-0001 v0.2.0; PLAN-0002 §2 carries MD-1. The row, not the work, was stale | — | Claude | S | done |
 
@@ -255,7 +254,7 @@ resolved: it is a planning call, not a transcription.
 | L-032 | ~~SCITT full extraction~~ — done: library#58 merged 2026-10-11; #40 closed | library#40 | S1 | L | done |
 | L-033 | ~~Fill the 264 unwritten scaffolds~~ — done: library#45 closed 2026-11-06 (#95–#124); 0 scaffolds | library#45 | S2 | XL | done |
 | L-034 | ~~YAML reader block scalars, scaffold inventory, duplicate detection~~ — done: library#48 merged 2026-10-05; #43, #35 closed | library#43/#35/#45 → #48 | Claude | M | done |
-| L-035 | **Sponsor decision:** accept library#42's FX-1 carve-out, or keep #32's rule — **settled in practice**: #42 merged with the carve-out and `docs/extraction.md` has a summary-bar row; **no explicit sponsor ruling recorded** | library#42 | PL | S | review — ruling to record |
+| L-035 | **Sponsor decision:** accept library#42's FX-1 carve-out, or keep #32's rule — **in force, never explicitly ruled.** The carve-out is in library `docs/extraction.md` ("Scope amended 2026-10-03 (#8, PR #42)": FX-1 fires on intent to extract, not on contact). library#42 was written by Ndewedo-Newbury and merged 2026-10-05 by the sponsor (`nymble`) **with no review and no comment**. Later work relies on it (DL-0006, DL-0007). The merge is the only act; **owed:** one line from the sponsor accepting it | library#42 | PL | S | review — sponsor to confirm |
 | L-036 | ~~First student FX-1 extractions — RFC 9804, RFC 8785~~ — done: library#46 merged 2026-10-05 | library#46 | S2 | L | done |
 | L-037 | FX-1 extraction of the R-0006 inventory (VC ×3, DSig, PICS labels, in-toto attestation, RFC 9162, SPKI structure) — 3 of 5 PRs merged | library#89 | — | L | doing |
 | L-038 | FX-1 debt: 19 spec records from the Threat-Radar fold-back | library#69 | — | L | todo |

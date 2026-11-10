@@ -7,10 +7,10 @@ description: "Every open decision across both repos, ranked by what it blocks. T
 type: process
 category: process
 status: active
-version: "0.6.1"
+version: "0.7.0"
 version_policy: "semver; MINOR = decisions added or closed"
 date: "2026-09-22"
-updated: "2026-11-07"
+updated: "2026-11-09"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -267,9 +267,16 @@ supply-chain profile first (T1-A), then accept P7 or correct it.
 | 23 | **`enforce_admins`** is `false` on both repos. Set so a single member could bootstrap; three admins now exist, so the reason has expired. **Still off at 2026-10-05** (`BACKLOG-0001` T-006c). | ready to flip |
 | 24 | **Signed commits** — `CONTRIBUTING.md` asks for them; the requirement is off so students are not blocked on key setup. | deliberate |
 | 25 | **`~/cb/.claude/rules/usf-provenance.md`** written but uncommitted — `~/cb` has your in-flight manifest work. | yours to commit |
-| **28** | **Wallet GUI framework — Tauri, tentative (MD-7).** Web frontend plus a Python sidecar; PySide6 is the fallback. **Confirm before GUI work begins** (`BACKLOG-0001` T-029c). | due Oct 14 |
+| ~~**28**~~ | **DECIDED 2026-11-09 — Python throughout; Tauri withdrawn.** Was: *Wallet GUI framework — Tauri, tentative (MD-7); PySide6 the fallback.* MD-7 was never confirmed, and W-6 shipped `mofn run` in Textual with PyInstaller builds (#127 §6). Decided by `ndewedo-newbury` (`DL-0033`): every UI is Python and calls the engine in process — no Rust, no TypeScript, no sidecar. **Still open, and smaller:** whether W-5 (#69) is a windowed PySide6 app or the Textual app is the Fall 2026 UI. That turns on whether D8 needs a desktop window. | decided; W-5 form open |
 
 ---
+
+## What changed in v0.7.0 — 2026-11-09
+
+**Item 28 closed** by `ndewedo-newbury` (`DL-0033`): the wallet UI stays
+Python, and Tauri (MD-7) is withdrawn. Whether the W-5 GUI is PySide6 or the
+existing Textual app is left open; the item says so. Open DEC-* items are
+unchanged.
 
 ## What changed in v0.6.1 — 2026-11-07
 
