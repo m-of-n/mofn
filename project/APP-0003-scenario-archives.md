@@ -158,10 +158,18 @@ is the protocol's interoperability vector, and `archives` is the domain file
 the wallet demo runs today. The two are not reconciled, and both name the
 same idea differently.
 
-**Recommendation:** once #152 merges, keep DV-3 as the vector and keep
-`archives` as the demo domain until W-3 (mofn#67) can run DV-3's delegation
-path. Then decide whether the demo switches to DV-3. Owner: @nymble (the
-issue owner), with the #152 author.
+**Decided 2026-11-09 (ndewedo-newbury), DL-0033:**
+
+1. **Now:** both stay. DV-3 is the protocol vector, and `archives` v1 is the
+   demo domain. Neither replaces the other, and each names the other.
+2. **When W-3 (mofn#67) merges:** converge on **one** archives vocabulary.
+   That will be a new version in the published vectors (for example
+   `library-review` v2 with `summarized` added, values settled then), and
+   the demo moves to it, delegation path included. `domains/archives/` and
+   its goldens are then retired or regenerated from the vector.
+   **This page changes then:** § Setup, § Steps and the goldens follow the
+   new vocabulary, and this section is replaced by a pointer. Tracked as
+   BACKLOG W-2b.
 
 ## Run it
 

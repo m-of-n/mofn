@@ -17,6 +17,13 @@ confirmed the `--lang` decision.
   from the domain, so the acceptance test stays checkable: the domain commit
   touches no engine file.
 
+- **Two archives vocabularies: keep both now, converge after W-3**
+  (ndewedo-newbury, 2026-11-09). This was the agent's recommendation, A then
+  D. Rejected: B, switching the demo to DV-3 now, because it loses
+  `summarized` and departs from #66's list; and C, rewriting approved #152
+  around `archives`, because it churns normative bytes. Trigger: BACKLOG W-2b,
+  on W-3's merge.
+
 ## What the human corrected
 
 - **The agent recorded the `--lang` decision as the sponsor's.** It wrote
