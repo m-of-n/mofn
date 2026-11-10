@@ -1,0 +1,50 @@
+schema: "library-record/v1"
+id: w3c-prov-dm
+body: w3c
+type: spec
+maturity: standard
+title: "PROV-DM: The PROV Data Model"
+short_title: "PROV-DM"
+authors:
+  - "Luc Moreau"
+  - "Paolo Missier"
+date: "2013-04-30"
+identifiers:
+  w3c: REC-prov-dm-20130430
+  url: https://www.w3.org/TR/prov-dm/
+content:
+  url: https://www.w3.org/TR/prov-dm/
+  sha256: "5c925c21bc96c285b25017c3b90d82cf74251d07713b71fcb81ca60f873c9e88"
+  retrieved: "2026-11-01"
+  local: false
+  media_type: text/html
+  note: "The digest was first recorded on 2026-10-05 and refetched bytes matched it on 2026-11-01. Authors are the two named editors; the document also lists contributors."
+relations:
+  supersedes: []
+  superseded_by: []
+  see_also:
+    - prov-o
+  cited_by: []
+  implements_concept: []
+bears_on:
+  - DEC-007
+applicability:
+  security: adjacent
+  cryptography: none
+  this_project: adjacent
+topic: predicate-rendering
+publisher: "World Wide Web Consortium"
+tags:
+  - provenance
+  - prior-art
+implementations:
+  open_source:
+    - "prov (Python), https://github.com/trungdong/prov, MIT"
+  commercial: []
+  searched: "2026-11-01"
+usefulness:
+  verdict: useful
+  reason: "The domain-neutral vocabulary of provenance. It gives terms and an extensibility model to compare with, but no signing and no per-value rendering."
+  assessed: "2026-11-01"
+status: summarized
+confidence: medium

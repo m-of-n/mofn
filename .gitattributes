@@ -1,3 +1,4 @@
 # Fixtures are compared byte for byte, and their digests are in the goldens.
 # A Windows checkout with core.autocrlf would otherwise add CR to them.
 prototype/wallet/fixtures/** -text
+prototype/wallet/domains/** -text

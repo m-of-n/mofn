@@ -25,6 +25,10 @@ Prototype: DEC-004 and DEC-005 are open; do not use real keys.
   vocabulary has no translation for is English, else its first language. The
   engine's own words, and every result and exit code, are unchanged. A tag
   not in canonical case (`ES`) is refused, exit 2.
+- `domains/archives/`: the second domain (mofn#66, W-2). Vocabulary
+  `archives` v1, its definer's statements, an example library record and
+  three goldens, run by `tests/test_archives.py` under both codecs. It needed
+  no engine change.
 
 ## 0.3.0 — 2026-11-09
 

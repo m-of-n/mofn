@@ -102,6 +102,9 @@ $M --wallet w/receiver check prov.stmt $F/tv-3-define.stmt --artifact $F/artifac
 ```
 
 `--wallet` can be left out: the wallet is `$MOFN_WALLET`, else `./wallet`.
+`--lang es` prints the vocabulary's own words — type and value names, and the
+sentence — in Spanish where the definition has them, English otherwise; the
+engine's own words stay English.
 `--passphrase-stdin` reads the passphrase from the first line of stdin, for
 scripts. `--codec review-yaml` runs the same steps with the human-review form;
 use the `.stmt.yaml` fixtures.
@@ -142,6 +145,12 @@ usage or wallet error, `3` a handed statement was invalid.
 
 The last line of every result is the limit of what this proves: who said it
 and whether they were entitled to say it, not that it is true.
+
+### A second domain
+
+`domains/archives/` runs the same commands over a different vocabulary:
+statements about a library record, and an ingestion agent that is trusted to
+say *summarized* but not *reviewed*. Its README has the run.
 
 ## Reading the files
 
@@ -249,6 +258,7 @@ on Windows.
 | `engine/reduce.py` | coverage over one context's anchors |
 | `engine/check.py`, `render.py` | the six-line verdict, text and JSON |
 | `engine/store.py`, `unlock.py` | the wallet directory, key store, anchors, passphrase |
+| `domains/archives/` | the second domain (mofn#66): the archives vocabulary, its author's statements, an example library record, goldens. No engine code knows it exists |
 | `fixtures/` | copies of the published vectors (`sync.py`; never edit by hand) and the goldens, which are `check` outputs pinned by `test_cli.py` |
 
 ## Where v0 departs from the documents, and why
