@@ -7,9 +7,9 @@ description: "The CS690 Fall 2026 Product Specification, in the course template'
 type: plan
 category: process
 status: draft
-version: "0.4.0"
+version: "0.4.1"
 date: "2026-09-25"
-updated: "2026-11-09"
+updated: "2026-11-12"
 needs_review: true
 reviewed: false
 canonical_path: project/PLAN-0002-product-spec.md
@@ -238,11 +238,11 @@ distribution.
 |---|---|
 | Development environment | macOS / Linux laptops |
 | Deployment | a downloadable desktop application from the project site (GitHub Pages) |
-| Languages | Python (prototype, reference implementation); TypeScript/HTML for the GUI; Rust for the Tauri shell |
+| Languages | **Python throughout** — engine, CLI and UI (`DECISIONS-0001` item 28, 2026-11-09) |
 | Code frameworks | a vetted CBOR library; `cryptography` for signatures |
-| UI framework | **Tauri** (web frontend, Python sidecar for the library) — *tentative*, confirm by Oct 14 before GUI work starts |
+| UI framework | **Textual** for `mofn run` (shipped, W-6); a windowed GUI, if D8 needs one, in **PySide6**. ~~Tauri~~ withdrawn 2026-11-09 |
 | Database | **None, by design** — files in `~/.mofn` (§6.4) |
-| Why this stack | Python because the prototype exists and reduction logic changes weekly; Tauri (tentative) for small signed desktop installers with a modern UI; CBOR because DEC-002 selected option 5 (reduced CBOR, no IANA tags) for byte-exact hashing |
+| Why this stack | Python because the prototype exists and reduction logic changes weekly; one language, so the UI calls the engine in process and PyInstaller builds one file per OS; CBOR because DEC-002 selected option 5 (reduced CBOR, no IANA tags) for byte-exact hashing |
 
 ### 5.2 Development Tools
 - **Environment:** VS Code or equivalent, with Claude Code for AI-assisted work.
