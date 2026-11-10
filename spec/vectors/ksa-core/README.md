@@ -59,5 +59,14 @@ this script; `prototype/wallet/tests/test_delegation.py` checks them
 | E-3 | a second hop with no delegation left | no, `depth` |
 | E-4 | onward `depth` larger than what remains | no, `widening` (not clipped) |
 
+## Archives target
+
+DV-3 `library-review` (definer Dave) and TV-21…26 are the archives target of
+`ARCH-0001` §2.3.2 (mofn#135). Carol's TV-22 is the anchor in context
+`library`. TV-26 is the first **description** target (`SPEC-0002` §7.2 type 6),
+a work identified by its title, with its URL carried as a `locator` attribute.
+E-5 (yes), E-6 (`no-path`, UC-3's must-fail) and E-7 (yes, the description
+target) are in `evaluations`.
+
 After regenerating, copy `vectors.md` into SPEC-0002 between the
 `VECTORS:BEGIN` / `VECTORS:END` markers.

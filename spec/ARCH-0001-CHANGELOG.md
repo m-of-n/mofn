@@ -5,15 +5,27 @@ title: "ARCH-0001 changelog"
 type: changelog
 parent: ARCH-0001
 status: active
-version: "0.2.1"
+version: "0.3.0"
 date: "2026-09-15"
-updated: "2026-11-07"
+updated: "2026-11-09"
 canonical_path: spec/ARCH-0001-CHANGELOG.md
 ---
 
 # ARCH-0001 changelog
 
 Format: newest first. Versions match the architecture document.
+
+## 0.3.0 — 2026-11-09
+
+MINOR. T-012b (mofn#135). New **§2.3 Target applications**: software supply
+chain (§2.3.1) and archives/library (§2.3.2), each with its domain of
+discourse, worked statements, the verifier question each answers, and
+interchange notes; §2.3.3 lists what is not a target and why. §1 cites AI
+agents as motivation only, with no normative content. Every worked statement
+is a `SPEC-0002` vector (TV-4…6, TV-9, TV-16…17, TV-21…26; DV-1, DV-3); SC-3's
+answer is marked illustrative, because `SPEC-0005` has no vectors. No
+requirement is added, amended or withdrawn; no DEC-* moves. Drafted by the
+agent from MD-1; recorded in `DL-0032`.
 
 ## 0.2.1 — 2026-11-07
 

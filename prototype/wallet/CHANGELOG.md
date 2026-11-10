@@ -15,6 +15,15 @@ The wallet engine and its `mofn` command line, `prototype/wallet/` (#65, #127).
 Every release is a prototype: DEC-004 and DEC-005 are open; do not use real
 keys.
 
+## 0.3.0 — 2026-11-09
+
+Prototype: DEC-004 and DEC-005 are open; do not use real keys.
+
+- A **text** attribute (SPEC-0003 §6 base kind 3) is a valid assignment, so a
+  statement may carry one beside an enum: TV-26's `locator` (ARCH-0001 §2.3.2,
+  mofn#135). Ranges over text are still not supported; trust about a text type
+  is refused as before.
+
 ## 0.2.1 — 2026-11-07
 
 Prototype: DEC-004 and DEC-005 are open; do not use real keys.

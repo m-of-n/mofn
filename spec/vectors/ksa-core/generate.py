@@ -261,6 +261,91 @@ EVALS = [
      "TV-20 asks for depth 1 where at most 0 remains; widening fails the hop, it is not clipped to 0"),
 ]
 
+# ---------------------------------------------------------------- archives / library (ARCH-0001 §2.3.2)
+# The second in-scope target (MD-1). Dave is the library lead and defines DV-3;
+# Bob is a student reviewer; Carol is a reader. Nothing below is supply-chain
+# specific, and DV-1 and DV-2 are untouched.
+DV3 = {
+    1: kid("dave"), 2: "library-review", 3: "1",
+    5: [
+        [1, {1: "reviewed", 2: 1,
+             3: {"en": "Reviewed", "es": "Revisado"},
+             4: {"en": "Whether a person has checked the record against its source.",
+                 "es": "Si una persona ha cotejado el registro con su fuente."},
+             6: [{1: "yes", 2: {"en": "Yes", "es": "Sí"},
+                  3: {"en": "checked in full against its source",
+                      "es": "cotejado por completo con su fuente"}},
+                 {1: "partial", 2: {"en": "Partly", "es": "En parte"},
+                  3: {"en": "checked in part against its source",
+                      "es": "cotejado en parte con su fuente"}},
+                 {1: "no", 2: {"en": "No", "es": "No"},
+                  3: {"en": "not checked against its source",
+                      "es": "no cotejado con su fuente"}}],
+             8: 2}],
+        [1, {1: "title", 2: 3, 3: {"en": "Title"}, 4: {"en": "The work's title as published."}, 8: 0}],
+        [1, {1: "work", 2: 9,
+             3: {"en": "Work", "es": "Obra"},
+             4: {"en": "A published work, identified by its description.",
+                 "es": "Una obra publicada, identificada por su descripción."},
+             8: 0,
+             11: [{1: "title", 2: {2: "title"}, 3: True,
+                   4: {"en": "Title"}, 5: {"en": "The title as published."}}]}],
+        [1, {1: "locator", 2: 3,
+             3: {"en": "Locator", "es": "Localizador"},
+             4: {"en": "Where a copy may be found. Evidence, not identity.",
+                 "es": "Dónde puede hallarse una copia. Indicio, no identidad."},
+             8: 0}],
+        [2, {1: "record-reviewed", 2: 4,
+             3: {1: [T_DIGEST, 6]},
+             4: [{1: {2: "reviewed"}, 2: True}, {1: {2: "locator"}, 2: False}],
+             8: {"en": "{says} says {this} is reviewed: {reviewed}.",
+                 "es": "{says} dice que {this} está revisado: {reviewed}."},
+             9: {"en": "Record reviewed", "es": "Registro revisado"}}],
+    ],
+}
+DV3_BYTES = enc(DV3)
+DV3_ID = hashlib.sha256(DV3_BYTES).digest()
+DEFS["DV-3"] = ("definition `library-review` v1, definer Dave", DV3_BYTES, DV3_ID)
+lref = lambda label: {1: DV3_ID, 2: label}
+RECORD = hashlib.sha256(b"ksa example library record\n").digest()
+WORK = [6, lref("work"), {"title": "Simple Public Key Certificate"}]
+LIB_VALID = {1: t("2026-10-08T00:00:00Z"), 2: t("2026-12-01T00:00:00Z")}
+REC_TPL = {1: DV3_ID, 2: "record-reviewed"}
+def rec_attest(signer, value, issued, this=None, extra=()):
+    body = {1: [{1: lref("reviewed"), 2: value}, *extra], 3: REC_TPL}
+    return statement("attestation", signer, this or [T_DIGEST, SHA256, RECORD], body,
+                     {**LIB_VALID, 3: t(issued)})
+def rev_trust(signer, to, rng, issued, deleg=None):
+    body = {1: [{1: lref("reviewed"), **({3: rng} if rng else {})}]}
+    if deleg is not None: body[2] = deleg
+    return statement("trust", signer, [T_KEY, kid(to)], body, {**LIB_VALID, 3: t(issued)})
+
+add("TV-21", "dave", statement("define", "dave", [T_DEFINITION, DV3_ID],
+    {1: "library-review", 2: "1"},
+    {1: t("2026-10-08T00:00:00Z"), 3: t("2026-10-08T09:00:00Z")}),
+    "define: Dave, the library lead, publishes definition DV-3 `library-review`")
+add("TV-22", "carol", rev_trust("carol", "dave", None, "2026-10-08T09:30:00Z", deleg={1: 1}),
+    "trust: Carol, a reader, trusts Dave about reviewed (unbounded), may delegate depth 1; her anchor in context `library`")
+add("TV-23", "dave", rev_trust("dave", "bob", ["partial"], "2026-10-08T10:00:00Z"),
+    "trust: Dave delegates reviewed in {partial} to Bob, a student reviewer")
+add("TV-24", "bob", rec_attest("bob", "yes", "2026-10-08T11:00:00Z"),
+    "attestation: Bob says the record has reviewed = yes, from template record-reviewed; outside his scope")
+add("TV-25", "bob", rec_attest("bob", "partial", "2026-10-08T11:30:00Z"),
+    "attestation: Bob says the record has reviewed = partial, from template record-reviewed")
+add("TV-26", "dave", rec_attest("dave", "yes", "2026-10-08T12:00:00Z", this=WORK,
+    extra=({1: lref("locator"), 2: "https://www.rfc-editor.org/rfc/rfc2693"},)),
+    "attestation about a DESCRIPTION target (R-M-11): Dave says the work titled \"Simple Public Key Certificate\" is reviewed = yes; its locator rides as an attribute")
+
+LIB_AT = "2026-10-15T12:00:00Z"
+LIB_EVALS = [
+    ("E-5", ["TV-23", "TV-25"], "record", "partial", "yes", None, None,
+     "TV-22 → TV-23: Bob is within scope for partial"),
+    ("E-6", ["TV-23", "TV-24"], "record", "yes", "no", "no-path", "TV-24",
+     "UC-3's must-fail: Bob, delegated only {partial}, asserts yes"),
+    ("E-7", ["TV-26"], "work", "yes", "yes", None, None,
+     "Dave, anchored directly, attests a description target"),
+]
+
 # ---------------------------------------------------------------- negative vectors
 N = {}
 def bad(name, env, why, step):
@@ -345,7 +430,12 @@ out = {
     "evaluations": {e: {"anchor": "TV-5", "context": "releases", "statements": s,
                         "ask": {"this": "artifact", "build-provenance": val}, "at": ASK_AT,
                         "answer": ans, "reason": why, "at_statement": at_s, "note": note}
-                    for e, s, val, ans, why, at_s, note in EVALS},
+                    for e, s, val, ans, why, at_s, note in EVALS}
+                   | {e: {"anchor": "TV-22", "context": "library", "statements": s,
+                          "ask": {"this": this, "reviewed": val}, "at": LIB_AT,
+                          "answer": ans, "reason": why, "at_statement": at_s, "note": note}
+                      for e, s, this, val, ans, why, at_s, note in LIB_EVALS},
+    "record_sha256": hx(RECORD),
 }
 (HERE / "vectors.json").write_text(json.dumps(out, indent=2) + "\n")
 
@@ -367,5 +457,10 @@ md += ["### Delegation evaluations (SPEC-0004 Appendix A)", "",
        f"Anchor TV-5 in context `releases`; ask: is the artifact's build-provenance the value shown, at {ASK_AT}.", "",
        "| eval | statements | value | answer | reason | at |", "|---|---|---|---|---|---|"]
 md += [f"| {e} | {', '.join(s)} | {val} | **{ans}** | {why or '—'} | {at_s or '—'} |" for e, s, val, ans, why, at_s, _ in EVALS]
+md += ["", "### Archives evaluations (ARCH-0001 §2.3.2; UC-3)", "",
+       f"Anchor TV-22 in context `library`; ask: does the subject have `reviewed` = the value shown, at {LIB_AT}. "
+       "`record` is the digest target `sha-256:` of the record; `work` is TV-26's description target.", "",
+       "| eval | statements | subject | value | answer | reason | at |", "|---|---|---|---|---|---|---|"]
+md += [f"| {e} | {', '.join(s)} | {this} | {val} | **{ans}** | {why or '—'} | {at_s or '—'} |" for e, s, this, val, ans, why, at_s, _ in LIB_EVALS]
 (HERE / "vectors.md").write_text("\n".join(md) + "\n")
 print(f"{len(V)} positive, {len(N)} negative; DV-1 id {hx(DV1_ID)[:16]}…; encoders agree on all positive vectors")
