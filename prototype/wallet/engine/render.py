@@ -3,7 +3,14 @@
 A key is shown by the relying party's own label for it, or by a fingerprint
 (`key:` and the first 8 octets of the kid in hex). Never by the label a key
 gives itself (SPEC-0001 §7.3). Sentences come from a definition's template
-(SPEC-0003 §10.1). Language is `en` when present, else the first tag.
+(SPEC-0003 §10.1).
+
+Language: vocabulary text (type names, value names and meanings, template
+sentences) is looked up in the language asked for with `--lang`, by RFC 4647
+§3.4 lookup: the tag, then the tag with its last subtag removed, and so on.
+When the vocabulary has none of those, or no language was asked for, it is
+`en` when present, else the first tag. The engine's own words (the verdict
+lines' frames, the limit line) are English in v0.
 """
 
 import json
@@ -25,7 +32,12 @@ LINES = (
 )
 
 
-def lang(m: dict) -> str:
+def lang(m: dict, want: str | None = None) -> str:
+    tag = want or ""
+    while tag:
+        if tag in m:
+            return m[tag]
+        tag = tag.rpartition("-")[0]
     return m["en"] if "en" in m else m[min(m)]
 
 
@@ -52,15 +64,17 @@ def target(t: list, labels: dict[bytes, str]) -> str:
     return "a described object"
 
 
-def type_name(d: Definition | None, label: str) -> str:
+def type_name(d: Definition | None, label: str, want: str | None = None) -> str:
     if d is None or label not in d.types:
         return label
-    return lang(d.types[label][3]).lower()
+    return lang(d.types[label][3], want).lower()
 
 
-def value_text(d: Definition | None, label: str, value, part: int = 3) -> str:
+def value_text(
+    d: Definition | None, label: str, value, part: int = 3, want: str | None = None
+) -> str:
     v = d.value_def(label, value) if d is not None and label in d.types else None
-    return lang(v[part]) if v else str(value)
+    return lang(v[part], want) if v else str(value)
 
 
 def _template(d: Definition, statement: dict) -> dict | None:
@@ -74,7 +88,12 @@ def _template(d: Definition, statement: dict) -> dict | None:
     return None
 
 
-def sentence(d: Definition | None, statement: dict, labels: dict[bytes, str]) -> str:
+def sentence(
+    d: Definition | None,
+    statement: dict,
+    labels: dict[bytes, str],
+    want: str | None = None,
+) -> str:
     says, this = key_name(statement[3], labels), target(statement[4], labels)
     attrs = statement[6].get(1, [])
     if d is None or any(a[1][1] != d.id for a in attrs):
@@ -87,15 +106,15 @@ def sentence(d: Definition | None, statement: dict, labels: dict[bytes, str]) ->
     t = _template(d, statement)
     if t is None:
         parts = ", ".join(
-            f"{type_name(d, a[1][2])} is {value_text(d, a[1][2], a[2], 2)}"
+            f"{type_name(d, a[1][2], want)} is {value_text(d, a[1][2], a[2], 2, want)}"
             for a in attrs
         )
         return f"{says} says that for {this}, {parts}."
-    text = lang(t[8]).replace("{says}", says).replace("{this}", this)
+    text = lang(t[8], want).replace("{says}", says).replace("{this}", this)
     for a in attrs:
         label = a[1][2]
-        text = text.replace("{" + label + ".name}", value_text(d, label, a[2], 2))
-        text = text.replace("{" + label + "}", value_text(d, label, a[2], 3))
+        text = text.replace("{" + label + ".name}", value_text(d, label, a[2], 2, want))
+        text = text.replace("{" + label + "}", value_text(d, label, a[2], 3, want))
     return text
 
 

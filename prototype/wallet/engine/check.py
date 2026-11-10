@@ -10,6 +10,9 @@
 5. Six verdict lines (SPEC-0004 §10.4). The answer is yes only if all six
    pass.
 
+`lang` picks the language of the vocabulary's own text in the lines and
+sentences (`render.lang`); it changes no result.
+
 Exit codes: 0 yes, 1 no, 3 a handed statement was invalid.
 """
 
@@ -154,6 +157,7 @@ def run(
     anchors: list[Anchor],
     context: str,
     at: int,
+    lang: str | None = None,
 ) -> Answer:
     verified = [h.verified for h in items if h.verified]
     subject = [2, 1, hashlib.sha256(artifact).digest()]
@@ -183,12 +187,12 @@ def run(
         _integrity(items, attestations, about, subject),
         _authenticity(items, used, labels),
         _names(used, labels),
-        _authorization(about, coverage, d, context, labels),
-        _acceptance(about, held),
+        _authorization(about, coverage, d, context, labels, lang),
+        _acceptance(about, held, lang),
         _semantics(d, def_error, referenced, define, labels),
     ]
     sentences = [
-        render.sentence(held.get(s.body[1][0][1][1]), s.statement, labels)
+        render.sentence(held.get(s.body[1][0][1][1]), s.statement, labels, lang)
         for s in (about or attestations)
     ]
     return Answer(context, at, subject, items, lines, sentences, coverage, labels)
@@ -261,7 +265,7 @@ def _names(used, labels) -> Line:
     return Line("names", "pass", "keys you have not labelled are shown by fingerprint")
 
 
-def _authorization(about, coverage, d, context, labels) -> Line:
+def _authorization(about, coverage, d, context, labels, lang=None) -> Line:
     if not about or coverage is None:
         return Line(
             "authorization",
@@ -273,7 +277,7 @@ def _authorization(about, coverage, d, context, labels) -> Line:
         label = c.scope[1][2]
         rng = c.scope.get(3)
         scope = (
-            ", ".join(render.value_text(d, label, v, 2).lower() for v in rng)
+            ", ".join(render.value_text(d, label, v, 2, lang).lower() for v in rng)
             if rng
             else "any value"
         )
@@ -281,7 +285,7 @@ def _authorization(about, coverage, d, context, labels) -> Line:
             "authorization",
             "pass",
             f"{render.key_name(c.anchor.trusts, labels)} is trusted in "
-            f"context {context} about {render.type_name(d, label)} ({scope})",
+            f"context {context} about {render.type_name(d, label, lang)} ({scope})",
         )
     s = coverage.stopped[0]
     who = render.key_name(s.statement.says, labels) if s.statement else "the speaker"
@@ -289,19 +293,19 @@ def _authorization(about, coverage, d, context, labels) -> Line:
     if s.code == "no-path" and s.anchor is None:
         text = (
             f"{who} was never given the right to say this: no anchor in context {context} trusts it "
-            f"about {render.type_name(d, label)}"
+            f"about {render.type_name(d, label, lang)}"
         )
     elif s.code == "no-path":
         text = (
-            f"{who} is trusted in context {context}, but not about {render.type_name(d, label)} "
-            f"= {render.value_text(d, label, s.attribute[2], 2).lower()}"
+            f"{who} is trusted in context {context}, but not about {render.type_name(d, label, lang)} "
+            f"= {render.value_text(d, label, s.attribute[2], 2, lang).lower()}"
         )
     else:
         text = f"{s.detail} ({s.code})"
     return Line("authorization", "fail", text)
 
 
-def _acceptance(about, held) -> Line:
+def _acceptance(about, held, lang=None) -> Line:
     if not about:
         return Line(
             "acceptance",
@@ -324,7 +328,7 @@ def _acceptance(about, held) -> Line:
             return Line(
                 "acceptance",
                 "pass",
-                f"conforms to the template {render.lang(t[9]).lower()}",
+                f"conforms to the template {render.lang(t[9], lang).lower()}",
             )
     return Line("acceptance", "pass", "no template is named")
 

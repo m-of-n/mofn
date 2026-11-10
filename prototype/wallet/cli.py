@@ -3,7 +3,7 @@
 This file parses arguments, calls the engine, prints, and sets the exit
 code. It does no cryptography, no encoding and no evaluation of its own.
 
-    mofn [--wallet DIR] [--codec ksa-cbor|review-yaml] COMMAND ...
+    mofn [--wallet DIR] [--codec ksa-cbor|review-yaml] [--lang TAG] COMMAND ...
 
     init
     key gen LABEL [--controller KIND] [--passphrase-stdin] [-o OUT]
@@ -14,6 +14,10 @@ code. It does no cryptography, no encoding and no evaluation of its own.
          [--passphrase-stdin]
     check STMT [STMT ...] --artifact FILE --def FILE [--context NAME] [--format text|json] [--at TIME]
     show FILE
+
+`--lang TAG` picks the language of the vocabulary's names and sentences
+(`make`, `check`), falling back to English; the engine's own words stay
+English.
 
 A bare `mofn` prints the same menu as `mofn -h`; `mofn --version` says what
 this mofn is built from.
@@ -76,6 +80,7 @@ OPTIONS = [
     ("    --version", "show what this mofn is built from"),
     ("    --wallet DIR", "wallet directory (default: $MOFN_WALLET, else ./wallet)"),
     ("    --codec NAME", "statement file form: ksa-cbor (default), review-yaml"),
+    ("    --lang TAG", "language of the vocabulary's words, e.g. es (default: en)"),
 ]
 EXAMPLES = [
     ("mofn run", "use your wallet through forms"),
@@ -303,7 +308,7 @@ def cmd_make(a):
     )
     out.write_bytes(codec.dump(envelope))
     print(f"wrote {out}")
-    print(render.sentence(d, v.statement, w.labels()))
+    print(render.sentence(d, v.statement, w.labels(), a.lang))
 
 
 def cmd_check(a):
@@ -324,6 +329,7 @@ def cmd_check(a):
         w.anchors(a.context),
         a.context,
         at,
+        a.lang,
     )
     sys.stdout.write(
         render.verdict_json(answer)
@@ -436,6 +442,15 @@ def version(a) -> str:
     )
 
 
+def language(text: str) -> str:
+    """A BCP 47 tag in the canonical case the definitions use (SPEC-0003)."""
+    if not defs.LANG_TAG.fullmatch(text):
+        raise argparse.ArgumentTypeError(
+            f"{text!r} is not a language tag in canonical case, such as es or pt-BR"
+        )
+    return text
+
+
 class Menu(argparse.Action):
     def __init__(self, option_strings, dest, **kw):
         super().__init__(option_strings, dest, nargs=0, **kw)
@@ -458,6 +473,12 @@ def parser() -> argparse.ArgumentParser:
     )
     top.add_argument(
         "--codec", choices=sorted(CODECS), default=DEFAULT, help="statement file form"
+    )
+    top.add_argument(
+        "--lang",
+        type=language,
+        metavar="TAG",
+        help="language of the vocabulary's names and sentences (default: en)",
     )
     sub = top.add_subparsers(dest="command")
 
