@@ -8,10 +8,10 @@ description: "Canonical working architecture for a native model that is not X.50
 type: architecture
 category: security
 status: draft
-version: "0.2.1"
+version: "0.3.0"
 version_policy: "semver; PATCH = editorial; MINOR = additive requirements; MAJOR = breaking model change"
 date: "2026-09-15"
-updated: "2026-11-07"
+updated: "2026-11-09"
 authors:
   - role: architect
     id: conversation-brainpool256
@@ -91,7 +91,7 @@ scope:
 agent_checkpoint: true
 agent_notes: >
   Other agents: treat this file as the source of truth for architecture
-  state as of v0.2.0. v0.2.0 folded ARCH-0001-PROPOSAL-v0.2.0 in (now
+  state as of v0.3.0. v0.3.0 adds §2.3, the two target applications. v0.2.0 folded ARCH-0001-PROPOSAL-v0.2.0 in (now
   superseded) and carried ADR-0002, ADR-0003, ADR-0007 and the T-012c
   delegation decision into §4-§7. Where SPEC-0001..0005 and this file differ,
   §5.5 lists every known gap and which side owes the change. Do not invent accepted decisions. Open items are
@@ -101,7 +101,7 @@ agent_notes: >
 
 # ARCH-0001 — Authorization, local names, and artifact attestation
 
-**Status:** draft · **Version:** 0.2.1 · **Date:** 2026-09-15 · **Updated:** 2026-11-07  
+**Status:** draft · **Version:** 0.3.0 · **Date:** 2026-09-15 · **Updated:** 2026-11-09  
 **Canonical file:** `spec/ARCH-0001-authorization-attestation.md`  
 **Changelog:** `spec/ARCH-0001-CHANGELOG.md`
 
@@ -123,6 +123,12 @@ Need a **native** authorization and attestation model whose primary objects are:
 X.509 / PKIX is an **interchange target**, not the information model.
 
 PGP Web of Trust is an **interchange and introducer pattern**, not the validation algorithm.
+
+**Motivation, not scope.** AI agents acting for people need exactly this:
+authority that is delegated, bounded in scope and time, and traceable to a
+person. That is cited here as motivation only. It carries **no normative
+content**. `UC-0001` UC-4 stays a use case, and §2.3 says why it is not a
+target.
 
 ---
 
@@ -149,6 +155,94 @@ PGP Web of Trust is an **interchange and introducer pattern**, not the validatio
 | NG3 | Freeze encoding, algorithms, or repository name. |
 | NG4 | Require a blockchain or any specific transparency log. |
 | NG5 | Treat email addresses as globally secure names. |
+
+### 2.3 Target applications
+
+Added in 0.3.0 (mofn#135, T-012b, `DL-0032`). MD-1 (`DECISIONS-0001` T1-A)
+scopes **two** targets. For each, an in-scope target costs a domain of
+discourse, worked examples and a section; this is that section. The two are
+deliberately unlike each other. One target would show that the machinery
+runs. Only two unlike domains, through one engine and one renderer with no
+domain-specific code, show that the vocabulary mechanism generalises
+(`ARCH-0002` P3; DEC-007 by `ADR-0007`).
+
+Every worked statement below is a published vector in `SPEC-0002` Appendix A
+(`spec/vectors/ksa-core/`), and each verifier answer is an `evaluations` entry
+there or a worked ask in `SPEC-0004` Appendix A. A row marked *illustrative*
+says why it has no vector.
+
+**Neutral on the open decisions.** Scopes are attribute ranges under the
+`SPEC-0003` §6 base kinds, not a tag language, so DEC-004 stays open. No export
+envelope is used, so DEC-005 stays open. The examples are encoded as
+`ADR-0004` specifies. A definition's hash is its identity in `SPEC-0003`, but
+`ARCH-0002` P4 (*a domain is a hash-identified set*) is still draft, so nothing
+here makes a domain's hash identity normative.
+
+#### 2.3.1 Software supply chain (primary)
+
+**Domain of discourse.** Definition DV-1 `supply-chain`, by the maintainer's
+key (Alice): the type `build-provenance` (`reproducible` / `attested` /
+`unverified`, delegable with narrowing); the type `outcome` (`approve` /
+`changes` / `reject`, not delegable); the template `release-attestation`.
+Subjects are artifacts by content digest (R-M-07, R-M-11 `digest` mode).
+
+| # | Worked statement | Vector | Verifier question | Answer | UC |
+|---|---|---|---|---|---|
+| SC-1 | *Alice says sha-256:artifact has build-provenance = reproducible* | TV-4 | Was this artifact built reproducibly, according to a key the relying party trusts for that? | yes (`SPEC-0004` App. A Ask 1); after Alice revokes it (TV-7), no, `revoked` (Ask 2) | UC-1 |
+| SC-2 | *Carol trusts Alice about build-provenance ∈ {reproducible, attested}, may delegate depth 1 within {reproducible}*; *Alice trusts Bob about {reproducible}*; *Bob says the artifact is reproducible* | TV-5, TV-16, TV-17; E-2 | Is the build bot's claim inside the authority the maintainer delegated? | yes. Must fail: a delegation outside `ranges` (E-1, `widening`), a third hop (E-3, `depth`), an onward depth that is too large (E-4, `widening`) | UC-1 |
+| SC-3 | *Carol trusts any 2 of {Alice, Bob, Dave} about build-provenance*; *Bob reviews TV-4: approve* | TV-9, TV-6 | Did enough independent reviewers approve this release? | **illustrative.** The statements are vectors; the answer is not. `SPEC-0005` (panels and processes) has no vectors yet | UC-2 |
+
+**Interchange.** in-toto Statement: subject = the digest target;
+`predicateType` URI ↔ `type-ref`, lossy (§6, `ARCH-0002` P1). SLSA provenance
+v1 and SPDX/CycloneDX travel as predicates (R-I-07), not as native types.
+SCITT (RFC 9943): registration is optional (R-O-04); a receipt is evidence
+about a statement and does not change its meaning (§6). The mapping is WP3.
+
+#### 2.3.2 Archives and library (contrast)
+
+**Domain of discourse.** Definition DV-3 `library-review`, by the library
+lead's key (Dave): the type `reviewed` (`yes` / `partial` / `no`, named in
+English and Spanish, delegable with narrowing); the record type `work` (a
+published work by its `title`), which identifies a subject that has no bytes of
+its own; the text type `locator`; the template `record-reviewed`, whose targets
+are a digest or a description. This is the corpus the project already runs
+(`library/`).
+
+| # | Worked statement | Vector | Verifier question | Answer | UC |
+|---|---|---|---|---|---|
+| AR-1 | *Carol trusts Dave about reviewed, may delegate depth 1*; *Dave trusts Bob about reviewed ∈ {partial}*; *Bob says sha-256:record has reviewed = partial* | TV-22, TV-23, TV-25; E-5 | Has this library record been checked against its source, by someone entitled to say so? | yes | UC-3 |
+| AR-2 | as AR-1, but *Bob says sha-256:record has reviewed = yes* | TV-24; E-6 | The same | no, `no-path`: Bob was delegated only `partial` | UC-3 |
+| AR-3 | *Dave says the work titled "Simple Public Key Certificate" has reviewed = yes, locator = https://www.rfc-editor.org/rfc/rfc2693* | TV-26; E-7 | Has **the work** been reviewed, whatever copy one holds? | yes. The subject is a `description` target (R-M-11), and the URL is an attribute, not the subject (`SPEC-0002` §7.2) | UC-3 |
+
+AR-1 and SC-2 are answered by the same procedure, and AR-1's sentence is
+rendered from DV-3 by the renderer that renders SC-1 from DV-1 (`prototype/wallet`
+tests). That is the evidence MD-1 asked the second target for.
+
+**Found, not fixed.** AR-3's subject is rendered as "a described object": the
+renderer has no rule for showing a description target (`SPEC-0003` §10 is
+silent on it). Owed as T-066. No requirement here changes because of it.
+
+**Interchange.** in-toto has no form for a description subject. Its subjects
+are digest sets, so AR-3 does not export to in-toto (§6, the in-toto row,
+already records this loss). No archival standard is mapped in this version.
+
+#### 2.3.3 Not targets
+
+| Application | Status | Why |
+|---|---|---|
+| AI agent attestation | **motivation only** (§1) | The target moves: NIST work began April 2026, and the SCITT agent profile is a draft. Specifying against it would date this document fastest. UC-4 stays a use case |
+| AI media provenance | not scoped | Crowded and standards-led (C2PA) |
+| Scientific data | not scoped | PROV-O adjacent; no partner |
+| IoT onboarding | not scoped | Key-centric by nature, but needs a partner |
+
+Adding a third target costs a domain, worked examples and interchange mapping.
+MD-1's argument governs any request to add one: a third domain adds cost
+without adding evidence of generalisation.
+
+**Not proposed.** No requirement is added, amended or withdrawn. No DEC-* is
+opened, ranked or accepted. P4 and P7 stay draft: §2.3.1 is not the
+supply-chain *profile* that `DECISIONS-0001` T1-B asks for before P7 can be
+accepted.
 
 ---
 
@@ -620,9 +714,9 @@ their common principle. It is not a reason to merge them.
 - W3C PICS (label format, signed labels, content checksum)  
 - Ellison, “SPKI/SDSI and the Web of Trust” comparison notes  
 - OpenPGP / GnuPG trust-signature model (meta-introducers)  
-- C2PA 2.4 (April 2026) — where C2PA is cited downstream  
+- C2PA 2.4 (April 2026) — where C2PA is cited downstream (§2.3.3)  
 - CDDL, if reached: RFC 8610 as updated by RFC 9165 and RFC 9682  
 - `draft-mih-scitt-agent-action-capsule-02` — ad hoc vocabulary inside SCITT (§3.3)  
 - RFC 9580 — OpenPGP (2024): §3.7, §5.2.3.7, §5.2.3.21, §5.2.3.24, §5.2.3.29, §5.2.5, §5.5.3, §5.5.4.3 (read for §3.4)
 
-End of ARCH-0001 v0.2.1
+End of ARCH-0001 v0.3.0

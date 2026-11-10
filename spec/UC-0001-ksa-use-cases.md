@@ -7,10 +7,10 @@ description: "Eight scenarios — release attestation, review panels, archive re
 type: specification
 category: security
 status: draft
-version: "0.1.0"
+version: "0.2.0"
 version_policy: "semver; MINOR = scenario added; PATCH = editorial"
 date: "2026-10-14"
-updated: "2026-10-14"
+updated: "2026-11-09"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -25,7 +25,7 @@ defers_to: ARCH-0001
 
 # KSA Use Cases — scenarios traced to the specifications
 
-**UC-0001 · version 0.1.0 · draft**
+**UC-0001 · version 0.2.0 · draft**
 
 ## Purpose
 
@@ -291,3 +291,14 @@ new key is stolen; Bob's wallet owner marks it compromised.
 | SPEC-0004 §9 policy (agents) | UC-4 |
 | SPEC-0005 panels, processes, aggregates | UC-2 |
 | SPEC-0001 §3.2 controllers, §9 discovery | UC-1, UC-4, UC-7, UC-8 |
+
+**Vectors and the ARCH target section** (0.2.0, mofn#135). `ARCH-0001` §2.3
+traces its worked statements to these use cases and to published vectors
+(`SPEC-0002` Appendix A):
+
+| UC | ARCH-0001 §2.3 | vectors and evaluations |
+|---|---|---|
+| UC-1 | SC-1, SC-2 | TV-4, TV-5, TV-7, TV-16, TV-17; E-1…E-4 |
+| UC-2 | SC-3 (illustrative) | TV-6, TV-9 |
+| UC-3 | AR-1, AR-2, AR-3 | DV-3, TV-21…26; E-5…E-7 |
+| UC-4 | §1, motivation only | — |

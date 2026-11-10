@@ -37,6 +37,7 @@ from .schema import (
 )
 
 ENUM = 1
+TEXT = 3
 BASE_KINDS = {
     1: "enum",
     2: "integer",
@@ -204,6 +205,10 @@ class Definition:
         return [v[1] for v in t[6]]
 
     def valid_assignment(self, label: str, value) -> bool:
+        t = self.type(label)
+        if t[2] == TEXT:  # SPEC-0003 §6: any text, params 1 = maximum octets
+            limit = t.get(12, {}).get(1)
+            return isinstance(value, str) and (limit is None or len(value.encode()) <= limit)
         return isinstance(value, str) and value in self._enum(label)
 
     def canonical_range(self, label: str, values: list[str]) -> list[str]:
