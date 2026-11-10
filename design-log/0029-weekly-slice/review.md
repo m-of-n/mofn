@@ -8,8 +8,9 @@ date: "2026-11-07"
 # DL-0029 — review
 
 **Human input:** Chip asked the question, asked for a recommendation, and
-accepted it ("go"). Human review of the workflow itself is pending on its PR
-(David reviews Chip's slice PRs, per mofn#68).
+accepted it ("go"). David reviewed the workflow and approved it on mofn#147
+(2026-11-08), and it merged 2026-11-09. **DL-0029 is closed.** Session 2,
+below, records how the first automated run's notes were actually written.
 
 ## Options the agent laid out
 
@@ -43,3 +44,47 @@ accepted it ("go"). Human review of the workflow itself is pending on its PR
 - The mofn#68 due window ("every Monday through Oct 28") has passed; the cron
   keeps running because the slice is the Nov 11 floor demo (mofn#31). Disable
   the workflow, or narrow it, when the floor is done.
+
+## Session 2 (2026-11-10): the first automated run
+
+The cron ran on 2026-11-09 (`c84a0e7`). It was green, 10/10, and it posted on
+mofn#68 with the notes left as a placeholder, as designed.
+
+**What happened:** Chip told the agent to do every next step "as Chip". So
+the agent wrote the verdict notes for the 2026-11-09 run and posted them on
+mofn#68 from Chip's account. It also filed the findings as mofn#157, and
+dispatched a rehearsal run for the Nov 11 floor. Chip did not read the notes
+line by line before they were posted. Both posts say they were drafted by
+Claude Code at Chip's instruction.
+
+**This departs from option 3 as accepted.** Option 3 kept the judgement half
+human. This week the judgement half was AI-drafted and posted with only a
+blanket human instruction behind it. That is weaker than option 1 in one
+respect: option 1 at least ran under the repo's own token, where it was
+plainly a bot. What makes it acceptable here:
+
+- the posts say who drafted them;
+- the findings went to a human owner (David, mofn#157) rather than being acted on;
+- this entry records it.
+
+It should not become the weekly pattern. If it does, the honest move is to
+revisit option 1, not to keep posting AI notes under a person's name.
+
+**What the agent judged** (open to Chip's or David's correction on mofn#157):
+
+- *F-1, kept.* ③ prints the attestation sentence after `answer: no` under a
+  failed integrity line. SPEC-0004 §10.4 is silent on this, so it is wording.
+- *F-2, kept but downgraded.* The vacuous `acceptance pass` conforms to
+  §10.4 and to DL-0020 A1. The agent leans to explaining it in the spec,
+  not changing the result.
+- *Rejected as a finding: `fail` vs `FAIL`.* The 2026-11-01 note listed it.
+  On checking, SPEC-0004 §10.4 specifies lowercase, so the engine is right and
+  only the issue text drifted. The 2026-11-01 finding was the agent's own and
+  was wrong.
+- *Rejected: adding the archives domain and `--lang` (mofn#154) to the slice
+  before the floor.* #154 is unmerged and overlaps mofn#152 (DV-3). Changing
+  the floor script two days out risks the demo for coverage the floor does not
+  require.
+
+**Still owed:** the cron should be disabled or narrowed after the Nov 11 floor
+(see *Also considered*). That is left for its own change, after the floor.
