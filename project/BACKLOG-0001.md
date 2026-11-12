@@ -7,7 +7,7 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.13.0"
+version: "0.13.1"
 date: "2026-09-16"
 updated: "2026-11-12"
 needs_review: true
@@ -212,7 +212,7 @@ before it runs.**
 | W-2 | **Second domain** — one-page scenario per MD-1 target (supply chain, archives/library) incl. the fail-authorization case and three personas; archives domain file v0 (`record-review`, renderings table, `--lang es`); five-view sketches replacing Product Spec §6.5 | #66 | D6/D8 | PL | L | review — APP-0002/0003 scenarios, `domains/archives/` through the same `make`/`check` with no engine change, `--lang` (wallet 0.4.0), APP-0004 sketches, PLAN-0002 0.4.0 §6.5 (DL-0032). Oct 14 part was 4 weeks late |
 | W-2b | **Converge the archives vocabularies — starts when W-3 merges.** DV-3 `library-review` (#152, vector) and `archives` v1 (#154, demo) become one published vocabulary (e.g. `library-review` v2 + `summarized`); the demo moves to it with its delegation path; `domains/archives/` retired or regenerated; APP-0003 § Setup/Steps and goldens updated (APP-0003 § *Two archives vocabularies*, DL-0033) | #66 | D6/D8 | PL | M | blocked — on W-3 (#67) |
 | W-3 | **Delegation with short expiry** — `may-speak` chains in `reduce`, intersecting topic *and* validity; expired or out-of-topic → `authorization FAIL` naming the broken link. **Short expiry is the revocation mechanism**; there is no revocation list | #67 | D6 | PL | L | todo — Nov 11 |
-| W-4 | **Weekly demo slice owner** — grow and run `demo/slice.sh` every Monday, post the output on the issue. Three cases minimum: green, `authorization FAIL`, `integrity FAIL` | #68 | D6 | S2 | M | doing — weekly |
+| W-4 | **Weekly demo slice owner** — grow and run `demo/slice.sh` every Monday, post the output on the issue. Three cases minimum: green, `authorization FAIL`, `integrity FAIL` | #68 | D6 | S2 | M | done — slice runs from a clean clone, 5 cases × 2 codecs; weekly notes Nov 1, Nov 9; Monday cron retired when I3 ended (Nov 11), manual run kept (DL-0029); verdict wording findings → #157 |
 | W-5 | ~~**Mac GUI** — local desktop app~~ **Rescoped 2026-11-09 into `mofn run`** (`DECISIONS-0001` item 28: Textual is the UI). What #69 adds beyond W-6: on every verdict in the Check tab, the **attribute associations** — who signed (key / named principal), topic (domain + type), the subject's digest, and standing (root → delegation → key, or "no standing"). Calls the engine; reimplements no crypto | #69 | D8 | S2 | M | todo — Dec |
 | W-6 | **A way in to the engine** — a bare `mofn` prints the menu (= `mofn -h`), `mofn --version`, one line for a missing dependency; `mofn run`, the wallet as a terminal app — forms for keys, trust, sign and check, each showing the command it runs, and a Learn tab that runs nothing; DV-1 ships as the example vocabulary (0.2.0, DL-0023); `key list`, `key export`, `hash` from `gpg`, the rest of `gpg` mapped or left out (DL-0022); `ci.yml` on Linux, macOS and Windows. Chip: `release.yml`, one self-contained build per OS, `SHA256SUMS`, pre-releases from `wallet-v0.2.0` (David's half lands as one PR, `feat/w6-tui`, so `main` never holds 0.1.0 and there is no `wallet-v0.1.0`). Prototype only; `src/` stays empty | #127 | D6 | S1 engine, S2 release | L | doing — Nov 11 |
 
