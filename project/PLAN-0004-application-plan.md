@@ -7,9 +7,9 @@ description: "Whether APP-0001 is complete, and the plan that fills the gaps. Dr
 type: plan
 category: product
 status: draft
-version: "0.2.0"
+version: "0.3.0"
 date: "2026-10-02"
-updated: "2026-11-05"
+updated: "2026-11-09"
 needs_review: true
 reviewed: false
 canonical_path: project/PLAN-0004-application-plan.md
@@ -214,6 +214,46 @@ Fits PLAN-0003. Does not move D8 earlier than the floor.
 Threshold subjects stay a cut, as APP-0001 already allows, unless the floor
 is otherwise green. Packaging is last.
 
+### 7.1 Schedule status, Nov 9, 2026
+
+Verified at main `c84a0e7` (2026-11-09). This is a status reading of the dates
+already in §7 and in PLAN-0001, PLAN-0002 and PLAN-0003. It does not move
+those dates, and it accepts no DEC-*.
+
+I3, the demo floor, is due 2026-11-11 — two days from this reading. The
+one-hop CLI path works. Delegation, which the sponsor has required for the
+floor, is not in the engine.
+
+| item | due | owner | status | evidence |
+|---|---|---|---|---|
+| I1 / D1–D3: library and research reports | Oct 14 | both | done | library repo; `R-0004`, `R-0005`, `R-0006` |
+| §7 one-page scenarios for each §3 application (W-2, #66, T-029a) | Oct 14 | Paul, both | behind | #66 is open; T-029a is still todo; APP-0001 still says "October" |
+| GUI framework (DECISIONS-0001 item 28, T-029c) | Oct 14 | Paul confirms; Ndewedo proposes | behind | still "Tauri, tentative, PySide6 fallback"; #69 last activity 2026-10-05 |
+| I2 / D4 encoding-neutral schema; D5 DEC-002 ADR | Oct 21 / Oct 28 | David, Paul | done | SPEC-0002; `ADR-0004` accepted 2026-10-25 |
+| §7 engine contract: `check` prints the six-line verdict (W-1, #65) | Oct 28 | David | done | #122, #125; `prototype/wallet` |
+| §7 signature check; tamper and unauthorized-key demos | Nov 11 | David, Ndewedo | done | `check.py` runs V1–V9, including the signature check, before `reduce`; `demo/slice.sh` cases ②, ③, ②′; #68 run of 2026-11-09 at `c84a0e7` was green |
+| I3 / D6 / #31 / #67: delegation in the engine | Nov 11 | David (engine); Paul (rewrite #67 and #31) | behind | `reduce.py` last changed in `b7600fe` (2026-11-01) and is one hop only; #148's `test_delegation.py` uses a test-only walker; #67 still uses retired `may-speak` terms; BACKLOG T-041 and T-065 are todo |
+| Issuer revocation (`ADR-0003` D5) | with the floor | David | not started | `check.py` hard-codes `revocations considered` to 0; #67 still says short expiry is the only revocation mechanism |
+| W-6 / #127: menu, `--version`, `mofn run`, CI matrix | Nov 11 | David | done | #131 (`724bb4b`, 2026-11-06) |
+| W-6 / #127: `release.yml`, downloads, README install | Nov 11 | Ndewedo | not started | no tags; no `.github/workflows/release.yml` |
+| I4 / D7 mappings; §7 archives domain through the same path | Nov 25 | David; #66 Paul and Ndewedo | not started | I4 has not begun; #66 is still open. The Oct 14 scenario half of #66 is already behind |
+| I5 / D8 five views and packaging; #69 GUI | Dec 1–4 | Ndewedo | not started | #69 unchanged since 2026-10-05 |
+| #68 weekly demo slice | every Monday | Ndewedo | on track for the current cases | `weekly-slice.yml`; automated post on #68, 2026-11-09. Delegation and revocation cases wait on the engine |
+
+David's last commit on this repo is `724bb4b` (2026-11-06, 10:25 AM PT). He
+has no open pull requests.
+
+**To recover before Nov 11:**
+
+- **David:** put delegation in `reduce` (move E-1…E-4 off the test-only
+  walker, T-065); keep sets of statements in the wallet for those paths;
+  enforce issuer revocation (`ADR-0003` D5) instead of hard-coding 0.
+- **Ndewedo (Chip):** add slice cases for delegation and revocation once the
+  engine can run them; write `release.yml`, the downloads, and the README
+  install section (#127).
+- **Paul:** rewrite #67 and #31 for integer depth, `trust` / `about` /
+  `may-delegate`, and issuer revocation; confirm or replace decision #28.
+
 ## 8. Fixes this plan expects in APP-0001
 
 1. Delete "No GUI" or replace it with "no web UI, no server; graphic UI is in scope."
@@ -222,3 +262,66 @@ is otherwise green. Packaging is last.
 4. Collapse the two sections both numbered 9.
 
 Those edits are documentation. They do not accept DEC-002 or any other open decision.
+
+## 9. Build and release
+
+**Proposed, 2026-11-09**, except where it restates what is already in the repo
+or in PLAN-0001 and PLAN-0002. It accepts no DEC-* and it does not close
+decision #28.
+
+**Current state**, verified 2026-11-09 at main `c84a0e7`. The only application
+is the `mofn` Python CLI, run from a checkout (the command menu, `--version`,
+and the `mofn run` guided screen). There are no releases, no tags, and no
+`release.yml`. There is nothing to download.
+
+What is automated:
+
+- `ci.yml` runs the wallet tests on Ubuntu, macOS and Windows for every pull
+  request and every push to `main`, and checks the menu and version.
+- `weekly-slice.yml` runs `demo/slice.sh` offline each Monday and posts the
+  result on #68.
+- `pages.yml` publishes the documentation site.
+- `library-update.yml` bumps the library pin hourly.
+
+**Targets.** macOS and Linux (PLAN-0002 M6, "wallet installs from Pages").
+Windows is already in the CI matrix but is not a release target unless that
+is decided.
+
+**CLI packaging (proposed).** PLAN-0001 row 10 is a single-file Python zipapp,
+not an installer. The proposal is that a `release.yml` workflow builds it on
+a version tag (`wallet-vX.Y.Z`, as the wallet changelog already describes),
+attaches it to a GitHub Release, and links it from Pages, with checksums.
+Ndewedo owns this half of #127 (`release.yml`, the downloads, the README
+install section). Signing of the release files is an open item.
+
+The wallet's runtime dependencies are `pynacl==1.5.0`, `PyYAML==6.0.2` and
+`textual==8.2.8` (`prototype/wallet/requirements.txt`; `pytest` is for tests
+only). PyNaCl is a native extension. A zipapp cannot bundle it portably, so
+an install still needs a Python (CI uses 3.12) and at least `pip install
+pynacl`, or a per-OS build that includes the wheel. How to handle that is an
+open question; BACKLOG W-6 already asks for one self-contained build per OS.
+
+**GUI.** Not started. #69 has had no activity since 2026-10-05. Decision #28
+(DECISIONS-0001) — "Tauri, tentative, PySide6 fallback" — was due 2026-10-14
+and is unconfirmed. The open options are Tauri, PySide6, and SwiftUI
+(Mac-only). GUI packaging (a signed and notarized Mac app, and a Linux
+AppImage or similar) comes after the five views, in the Dec 1–4 window, with
+packaging last, per §7.
+
+| output | platform | built by | status |
+|---|---|---|---|
+| CLI zipapp | macOS, Linux (Windows only if decided) | proposed `release.yml` on a `wallet-v*` tag; Ndewedo, #127 | not started |
+| GUI app | Mac first; Linux if the framework is not SwiftUI | after the five views, Dec 1–4, packaging last | not started; framework (decision #28) unconfirmed |
+| documentation site | Pages | `pages.yml` | in place |
+| weekly slice report | posted on #68 | `weekly-slice.yml` each Monday | in place |
+
+**Open items.** Confirm the GUI framework (decision #28). Cut a first tagged
+CLI release. Decide how release files are signed. Decide whether Windows is a
+release target.
+
+## What changed in v0.3.0 — 2026-11-09
+
+- §7.1: schedule status as of main `c84a0e7`, with evidence and a recover
+  list. No dates in §7 are changed.
+- §9: build and release — what CI does today, the proposed zipapp release,
+  and the open items. Decision #28 is listed as open, not accepted.
