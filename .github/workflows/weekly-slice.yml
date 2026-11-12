@@ -1,14 +1,13 @@
 name: weekly-slice
-# mofn#68 (W-4): run demo/slice.sh every Monday from a clean clone and post the
-# output on #68. The run is mechanical; the notes on what the verdict says stay
+# mofn#68 (W-4): run demo/slice.sh from a clean clone and post the output on
+# #68. The Monday cron ran until I3 ended (Nov 11) and is retired (DL-0029
+# session 3); run it by hand from the Actions tab before a demo. The run is mechanical; the notes on what the verdict says stay
 # with the slice owner, who replies under the bot's comment (DL-0029).
 #
 # Clean clone: a fresh checkout, a new venv, an empty HOME, and the slice run
 # in a network namespace with no interfaces, so it cannot pass by fetching
 # anything. Dependencies are installed before the network is cut.
 on:
-  schedule:
-    - cron: '0 13 * * 1'   # Monday 13:00 UTC (08:00 US Eastern, winter)
   workflow_dispatch:        # run by hand from the Actions tab
   pull_request:             # dry run: builds the comment, posts nothing
     paths: [.github/workflows/weekly-slice.yml]
