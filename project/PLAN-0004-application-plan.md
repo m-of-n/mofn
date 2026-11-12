@@ -7,9 +7,9 @@ description: "Whether APP-0001 is complete, and the plan that fills the gaps. Dr
 type: plan
 category: product
 status: draft
-version: "0.3.0"
+version: "0.4.0"
 date: "2026-10-02"
-updated: "2026-11-09"
+updated: "2026-11-12"
 needs_review: true
 reviewed: false
 canonical_path: project/PLAN-0004-application-plan.md
@@ -254,6 +254,57 @@ has no open pull requests.
 - **Paul:** rewrite #67 and #31 for integer depth, `trust` / `about` /
   `may-delegate`, and issuer revocation; confirm or replace decision #28.
 
+### 7.2 I3 closed, Nov 12, 2026 — proposed status, for the sponsor
+
+Verified at main `d7f7f89` (2026-11-12). This is a **proposal**. It records
+what I3 delivered and asks the sponsor to decide what happens to the rest. It
+moves no date by itself, and it accepts no DEC-*.
+
+**What the floor is.** "The demo floor" is the **I3 milestone** (Oct 29 –
+Nov 11): D6, the minimum that must stand if everything later slips (PLAN-0001
+§9, PLAN-0003). It is not an event. Its demo is to be *scripted, rehearsed and
+recorded* (PROC-0004 §5). No live showing was planned for Nov 11 and none was
+held. The one scheduled event is CS Night, Dec 4 (PLAN-0002).
+
+**I3 ended with D6 partly met.** The one-hop path is done. Multi-hop
+delegation, the part PLAN-0001 §9 names ("delegation chain reduces to a tag;
+break a link; verifier explains it in English"), did not land.
+
+| D6 item (PROC-0004 §5, PLAN-0001 §9) | status at Nov 12 | evidence |
+|---|---|---|
+| signature check inside reduction; tamper and unauthorized-key demos | **met** | `check.py` V1–V9 before `reduce`; `demo/slice.sh` ②, ③, ②′, green on #68 |
+| verdict reports the dimensions separately (R-O-06) | **met** | six-line verdict, SPEC-0004 §10.4 |
+| statement acceptance kept separate from reduction | **met** | `check.py` `_acceptance` separate from `reduce.evaluate` |
+| runs from a clean clone with documented prerequisites | **met** | `weekly-slice.yml`: fresh checkout, new venv, no network, empty `HOME` |
+| delegation chain reduces; break a link and name it | **not met** | `reduce.py` is one hop (last changed `b7600fe`, 2026-11-01); E-1…E-4 run on a test-only walker; #67 open |
+| issuer revocation (`ADR-0003` D5) | **not met** | `revocations considered` hard-coded to 0 |
+| name resolution, `Name` → `KeyId` via `NameCert` chains | **not met** | no `NameCert` in `prototype/wallet/engine/`; #143 open |
+| *k*-of-*n* threshold subjects | **not met; already a permitted cut** | parsed, not reduced; APP-0001 §6, PLAN-0001 §12 risk 7 |
+| demo scripted, rehearsed **and recorded** | **scripted only** | `demo/slice.sh` exists; no recording is in the repo or linked from #31 |
+
+**Decisions owed by the sponsor.** Decisions 1 and 3 are the same questions
+as risks 11 and 7 in PLAN-0001 §12. #156 merged §12 with them still marked
+"At sign-off", so they are unanswered. Write the answers into §12 rather than
+here, so there is one place. The date they were asked against has now
+passed.
+
+1. **Delegation and revocation.** Either:
+   - **(a)** re-date them to I4 (Nov 25), with a named owner for W-3 (#67);
+   - **(b)** cut multi-hop delegation from D6 and show it first at CS Night;
+   - **(c)** cut it from the semester.
+
+   *Recommended: (a).* PLAN-0002 §8.1's CS Night success case is "a
+   delegation chain reduced, a broken link named". (b) leaves no slack before
+   Dec 4, and (c) removes the demo's central claim. PLAN-0005's table still
+   says delegation lands Nov 11, and needs the same update.
+2. **Name resolution** (`NameCert` chains, #143). Re-date it with delegation,
+   or record it as cut from D6.
+3. **Thresholds.** Confirm the cut that APP-0001 already allows.
+4. **The recording.** PROC-0004 §5 asks for a recorded demo. *Recommended:*
+   Ndewedo records the one-hop slice now, and again once delegation lands.
+5. **#31 and #67.** Rewrite them to match (1)–(4), or close #31 as partly met
+   and open a successor for the remainder.
+
 ## 8. Fixes this plan expects in APP-0001
 
 1. Delete "No GUI" or replace it with "no web UI, no server; graphic UI is in scope."
@@ -318,6 +369,13 @@ packaging last, per §7.
 **Open items.** Confirm the GUI framework (decision #28). Cut a first tagged
 CLI release. Decide how release files are signed. Decide whether Windows is a
 release target.
+
+## What changed in v0.4.0 — 2026-11-12
+
+- §7.2: I3 close-out status at main `d7f7f89`, proposed for the sponsor. It
+  states that the floor is a milestone, not an event, and lists D6 item by
+  item (met / not met). It names the decisions owed, and points them at
+  PLAN-0001 §12. No date in §7 is changed (DL-0037).
 
 ## What changed in v0.3.0 — 2026-11-09
 
