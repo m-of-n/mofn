@@ -15,6 +15,22 @@ The wallet engine and its `mofn` command line, `prototype/wallet/` (#65, #127).
 Every release is a prototype: DEC-004 and DEC-005 are open; do not use real
 keys.
 
+## 0.4.1 — 2026-11-11
+
+Prototype: DEC-004 and DEC-005 are open; do not use real keys.
+
+Verdict wording only (mofn#157, SPEC-0004 0.5.0 §10.4, DL-0035). No line
+result, answer or exit code changes.
+
+- When no verified attestation is about your copy of the file (golden ③,
+  `tampered`), the statements' sentences are now preceded by "The statements
+  handed over are about another file, not yours:". This applies to text output
+  and to the `mofn run` screen. JSON gains `sentences_about_your_file`.
+- A vacuous acceptance pass now reads "no template is named, so there is none
+  to meet".
+- Goldens updated: `fixtures/golden/` (tampered, green, unauthorized,
+  expired) and `domains/archives/golden/`.
+
 ## 0.4.0 — 2026-11-09
 
 Prototype: DEC-004 and DEC-005 are open; do not use real keys.

@@ -7,10 +7,10 @@ description: "How a relying party decides whether to believe a verified statemen
 type: specification
 category: security
 status: draft
-version: "0.4.0"
+version: "0.5.0"
 version_policy: "semver; MAJOR = any change to an evaluation result; MINOR = additive; PATCH = editorial"
 date: "2026-10-14"
-updated: "2026-11-07"
+updated: "2026-11-11"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -87,6 +87,12 @@ delegation.
 **0.4.0 (2026-11-07):** Appendix A's Ask 3, a hypothetical, becomes asks over
 real vectors: E-1…E-4 (SPEC-0002 TV-14…20) cover `widening` and `depth`
 (mofn#136, DL-0031). No rule changes and no existing answer changes.
+**0.5.0 (2026-11-11):** two §10.4 rules about what a verdict prints, both
+found by the W-4 demo slice (mofn#157, DL-0035). First, when no verified
+attestation is about the relying party's copy, the sentences shown for the
+handed statements MUST say they are about another file. Second, an acceptance
+line that passes because no template is named says so. No line result and no
+answer changes. Additive, so MINOR.
 
 ---
 
@@ -447,6 +453,24 @@ acceptance when no verified statement is about the subject.
 > §10.2 item 1 and the verdict can report it only under authorization, which
 > blames the speaker for a change to the object. With it, integrity names both
 > digests, and authorization and acceptance are not evaluated.
+
+Where the verdict shows the handed statements' own sentences, and no verified
+attestation is about the relying party's copy, it MUST say before them that
+they are about another file. A sentence printed after **answer: no** with no
+such framing reads as a claim about the file in hand, and that file is the one
+the statement is not about.
+
+Acceptance **passes** when no template is named: there is nothing for the
+statement to fail. Its sentence MUST say that no template is named, so a
+relying party does not read the pass as a template that was met.
+
+> **Why a vacuous pass and not "not evaluated".** "Not evaluated" means there
+> is nothing to examine (above). A statement that names no template has been
+> examined: it is about the file and it asks for no template. Reporting it as
+> not evaluated would merge two cases a relying party should be able to tell
+> apart: no statement about the file, and a statement about the file that
+> carries no requirement. The vacuous pass was chosen in DL-0016 and DL-0020
+> (A1), and Appendix A prints it.
 
 A line that fails MUST give its reason in words: where the reason is a failed
 constraint or an unmet process, the sentence is that rule's or process's

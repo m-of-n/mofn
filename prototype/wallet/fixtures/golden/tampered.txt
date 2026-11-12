@@ -7,6 +7,7 @@ semantics      pass           supply-chain 1 is published by its definer, Alice 
 
 answer: no
 
+The statements handed over are about another file, not yours:
 release machine attests that sha-256:48dfc39586b0c4f9 was built reproducibly from published sources.
 
 This establishes who said it and whether they were entitled to say it; it does not establish that it is true.

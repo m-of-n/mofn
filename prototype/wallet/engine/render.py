@@ -18,6 +18,9 @@ import json
 from . import ksatime
 from .definition import Definition
 
+# Printed before the sentences when none of them is about the relying
+# party's copy (SPEC-0004 §10.4, mofn#157 F-1).
+OTHER_FILE = "The statements handed over are about another file, not yours:"
 LIMIT = (
     "This establishes who said it and whether they were entitled to say it; "
     "it does not establish that it is true."
@@ -122,7 +125,10 @@ def verdict_text(answer) -> str:
     out = [f"{ln.name:<15}{ln.result:<15}{ln.sentence}" for ln in answer.lines]
     out += ["", f"answer: {'yes' if answer.yes else 'no'}"]
     if answer.sentences:
-        out += [""] + answer.sentences
+        out += [""]
+        if not answer.sentences_about_your_file:
+            out += [OTHER_FILE]
+        out += answer.sentences
     out += ["", LIMIT]
     return "\n".join(out) + "\n"
 

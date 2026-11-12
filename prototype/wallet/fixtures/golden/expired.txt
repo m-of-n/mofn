@@ -2,7 +2,7 @@ integrity      pass           every statement verified, and your file is the one
 authenticity   pass           every speaker's key is in your key store, and each envelope agrees with its statement
 names          pass           every key is shown by your own label for it
 authorization  fail           not valid at 2099-01-01T00:00:00Z (not-valid-at-time)
-acceptance     pass           no template is named
+acceptance     pass           no template is named, so there is none to meet
 semantics      pass           supply-chain 1 is published by its definer, Alice (definer)
 
 answer: no

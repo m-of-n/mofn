@@ -25,6 +25,10 @@ from .errors import DefinitionError, Rejected
 from .reduce import Anchor, Ask, Coverage, evaluate
 from .verifier import Verified, verify
 
+# A vacuous pass (SPEC-0004 §10.4, DL-0020 A1): the sentence says why there
+# is nothing to fail (mofn#157 F-2).
+NO_TEMPLATE = "no template is named, so there is none to meet"
+
 INTEGRITY = {"envelope", "signature", "encoding", "structure", "kind-rule"}
 
 
@@ -55,6 +59,9 @@ class Answer:
     sentences: list[str]
     coverage: Coverage | None
     labels: dict = field(default_factory=dict)
+    # False when no verified attestation is about the relying party's copy, so
+    # the sentences describe another file (mofn#157 F-1, SPEC-0004 §10.4).
+    sentences_about_your_file: bool = True
 
     @property
     def yes(self) -> bool:
@@ -134,6 +141,7 @@ class Answer:
                 for h in self.handed
             ],
             "sentences": self.sentences,
+            "sentences_about_your_file": self.sentences_about_your_file,
             "limit": render.LIMIT,
         }
 
@@ -195,7 +203,9 @@ def run(
         render.sentence(held.get(s.body[1][0][1][1]), s.statement, labels, lang)
         for s in (about or attestations)
     ]
-    return Answer(context, at, subject, items, lines, sentences, coverage, labels)
+    return Answer(
+        context, at, subject, items, lines, sentences, coverage, labels, bool(about)
+    )
 
 
 def _integrity(items, attestations, about, subject) -> Line:
@@ -330,7 +340,7 @@ def _acceptance(about, held, lang=None) -> Line:
                 "pass",
                 f"conforms to the template {render.lang(t[9], lang).lower()}",
             )
-    return Line("acceptance", "pass", "no template is named")
+    return Line("acceptance", "pass", NO_TEMPLATE)
 
 
 def _semantics(d: Definition | None, error, referenced, define, labels) -> Line:

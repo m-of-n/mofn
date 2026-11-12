@@ -12,6 +12,7 @@ from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.widgets import Button, Input, Label, Select, SelectionList, Static
 
+from engine import render
 from engine.errors import WalletError
 from engine.store import CONTROLLERS
 from screens import data, example, runner
@@ -512,6 +513,8 @@ class Check(Vocabulary):
             style = "bold" if n == deciding else ("green" if res == "pass" else "")
             out.append(f"{mark} {i} {n:<14} {res:<14} {v[n]['sentence']}\n", style)
         out.append(f"\nanswer: {j['answer']}\n", "bold green" if j["answer"] == "yes" else "bold red")
+        if j.get("sentences") and not j.get("sentences_about_your_file", True):
+            out.append(f"\n{render.OTHER_FILE}")
         for s in j.get("sentences", []):
             out.append(f"\n{s}\n")
         out.append(f"\n{j['limit']}\n", "dim")
