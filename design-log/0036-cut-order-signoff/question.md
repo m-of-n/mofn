@@ -12,7 +12,7 @@ status: open
 
 # DL-0036 — question
 
-The search in `DL-0033` found no record that the cut order was ever agreed:
+The search in `DL-0038` found no record that the cut order was ever agreed:
 mofn#7's done-when ("all three have signed off in the PR") was never met, and
 the issue was closed on 2026-10-28. The human said the closure was their
 mistake and directed the agent to complete the next steps: reopen #7, and open
