@@ -59,3 +59,7 @@ All of these are options the agent offered and the human declined.
   `SPEC-0004` §5.3 by a second reader.
 - T-040: a resolver in the engine that passes R-1…R-7 and E-8…E-10.
 - A name-rotation vector, which needs a `key-publish` for bob2.
+
+**Update 2026-11-13 (`DL-0040`).** `ADR-0008` is accepted, T-040 is in
+review with `engine/names.py`, and R-8…R-10 with TV-35 are the rotation
+vectors. The second reader's review of §5.3 is still owed.

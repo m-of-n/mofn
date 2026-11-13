@@ -6,11 +6,11 @@ short_title: "ADR-0008 SDSI names"
 description: "Registers SPEC-0002 target type 7 (name) and SPEC-0003 base kind 12 (name), and fixes the semantics SPEC-0004 §5.3 specifies: bindings need no anchor, a label bound twice is a group, names follow rotation, and a binding is only ever in its speaker's namespace."
 type: decision
 category: security
-status: proposed
-version: "0.1.0"
+status: accepted
+version: "1.0.0"
 version_policy: "semver; an accepted ADR changes only by superseding it"
 date: "2026-11-12"
-updated: "2026-11-12"
+updated: "2026-11-13"
 decision_makers:
   - role: student
     id: ndewedo-newbury
@@ -19,7 +19,7 @@ decision_makers:
       ARCH-0001 v0.1.7 front matter. No written sponsor confirmation is
       recorded (DL-0021).
 reviewers: []
-needs_review: true
+needs_review: false
 reviewed: false
 canonical_path: spec/ADR-0008-sdsi-names.md
 defers_to: ARCH-0001
@@ -29,11 +29,13 @@ supersedes: []
 
 # ADR-0008 — SDSI names in KSA
 
-**Status: proposed.** The six choices below were made by `ndewedo-newbury` on
-2026-11-12 in the mofn#143 session; the agent drafted the text. This ADR
-becomes **accepted** when a decision maker changes `status` to `accepted` and
-`needs_review` to `false` (`ARCH-0001` §9). The agent does not do that. Recorded
-in `DL-0039`. No `DEC-*` is decided here: names were kept in `ARCH-0001` 0.2.0
+**Status: accepted 2026-11-13.** The six choices below were made by
+`ndewedo-newbury` on 2026-11-12 in the mofn#143 session, and the agent drafted
+the text (`DL-0039`). After mofn#164 merged, `ndewedo-newbury` instructed the
+agent on 2026-11-13 to complete the paperwork, and that instruction is the
+decision maker's acceptance; the agent made the edit (`DL-0040`). No second
+reader has reviewed `SPEC-0004` §5.3; that review is still owed and is not a
+condition of this acceptance. No `DEC-*` is decided here: names were kept in `ARCH-0001` 0.2.0
 by decision (`DL-0028`), and this ADR records how the SPECs meet that.
 
 It is an ADR because `SPEC-0002` §12 and `SPEC-0003` §12 say a registry entry is
@@ -93,7 +95,8 @@ owed by `SPEC-0004` (mofn#143).
 - A trust to a name hands the choice of key to the name's issuers
   (`SPEC-0002` §13.11, `SPEC-0004` §11.7–§11.8).
 - `ARCH-0001` §5.5's SDSI row is closed (0.3.1).
-- The engine work is T-040. It is unblocked, and it is not done.
+- The engine work is T-040: `prototype/wallet/engine/names.py` (wallet 0.6.0,
+  `DL-0040`).
 
 ## Acceptance test
 
@@ -101,3 +104,7 @@ A resolver that implements `SPEC-0004` §5.3 returns R-1…R-7 of `vectors.json`
 → `resolutions`, and an evaluator returns E-8…E-10 of `name_evaluations`.
 The `prototype/wallet` verifier already accepts TV-27…34 and rejects N-12 and
 N-13 at V7.
+
+**Met 2026-11-13** by wallet 0.6.0: `tests/test_names.py` passes R-1…R-10
+(R-8…R-10, across a rotation, were added with TV-35 in `SPEC-0002` 0.9.1) and
+E-8…E-10.

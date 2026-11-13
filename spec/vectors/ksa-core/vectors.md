@@ -656,6 +656,24 @@ a60104020103582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9
 ```
 - expected: **accept**
 
+### TV-35 — key-publish: bob2 publishes its key, so TV-8 links Bob to bob2 (SPEC-0004 §7.2)
+
+- signer: bob2
+- statement digest = SHA-256(TBS): `ac51b06c0bfc23eecae7f158537934bfcf31aefa86bdfebd4581bcd381d7ff71`
+- TBS:
+```
+a6010102010358209dcd2b600a6996b68623f46e19c60b6eb076c4a707df022e8479ef1d191b91f604820158209dcd2b600a6996b68623f46e19c60b6eb076c4a707df022e8479ef1d191b91f605a201190247031a0301515006a101a2010102582005da6bf466928fa468b1ecb00413a356c33502b70dc0620020fe98315cd1dfd8
+```
+- signature over DS ‖ TBS:
+```
+a33e6a2f15e08e423f622daccc9fefaf89476baf270dce6ef6b5a554321658e7805f3e0b688d1313a5a231bfc3e64756efdadfbc98e09d635190c1c21c99590e
+```
+- envelope `[suite, says, tbs, sig, ? pub]`:
+```
+850158209dcd2b600a6996b68623f46e19c60b6eb076c4a707df022e8479ef1d191b91f65882a6010102010358209dcd2b600a6996b68623f46e19c60b6eb076c4a707df022e8479ef1d191b91f604820158209dcd2b600a6996b68623f46e19c60b6eb076c4a707df022e8479ef1d191b91f605a201190247031a0301515006a101a2010102582005da6bf466928fa468b1ecb00413a356c33502b70dc0620020fe98315cd1dfd85840a33e6a2f15e08e423f622daccc9fefaf89476baf270dce6ef6b5a554321658e7805f3e0b688d1313a5a231bfc3e64756efdadfbc98e09d635190c1c21c99590e582005da6bf466928fa468b1ecb00413a356c33502b70dc0620020fe98315cd1dfd8
+```
+- expected: **accept**
+
 ### Negative vectors
 
 #### N-1 — reject at V5 canonical decode
@@ -772,17 +790,20 @@ Anchor TV-22 in context `library`; ask: does the subject have `reviewed` = the v
 
 ### Name resolutions (SPEC-0004 §5.3; mofn#143)
 
-DV-4 held; every statement listed is in the statement set, at 2026-10-10T12:00:00Z.
+DV-4 held; every statement listed is in the statement set.
 
-| res | name | statements | keys | reason | case |
-|---|---|---|---|---|---|
-| R-1 | alice's fred | TV-28 | bob | — | one hop |
-| R-2 | alice's fred sam | TV-28, TV-29 | dave | — | a compound name: Alice's fred is Bob, Bob's sam is Dave |
-| R-3 | carol's builder | TV-30, TV-28, TV-29 | dave | — | a binding to a name: Carol's builder is Alice's fred's sam |
-| R-4 | alice's fred | TV-28, TV-34 | bob, dave | — | two bindings of one label: the name is a set (SDSI group), not an error |
-| R-5 | alice's fred sam | TV-28 | ∅ | name-unresolved | missing link: Bob binds no sam |
-| R-6 | alice's loop | TV-33 | ∅ | name-cycle | Alice's loop is defined as itself |
-| R-7 | alice's fred | TV-32 | ∅ | name-foreign | the only fred binding is Bob's; Bob cannot bind a label in Alice's namespace |
+| res | name | statements | at | keys | reason | case |
+|---|---|---|---|---|---|---|
+| R-1 | alice's fred | TV-28 | 2026-10-10T12:00:00Z | bob | — | one hop |
+| R-2 | alice's fred sam | TV-28, TV-29 | 2026-10-10T12:00:00Z | dave | — | a compound name: Alice's fred is Bob, Bob's sam is Dave |
+| R-3 | carol's builder | TV-30, TV-28, TV-29 | 2026-10-10T12:00:00Z | dave | — | a binding to a name: Carol's builder is Alice's fred's sam |
+| R-4 | alice's fred | TV-28, TV-34 | 2026-10-10T12:00:00Z | bob, dave | — | two bindings of one label: the name is a set (SDSI group), not an error |
+| R-5 | alice's fred sam | TV-28 | 2026-10-10T12:00:00Z | ∅ | name-unresolved | missing link: Bob binds no sam |
+| R-6 | alice's loop | TV-33 | 2026-10-10T12:00:00Z | ∅ | name-cycle | Alice's loop is defined as itself |
+| R-7 | alice's fred | TV-32 | 2026-10-10T12:00:00Z | ∅ | name-foreign | the only fred binding is Bob's; Bob cannot bind a label in Alice's namespace |
+| R-8 | alice's fred | TV-28, TV-8, TV-35 | 2026-10-25T12:00:00Z | bob2 | — | names follow rotation: TV-8 with TV-35 links Bob to bob2 from 2026-10-20 |
+| R-9 | alice's fred sam | TV-28, TV-29, TV-8, TV-35 | 2026-10-25T12:00:00Z | dave | — | Bob's namespace continues as bob2's: TV-29 was issued before TV-8, so it is still used |
+| R-10 | alice's fred | TV-28, TV-8 | 2026-10-25T12:00:00Z | bob | — | no key-publish for bob2, so TV-8 links nothing and fred is still Bob |
 
 ### Name evaluations (SPEC-0004 Appendix A)
 

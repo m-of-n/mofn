@@ -7,10 +7,10 @@ description: "How a relying party decides whether to believe a verified statemen
 type: specification
 category: security
 status: draft
-version: "0.6.0"
+version: "0.6.1"
 version_policy: "semver; MAJOR = any change to an evaluation result; MINOR = additive; PATCH = editorial"
 date: "2026-10-14"
-updated: "2026-11-12"
+updated: "2026-11-13"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -102,6 +102,11 @@ trust statement (§6.3) may trust a name. The `names` line (§10.4) reports
 resolution, and §14.2 gains `name-unresolved`, `name-foreign` and `name-cycle`.
 Appendix A gains R-1…R-7 and asks 7–9 (E-8…E-10). No input without a name
 target changes its answer, so MINOR.
+**0.6.1 (2026-11-13):** Appendix A gains R-8…R-10, names across a rotation
+(§7.2; SPEC-0002 TV-35), and an `at` column, because those three are evaluated
+after the rotation. The resolutions are now computed by the prototype
+wallet's resolver as well as declared (T-040, DL-0040). No rule changes, so
+PATCH.
 
 ---
 
@@ -751,8 +756,10 @@ E-4 is the reason R-M-10 (ARCH-0001) says a widening is reported, not
 intersected silently: clipping TV-20 to depth 0 would have answered **yes**.
 
 **Name resolutions** (§5.3). DV-4 held. Each row resolves one name over the
-statements shown, at 2026-10-10T12:00:00Z. Statements: SPEC-0002 TV-28…34;
-machine-readable as `resolutions` in `vectors.json`.
+statements shown, at the time shown: 2026-10-10T12:00:00Z for R-1…R-7, and
+2026-10-25T12:00:00Z for R-8…R-10, after TV-8's link takes effect on
+2026-10-20. Statements: SPEC-0002 TV-8, TV-28…35; machine-readable as
+`resolutions` in `vectors.json`.
 
 | res | name | statements | keys | reason | case |
 |---|---|---|---|---|---|
@@ -763,6 +770,9 @@ machine-readable as `resolutions` in `vectors.json`.
 | R-5 | Alice's fred sam | TV-28 | ∅ | `name-unresolved` | missing link: Bob binds no `sam` |
 | R-6 | Alice's loop | TV-33 | ∅ | `name-cycle` | Alice's loop is defined as itself |
 | R-7 | Alice's fred | TV-32 | ∅ | `name-foreign` | the only `fred` binding is Bob's: Bob cannot bind a label in Alice's namespace |
+| R-8 | Alice's fred | TV-28, TV-8, TV-35 | bob2 | — | names follow rotation: TV-8 with bob2's `key-publish` links Bob to bob2 |
+| R-9 | Alice's fred sam | TV-28, TV-29, TV-8, TV-35 | Dave | — | Bob's namespace continues as bob2's: TV-29 was issued before TV-8, so it is still used |
+| R-10 | Alice's fred | TV-28, TV-8 | Bob | — | no `key-publish` for bob2, so TV-8 links nothing (§7.2) |
 
 R-7 is the reason §5.3.1 says a binding is in its speaker's namespace and no
 other. If resolution matched on the label alone, Bob could make himself

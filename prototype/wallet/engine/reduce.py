@@ -4,21 +4,25 @@ anchors.
 Only statements that passed V1–V9 reach this module. v0 has no delegation,
 so a path is one hop: an anchor in the evaluated context whose `trusts` is
 the attestation's speaker and whose `about` holds a range of the attribute's
-type that contains the value. Revocation, rotation and thresholds are not in
-v0; the answer says 0 revocation statements were considered.
+type that contains the value. An anchor may trust a name (SPEC-0004 §4.2):
+it is first resolved by `names.py` (§5.3) and then trusts each resulting key
+under its own `about`. Revocation and rotation are applied to name bindings
+only; for coverage, and for thresholds, they are not in v0, and the answer
+says 0 revocation statements were considered.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from . import ksatime
 from .definition import Definition, conforms_to_template
+from .names import T_NAME, Resolution, Resolver, valid_at
 from .verifier import Verified
 
 
 @dataclass
 class Anchor:
     context: str
-    trusts: bytes
+    trusts: bytes | list  # a kid, or a name [7, kid, [label, ...]] (SPEC-0004 §4.2)
     about: list[dict]
     accepted_by: bytes
     accepted_at: int
@@ -56,17 +60,11 @@ class Coverage:
     covered: list[Covered] = field(default_factory=list)
     stopped: list[Stopped] = field(default_factory=list)
     revocations_considered: int = 0
+    names: list[Resolution] = field(default_factory=list)  # §10.3: each name used
 
     @property
     def yes(self) -> bool:
         return not self.stopped and bool(self.covered)
-
-
-def valid_at(v: Verified, at: int) -> bool:
-    valid, t = v.statement.get(5, {}), ksatime.to_seconds(at)
-    return (1 not in valid or ksatime.to_seconds(valid[1]) <= t) and (
-        2 not in valid or t < ksatime.to_seconds(valid[2])
-    )
 
 
 def evaluate(
@@ -77,14 +75,22 @@ def evaluate(
     attributed: set[bytes],
 ) -> Coverage:
     result = Coverage()
-    mine = [a for a in anchors if a.context == ask.context]
+    mine, unresolved = _resolve_anchors(
+        [a for a in anchors if a.context == ask.context], statements, definitions, ask, result
+    )
     for attr in ask.has:
+        # §5.3.4: an unresolved name is reported first; it is why its anchor started no path.
+        named = [
+            Stopped(attr, r.reason, f"{_show(r.name)} resolves to no key", anchor=a)
+            for a, r in unresolved
+        ]
         candidates = [
             s
             for s in statements
             if s.kind == 4 and s.this == ask.subject and attr in s.body[1]
         ]
         if not candidates:
+            result.stopped += named
             result.stopped.append(
                 Stopped(
                     attr, "not-verified", "no verified attestation assigns this value"
@@ -99,8 +105,28 @@ def evaluate(
                 break
             reasons.append(hit)
         else:
-            result.stopped += reasons
+            result.stopped += named + reasons
     return result
+
+
+def _resolve_anchors(anchors, statements, definitions, ask, result):
+    """Replace each name anchor by one anchor per key it resolves to (§5.3, §6.2)."""
+    out, unresolved, resolver = [], [], None
+    for a in anchors:
+        if not (isinstance(a.trusts, list) and a.trusts[0] == T_NAME):
+            out.append(a)
+            continue
+        resolver = resolver or Resolver(statements, definitions, ask.at)
+        r = resolver.resolve(a.trusts)
+        result.names.append(r)
+        if not r.keys:
+            unresolved.append((a, r))
+        out += [replace(a, trusts=k) for k in sorted(r.keys)]
+    return out, unresolved
+
+
+def _show(name: list) -> str:
+    return f"key:{name[1].hex()[:16]}…'s " + " ".join(name[2])
 
 
 def _cover(

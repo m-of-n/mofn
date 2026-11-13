@@ -74,10 +74,12 @@ DV-4 `naming` (definer Alice) has one type, `name`, of base kind 12 (`SPEC-0003`
 §6.4), so an attribute of it is a **name binding**. TV-27…34 are the bindings,
 a trust to a name (TV-31) and a name target (`SPEC-0002` §7.2 type 7). DV-2 and
 TV-13 are untouched: DV-2's `name` is base kind text, so TV-13 is not a binding.
-`vectors.json` → `resolutions` gives R-1…R-7 and `name_evaluations` gives
-E-8…E-10. Both are **declared**; no resolver is run here, and the engine owes
-one (T-040). They are kept out of `evaluations` so the existing delegation test
-does not pick them up. Reasoning: `design-log/0039-sdsi-names/`.
+TV-35 is bob2's `key-publish`, so TV-8 links Bob to bob2 (`SPEC-0004` §7.2).
+`vectors.json` → `resolutions` gives R-1…R-10 and `name_evaluations` gives
+E-8…E-10. Both are **declared** here; `prototype/wallet/tests/test_names.py`
+checks the wallet engine's resolver (`engine/names.py`, T-040) against them.
+They are kept out of `evaluations`, which the test-only delegation walker
+reads. Reasoning: `design-log/0039-sdsi-names/`, `design-log/0040-names-resolver/`.
 
 | vector | case | expected |
 |---|---|---|
@@ -85,6 +87,7 @@ does not pick them up. Reasoning: `design-log/0039-sdsi-names/`.
 | R-3 | a binding to a name (TV-30) | {dave} |
 | R-4 | one label bound twice | {bob, dave}, a group |
 | R-5, R-6, R-7 | missing link; cycle; foreign binding | ∅, `name-unresolved` / `name-cycle` / `name-foreign` |
+| R-8, R-9, R-10 | after TV-8: rotation; namespace continues; no `key-publish` | {bob2}; {dave}; {bob} |
 | E-8, E-9, E-10 | trust to a name: resolves; does not; passes through Bob | yes; no `name-unresolved`; no `no-path` |
 | N-12, N-13 | empty label list; label `Fred` | V7 `structure` |
 
