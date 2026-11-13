@@ -7,9 +7,9 @@ description: "Execution plan for the CS690 project. Subordinate to ARCH-0001 for
 type: plan
 category: process
 status: draft
-version: "0.6.4"
+version: "0.7.0"
 date: "2026-09-16"
-updated: "2026-11-07"
+updated: "2026-11-09"
 authors:
   - role: planner
     id: conversation-claude-opus-5
@@ -65,6 +65,10 @@ historical. §7.1 and §13 are rewritten accordingly.
 `.github/**` to Paul; one approval from any code owner merges any PR. A PR
 touching one of those paths otherwise needed Paul on top of a student's
 approval, which stalled merges (mofn#118 is the live case).
+
+**v0.6.4 → v0.7.0.** §12 gains its status at 2026-11-09 and two new risks
+(11, 12). The cut order was never agreed (mofn#7 closed without sign-off,
+`DL-0036`); this version is the one put to all three for sign-off.
 
 Per ARCH-0001 §9, this file proposes; it does not ratify.
 
@@ -562,22 +566,31 @@ and which of those failure modes this design still carries.
 
 Agree in writing during I0, so cutting under pressure is a decision already made.
 
-| # | Risk | Fallback | Cut by |
-|---|---|---|---|
-| 1 | **DEC-001 blocks org creation** | Pick a placeholder slug, accept the rename cost, move | Sep 19 |
-| 2 | Harness work eats the semester | Timebox I0 hard at two weeks. Ship an ugly site | Sep 30 |
-| 3 | Library scope unbounded | Cap at ~40 records for D2 v1. Depth over breadth | Oct 14 |
-| 4 | **DEC-002 deadlocks** | Ship WP1 encoding-neutral; implement reduction against the logical model; decide encoding later | Oct 28 |
-| 5 | WP4/WP5 (PGP, X.509 import) creep in | Already out of scope. Say no | ongoing |
-| 6 | Tag language over-scopes | ARCH-0001 DEC-004 already offers the out: opaque byte string + `bytes-equal` profile | Nov 4 |
-| 7 | Threshold subjects prove hard | Implement *k*-of-*n* over keys only; no nested thresholds | Nov 11 |
-| 8 | Transparency log / receipts | Defer to v2 (R-O-04 is already **C**). **Not in the demo floor** | Nov 11 |
-| 9 | Federation across libraries | Design and document only; do not build | Oct 14 |
-| 10 | App packaging | Single-file Python zipapp, not an installer | Dec 1 |
+**It was not agreed in I0.** mofn#7 asked for all three to sign off in a PR;
+none was opened, and the issue was closed in error on 2026-10-28. The table
+below is the original, with its status at 2026-11-09. **This version is agreed
+when the sponsor and both students approve the PR that carries it** (T-013).
+Rows 6, 7 and 11 are cuts that fall due now and need an answer at sign-off.
+
+| # | Risk | Fallback | Cut by | Status 2026-11-09 |
+|---|---|---|---|---|
+| 1 | **DEC-001 blocks org creation** | Pick a placeholder slug, accept the rename cost, move | Sep 19 | **Did not happen.** Org created Sep; DEC-001 accepted by `ADR-0006` (slug `m-of-n`) |
+| 2 | Harness work eats the semester | Timebox I0 hard at two weeks. Ship an ugly site | Sep 30 | **Did not happen.** I0 closed on time |
+| 3 | Library scope unbounded | Cap at ~40 records for D2 v1. Depth over breadth | Oct 14 | **Cap not applied.** 446 records, all written (T-024). The risk was absorbed rather than cut |
+| 4 | **DEC-002 deadlocks** | Ship WP1 encoding-neutral; implement reduction against the logical model; decide encoding later | Oct 28 | **Did not happen.** `ADR-0004` (Oct 25); the encoding-neutral schema is not owed (T-030 closed) |
+| 5 | WP4/WP5 (PGP, X.509 import) creep in | Already out of scope. Say no | ongoing | **Held.** T-090, T-091 parked |
+| 6 | Tag language over-scopes | ARCH-0001 DEC-004 already offers the out: opaque byte string + `bytes-equal` profile | Nov 4 | **Due, not taken.** DEC-004 is open and T-042 is `todo`; `R-0006` §4.7 asks whether `SPEC-0003` `delegation: 1` subsumes it. **At sign-off:** take the fallback for the demo floor (DEC-004 stays open), or move the date |
+| 7 | Threshold subjects prove hard | Implement *k*-of-*n* over keys only; no nested thresholds | Nov 11 | **At risk.** The engine parses the threshold form but does not reduce it (T-043 `todo`). **At sign-off:** keep *k*-of-*n* in the Nov 11 floor, or move it after |
+| 8 | Transparency log / receipts | Defer to v2 (R-O-04 is already **C**). **Not in the demo floor** | Nov 11 | **Held.** T-092 parked |
+| 9 | Federation across libraries | Design and document only; do not build | Oct 14 | **Held.** T-093 parked |
+| 10 | App packaging | ~~Single-file Python zipapp~~ One PyInstaller build per OS, not an installer (#127 §6: zipapp cannot load PyNaCl) | Dec 1 | **In progress.** `release.yml` is W-6's open half |
+| 11 | **Delegation not in the engine** — the floor's "chain reduces; break a link" (T-047) needs more than one hop | Demo one hop through `demo/slice.sh` (it already breaks a link and names it); show the chain with the E-1…E-4 test walker | Nov 11 | **New.** `engine/reduce.py` is one hop; T-041 / W-3 `todo`. **At sign-off:** accept the fallback, or name who lands W-3 by Nov 11 |
+| 12 | A second UI | One UI: the Textual app (`mofn run`); no windowed GUI | Nov 9 | **Taken.** `DECISIONS-0001` item 28; W-5 rescoped |
 
 **Hard floor that still passes:** D0–D6, done by **November 11** — harness,
-library, three reports, encoding-neutral schema, DEC-002 package, and a working
-reduction with test vectors. Everything after is upside.
+library, three reports, ~~encoding-neutral schema~~ the DEC-002 package
+(`ADR-0004`, `SPEC-0002` Appendix B), and a working reduction with test
+vectors. Everything after is upside.
 
 ---
 
