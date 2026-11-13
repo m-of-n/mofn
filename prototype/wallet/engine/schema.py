@@ -61,6 +61,7 @@ TARGETS = {
     4: "definition",
     # 5 is reserved: the locator target, withdrawn in SPEC-0002 0.6.0 (mofn#144)
     6: "description",
+    7: "name",
 }
 TARGET = {v: k for k, v in TARGETS.items()}
 KIND_TARGETS = {
@@ -68,7 +69,7 @@ KIND_TARGETS = {
     2: {1},
     3: {1},
     4: set(TARGETS),
-    5: {1},
+    5: {1, 7},
     6: {1},
     7: {1},
     8: {4},
@@ -405,6 +406,9 @@ TIME = Time()
 TYPE_REF = Map(
     Field(1, "definition", ID, True), Field(2, "label", LABEL, True), flow=True
 )
+# SPEC-0002 §7.2 type 7: a name is an issuer kid and 1..16 labels.
+NAME_LABELS = ListOf(Tstr(r"[a-z][a-z0-9-]{0,62}"))
+NAME_MAX_LABELS = 16
 ATTRIBUTE = Map(Field(1, "type", TYPE_REF, True), Field(2, "value", VALUE, True))
 ATTRIBUTE_RANGE = Map(Field(1, "type", TYPE_REF, True), Field(3, "range", VALUE))
 PUBLIC_KEY = Map(
@@ -487,6 +491,13 @@ class Target:
                 fail(path, "a description target is [6, type-ref, value]")
             TYPE_REF.check(v[1], path)
             VALUE.check(v[2], path)
+        elif t == 7:
+            if n != 3:
+                fail(path, "a name target is [7, kid, [+ label]]")
+            KID.check(v[1], path)
+            NAME_LABELS.check(v[2], path)
+            if len(v[2]) > NAME_MAX_LABELS:
+                fail(path, f"a name has at most {NAME_MAX_LABELS} labels")
         elif n != 2:
             fail(path, f"a {TARGETS[t]} target has two elements")
         else:
@@ -498,6 +509,8 @@ class Target:
             inner = Flow(alg=Name(DIGEST_ALGS[v[1]]), value=Hex(v[2]))
         elif t == 6:
             inner = Flow(type=TYPE_REF.to_h(v[1]), value=VALUE.to_h(v[2]))
+        elif t == 7:
+            inner = Flow(issuer=Hex(v[1]), labels=NAME_LABELS.to_h(v[2]))
         else:
             inner = Hex(v[1])
         return Flow({TARGETS[t]: inner})
@@ -520,6 +533,11 @@ class Target:
                 Field(1, "type", TYPE_REF, True), Field(2, "value", VALUE, True)
             ).from_h(x, path)
             v = [6, m[1], m[2]]
+        elif t == 7:
+            m = Map(
+                Field(1, "issuer", KID, True), Field(2, "labels", NAME_LABELS, True)
+            ).from_h(x, path)
+            v = [7, m[1], m[2]]
         else:
             v = [t, _bytes(x, path)]
         self.check(v, path)

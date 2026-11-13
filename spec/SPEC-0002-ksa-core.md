@@ -7,10 +7,10 @@ description: "The KSA statement: its data model, deterministic encoding, signed 
 type: specification
 category: security
 status: draft
-version: "0.8.0"
+version: "0.9.0"
 version_policy: "semver; MAJOR = any change to signed or hashed bytes; MINOR = additive registry entries or requirements; PATCH = editorial"
 date: "2026-10-14"
-updated: "2026-11-09"
+updated: "2026-11-12"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -49,7 +49,7 @@ related_rfcs: [RFC2119, RFC8174, RFC8032, RFC8610, RFC8949]
 
 # KSA Core — statements, data model, canonical encoding and cipher suites
 
-**Specification SPEC-0002 · version 0.6.0 · draft**
+**Specification SPEC-0002 · version 0.9.0 · draft**
 
 ## Abstract
 
@@ -97,6 +97,13 @@ existing vector is byte-identical.
 the archives target of ARCH-0001 §2.3.2 (mofn#135, DL-0032): a description
 target (TV-26) with a locator carried as an attribute, and evaluations
 E-5…E-7. Every existing vector is byte-identical.
+**0.9.0 (2026-11-12):** SDSI names (mofn#143, DL-0039, ADR-0008). §7.2
+registers target type 7, the **name** `[7, kid, [+ label]]`: the issuer's
+first label's second label, and so on (ARCH-0001 §3.1). It may be the `this` of
+an `attestation`, which then binds a name to a name, and of a `trust`, which
+then trusts whatever keys the name resolves to (§8.6). SPEC-0004 §5.3 says how a
+name resolves. Appendix A gains DV-4 `naming`, TV-27…34, N-12 and N-13. Every
+existing vector is byte-identical and keeps its result. Additive, so MINOR.
 Nothing in this draft is final until its version leaves `0.x`.
 
 ---
@@ -431,13 +438,24 @@ a target type.
 | 4 definition | `[4, DefinitionId]` | a definition |
 | 5 | — | **reserved, never assigned.** Was the locator, `[5, text]`; withdrawn in 0.6.0 |
 | 6 description | `[6, type-ref, value]` | something identified by a typed description — the description's canonical encoding is its identity |
+| 7 name | `[7, kid, [+ label]]` | a **name**: the issuer `kid`'s first label's second label, and so on — an SDSI compound name (ARCH-0001 §3.1, §4.1) |
 
 Subjects are not limited to keys: a statement can concern a release, a record,
 a definition, or another statement.
 
+**A name** (type 7) names a principal **relative to a key**, never globally
+(ARCH-0001 R-M-03). `[7, alice, ["fred", "sam"]]` is *Alice's fred's sam*: the
+key that Alice calls `fred` calls `sam`. Each label matches
+`[a-z][a-z0-9-]{0,62}`, the label grammar of SPEC-0003 §5.2, and a name has one
+to 16 labels. Anything else MUST be rejected at V7 (N-12, N-13). A name is
+interpreted only by resolution against name bindings at an evaluation time
+(SPEC-0004 §5.3). It is not a key, and a verifier MUST NOT treat it as one:
+single-statement verification (§9) never resolves a name.
+
 **Every target binds a digest** (ARCH-0001 R-M-07, R-M-11). Types 1, 3 and 4
 are digests; type 2 is a content digest; type 6 is identified by the canonical
-encoding of its description. A statement whose target is not one of the types
+encoding of its description; type 7 binds the issuer's `kid`, the namespace in
+which its labels mean anything. A statement whose target is not one of the types
 above MUST be rejected at V7 (§9.2).
 
 **A locator is evidence, never a target.** A URI, URN, ISBN, serial number or
@@ -494,13 +512,13 @@ range where an assignment is required, or the reverse, is a type error.
 | 2 | `self` | MUST be `[1, says]` | the speaker's public claims about itself |
 | 3 | `speaks` | MUST be `[1, says]` | the definitions the speaker can produce and understand |
 | 4 | `attestation` | any target | assign attributes to the target |
-| 5 | `trust` | `[1, kid]`, or absent in the threshold form | extend trust to a key about a range of attributes |
+| 5 | `trust` | `[1, kid]` or `[7, …]`, or absent in the threshold form | extend trust to a key, or to the keys a name resolves to, about a range of attributes |
 | 6 | `revoke` | MUST be `[1, says]` | withdraw one of the speaker's own statements |
 | 7 | `rotate` | `[1, new-kid]`, not equal to `says` | name the speaker key's successor |
 | 8 | `define` | MUST be `[4, DefinitionId]` | publish a definition, as its author |
 | 9 | `review` | `[3, statement-digest]` or `[2, …]` | give an opinion on a statement or object |
 | 10 | `approve` | `[3, statement-digest]` or `[2, …]` | authorise a statement or object |
-| 11 | `aggregate` | any target except `[1, …]` | the result of a published process (SPEC-0005) |
+| 11 | `aggregate` | any target except `[1, …]` and `[7, …]` | the result of a published process (SPEC-0005) |
 
 A verifier MUST reject a statement whose kind is not registered.
 
@@ -563,7 +581,10 @@ delegation-constraints = { ? 1 depth: uint, ? 2 ranges: [+ attribute-range],
                            ? 5 not-on-or-after: time }
 ```
 
-The speaker extends trust to a key about a range of attributes. In the
+The speaker extends trust to a key about a range of attributes. Where `this` is
+a name (§7.2), the trust is extended to each key the name resolves to at the
+evaluation time (SPEC-0004 §5.3), as if a statement to that key had been made:
+the speaker delegates the choice of key to the name's issuer. In the
 **threshold form**, `this` is absent, `trusts` lists two or more keys, and
 `threshold` is an integer `n` with 1 ≤ n ≤ the number of keys: the trust is
 extended to any `n` of them acting together (SPEC-0004 §6.4). Otherwise `this`
@@ -757,8 +778,10 @@ map keys are always sorted (§4.2).
   and MUST NOT alter the text. The statement stays valid in its binary form.
 - A target (§7.2) is a map with one key, the name of its type: `{key: '0x…'}`,
   `{digest: {alg: sha-256, value: '0x…'}}`, `{statement: '0x…'}`,
-  `{definition: '0x…'}`, and
-  `{description: {type: {definition: '0x…', label: text}, value: …}}`.
+  `{definition: '0x…'}`,
+  `{description: {type: {definition: '0x…', label: text}, value: …}}`, and
+  `{name: {issuer: '0x…', labels: [text, …]}}`. A label that a YAML 1.1 parser
+  reads as non-text — `yes`, `no`, `on`, `off`, `y`, `n` — is quoted, as above.
 - Times are quoted text in the exact form of §4.4. A YAML loader MUST NOT resolve
   YAML timestamps.
 - Integers are decimal only: `0`, or an optional `-` followed by a non-zero digit
@@ -784,7 +807,8 @@ bytes of any existing statement.
 ### 12.2 Target types — §7.2
 
 Code 5 is reserved, never assigned: the locator was withdrawn in 0.6.0 (§7.2).
-A new target type MUST bind a digest (ARCH-0001 R-M-07).
+A new target type MUST bind a digest (ARCH-0001 R-M-07). Code 7, the name, was
+registered in 0.9.0 (ADR-0008).
 
 ### 12.3 Cipher suites — §6.2
 
@@ -912,6 +936,15 @@ identity is the description, so it is a statement about the name, not about
 content found under it. A definer SHOULD NOT define a description type that a
 reader would take for a statement about the content at a locator.
 
+### 13.11 Names as subjects
+
+A trust statement to a name (§8.6) trusts whichever keys the name's issuer —
+and every issuer along its chain — binds the labels to at the evaluation time.
+That is the point of a name: Carol can trust *Alice's release signer* and let
+Alice change who that is. It is also a delegation of the choice of key that no
+`may-delegate` constrains. A speaker that wants to fix the key trusts the key
+(`[1, kid]`), not a name. SPEC-0004 §11.7 discusses the evaluation side.
+
 ## 14. Privacy considerations
 
 Statements are designed to be shown to others. A kid is a stable identifier and
@@ -992,6 +1025,14 @@ DefinitionId = SHA-256(body) = `bf49683b008a99fcdd3e2d2068b14b56b5cdca3c08d87246
 
 ```
 a4015820d5f0b21718b21f79648f7f4a0325288209e6fd37fa2f90f9d29c4229e371f8c7026e6c6962726172792d72657669657703613105858201a601687265766965776564020103a262656e68526576696577656462657368526576697361646f04a262656e783b57686574686572206120706572736f6e2068617320636865636b656420746865207265636f726420616761696e73742069747320736f757263652e6265737835536920756e6120706572736f6e6120686120636f74656a61646f20656c20726567697374726f20636f6e207375206675656e74652e0683a3016379657302a262656e635965736265736353c3ad03a262656e7822636865636b656420696e2066756c6c20616761696e73742069747320736f757263656265737823636f74656a61646f20706f7220636f6d706c65746f20636f6e207375206675656e7465a301677061727469616c02a262656e66506172746c7962657368456e20706172746503a262656e7822636865636b656420696e207061727420616761696e73742069747320736f75726365626573781f636f74656a61646f20656e20706172746520636f6e207375206675656e7465a301626e6f02a262656e624e6f626573624e6f03a262656e781e6e6f7420636865636b656420616761696e73742069747320736f7572636562657378196e6f20636f74656a61646f20636f6e207375206675656e746508028201a501657469746c65020303a162656e655469746c6504a162656e781e54686520776f726b2773207469746c65206173207075626c69736865642e08008201a60164776f726b020903a262656e64576f726b626573644f62726104a262656e783041207075626c697368656420776f726b2c206964656e74696669656420627920697473206465736372697074696f6e2e6265737835556e61206f627261207075626c69636164612c206964656e746966696361646120706f7220737520646573637269706369c3b36e2e08000b81a501657469746c6502a102657469746c6503f504a162656e655469746c6505a162656e77546865207469746c65206173207075626c69736865642e8201a501676c6f6361746f72020303a262656e674c6f6361746f726265736b4c6f63616c697a61646f7204a262656e78325768657265206120636f7079206d617920626520666f756e642e2045766964656e63652c206e6f74206964656e746974792e626573783744c3b36e64652070756564652068616c6c6172736520756e6120636f7069612e20496e646963696f2c206e6f206964656e74696461642e08008202a6016f7265636f72642d7265766965776564020403a1018202060482a201a10268726576696577656402f5a201a102676c6f6361746f7202f408a262656e782b7b736179737d2073617973207b746869737d2069732072657669657765643a207b72657669657765647d2e62657378327b736179737d206469636520717565207b746869737d20657374c3a120726576697361646f3a207b72657669657765647d2e09a262656e6f5265636f726420726576696577656462657371526567697374726f20726576697361646f
+```
+
+### DV-4 — definition `naming` v1, definer Alice; `name` has base kind 12
+
+DefinitionId = SHA-256(body) = `eaf0ec4440c9c9bfbead12db82f44d1bd4ad74472f6c6014673c25f62a296729`
+
+```
+a401582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b902666e616d696e6703613105818201a501646e616d65020c03a262656e644e616d65626573664e6f6d62726504a262656e7842576861742074686520737065616b65722063616c6c7320746865207461726765742c20696e2074686520737065616b65722773206f776e206e616d6573706163652e626573784443c3b36d6f206c6c616d6120656c206861626c616e746520616c2064657374696e6f2c20656e2073752070726f70696f206573706163696f206465206e6f6d627265732e0800
 ```
 
 ### TV-1 — key-publish: Alice publishes her Ed25519 key; this = says = SHA-256(pub); the envelope carries pub
@@ -1462,6 +1503,150 @@ ca62e37cd3c07c045b3bf4095fd79d678f9565ce305e4fb2bf54c72d396930516ef7ae7b467b5d9f
 ```
 - expected: **accept**
 
+### TV-27 — define: Alice publishes definition DV-4 `naming`, whose `name` type has base kind name
+
+- signer: alice
+- statement digest = SHA-256(TBS): `a884f193e183a125baa876452ab2ed9627ac1500c3f4df2e5e4e2174ffe005bb`
+- TBS:
+```
+a60108020103582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b90482045820eaf0ec4440c9c9bfbead12db82f44d1bd4ad74472f6c6014673c25f62a29672905a201190231031a02e3b5a006a201666e616d696e67026131
+```
+- signature over DS ‖ TBS:
+```
+e932527c724154f50891010484a2377c43e71f1fc374cd2d1ac613f44a55db37471323e73365df049af69c5421ce47c78a9d31b6bbb9a1805938bf4c90de4309
+```
+- envelope `[suite, says, tbs, sig, ? pub]`:
+```
+8401582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b95866a60108020103582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b90482045820eaf0ec4440c9c9bfbead12db82f44d1bd4ad74472f6c6014673c25f62a29672905a201190231031a02e3b5a006a201666e616d696e670261315840e932527c724154f50891010484a2377c43e71f1fc374cd2d1ac613f44a55db37471323e73365df049af69c5421ce47c78a9d31b6bbb9a1805938bf4c90de4309
+```
+- expected: **accept**
+
+### TV-28 — name binding: Alice's fred is Bob's key (one hop; SPEC-0004 §5.3)
+
+- signer: alice
+- statement digest = SHA-256(TBS): `d5adcbf09c384196ce99a361382bd0ecb17b979415f449145303418fa9f2cb9c`
+- TBS:
+```
+a60104020103582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9048201582039f713d0a644253f04529421b9f51b9b08979d08295959c4f3990ee617f5139f05a3011902310219029d031a02e3c3b006a10181a201a2015820eaf0ec4440c9c9bfbead12db82f44d1bd4ad74472f6c6014673c25f62a29672902646e616d65026466726564
+```
+- signature over DS ‖ TBS:
+```
+1264c85a04ce62806b7900b9cafd6f29434870bf61fa45cf0949cc4df7172439f2fc57ff32468fcaa2ef22f1cd89b25a331e0eea3e41c0cb57e35cf44a0dbe0c
+```
+- envelope `[suite, says, tbs, sig, ? pub]`:
+```
+8401582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b95893a60104020103582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9048201582039f713d0a644253f04529421b9f51b9b08979d08295959c4f3990ee617f5139f05a3011902310219029d031a02e3c3b006a10181a201a2015820eaf0ec4440c9c9bfbead12db82f44d1bd4ad74472f6c6014673c25f62a29672902646e616d6502646672656458401264c85a04ce62806b7900b9cafd6f29434870bf61fa45cf0949cc4df7172439f2fc57ff32468fcaa2ef22f1cd89b25a331e0eea3e41c0cb57e35cf44a0dbe0c
+```
+- expected: **accept**
+
+### TV-29 — name binding: Bob's sam is Dave's key; with TV-28, Alice's fred's sam is Dave (a compound name)
+
+- signer: bob
+- statement digest = SHA-256(TBS): `6d978fc48a64c39064c00b16b573839c102af3f0f9fb9a88d7cabfcf8d4c624f`
+- TBS:
+```
+a60104020103582039f713d0a644253f04529421b9f51b9b08979d08295959c4f3990ee617f5139f0482015820d5f0b21718b21f79648f7f4a0325288209e6fd37fa2f90f9d29c4229e371f8c705a3011902310219029d031a02e3d1c006a10181a201a2015820eaf0ec4440c9c9bfbead12db82f44d1bd4ad74472f6c6014673c25f62a29672902646e616d65026373616d
+```
+- signature over DS ‖ TBS:
+```
+b10599f3e341febaa8bbd8b5ce321b12515250d08a9c72b1d6e2ea067457b94a7cd68d78e43a04cfeff8b5c4f049a60b9bdebb0af470f7812df0a85b4d16d40a
+```
+- envelope `[suite, says, tbs, sig, ? pub]`:
+```
+8401582039f713d0a644253f04529421b9f51b9b08979d08295959c4f3990ee617f5139f5892a60104020103582039f713d0a644253f04529421b9f51b9b08979d08295959c4f3990ee617f5139f0482015820d5f0b21718b21f79648f7f4a0325288209e6fd37fa2f90f9d29c4229e371f8c705a3011902310219029d031a02e3d1c006a10181a201a2015820eaf0ec4440c9c9bfbead12db82f44d1bd4ad74472f6c6014673c25f62a29672902646e616d65026373616d5840b10599f3e341febaa8bbd8b5ce321b12515250d08a9c72b1d6e2ea067457b94a7cd68d78e43a04cfeff8b5c4f049a60b9bdebb0af470f7812df0a85b4d16d40a
+```
+- expected: **accept**
+
+### TV-30 — name binding to a NAME target (SPEC-0002 §7.2 type 7): Carol's builder is Alice's fred's sam
+
+- signer: carol
+- statement digest = SHA-256(TBS): `e80919072666942c5328ab14f13d2029eb867dbf1b1e5b8db973121633c8b8e6`
+- TBS:
+```
+a601040201035820c7b66369c87c115e8f8ab2fd27540d1a8a28cc475aab29b58ba0caf47910e207048307582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b98264667265646373616d05a3011902310219029d031a02e3dfd006a10181a201a2015820eaf0ec4440c9c9bfbead12db82f44d1bd4ad74472f6c6014673c25f62a29672902646e616d6502676275696c646572
+```
+- signature over DS ‖ TBS:
+```
+9921306044cff886eaf576229502fda724c4cd86a70f8419f4738ad361f4dcc27eb3757ca552113bba9c55a7b370db3a36c1034d7d03bb86ab8230c0f8e29f0a
+```
+- envelope `[suite, says, tbs, sig, ? pub]`:
+```
+84015820c7b66369c87c115e8f8ab2fd27540d1a8a28cc475aab29b58ba0caf47910e20758a0a601040201035820c7b66369c87c115e8f8ab2fd27540d1a8a28cc475aab29b58ba0caf47910e207048307582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b98264667265646373616d05a3011902310219029d031a02e3dfd006a10181a201a2015820eaf0ec4440c9c9bfbead12db82f44d1bd4ad74472f6c6014673c25f62a29672902646e616d6502676275696c64657258409921306044cff886eaf576229502fda724c4cd86a70f8419f4738ad361f4dcc27eb3757ca552113bba9c55a7b370db3a36c1034d7d03bb86ab8230c0f8e29f0a
+```
+- expected: **accept**
+
+### TV-31 — trust to a NAME: Carol trusts Carol's builder about build-provenance in {reproducible}, one hop
+
+- signer: carol
+- statement digest = SHA-256(TBS): `0402e38ceccd94dc111ff890dbe991262158058e3ac16910af6ce616a3914984`
+- TBS:
+```
+a601050201035820c7b66369c87c115e8f8ab2fd27540d1a8a28cc475aab29b58ba0caf47910e2070483075820c7b66369c87c115e8f8ab2fd27540d1a8a28cc475aab29b58ba0caf47910e20781676275696c64657205a3011902310219029d031a02e3ede006a10181a201a2015820517007656a617b3b5ab7cc376275a46ad88d14594f6846df88a34f2c8b3a717502706275696c642d70726f76656e616e636503816c726570726f64756369626c65
+```
+- signature over DS ‖ TBS:
+```
+15a85e030cd43758e18e930752af312c4e4cfa82334acef6a23d8404f7027b86196dcb1f2699030ce6aea88000c43e67dfc3d83f488053f2e7d26ddc31d1a70f
+```
+- envelope `[suite, says, tbs, sig, ? pub]`:
+```
+84015820c7b66369c87c115e8f8ab2fd27540d1a8a28cc475aab29b58ba0caf47910e20758b1a601050201035820c7b66369c87c115e8f8ab2fd27540d1a8a28cc475aab29b58ba0caf47910e2070483075820c7b66369c87c115e8f8ab2fd27540d1a8a28cc475aab29b58ba0caf47910e20781676275696c64657205a3011902310219029d031a02e3ede006a10181a201a2015820517007656a617b3b5ab7cc376275a46ad88d14594f6846df88a34f2c8b3a717502706275696c642d70726f76656e616e636503816c726570726f64756369626c65584015a85e030cd43758e18e930752af312c4e4cfa82334acef6a23d8404f7027b86196dcb1f2699030ce6aea88000c43e67dfc3d83f488053f2e7d26ddc31d1a70f
+```
+- expected: **accept**
+
+### TV-32 — name binding: Bob's fred is Dave's key. It is in Bob's namespace, never Alice's
+
+- signer: bob
+- statement digest = SHA-256(TBS): `7967211024814b996de2c1756d40bb7e09533299edf5781ebc487bf08f062554`
+- TBS:
+```
+a60104020103582039f713d0a644253f04529421b9f51b9b08979d08295959c4f3990ee617f5139f0482015820d5f0b21718b21f79648f7f4a0325288209e6fd37fa2f90f9d29c4229e371f8c705a3011902310219029d031a02e3fbf006a10181a201a2015820eaf0ec4440c9c9bfbead12db82f44d1bd4ad74472f6c6014673c25f62a29672902646e616d65026466726564
+```
+- signature over DS ‖ TBS:
+```
+f05bb70c2d0bd0372c0853fd6483b4e4ec81863e861e3cea88be8b0a076e84621cc0a279eb64ee6fc98488e0d199653da7a2afe61205f7c33918d2291136e403
+```
+- envelope `[suite, says, tbs, sig, ? pub]`:
+```
+8401582039f713d0a644253f04529421b9f51b9b08979d08295959c4f3990ee617f5139f5893a60104020103582039f713d0a644253f04529421b9f51b9b08979d08295959c4f3990ee617f5139f0482015820d5f0b21718b21f79648f7f4a0325288209e6fd37fa2f90f9d29c4229e371f8c705a3011902310219029d031a02e3fbf006a10181a201a2015820eaf0ec4440c9c9bfbead12db82f44d1bd4ad74472f6c6014673c25f62a29672902646e616d650264667265645840f05bb70c2d0bd0372c0853fd6483b4e4ec81863e861e3cea88be8b0a076e84621cc0a279eb64ee6fc98488e0d199653da7a2afe61205f7c33918d2291136e403
+```
+- expected: **accept**
+
+### TV-33 — name binding: Alice's loop is Alice's loop, a cycle
+
+- signer: alice
+- statement digest = SHA-256(TBS): `c0410cb0d0279cc9af2c2150f8d76c6e03fcd2fcc279f6c5743577f14c1a8311`
+- TBS:
+```
+a60104020103582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9048307582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b981646c6f6f7005a3011902310219029d031a02e40a0006a10181a201a2015820eaf0ec4440c9c9bfbead12db82f44d1bd4ad74472f6c6014673c25f62a29672902646e616d6502646c6f6f70
+```
+- signature over DS ‖ TBS:
+```
+d4d2cf2126e72b3c041cd14a71ad66e1666255900aeb9aac61872d0faf2ec6a285e2e0ae442157a1dad9eba54e6f63ac0eca993e306f023fef91e34d2a042403
+```
+- envelope `[suite, says, tbs, sig, ? pub]`:
+```
+8401582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b95899a60104020103582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9048307582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b981646c6f6f7005a3011902310219029d031a02e40a0006a10181a201a2015820eaf0ec4440c9c9bfbead12db82f44d1bd4ad74472f6c6014673c25f62a29672902646e616d6502646c6f6f705840d4d2cf2126e72b3c041cd14a71ad66e1666255900aeb9aac61872d0faf2ec6a285e2e0ae442157a1dad9eba54e6f63ac0eca993e306f023fef91e34d2a042403
+```
+- expected: **accept**
+
+### TV-34 — name binding: Alice's fred is also Dave's key; with TV-28, Alice's fred is the set {Bob, Dave}
+
+- signer: alice
+- statement digest = SHA-256(TBS): `9217aa27e60a61d1d07b54c3fbef2f09060f060e25626200c7dd5b3deebaa0e2`
+- TBS:
+```
+a60104020103582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b90482015820d5f0b21718b21f79648f7f4a0325288209e6fd37fa2f90f9d29c4229e371f8c705a3011902310219029d031a02e4181006a10181a201a2015820eaf0ec4440c9c9bfbead12db82f44d1bd4ad74472f6c6014673c25f62a29672902646e616d65026466726564
+```
+- signature over DS ‖ TBS:
+```
+2f339a835a529747b7fdb0582b467833215578bf0da2f82828f286c4b303c09b12b8095806c9c8a335393c54906d2b75acd5fa6f4f69b37dd46ac4aa89c0820a
+```
+- envelope `[suite, says, tbs, sig, ? pub]`:
+```
+8401582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b95893a60104020103582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b90482015820d5f0b21718b21f79648f7f4a0325288209e6fd37fa2f90f9d29c4229e371f8c705a3011902310219029d031a02e4181006a10181a201a2015820eaf0ec4440c9c9bfbead12db82f44d1bd4ad74472f6c6014673c25f62a29672902646e616d6502646672656458402f339a835a529747b7fdb0582b467833215578bf0da2f82828f286c4b303c09b12b8095806c9c8a335393c54906d2b75acd5fa6f4f69b37dd46ac4aa89c0820a
+```
+- expected: **accept**
+
 ### Negative vectors
 
 #### N-1 — reject at V5 canonical decode
@@ -1541,6 +1726,20 @@ attestation whose target is a bare locator [5, uri]; target type 5 is reserved, 
 8401582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b958b3a60104020103582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9048205782c68747470733a2f2f6578616d706c652e6f72672f72656c65617365732f64656d6f2d312e302e7461722e677a05a30119022d02190261031a02de295006a10181a201a2015820517007656a617b3b5ab7cc376275a46ad88d14594f6846df88a34f2c8b3a717502706275696c642d70726f76656e616e6365026c726570726f64756369626c655840952ede3f1f82c70ee53a5e557691e652496e225771b5d5187a8e9035d395f94eb80087ca38ed9cfd7b7f2126f7f7ca9b9291fa245407135cd415aa2a89302606
 ```
 
+#### N-12 — reject at V7 structure
+
+name target with an empty label list; a name has at least one label.
+```
+8401582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b95894a60104020103582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9048307582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b98005a3011902310219029d031a02e3c3b006a10181a201a2015820eaf0ec4440c9c9bfbead12db82f44d1bd4ad74472f6c6014673c25f62a29672902646e616d650264667265645840f850366037232cb46abaf3347a091366a2a99319ace847f6d5d2f8943dd948e27787ede500aaef4d0b908998964850ae219feb6dde070456414aa2c17d99de0b
+```
+
+#### N-13 — reject at V7 structure
+
+name target whose label "Fred" is outside [a-z][a-z0-9-]{0,62}.
+```
+8401582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b95899a60104020103582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9048307582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b981644672656405a3011902310219029d031a02e3c3b006a10181a201a2015820eaf0ec4440c9c9bfbead12db82f44d1bd4ad74472f6c6014673c25f62a29672902646e616d6502646672656458406b2798887a415afd4bfd34b4e70e7b2e4855c8e587b9c3fafbdb949106636742e9b8006871a6e2724b81087ac8cb620d64294afa54b8c140844c3054a78dc906
+```
+
 ### Delegation evaluations (SPEC-0004 Appendix A)
 
 Anchor TV-5 in context `releases`; ask: is the artifact's build-provenance the value shown, at 2026-10-10T12:00:00Z.
@@ -1561,6 +1760,30 @@ Anchor TV-22 in context `library`; ask: does the subject have `reviewed` = the v
 | E-5 | TV-23, TV-25 | record | partial | **yes** | — | — |
 | E-6 | TV-23, TV-24 | record | yes | **no** | no-path | TV-24 |
 | E-7 | TV-26 | work | yes | **yes** | — | — |
+
+### Name resolutions (SPEC-0004 §5.3; mofn#143)
+
+DV-4 held; every statement listed is in the statement set, at 2026-10-10T12:00:00Z.
+
+| res | name | statements | keys | reason | case |
+|---|---|---|---|---|---|
+| R-1 | alice's fred | TV-28 | bob | — | one hop |
+| R-2 | alice's fred sam | TV-28, TV-29 | dave | — | a compound name: Alice's fred is Bob, Bob's sam is Dave |
+| R-3 | carol's builder | TV-30, TV-28, TV-29 | dave | — | a binding to a name: Carol's builder is Alice's fred's sam |
+| R-4 | alice's fred | TV-28, TV-34 | bob, dave | — | two bindings of one label: the name is a set (SDSI group), not an error |
+| R-5 | alice's fred sam | TV-28 | ∅ | name-unresolved | missing link: Bob binds no sam |
+| R-6 | alice's loop | TV-33 | ∅ | name-cycle | Alice's loop is defined as itself |
+| R-7 | alice's fred | TV-32 | ∅ | name-foreign | the only fred binding is Bob's; Bob cannot bind a label in Alice's namespace |
+
+### Name evaluations (SPEC-0004 Appendix A)
+
+Anchor TV-31 (Carol's own trust to Carol's builder) in context `releases-by-name`; ask: is the artifact's build-provenance the value shown, at 2026-10-10T12:00:00Z.
+
+| eval | statements | value | answer | reason | at |
+|---|---|---|---|---|---|
+| E-8 | TV-30, TV-28, TV-29, TV-19 | reproducible | **yes** | — | — |
+| E-9 | TV-30, TV-28, TV-19 | reproducible | **no** | name-unresolved | TV-31 |
+| E-10 | TV-30, TV-28, TV-29, TV-17 | reproducible | **no** | no-path | TV-17 |
 <!-- VECTORS:END -->
 
 ## Appendix B. CDDL
@@ -1596,7 +1819,9 @@ target = [1, kid]                        ; key
        / [4, definition-id]              ; definition
                                          ; 5: reserved (locator, withdrawn 0.6.0)
        / [6, type-ref, value]            ; description
+       / [7, kid, [1*16 name-label]]     ; name (0.9.0)
 digest-alg = 1..3
+name-label = tstr .regexp "[a-z][a-z0-9-]{0,62}"
 
 validity = { ? 1 => time, ? 2 => time, ? 3 => time }   ; not-before, not-on-or-after, issued
 

@@ -20,6 +20,8 @@ NEGATIVE = {
     "N-9": ("V7", "structure"),
     "N-10": ("V5", "encoding"),
     "N-11": ("V7", "structure"),
+    "N-12": ("V7", "structure"),
+    "N-13": ("V7", "structure"),
 }
 
 

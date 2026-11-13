@@ -8,10 +8,10 @@ description: "Canonical working architecture for a native model that is not X.50
 type: architecture
 category: security
 status: draft
-version: "0.3.0"
+version: "0.3.1"
 version_policy: "semver; PATCH = editorial; MINOR = additive requirements; MAJOR = breaking model change"
 date: "2026-09-15"
-updated: "2026-11-09"
+updated: "2026-11-12"
 authors:
   - role: architect
     id: conversation-brainpool256
@@ -91,7 +91,7 @@ scope:
 agent_checkpoint: true
 agent_notes: >
   Other agents: treat this file as the source of truth for architecture
-  state as of v0.3.0. v0.3.0 adds §2.3, the two target applications. v0.2.0 folded ARCH-0001-PROPOSAL-v0.2.0 in (now
+  state as of v0.3.1. v0.3.1 closes the SDSI-names gap in §5.5. v0.3.0 adds §2.3, the two target applications. v0.2.0 folded ARCH-0001-PROPOSAL-v0.2.0 in (now
   superseded) and carried ADR-0002, ADR-0003, ADR-0007 and the T-012c
   delegation decision into §4-§7. Where SPEC-0001..0005 and this file differ,
   §5.5 lists every known gap and which side owes the change. Do not invent accepted decisions. Open items are
@@ -101,7 +101,7 @@ agent_notes: >
 
 # ARCH-0001 — Authorization, local names, and artifact attestation
 
-**Status:** draft · **Version:** 0.3.0 · **Date:** 2026-09-15 · **Updated:** 2026-11-09  
+**Status:** draft · **Version:** 0.3.1 · **Date:** 2026-09-15 · **Updated:** 2026-11-12  
 **Canonical file:** `spec/ARCH-0001-authorization-attestation.md`  
 **Changelog:** `spec/ARCH-0001-CHANGELOG.md`
 
@@ -331,8 +331,8 @@ Logical types. Encoding is DEC-002, accepted as KSA-CBOR (`ADR-0004`). The right
 |------|---------|------------------------|
 | `Key` | Public key material + algorithm identifier | `public-key = { alg, pub }` (§8.2), suite per §6 |
 | `KeyId` | Digest of a canonical key encoding — **narrowed by `ADR-0005`:** SHA-256 of the key's public-key encoding under its suite | `kid` (§4.5) |
-| `Principal` | `Key` \| `KeyId` \| `Name` \| `Threshold` \| `Group` | `kid`; threshold form of `trust` (§8.6). **`Name` and `Group` have no KSA form yet** (§5.5) |
-| `Name` | `{ issuer: Principal, labels: [string, ...] }` — SDSI compound name | **owed by `SPEC-0004`** (mofn#143). A one-label binding is an `attestation` about a key under a names definition (`ARCH-0002` P6; TV-13) |
+| `Principal` | `Key` \| `KeyId` \| `Name` \| `Threshold` \| `Group` | `kid`; name target (§7.2 type 7); threshold form of `trust` (§8.6). **`Group` has no KSA form yet** (§5.5) |
+| `Name` | `{ issuer: Principal, labels: [string, ...] }` — SDSI compound name | target type 7 `[7, kid, [+ label]]` (`SPEC-0002` 0.9.0 §7.2). A binding is an `attestation` with a naming-type attribute (`SPEC-0003` §6.4; `ARCH-0002` P6; TV-28…34), and `SPEC-0004` §5.3 resolves it (`ADR-0008`). The issuer is a kid |
 | `Threshold` | `{ k: int, n: int, members: [Principal, ...] }` with `1 ≤ k ≤ n` and `n = len(members)` | `trust` with `trusts: [2* kid]`, `threshold: k`; `n` is the array length (§8.6) |
 | `Tag` | Authorization scope; opaque at this layer except for defined intersection | `attribute-range` (§7.4). Its *within* relation is the type's base kind (`SPEC-0003` §6). DEC-004 still open |
 | `Validity` | `{ not_before?, not_after?, online_check? }` | `valid = { not-before, not-on-or-after, issued }` (§7.3); no online check |
@@ -351,7 +351,7 @@ kind-specific `body` (*C*).
 
 | v0.1 kind | Function | KSA kind (`SPEC-0002` §8) | Notes |
 |---|---|---|---|
-| `NameCert` | **naming**: bind a local name to a principal | `attestation` (4) about a key, assigning a name-typed attribute (TV-13, DV-2) | One label today. **Compound names and their resolution are owed by `SPEC-0004`** (§5.5, mofn#143). G2 and R-M-04 still hold: naming and delegation are different functions with different verifier procedures |
+| `NameCert` | **naming**: bind a local name to a principal | `attestation` (4) about a key or a name, assigning an attribute of base kind `name` (`SPEC-0003` §6.4; DV-4, TV-28…34) | Compound names resolve by `SPEC-0004` §5.3 (`ADR-0008`). TV-13 under DV-2 is a plain text attribute, not a binding. G2 and R-M-04 still hold: naming and delegation are different functions with different verifier procedures |
 | `AuthzCert` | **delegation**: extend authority to a principal over a scope | `trust` (5): `about` is the scope; `may-delegate` constrains onward delegation | Replaces `delegate: bool` (R-M-10, below) |
 | `AclEntry` | **local policy**: the relying party's own root | not a statement. An unsigned local anchor in a context (`SPEC-0004` §4). A signed `trust` becomes an anchor only by a local act of acceptance (`ADR-0003` D3) | The anchor list is unsigned, so it has no speaker and is not a statement (P6). It is the fixed floor that `ARCH-0002` DEC-008 says cannot be key-local |
 | `ArtifactStatement` | **attestation**: assert that a subject has attributes | `attestation` (4) about a digest or description target, a locator riding as an attribute; `review` (9), `approve` (10) and `aggregate` (11) about a statement or object | Acceptance may still require a delegation (§4.3 step 3). An `approve` counts only if its speaker reduces to a delegation for approval; a `review` never does |
@@ -395,7 +395,7 @@ A decision procedure takes:
 
 Three procedures, kept separate (v0.1 said "two" and listed three):
 
-1. **Name resolution** — rewrite `Name` to `KeyId` via chains of naming statements. **Kept in 0.2.0 by decision** (`DL-0028`), although `SPEC-0004` does not yet specify it; owed there (mofn#143).
+1. **Name resolution** — rewrite `Name` to `KeyId` via chains of naming statements. Kept in 0.2.0 by decision (`DL-0028`); specified by `SPEC-0004` 0.6.0 §5.3 (mofn#143, `ADR-0008`).
 2. **Authorization reduction** — SPKI-style composition after names are resolved. In KSA: delegation paths (`SPEC-0004` §6), scope narrowing by typed range, depth by `may-delegate`.
 3. **Statement acceptance** — signature valid ∧ issuer authorized for that `PredicateType` ∧ subject digest matches the artifact under consideration ∧ every named template is conformed to (`SPEC-0003` §7.1).
 
@@ -470,12 +470,13 @@ Priority: **M**ust / **S**hould / **C**ould. Open decisions do not silently sati
 `ADR-0003`: where a SPEC and an ARCH document differ, the SPEC governs and the
 ARCH document is corrected. 0.2.0 makes those corrections in §4 and §5. Two
 differences went the **other** way by decision (`DL-0028`). In those cases this
-document keeps its requirement, and the SPEC owes the change. One is closed:
-locator-only subjects, by `SPEC-0002` 0.6.0 (mofn#144, `DL-0030`).
+document keeps its requirement, and the SPEC owes the change. Both are closed:
+locator-only subjects, by `SPEC-0002` 0.6.0 (mofn#144, `DL-0030`); SDSI names,
+by `SPEC-0002` 0.9.0, `SPEC-0003` 0.2.0 and `SPEC-0004` 0.6.0 (mofn#143,
+`DL-0039`).
 
 | Gap | ARCH-0001 | SPEC | Owed by | Issue |
 |---|---|---|---|---|
-| SDSI names | §1 item 2, G1, R-M-03, §4.3 step 1: compound names resolve to a key | no `Name` principal, no compound names, no resolution step | `SPEC-0004` (and `SPEC-0002` if a form is needed) | mofn#143 |
 | `Group` principal | §4.1 | no form | open; no consumer yet | — |
 | `aliases` set | §4.1, R-M-11 | no form | `SPEC-0002`, when a consumer needs it | — |
 | Online validity check | §4.1 `Validity.online_check`, R-M-09 | none; `valid` is time only | open; R-O-02 prefers short validity | — |
@@ -719,4 +720,4 @@ their common principle. It is not a reason to merge them.
 - `draft-mih-scitt-agent-action-capsule-02` — ad hoc vocabulary inside SCITT (§3.3)  
 - RFC 9580 — OpenPGP (2024): §3.7, §5.2.3.7, §5.2.3.21, §5.2.3.24, §5.2.3.29, §5.2.5, §5.5.3, §5.5.4.3 (read for §3.4)
 
-End of ARCH-0001 v0.3.0
+End of ARCH-0001 v0.3.1

@@ -5,15 +5,25 @@ title: "ARCH-0001 changelog"
 type: changelog
 parent: ARCH-0001
 status: active
-version: "0.3.0"
+version: "0.3.1"
 date: "2026-09-15"
-updated: "2026-11-09"
+updated: "2026-11-12"
 canonical_path: spec/ARCH-0001-CHANGELOG.md
 ---
 
 # ARCH-0001 changelog
 
 Format: newest first. Versions match the architecture document.
+
+## 0.3.1 — 2026-11-12
+
+PATCH. T-040s (mofn#143). No requirement changes. `SPEC-0002` 0.9.0 registers
+the name target (type 7), `SPEC-0003` 0.2.0 the `name` base kind, and
+`SPEC-0004` 0.6.0 §5.3 specifies name resolution, which meets §1 item 2, G1,
+R-M-03 and §4.3 procedure 1 as 0.2.0 kept them. The §5.5 SDSI row is closed and
+removed. The §4.1 `Principal` and `Name` rows, the §4.2 `NameCert` row and §4.3
+item 1 now point to the SPECs and to `ADR-0008` (proposed). Decided by
+`ndewedo-newbury`; the agent drafted the text. Recorded in `DL-0039`.
 
 ## 0.3.0 — 2026-11-09
 
