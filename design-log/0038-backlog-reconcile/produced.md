@@ -1,16 +1,16 @@
 ---
 schema: "design-log/v1"
-id: DL-0033
+id: DL-0038
 part: produced
 date: "2026-11-09"
 ---
 
-# DL-0033 — produced
+# DL-0038 — produced
 
 | file | change |
 |---|---|
 | `project/BACKLOG-0001.md` 0.12.15 → **0.13.0** | New §*Status at 2026-11-09*. **Done, with evidence:** T-006d, T-012a, T-024, T-029a, T-033, T-045, T-046, T-055, W-1; L-001…L-007, L-011, L-013, L-018, L-021, L-031…L-034, L-036. **Closed, not owed:** T-030, T-032. **Review:** T-012b (#152). **Doing, with what is left:** T-028, T-034, T-044, T-047, L-015, L-016, L-017, L-035 (ruling to record). **Rewritten:** T-029c (overdue decision, three options), T-054 (zipapp → PyInstaller, per #127 §6). **Added:** T-066 (mofn#110), L-037…L-040 (library#89, #69, #110, #133) |
-| `project/DECISIONS-0001.md` 0.6.1 → **0.7.0** | Item 28 closed: Python throughout, Tauri withdrawn, the Textual app is the UI. MINOR, per its policy |
+| `project/DECISIONS-0001.md` 0.6.1 → **0.7.1** | Item 28 closed: Python throughout, Tauri withdrawn, the Textual app is the UI. MINOR, per its policy |
 | `project/PLAN-0002-product-spec.md` 0.3.0 → 0.3.1 | §5.1 stack table: languages, UI framework and rationale no longer name Tauri |
 | `project/PLAN-0004-application-plan.md` 0.2.0 → 0.2.1 | §4: the Tauri paragraph replaced by "the UI is Python too" |
 | `project/BACKLOG-0001.md` (same 0.13.0) | T-029c done; W-5 rescoped into `mofn run`; T-013 and L-035 rewritten with what the search found |
@@ -33,3 +33,27 @@ and no comment. Later work relies on the amended rule (DL-0006, DL-0007). The
 library#69).
 
 MINOR bump: rows added, statuses changed. Nothing in `spec/` moves.
+
+## Rebased onto `main` at `c3e1eb5` (2026-11-12)
+
+Nine PRs landed while #155 was open. Conflicts resolved to keep both sides:
+
+- **Renumbered DL-0033 → DL-0038.** #154 (W-2) took DL-0033 first, and
+  #153, #161, #156 and #163 took 0034–0037. References in `BACKLOG-0001`
+  T-029c, `DECISIONS-0001` item 28 and `DL-0036` were moved. `DL-0033` in
+  W-2b and `APP-0003` is W-2's and stays.
+- **T-066 kept for main's renderer task** (#154). This PR's mofn#110 row is
+  now **T-067**.
+- **T-012b → done.** #152 merged and #135 closed 2026-11-10, after the sweep.
+- **W-2 and W-2b** are main's rows, unchanged. W-1 is this PR's.
+- **T-013 → `review — sign-off owed`.** #156 (`DL-0036`) merged 2026-11-13
+  with no approvals, and #7 closed with it. §12 says it is agreed when all
+  three approve, so the condition is still unmet.
+- **`PLAN-0004` 0.4.1:** main's §7–§9 status lines (from #153, #163) still
+  called decision #28 open, Tauri/PySide6/SwiftUI candidates, a separate GUI
+  package and a zipapp. They now record #28 closed and the Textual app as the
+  UI. Main's dated "proposed" text is kept, with notes, not rewritten.
+- **Version bumps re-based:** `PLAN-0002` 0.4.0 → 0.4.1 and `PLAN-0004`
+  0.4.0 → 0.4.1 (main had moved both); `BACKLOG-0001` 0.12.17 → 0.13.0;
+  `DECISIONS-0001` 0.7.0 → 0.7.1 for the renumbered citation.
+  `updated` is 2026-11-12 on all of them.

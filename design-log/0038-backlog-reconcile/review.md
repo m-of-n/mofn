@@ -1,11 +1,11 @@
 ---
 schema: "design-log/v1"
-id: DL-0033
+id: DL-0038
 part: review
 date: "2026-11-09"
 ---
 
-# DL-0033 — review
+# DL-0038 — review
 
 **Human decisions:** T-030 and T-032 are closed. T-029c: keep everything
 Python (`DECISIONS-0001` item 28); then, asked whether D8 needs a desktop

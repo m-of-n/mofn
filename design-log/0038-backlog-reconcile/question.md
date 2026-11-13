@@ -1,6 +1,6 @@
 ---
 schema: "design-log/v1"
-id: DL-0033
+id: DL-0038
 part: question
 title: "BACKLOG-0001 0.13.0 — reconcile the backlog with the repos; close T-030 and T-032; spell out T-029c"
 date: "2026-11-09"
@@ -10,7 +10,7 @@ outcome: "BACKLOG-0001 0.13.0: 26 rows marked done with evidence, T-030 and T-03
 status: open
 ---
 
-# DL-0033 — question
+# DL-0038 — question
 
 The human asked: *"how much of the backlog is actually finished but
 undocumented? Search the entire repo."* The agent swept `origin/main`

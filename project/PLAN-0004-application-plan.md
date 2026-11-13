@@ -230,7 +230,7 @@ floor, is not in the engine.
 |---|---|---|---|---|
 | I1 / D1–D3: library and research reports | Oct 14 | both | done | library repo; `R-0004`, `R-0005`, `R-0006` |
 | §7 one-page scenarios for each §3 application (W-2, #66, T-029a) | Oct 14 | Paul, both | behind | #66 is open; T-029a is still todo; APP-0001 still says "October" |
-| GUI framework (DECISIONS-0001 item 28, T-029c) | Oct 14 | Paul confirms; Ndewedo proposes | behind | still "Tauri, tentative, PySide6 fallback"; #69 last activity 2026-10-05 |
+| GUI framework (DECISIONS-0001 item 28, T-029c) | Oct 14 | Paul confirms; Ndewedo proposes | done (late) | decided 2026-11-09: Python throughout, the Textual app (`mofn run`) is the UI; Tauri withdrawn; #69 rescoped into `mofn run` (`DL-0038`) |
 | I2 / D4 encoding-neutral schema; D5 DEC-002 ADR | Oct 21 / Oct 28 | David, Paul | done | SPEC-0002; `ADR-0004` accepted 2026-10-25 |
 | §7 engine contract: `check` prints the six-line verdict (W-1, #65) | Oct 28 | David | done | #122, #125; `prototype/wallet` |
 | §7 signature check; tamper and unauthorized-key demos | Nov 11 | David, Ndewedo | done | `check.py` runs V1–V9, including the signature check, before `reduce`; `demo/slice.sh` cases ②, ③, ②′; #68 run of 2026-11-09 at `c84a0e7` was green |
@@ -254,7 +254,8 @@ has no open pull requests.
   engine can run them; write `release.yml`, the downloads, and the README
   install section (#127).
 - **Paul:** rewrite #67 and #31 for integer depth, `trust` / `about` /
-  `may-delegate`, and issuer revocation; confirm or replace decision #28.
+  `may-delegate`, and issuer revocation. ~~Confirm or replace decision #28~~ —
+  closed 2026-11-09 (`DL-0038`).
 
 ### 7.2 I3 closed, Nov 12, 2026 — proposed status, for the sponsor
 
@@ -319,8 +320,8 @@ Those edits are documentation. They do not accept DEC-002 or any other open deci
 ## 9. Build and release
 
 **Proposed, 2026-11-09**, except where it restates what is already in the repo
-or in PLAN-0001 and PLAN-0002. It accepts no DEC-* and it does not close
-decision #28.
+or in PLAN-0001 and PLAN-0002. It accepts no DEC-*. Decision #28 has closed
+since (2026-11-09, `DL-0038`): the Textual app is the UI.
 
 **Current state**, verified 2026-11-09 at main `c84a0e7`. The only application
 is the `mofn` Python CLI, run from a checkout (the command menu, `--version`,
@@ -340,8 +341,8 @@ What is automated:
 Windows is already in the CI matrix but is not a release target unless that
 is decided.
 
-**CLI packaging (proposed).** PLAN-0001 row 10 is a single-file Python zipapp,
-not an installer. The proposal is that a `release.yml` workflow builds it on
+**CLI packaging (proposed).** PLAN-0001 row 10 was a single-file Python zipapp,
+not an installer; PLAN-0001 0.7.0 now says one PyInstaller build per OS. The proposal is that a `release.yml` workflow builds it on
 a version tag (`wallet-vX.Y.Z`, as the wallet changelog already describes),
 attaches it to a GitHub Release, and links it from Pages, with checksums.
 Ndewedo owns this half of #127 (`release.yml`, the downloads, the README
@@ -354,21 +355,18 @@ an install still needs a Python (CI uses 3.12) and at least `pip install
 pynacl`, or a per-OS build that includes the wheel. How to handle that is an
 open question; BACKLOG W-6 already asks for one self-contained build per OS.
 
-**GUI.** Not started. #69 has had no activity since 2026-10-05. Decision #28
-(DECISIONS-0001) — "Tauri, tentative, PySide6 fallback" — was due 2026-10-14
-and is unconfirmed. The open options are Tauri, PySide6, and SwiftUI
-(Mac-only). GUI packaging (a signed and notarized Mac app, and a Linux
-AppImage or similar) comes after the five views, in the Dec 1–4 window, with
-packaging last, per §7.
+**GUI.** Decided 2026-11-09 (decision #28, `DL-0038`): **the Textual app,
+`mofn run`, is the UI.** Python throughout; Tauri, PySide6 and SwiftUI are not
+built. #69 is rescoped to the verdict's attribute associations inside
+`mofn run`. There is no separate GUI package: the CLI build carries it.
 
 | output | platform | built by | status |
 |---|---|---|---|
-| CLI zipapp | macOS, Linux (Windows only if decided) | proposed `release.yml` on a `wallet-v*` tag; Ndewedo, #127 | not started |
-| GUI app | Mac first; Linux if the framework is not SwiftUI | after the five views, Dec 1–4, packaging last | not started; framework (decision #28) unconfirmed |
+| CLI, including `mofn run` — one PyInstaller build per OS (#127 §6; zipapp cannot load PyNaCl) | macOS, Linux (Windows only if decided) | proposed `release.yml` on a `wallet-v*` tag; Ndewedo, #127 | not started |
 | documentation site | Pages | `pages.yml` | in place |
 | weekly slice report | posted on #68 | `weekly-slice.yml` each Monday | in place |
 
-**Open items.** Confirm the GUI framework (decision #28). Cut a first tagged
+**Open items.** Cut a first tagged
 CLI release. Decide how release files are signed. Decide whether Windows is a
 release target.
 

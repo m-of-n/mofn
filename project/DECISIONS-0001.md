@@ -7,10 +7,10 @@ description: "Every open decision across both repos, ranked by what it blocks. T
 type: process
 category: process
 status: active
-version: "0.7.0"
+version: "0.7.1"
 version_policy: "semver; MINOR = decisions added or closed"
 date: "2026-09-22"
-updated: "2026-11-09"
+updated: "2026-11-12"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -267,13 +267,18 @@ supply-chain profile first (T1-A), then accept P7 or correct it.
 | 23 | **`enforce_admins`** is `false` on both repos. Set so a single member could bootstrap; three admins now exist, so the reason has expired. **Still off at 2026-10-05** (`BACKLOG-0001` T-006c). | ready to flip |
 | 24 | **Signed commits** — `CONTRIBUTING.md` asks for them; the requirement is off so students are not blocked on key setup. | deliberate |
 | 25 | **`~/cb/.claude/rules/usf-provenance.md`** written but uncommitted — `~/cb` has your in-flight manifest work. | yours to commit |
-| ~~**28**~~ | **DECIDED 2026-11-09 — Python throughout; Tauri withdrawn.** Was: *Wallet GUI framework — Tauri, tentative (MD-7); PySide6 the fallback.* MD-7 was never confirmed, and W-6 shipped `mofn run` in Textual with PyInstaller builds (#127 §6). Decided by `ndewedo-newbury` (`DL-0033`): every UI is Python and calls the engine in process — no Rust, no TypeScript, no sidecar. **The Textual app is the Fall 2026 UI** (same day): `mofn run` is the GUI for D8, shipped as PyInstaller builds; there is no desktop window and no PySide6. W-5 (#69) is rescoped into `mofn run`. | decided |
+| ~~**28**~~ | **DECIDED 2026-11-09 — Python throughout; Tauri withdrawn.** Was: *Wallet GUI framework — Tauri, tentative (MD-7); PySide6 the fallback.* MD-7 was never confirmed, and W-6 shipped `mofn run` in Textual with PyInstaller builds (#127 §6). Decided by `ndewedo-newbury` (`DL-0038`): every UI is Python and calls the engine in process — no Rust, no TypeScript, no sidecar. **The Textual app is the Fall 2026 UI** (same day): `mofn run` is the GUI for D8, shipped as PyInstaller builds; there is no desktop window and no PySide6. W-5 (#69) is rescoped into `mofn run`. | decided |
 
 ---
 
+## What changed in v0.7.1 — 2026-11-12
+
+PATCH. Item 28 cites `DL-0038`; its design log was renumbered from DL-0033,
+which #154 took first. No item is added or closed.
+
 ## What changed in v0.7.0 — 2026-11-09
 
-**Item 28 closed** by `ndewedo-newbury` (`DL-0033`): the wallet UI stays
+**Item 28 closed** by `ndewedo-newbury` (`DL-0038`): the wallet UI stays
 Python, and Tauri (MD-7) is withdrawn. The Textual app (`mofn run`) is the
 Fall 2026 UI; no windowed GUI is built, and W-5 is rescoped into it. Open DEC-*
 items are unchanged.
