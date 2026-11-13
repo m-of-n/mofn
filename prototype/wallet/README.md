@@ -266,7 +266,8 @@ on Windows.
 | | v0 | why |
 |---|---|---|
 | integrity line | also checks that a verified attestation is about **your** copy of the artifact | A1 (DL-0020); proposed in SPEC-0004 0.2.0, pending sponsor review |
-| acceptance line | **pass** when no template is named | SPEC-0004 Appendix A; A1 as decided in DL-0020 |
+| acceptance line | **pass** when no template is named, and the sentence says so | SPEC-0004 Appendix A, §10.4 (0.5.0); A1 as decided in DL-0020; mofn#157 |
+| sentences about another file | framed as such when no attestation is about **your** copy | SPEC-0004 §10.4 (0.5.0); mofn#157 |
 | answer | yes only if all six lines pass | stricter than SPEC-0004 §10.3 (coverage alone); kept for v0, see DL-0020 |
 | second codec | the human-review YAML form, with `signed` | C1 (DL-0020) |
 | base kinds | enum only; others are refused, never treated as valid | DV-1 needs only enum |

@@ -179,6 +179,7 @@ def test_tampered_artifact_fails_integrity():
         lines(a)["integrity"] == "fail" and lines(a)["authorization"] == "not evaluated"
     )
     assert a.exit_code == 1
+    assert a.sentences and not a.sentences_about_your_file
 
 
 def test_template_that_conforms_passes_acceptance():

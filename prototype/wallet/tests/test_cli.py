@@ -196,8 +196,9 @@ def test_json_verdict(world):
     assert j["answer"] == "yes"
     assert j["verdict"]["acceptance"] == {
         "result": "pass",
-        "sentence": "no template is named",
+        "sentence": "no template is named, so there is none to meet",
     }
+    assert j["sentences_about_your_file"] is True
     assert j["because"][0]["path"][0]["key"] == "release machine"
 
 
