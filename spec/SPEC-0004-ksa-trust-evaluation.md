@@ -7,10 +7,10 @@ description: "How a relying party decides whether to believe a verified statemen
 type: specification
 category: security
 status: draft
-version: "0.5.0"
+version: "0.6.0"
 version_policy: "semver; MAJOR = any change to an evaluation result; MINOR = additive; PATCH = editorial"
 date: "2026-10-14"
-updated: "2026-11-11"
+updated: "2026-11-12"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -49,7 +49,7 @@ related_rfcs: [RFC2119, RFC8174, RFC2693]
 
 # KSA Trust Evaluation — contexts, anchors, delegation, revocation, rotation, and the verdict
 
-**Specification SPEC-0004 · version 0.3.0 · draft**
+**Specification SPEC-0004 · version 0.6.0 · draft**
 
 ## Abstract
 
@@ -93,6 +93,15 @@ attestation is about the relying party's copy, the sentences shown for the
 handed statements MUST say they are about another file. Second, an acceptance
 line that passes because no template is named says so. No line result and no
 answer changes. Additive, so MINOR.
+**0.6.0 (2026-11-12):** **name resolution**, ARCH-0001 §4.3 procedure 1
+(mofn#143, DL-0039, ADR-0008). §5.3 resolves a name (SPEC-0002 §7.2 type 7)
+against name bindings, which are attestations under a naming type (SPEC-0003
+§6.4), with SDSI semantics: no anchor is needed to bind a name, a label bound
+twice denotes both keys, and names follow rotation. An anchor (§4.2) and a
+trust statement (§6.3) may trust a name. The `names` line (§10.4) reports
+resolution, and §14.2 gains `name-unresolved`, `name-foreign` and `name-cycle`.
+Appendix A gains R-1…R-7 and asks 7–9 (E-8…E-10). No input without a name
+target changes its answer, so MINOR.
 
 ---
 
@@ -124,6 +133,9 @@ Terms from SPEC-0002 §2 and SPEC-0003 §2 apply. In addition:
 | **path** | a chain from an anchor to the key that made a statement (§6) |
 | **scope** | the attribute ranges a key is trusted about at a point on a path |
 | **evaluation time** | the instant at which validity and revocation are judged (§8) |
+| **name** | a key and a chain of labels, *Alice's fred's sam* (SPEC-0002 §7.2 type 7) |
+| **name binding** | an attribute of a naming type in an attestation: *the speaker's label is the target* (§5.3.1) |
+| **resolution** | rewriting a name to the set of keys it denotes at the evaluation time (§5.3) |
 
 ## 3. Overview
 
@@ -135,6 +147,10 @@ Terms from SPEC-0002 §2 and SPEC-0003 §2 apply. In addition:
   revocations, rotations (§7) ───┘                                         answer: yes | no
   evaluation time (§8) ──────────────────────────────────────────────────  because: reasons + verdict
 ```
+
+Names in the anchors and the trust statements are resolved first (§5.3), and
+paths are then walked over keys. Resolution reads the statement set, but it
+does not read paths.
 
 An evaluator MUST produce the same answer for the same inputs: the anchors of
 one context, the statement set, the definitions, the key store, the ask and the
@@ -159,7 +175,7 @@ trusted about a scope.
 anchor = {
   context:       local context id,
   source:        local | statement(statement-digest),
-  trusts:        kid | { keys: [2* kid], threshold: uint },
+  trusts:        kid | name | { keys: [2* kid], threshold: uint },   ; name: §5.3
   about:         [+ attribute-range],
   ? may-delegate: delegation-constraints,       ; SPEC-0002 §8.6
   accepted-by:   kid,                           ; an owned persona, §4.4
@@ -237,6 +253,97 @@ is a valid assignment, every attribute range is a well-formed range of its type,
 and — if it names a template — it conforms to that template (SPEC-0003 §7.1).
 A failure is a **type error** for that statement and is reported.
 
+### 5.3 Name resolution
+
+This is the first of ARCH-0001 §4.3's three procedures. It rewrites a **name**
+(SPEC-0002 §7.2 type 7) to the set of keys it denotes at the evaluation time.
+It is a procedure of its own. It runs before delegation paths (§6) and takes
+nothing from them, and §6 uses only its result. ARCH-0001 §4.3 forbids
+collapsing the two into one graph walk, and R-M-04 keeps naming and delegation
+distinct.
+
+#### 5.3.1 Bindings
+
+A **name binding** is an attribute `(T, L)` in the `has` of an `attestation`
+`b` in the statement set, where `T` is a naming type: its base kind is `name`
+(SPEC-0003 §6.4). It binds **`b.says`'s `L`** to `b.this`, which is a key
+target `[1, K]` or a name target. Under any other target a naming-type
+attribute binds nothing.
+
+A binding is **usable** at evaluation time `t` if `b` passes §5.2, is valid at
+`t`, is not revoked (§7.1), and is used under the rotation rules (§7.2).
+
+**A binding needs no path from an anchor.** A label means only what its
+issuer's bindings say, because the namespace is the issuer's (ARCH-0001 R-M-03,
+G1; SDSI). Trust enters where a resolved key is used: a path (§6) still has to
+reach that key before anything it says counts. A binding confers no trust and
+no authority on the key it names.
+
+A binding is in its **speaker's** namespace and in no other. No statement can
+bind a label in another key's namespace. Bob's binding of `fred` is Bob's
+`fred`, whichever key defined the naming type it uses (SPEC-0003 §6.4).
+
+#### 5.3.2 Procedure
+
+`resolve(I, [L₁, …, Lₙ])` at evaluation time `t` is:
+
+1. If `n = 0`, the result is `{I}`, with `I` replaced by its successor where a
+   rotation links it (§7.2).
+2. Otherwise, let `B` be the usable bindings of `L₁` in `I`'s namespace. If a
+   rotation links a key `J` to `I`, `I`'s namespace includes `J`'s bindings
+   that §7.2 still uses. Names follow the key, as trust does.
+3. For each `b` in `B`:
+   - if `b.this = [1, K]`, then `R_b = resolve(K, [L₂, …, Lₙ])`;
+   - if `b.this = [7, J, M]`, then `R_b` is the union of
+     `resolve(K, [L₂, …, Lₙ])` over every `K` in `resolve(J, M)`.
+4. The result is the union of `R_b` over `B`.
+
+A name `[7, I, labels]` resolves to `resolve(I, labels)`. The order of the
+statement set does not affect the result, and the result is a **set**.
+
+#### 5.3.3 Several bindings: a group
+
+Two usable bindings of one label make a name denote both keys. This is SDSI's
+group (RFC 2693 §6) and is **not an error**. A trust to that name trusts each
+key (§6.2, §6.3). An issuer that adds a binding adds a member. A relying party
+that wants exactly one key trusts the key (SPEC-0002 §13.11).
+
+#### 5.3.4 Failures
+
+A resolution whose result is empty is **unresolved**. Each failing branch is
+reported with one of these codes:
+
+| code | when |
+|---|---|
+| `name-unresolved` | `B` is empty at some step: no usable binding of `L` in `I`'s namespace |
+| `name-foreign` | as `name-unresolved`, and the statement set holds a usable binding of the same `L` by another speaker. A diagnostic: that binding is in its own speaker's namespace, never `I`'s (§5.3.1) |
+| `name-cycle` | a call `resolve(I, labels)` is reached while the same call is still in progress. That branch contributes nothing |
+
+A branch that fails does not fail a resolution whose result is non-empty, and
+the failure is still reported in `because` (§10.3).
+
+**A binding that lies outside the window is not used and not clipped.** If a
+binding is not valid at `t` or is revoked, it is not in `B`. No part of a chain
+is "repaired" by another binding unless that binding is itself usable.
+
+#### 5.3.5 Bounds
+
+An evaluator MUST NOT nest resolution more than 16 calls deep, and MAY impose a
+lower bound and a bound on the number of bindings examined in one evaluation.
+Exceeding a bound fails the **whole** resolution with reason `work-bound`, never
+a partial set (§6.5).
+
+#### 5.3.6 Where names are used
+
+A name may appear as the `this` of a trust statement (SPEC-0002 §8.6), as the
+key an anchor trusts (§4.2), and as the target of a binding (§5.3.1). A name is
+**not** a threshold member: `trusts` lists kids (SPEC-0002 §8.6). An ask's
+subject MUST NOT be a name (§10.1). An attestation about a name that assigns no
+naming-type attribute has no effect in this version.
+
+TV-13 under DV-2 is **not** a binding: DV-2's `name` has base kind text. The
+bindings in SPEC-0002 Appendix A are TV-28…34, under DV-4.
+
 ## 6. Delegation paths
 
 ### 6.1 State
@@ -251,6 +358,10 @@ Walking a path, an evaluator holds, for the current key `K`:
 
 ### 6.2 Starting a path
 
+For an anchor trusting a name, resolve it (§5.3). Each key `A` in the result
+starts a path of its own, as below. A name that is unresolved starts none, and
+the reason is its §5.3.4 code.
+
 For an anchor trusting key `A` (not a threshold set): `K = A`, `scope = about`,
 `deleg = may-delegate` (none if absent), `cap` = the anchor's `not-on-or-after`
 if it came from a statement, else unbounded, `allow` = all keys, `exclude` = ∅,
@@ -264,7 +375,11 @@ is in the statement set, valid at the evaluation time and not revoked (§7.1).
 From state at key `K`, a trust statement `s` is followed to key `K′` if and only
 if **all** of the following hold:
 
-1. `s.says = K`; `s.this = [1, K′]`; `K′ ∉ visited`;
+1. `s.says = K`; `s.this = [1, K′]`, or `s.this` is a name and `K′` is in its
+   resolution (§5.3); and `K′ ∉ visited`. Each key a name resolves to is a
+   separate edge. Every other condition applies to it as to a key target, so a
+   name cannot carry a key that `allow` or `exclude` forbids. A name does not
+   use up depth: only the trust statement does;
 2. `s` is in the statement set, valid at the evaluation time, and not revoked (§7.1);
 3. `deleg` is present, and `deleg.depth ≥ 1` (an absent depth is 0);
 4. for every attribute range in `s.about`: its type's `delegation` is not 0
@@ -304,6 +419,7 @@ same target, type and value**. Delegation onward from a threshold set requires
 identical `about` and `may-delegate`; the resulting edge is followed as one.
 
 Distinctness is by kid. Keys that a rotation (§7.2) links count as one member.
+A threshold's members are kids, never names (§5.3.6).
 
 ### 6.5 Bounds
 
@@ -337,6 +453,8 @@ by its own `key-publish`, **links** `K` to `K′` from `r.valid.not-before`.
   used.
 - **Trust follows the key.** An anchor or trust statement naming `K` as its
   subject applies to `K′` from the link, under all its original constraints.
+  A name binding naming `K` resolves to `K′` from the link, and `K`'s
+  namespace continues as `K′`'s (§5.3.2).
   An evaluator MUST NOT follow more than 4 rotations from one key.
 - **A compromised key cannot rotate.** If the wallet has marked `K` compromised
   (SPEC-0001 §9.6), every `rotate` by `K` is ignored, and every statement by `K` is
@@ -385,7 +503,8 @@ ask = {
 An ask is a query to a local evaluator. It is not a statement and is never
 signed or transmitted as one. Where the subject is a digest target, the
 evaluator computes it from the relying party's own copy of the object; it MUST
-NOT take it from a statement.
+NOT take it from a statement. The subject MUST NOT be a name (SPEC-0002 §7.2
+type 7): an ask about a name is not defined in this version (§5.3.6).
 
 ### 10.2 Coverage
 
@@ -428,7 +547,9 @@ answer = {
 attribute, the path as the sequence of anchor and trust-statement digests with
 the scope after each hop; the checks performed; and, for a **no**, every reason
 that stopped coverage, with its code (§14.2). It MUST state the number of
-revocation statements considered (§7.1) and any non-default policy (§9).
+revocation statements considered (§7.1) and any non-default policy (§9). For
+each name used, it MUST name the name, the digests of the bindings used at each
+step, the keys it resolved to, and each failing branch with its code (§5.3.4).
 
 ### 10.4 The verdict
 
@@ -442,7 +563,7 @@ acceptance when no verified statement is about the subject.
 |---|---|---|
 | **integrity** | every statement used decoded canonically and its signature verified, and, where the subject is a digest target and attestations verified, at least one is about the relying party's own copy | SPEC-0002 V1, V4, V5; §10.1 |
 | **authenticity** | every speaker's key is in the key store by §10 of SPEC-0002, and the envelope agreed with the statement | SPEC-0002 V3, V6 |
-| **names** | every key shown has been rendered by the relying party's own label or fingerprint, and any name statements used are covered | SPEC-0001 §7.3 |
+| **names** | every key shown has been rendered by the relying party's own label or fingerprint, and every name used resolved to at least one key (§5.3) | SPEC-0001 §7.3; §5.3 |
 | **authorization** | §10.2 items 1–3 hold | §6 |
 | **acceptance** | every named template is conformed to and every required process is met | SPEC-0003 §7.1, SPEC-0005 |
 | **semantics** | every definition used is obtained, conforming and attributed | SPEC-0003 §9, §11 |
@@ -471,6 +592,11 @@ relying party does not read the pass as a template that was met.
 > apart: no statement about the file, and a statement about the file that
 > carries no requirement. The vacuous pass was chosen in DL-0016 and DL-0020
 > (A1), and Appendix A prints it.
+
+A key reached through a name MAY also be shown by that name, its issuer
+rendered under SPEC-0001 §7.3: *Dave, as your builder*. The name is a pointer to
+the key, not the key. Where a name is unresolved, the `names` line fails, and
+says which label had no binding, in whose namespace.
 
 A line that fails MUST give its reason in words: where the reason is a failed
 constraint or an unmet process, the sentence is that rule's or process's
@@ -516,6 +642,23 @@ threshold prevented it; SPEC-0005 §4.3 discusses panels.
 A wrong evaluation time gives wrong answers about validity and
 revocation. The time is an explicit input and is reported.
 
+### 11.7 Names choose keys
+
+A trust to a name trusts whatever keys the name's issuers bind at the
+evaluation time. Each issuer along the chain can change the answer without a
+statement from the relying party. That is what a name is for, and it is
+bounded: a name adds no scope, does not use depth, and cannot carry a key that
+`allow` or `exclude` forbids (§6.3). A relying party that wants a fixed key
+trusts the key. A wallet SHOULD show, when an anchor trusts a name, the keys it
+resolves to now and whose bindings they rest on.
+
+### 11.8 Groups grow
+
+Because a label bound twice denotes both keys (§5.3.3), an issuer, or an
+attacker holding an issuer's key, can add a member to every name that passes
+through that namespace. The defences are the same as for trust: revocation of
+the binding, short validity, and marking a key compromised (§7.2).
+
 ## 12. Privacy considerations
 
 Anchors reveal whom a relying party trusts and are kept local by default — as
@@ -544,7 +687,7 @@ remote, in which case the evaluator learns the subject and what was asked.
 `revoked`, `no-path`, `widening`, `depth`, `key-excluded`, `key-not-allowed`,
 `threshold-not-met`, `rotated-out`, `compromised`, `work-bound`,
 `process-not-met`, `definition-unobtainable`, `definition-non-conforming`,
-`unattributed-definition`.
+`unattributed-definition`, `name-unresolved`, `name-foreign`, `name-cycle`.
 
 ---
 
@@ -606,3 +749,57 @@ TV-14…20; machine-readable as `evaluations` in `vectors.json`.
 
 E-4 is the reason R-M-10 (ARCH-0001) says a widening is reported, not
 intersected silently: clipping TV-20 to depth 0 would have answered **yes**.
+
+**Name resolutions** (§5.3). DV-4 held. Each row resolves one name over the
+statements shown, at 2026-10-10T12:00:00Z. Statements: SPEC-0002 TV-28…34;
+machine-readable as `resolutions` in `vectors.json`.
+
+| res | name | statements | keys | reason | case |
+|---|---|---|---|---|---|
+| R-1 | Alice's fred | TV-28 | Bob | — | one hop |
+| R-2 | Alice's fred sam | TV-28, TV-29 | Dave | — | compound: Alice's fred is Bob, Bob's sam is Dave |
+| R-3 | Carol's builder | TV-30, TV-28, TV-29 | Dave | — | a binding to a name: Carol's builder is Alice's fred's sam |
+| R-4 | Alice's fred | TV-28, TV-34 | Bob, Dave | — | two bindings of one label: a group, not an error (§5.3.3) |
+| R-5 | Alice's fred sam | TV-28 | ∅ | `name-unresolved` | missing link: Bob binds no `sam` |
+| R-6 | Alice's loop | TV-33 | ∅ | `name-cycle` | Alice's loop is defined as itself |
+| R-7 | Alice's fred | TV-32 | ∅ | `name-foreign` | the only `fred` binding is Bob's: Bob cannot bind a label in Alice's namespace |
+
+R-7 is the reason §5.3.1 says a binding is in its speaker's namespace and no
+other. If resolution matched on the label alone, Bob could make himself
+*Alice's fred*.
+
+**Asks 7–9: trust to a name** (§6.2). Context `releases-by-name` in Carol's
+wallet; its one anchor is **TV-31**, Carol's own trust to *Carol's builder*
+about `build-provenance` in `[reproducible]`, one hop. Ask: is the artifact's
+`build-provenance` `reproducible`, at 2026-10-10T12:00:00Z. Machine-readable as
+`name_evaluations` in `vectors.json`.
+
+| ask | statements | answer | reason | why |
+|---|---|---|---|---|
+| 7 (E-8) | TV-30, TV-28, TV-29, TV-19 | **yes** | — | Carol's builder resolves to Dave (R-3); TV-31 starts a path at Dave, and Dave attests (TV-19) |
+| 8 (E-9) | TV-30, TV-28, TV-19 | **no** | `name-unresolved` at TV-31 | without TV-29, Bob binds no `sam`, so the name resolves to no key and the anchor starts no path. `names` fails |
+| 9 (E-10) | TV-30, TV-28, TV-29, TV-17 | **no** | `no-path` | Bob attests, and Bob is on the chain (Alice's fred), but the name denotes Dave. A name grants nothing to the keys it passes through |
+
+```yaml
+# Ask 7 (E-8)
+answer: yes
+at: "2026-10-10T12:00:00Z"
+because:
+  - names:
+      - name: {issuer: carol, labels: [builder]}
+        steps: [TV-30, TV-28, TV-29]
+        keys: [dave]
+  - used: [TV-19]
+    path:
+      - {anchor: TV-31, key: dave, scope: {build-provenance: [reproducible]}}
+    covered: {build-provenance: reproducible}
+    checks: [verified, types, resolved, valid-at-time, not-revoked, coverage]
+  - revocations considered: 0
+verdict:
+  integrity: pass
+  authenticity: pass
+  names: pass          # "Dave, as your builder (Alice's fred's sam)"
+  authorization: pass  # "You trust your builder about build provenance (reproducible)"
+  acceptance: pass     # TV-19 names no template
+  semantics: pass      # DV-1 (TV-3), DV-4 (TV-27), both published by Alice
+```

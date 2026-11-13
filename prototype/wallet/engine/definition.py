@@ -50,6 +50,7 @@ BASE_KINDS = {
     9: "record",
     10: "time",
     11: "email",
+    12: "name",
 }
 DELEGATIONS = {0: "none", 1: "same", 2: "scoped"}
 LABEL_RE = r"[a-z][a-z0-9-]{0,62}"

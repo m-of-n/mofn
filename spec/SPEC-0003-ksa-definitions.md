@@ -7,10 +7,10 @@ description: "How a key publishes what statements mean: hash-identified definiti
 type: specification
 category: security
 status: draft
-version: "0.1.3"
+version: "0.2.0"
 version_policy: "semver; MAJOR = any change to hashed bytes or evaluation results; MINOR = additive registry entries; PATCH = editorial"
 date: "2026-10-14"
-updated: "2026-11-03"
+updated: "2026-11-12"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -48,7 +48,7 @@ related_rfcs: [RFC5646, RFC5890, RFC5952, RFC8949]
 
 # KSA Definitions — vocabularies, types, human-readable semantics, constraints and templates
 
-**Specification SPEC-0003 · version 0.1.3 · draft**
+**Specification SPEC-0003 · version 0.2.0 · draft**
 
 ## Abstract
 
@@ -73,6 +73,11 @@ requires (DL-0020). DV-1's bytes and DefinitionId do not change.
 (DL-0020); nothing normative changes.
 **0.1.3 (2026-11-03):** process. `decision_makers` records the sponsor's October
 delegation (DL-0021); nothing normative changes.
+**0.2.0 (2026-11-12):** §6 registers base kind 12, **name** (mofn#143, DL-0039,
+ADR-0008). A type of that kind is a naming type: SPEC-0004 §5.3 reads an
+attribute of it as a name binding. No hashed bytes change: DV-1's bytes and
+DefinitionId are unchanged, and DV-2's `name`, base kind text, stays a plain
+attribute. Additive registry entry, so MINOR.
 
 ---
 
@@ -270,6 +275,7 @@ stated for each kind, so that equal ranges have equal bytes.
 | 9 | **record** | a map from field names to values, as `fields` define | none — a record type's `delegation` MUST be 0 | — | — |
 | 10 | **time** | a time (SPEC-0002 §4.4) | `[not-before, not-on-or-after]`, the first less than the second | nb ≤ v < noa | nb₁ ≥ nb₂ and noa₁ ≤ noa₂ |
 | 11 | **email** | an address, §6.3 | an array of patterns, §6.3, sorted bytewise, none within another | §6.3 | as dns-name |
+| 12 | **name** | a label, §5.2: one text matching `[a-z][a-z0-9-]{0,62}` | an array of distinct such labels, sorted bytewise | equal to an element, byte-exact | subset |
 
 ### 6.1 dns-name
 
@@ -305,6 +311,26 @@ version and MUST be rejected.
 This is the type behind the email-delegation scenario in UC-0001 §UC-5: a domain
 owner trusted about `*@foo.com` may delegate `*@eng.foo.com`, and not
 `*@bar.com`.
+
+### 6.4 name
+
+A type of base kind **name** is a **naming type**. An attribute of a naming
+type, in an `attestation`, is a **name binding**: *the speaker's `value` is the
+target* (ARCH-0002 P6). SPEC-0004 §5.3 is normative for how bindings resolve a
+name (SPEC-0002 §7.2 type 7); this section fixes only the value.
+
+The value is a single label, not a chain. A compound name is written as a
+target, never as a value: `[7, alice, ["fred", "sam"]]`, not `"fred sam"`.
+The label grammar is the definition label grammar (§5.2), so a name has one
+spelling and no case folding, and it is outside the homograph surface of free
+text (§13.3).
+
+What makes a binding is the **base kind**, not the type's definer. Every key
+may define its own naming type (ARCH-0002 P1), and a binding under Alice's
+naming type, signed by Bob, binds a label in **Bob's** namespace. The definer
+says what the type is called and how it reads; it gains no say over whose names
+the bindings make. A type of base kind text — DV-2's `name` — is not a naming
+type, whatever its label is.
 
 ## 7. Templates
 

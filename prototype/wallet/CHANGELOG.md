@@ -15,6 +15,21 @@ The wallet engine and its `mofn` command line, `prototype/wallet/` (#65, #127).
 Every release is a prototype: DEC-004 and DEC-005 are open; do not use real
 keys.
 
+## 0.5.0 — 2026-11-12
+
+Prototype: DEC-004 and DEC-005 are open; do not use real keys.
+
+The verifier reads SDSI name targets (mofn#143, SPEC-0002 0.9.0 §7.2, DL-0039).
+It does **not** resolve names yet: that is T-040 (SPEC-0004 §5.3).
+
+- Target type 7, `[7, kid, [+ label]]`, passes V7 as the `this` of an
+  `attestation` or a `trust`, and has a human form:
+  `{name: {issuer: '0x…', labels: [fred, sam]}}`.
+- An empty label list, more than 16 labels, or a label outside
+  `[a-z][a-z0-9-]{0,62}` is invalid at V7 (N-12, N-13).
+- Definitions may use base kind 12, `name` (SPEC-0003 0.2.0).
+- Every existing vector keeps its result.
+
 ## 0.4.1 — 2026-11-11
 
 Prototype: DEC-004 and DEC-005 are open; do not use real keys.

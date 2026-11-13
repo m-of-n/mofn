@@ -7,7 +7,7 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.13.1"
+version: "0.13.2"
 date: "2026-09-16"
 updated: "2026-11-12"
 needs_review: true
@@ -161,8 +161,8 @@ summary bar). Accept or keep #32's rule — L-035.
 
 | id | task | del | own | sz | status |
 |---|---|---|---|---|---|
-| T-040 | Name resolution: `Name` → `KeyId` via `NameCert` chains (§4.3 step 1) | D6 | S1 | L | todo |
-| T-040s | SPEC-0004: specify SDSI name resolution — `Name` principals, compound names (ARCH-0001 §5.5) — mofn#143. Blocks T-040 | D6 | S1 | L | todo |
+| T-040 | Name resolution: `Name` → `KeyId` via `NameCert` chains (§4.3 step 1). **Unblocked** by T-040s: implement `SPEC-0004` §5.3 in `prototype/wallet/engine/`; pass R-1…R-7 (`resolutions`) and E-8…E-10 (`name_evaluations`) | D6 | S1 | L | todo |
+| T-040s | ~~SPEC-0004: specify SDSI name resolution — `Name` principals, compound names (ARCH-0001 §5.5)~~ — done: `SPEC-0002` 0.9.0 (target type 7), `SPEC-0003` 0.2.0 (base kind 12), `SPEC-0004` 0.6.0 §5.3; TV-27…34, N-12…13, R-1…7, E-8…10; `ADR-0008` (proposed); DL-0039 — mofn#143 | D6 | S1 | L | review |
 | T-048 | ~~SPEC-0002 §7.2: a locator target must travel with a digest or description (R-M-07)~~ — done: SPEC-0002 0.6.0 withdraws target type 5; N-11; DL-0030 — mofn#144 | D6 | S2 | S | done |
 | T-049 | Wallet test: DV-2/TV-13 rendered sentence — the clause `ADR-0007`'s acceptance test still owes | D6 | S2 | S | **done** 2026-11-07 (`test_delegation.py`, DL-0031) |
 | T-066 | Renderer: show a description target (`SPEC-0002` §7.2 type 6) by its description, not as "a described object"; `SPEC-0003` §10 is silent — ARCH-0001 §2.3.2 | D6 | S2 | S | todo |

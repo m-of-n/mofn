@@ -346,6 +346,80 @@ LIB_EVALS = [
      "Dave, anchored directly, attests a description target"),
 ]
 
+# ---------------------------------------------------------------- SDSI names (SPEC-0004 §5.3; mofn#143)
+# DV-4's `name` has base kind 12, `name` (SPEC-0003 §6), so an attribute of it is
+# a name binding: "says's <label> is this". DV-2's `name` is base kind 3, text,
+# and stays a plain attribute: TV-13 is not a binding. DV-1…DV-3 are untouched.
+T_NAME = 7
+DV4 = {
+    1: kid("alice"), 2: "naming", 3: "1",
+    5: [
+        [1, {1: "name", 2: 12,         # base kind 12: name (SPEC-0003 §6)
+             3: {"en": "Name", "es": "Nombre"},
+             4: {"en": "What the speaker calls the target, in the speaker's own namespace.",
+                 "es": "Cómo llama el hablante al destino, en su propio espacio de nombres."},
+             8: 0}],
+    ],
+}
+DV4_BYTES = enc(DV4)
+DV4_ID = hashlib.sha256(DV4_BYTES).digest()
+DEFS["DV-4"] = ("definition `naming` v1, definer Alice; `name` has base kind 12", DV4_BYTES, DV4_ID)
+NAME_VALID = {1: t("2026-10-08T00:00:00Z"), 2: t("2026-12-01T00:00:00Z")}
+def name_target(issuer, labels):
+    return [T_NAME, kid(issuer), list(labels)]
+def bind(signer, this, label, issued):
+    """`signer`'s <label> is `this` (a key target or a name target)."""
+    return statement("attestation", signer, this,
+                     {1: [{1: {1: DV4_ID, 2: "name"}, 2: label}]}, {**NAME_VALID, 3: t(issued)})
+
+add("TV-27", "alice", statement("define", "alice", [T_DEFINITION, DV4_ID],
+    {1: "naming", 2: "1"},
+    {1: t("2026-10-08T00:00:00Z"), 3: t("2026-10-08T13:00:00Z")}),
+    "define: Alice publishes definition DV-4 `naming`, whose `name` type has base kind name")
+add("TV-28", "alice", bind("alice", [T_KEY, kid("bob")], "fred", "2026-10-08T13:30:00Z"),
+    "name binding: Alice's fred is Bob's key (one hop; SPEC-0004 §5.3)")
+add("TV-29", "bob", bind("bob", [T_KEY, kid("dave")], "sam", "2026-10-08T14:00:00Z"),
+    "name binding: Bob's sam is Dave's key; with TV-28, Alice's fred's sam is Dave (a compound name)")
+add("TV-30", "carol", bind("carol", name_target("alice", ["fred", "sam"]), "builder", "2026-10-08T14:30:00Z"),
+    "name binding to a NAME target (SPEC-0002 §7.2 type 7): Carol's builder is Alice's fred's sam")
+add("TV-31", "carol", statement("trust", "carol", name_target("carol", ["builder"]),
+    {1: [{1: tref("build-provenance"), 3: ["reproducible"]}]},
+    {**NAME_VALID, 3: t("2026-10-08T15:00:00Z")}),
+    "trust to a NAME: Carol trusts Carol's builder about build-provenance in {reproducible}, one hop")
+add("TV-32", "bob", bind("bob", [T_KEY, kid("dave")], "fred", "2026-10-08T15:30:00Z"),
+    "name binding: Bob's fred is Dave's key. It is in Bob's namespace, never Alice's")
+add("TV-33", "alice", bind("alice", name_target("alice", ["loop"]), "loop", "2026-10-08T16:00:00Z"),
+    "name binding: Alice's loop is Alice's loop, a cycle")
+add("TV-34", "alice", bind("alice", [T_KEY, kid("dave")], "fred", "2026-10-08T16:30:00Z"),
+    "name binding: Alice's fred is also Dave's key; with TV-28, Alice's fred is the set {Bob, Dave}")
+
+# Expected SPEC-0004 §5.3 resolutions. Declared, not computed: no resolver is run
+# here (T-040 owes one). DV-4 is held; every statement is verified and unrevoked.
+NAME_AT = "2026-10-10T12:00:00Z"
+RESOLUTIONS = [
+    ("R-1", ("alice", ["fred"]), ["TV-28"], ["bob"], None, "one hop"),
+    ("R-2", ("alice", ["fred", "sam"]), ["TV-28", "TV-29"], ["dave"], None,
+     "a compound name: Alice's fred is Bob, Bob's sam is Dave"),
+    ("R-3", ("carol", ["builder"]), ["TV-30", "TV-28", "TV-29"], ["dave"], None,
+     "a binding to a name: Carol's builder is Alice's fred's sam"),
+    ("R-4", ("alice", ["fred"]), ["TV-28", "TV-34"], ["bob", "dave"], None,
+     "two bindings of one label: the name is a set (SDSI group), not an error"),
+    ("R-5", ("alice", ["fred", "sam"]), ["TV-28"], [], "name-unresolved",
+     "missing link: Bob binds no sam"),
+    ("R-6", ("alice", ["loop"]), ["TV-33"], [], "name-cycle",
+     "Alice's loop is defined as itself"),
+    ("R-7", ("alice", ["fred"]), ["TV-32"], [], "name-foreign",
+     "the only fred binding is Bob's; Bob cannot bind a label in Alice's namespace"),
+]
+NAME_EVALS = [
+    ("E-8", ["TV-30", "TV-28", "TV-29", "TV-19"], "reproducible", "yes", None, None,
+     "TV-31 trusts Carol's builder, which resolves to Dave (R-3); Dave attests"),
+    ("E-9", ["TV-30", "TV-28", "TV-19"], "reproducible", "no", "name-unresolved", "TV-31",
+     "without TV-29 Carol's builder resolves to no key, so TV-31 starts no path"),
+    ("E-10", ["TV-30", "TV-28", "TV-29", "TV-17"], "reproducible", "no", "no-path", "TV-17",
+     "Bob is Alice's fred, not Carol's builder: a name grants nothing to the keys it passes through"),
+]
+
 # ---------------------------------------------------------------- negative vectors
 N = {}
 def bad(name, env, why, step):
@@ -415,6 +489,14 @@ tb11 = enc(s11)
 bad("N-11", envelope(kid("alice"), tb11, sign("alice", tb11)),
     "attestation whose target is a bare locator [5, uri]; target type 5 is reserved, so no digest is bound",
     "V7 structure")
+# N-12, N-13: TV-28's binding with a malformed name target (SPEC-0002 §7.2 type 7).
+# Well-formed CBOR, correctly signed; only V7 can see either.
+def bad_name(name, labels, why):
+    s = bind("alice", [T_NAME, kid("alice"), labels], "fred", "2026-10-08T13:30:00Z")
+    tb = enc(s)
+    bad(name, envelope(kid("alice"), tb, sign("alice", tb)), why, "V7 structure")
+bad_name("N-12", [], "name target with an empty label list; a name has at least one label")
+bad_name("N-13", ["Fred"], "name target whose label \"Fred\" is outside [a-z][a-z0-9-]{0,62}")
 
 # ---------------------------------------------------------------- output
 hx = lambda b: b.hex()
@@ -436,6 +518,14 @@ out = {
                           "answer": ans, "reason": why, "at_statement": at_s, "note": note}
                       for e, s, this, val, ans, why, at_s, note in LIB_EVALS},
     "record_sha256": hx(RECORD),
+    # Kept out of `evaluations`: the W-1 engine has no resolver yet (T-040).
+    "resolutions": {r: {"name": {"issuer": iss, "labels": labels}, "statements": s, "at": NAME_AT,
+                        "keys": keys, "reason": why, "note": note}
+                    for r, (iss, labels), s, keys, why, note in RESOLUTIONS},
+    "name_evaluations": {e: {"anchor": "TV-31", "context": "releases-by-name", "statements": s,
+                             "ask": {"this": "artifact", "build-provenance": val}, "at": NAME_AT,
+                             "answer": ans, "reason": why, "at_statement": at_s, "note": note}
+                         for e, s, val, ans, why, at_s, note in NAME_EVALS},
 }
 (HERE / "vectors.json").write_text(json.dumps(out, indent=2) + "\n")
 
@@ -462,5 +552,15 @@ md += ["", "### Archives evaluations (ARCH-0001 §2.3.2; UC-3)", "",
        "`record` is the digest target `sha-256:` of the record; `work` is TV-26's description target.", "",
        "| eval | statements | subject | value | answer | reason | at |", "|---|---|---|---|---|---|---|"]
 md += [f"| {e} | {', '.join(s)} | {this} | {val} | **{ans}** | {why or '—'} | {at_s or '—'} |" for e, s, this, val, ans, why, at_s, _ in LIB_EVALS]
+md += ["", "### Name resolutions (SPEC-0004 §5.3; mofn#143)", "",
+       f"DV-4 held; every statement listed is in the statement set, at {NAME_AT}.", "",
+       "| res | name | statements | keys | reason | case |", "|---|---|---|---|---|---|"]
+md += [f"| {r} | {iss}'s {' '.join(labels)} | {', '.join(s)} | {', '.join(keys) or '∅'} | {why or '—'} | {note} |"
+       for r, (iss, labels), s, keys, why, note in RESOLUTIONS]
+md += ["", "### Name evaluations (SPEC-0004 Appendix A)", "",
+       f"Anchor TV-31 (Carol's own trust to Carol's builder) in context `releases-by-name`; ask: is the artifact's "
+       f"build-provenance the value shown, at {NAME_AT}.", "",
+       "| eval | statements | value | answer | reason | at |", "|---|---|---|---|---|---|"]
+md += [f"| {e} | {', '.join(s)} | {val} | **{ans}** | {why or '—'} | {at_s or '—'} |" for e, s, val, ans, why, at_s, _ in NAME_EVALS]
 (HERE / "vectors.md").write_text("\n".join(md) + "\n")
 print(f"{len(V)} positive, {len(N)} negative; DV-1 id {hx(DV1_ID)[:16]}…; encoders agree on all positive vectors")
