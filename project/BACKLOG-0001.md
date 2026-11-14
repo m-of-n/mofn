@@ -7,7 +7,7 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.14.3"
+version: "0.15.0"
 date: "2026-09-16"
 updated: "2026-11-16"
 needs_review: true
@@ -185,9 +185,9 @@ summary bar). Accept or keep #32's rule — L-035.
 | id | task | del | own | sz | status |
 |---|---|---|---|---|---|
 | T-050 | WP2 — `MAP-0001` SPKI/SDSI S-expression ↔ native | D7 | S1 | L | todo |
-| T-051 | WP3 — `MAP-0002` in-toto Statement ↔ `ArtifactStatement` | D7 | S1 | L | todo |
-| T-052 | Round-trip a real SLSA v1.1 provenance from a public release | D7 | S1 | M | todo |
-| T-053 | Record interchange losses in the §6 matrix (R-I-01) | D7 | S1 | M | todo |
+| T-051 | WP3 — `MAP-0002` in-toto Statement ↔ `ArtifactStatement` | D7 | S1 | L | todo — needs L-041 `in-toto-envelope-v1` and L-037 library#134 |
+| T-052 | Round-trip a real SLSA v1.1 provenance from a public release | D7 | S1 | M | todo — needs L-041 `slsa-provenance-1-2`; the library holds spec 1.2, the row says 1.1 — owner to reconcile |
+| T-053 | Record interchange losses in the §6 matrix (R-I-01) | D7 | S1 | M | todo — `slsa-vsa-1-2` (L-041) is an input |
 | T-054 | App packaging — ~~single-file zipapp~~ **one PyInstaller build per OS**: #127 §6 rejected zipapp (cannot load PyNaCl's extension). Lands as W-6's `release.yml`: `prototype/wallet/mofn.spec`, Linux x86-64, macOS arm64, Windows x86-64, each smoke-tested on a runner with no checkout (DL-0043). Done when the first `wallet-v*` pre-release is published | D8 | S2 | M | review |
 | T-055 | ~~Demo: valid-but-**unauthorized** key → distinct verdict~~ — done: `fixtures/golden/unauthorized.txt`; slice case ②′ | D7 | S2 | M | done |
 
@@ -264,6 +264,7 @@ resolved: it is a planning call, not a transcription.
 | L-038 | FX-1 debt: 19 spec records from the Threat-Radar fold-back | library#69 | — | L | todo |
 | L-039 | Paywalled records: source text not held | library#110 | — | M | todo |
 | L-040 | `bears_on` mixes two decision registers (mofn and tmodel) under colliding ids | library#133 | — | S | todo |
+| L-041 | FX-1 extraction for D7: `in-toto-envelope-v1`, `slsa-provenance-1-2`, `slsa-vsa-1-2` — all `summarized`, none extracted; T-051, T-052, T-053 cite them. One PR per record, envelope first (DL-0047) | library#136 | — | M | todo |
 
 ### L-011 — the NIST set
 
