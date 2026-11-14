@@ -7,7 +7,7 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.15.0"
+version: "0.15.1"
 date: "2026-09-16"
 updated: "2026-11-16"
 needs_review: true
@@ -129,7 +129,7 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-012b | ~~ARCH-0001 target section: supply chain + archives/library (MD-1); AI agents as motivation only~~ — done: ARCH-0001 0.3.0 §2.3 (mofn#152, DL-0032); #135 closed 2026-11-10 | — | S1+S2 | L | done |
 | T-012c | Delegation: reconcile R-M-10 (boolean) with SPEC-0004 (integer depth + ranges); `may-speak` vs `trust … about` — mofn#136 | — | PL | M | **decided** 2026-11-06 (1a integer depth, 2a `trust … about`; DL-0025); R-M-10 text landed in ARCH-0001 v0.2.0; **done** 2026-11-07: vectors TV-14…20, E-1…E-4 (DL-0031) |
 | T-012x | ~~`design-log/` opened~~ — done; DL-0001 and DL-0002 written | D0 | PL | S | done |
-| T-013 | Agree and commit the cut order (PLAN-0001 §12) — **still not agreed.** mofn#7's done-when was "all three have signed off in the PR". PLAN-0001 0.7.0 §12 (#156, `DL-0036`) put the order to all three and says it is agreed "when the sponsor and both students approve the PR that carries it". #156 merged 2026-11-13 **with no approvals**, and #7 closed with it. §12 is on `main`, but its own condition is unmet, and rows 6, 7 and 11 are still unanswered. **Owed:** approvals from the sponsor and David, recorded on #7 or in a §12 PATCH, plus the three answers | D0 | all | S | review — sign-off owed |
+| T-013 | Agree and commit the cut order (PLAN-0001 §12) — **still not agreed.** #156 merged 2026-11-13 after its approval was dismissed by a `dco` fix push, so 0.7.0 was never signed off. PLAN-0001 **0.7.1** (`DL-0045`) answers rows 6, 7, 10 and 11 by building them — #167 (thresholds), #168 (delegation; T-042 subsumed), #169 (release) — and closes row 3. **Owed:** approval from the sponsor and both students on the 0.7.1 PR or on mofn#7 | D0 | all | S | review — sign-off owed |
 
 ## I1 — Library & research · Oct 1–14 · D1 D2 D3
 

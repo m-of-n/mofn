@@ -7,9 +7,9 @@ description: "Execution plan for the CS690 project. Subordinate to ARCH-0001 for
 type: plan
 category: process
 status: draft
-version: "0.7.0"
+version: "0.7.1"
 date: "2026-09-16"
-updated: "2026-11-09"
+updated: "2026-11-16"
 authors:
   - role: planner
     id: conversation-claude-opus-5
@@ -69,6 +69,12 @@ approval, which stalled merges (mofn#118 is the live case).
 **v0.6.4 → v0.7.0.** §12 gains its status at 2026-11-09 and two new risks
 (11, 12). The cut order was never agreed (mofn#7 closed without sign-off,
 `DL-0036`); this version is the one put to all three for sign-off.
+
+**v0.7.0 → v0.7.1.** §12 status moves to 2026-11-14. Rows 6, 7, 10 and 11 are
+answered by building rather than cutting (#167, #168, #169); row 3 is closed
+as absorbed. Records that #156 merged without a standing approval, so the
+order is still not agreed (`DL-0045`). Amended 2026-11-16: a dated note that
+#167, #168 and #169 have merged, closing rows 6, 7 and 11.
 
 Per ARCH-0001 §9, this file proposes; it does not ratify.
 
@@ -567,30 +573,48 @@ and which of those failure modes this design still carries.
 Agree in writing during I0, so cutting under pressure is a decision already made.
 
 **It was not agreed in I0.** mofn#7 asked for all three to sign off in a PR;
-none was opened, and the issue was closed in error on 2026-10-28. The table
-below is the original, with its status at 2026-11-09. **This version is agreed
-when the sponsor and both students approve the PR that carries it** (T-013).
-Rows 6, 7 and 11 are cuts that fall due now and need an answer at sign-off.
+none was opened, and the issue was closed in error on 2026-10-28. 0.7.0 (#156)
+put the order to all three, but #156 merged on 2026-11-13 **without a standing
+approval**: David's approval was dismissed when a commit fixing the `dco`
+check was pushed, and the PR merged without being re-approved. So 0.7.0 was
+never agreed either. **This version is agreed when the sponsor and both
+students approve the PR that carries it** (T-013), or record their approval
+on mofn#7.
 
-| # | Risk | Fallback | Cut by | Status 2026-11-09 |
+**Rows 6, 7 and 11 were due and are answered by building, not cutting.** The
+dates had passed by 2026-11-14, and the human directed that the work be
+completed rather than the dates moved. Each answer is a PR in review; a row
+is **closed** when its PR merges. Approving this version approves those
+answers; it does not approve the PRs, which are reviewed on their own.
+
+| # | Risk | Fallback | Cut by | Status 2026-11-14 |
 |---|---|---|---|---|
 | 1 | **DEC-001 blocks org creation** | Pick a placeholder slug, accept the rename cost, move | Sep 19 | **Did not happen.** Org created Sep; DEC-001 accepted by `ADR-0006` (slug `m-of-n`) |
 | 2 | Harness work eats the semester | Timebox I0 hard at two weeks. Ship an ugly site | Sep 30 | **Did not happen.** I0 closed on time |
-| 3 | Library scope unbounded | Cap at ~40 records for D2 v1. Depth over breadth | Oct 14 | **Cap not applied.** 446 records, all written (T-024). The risk was absorbed rather than cut |
+| 3 | Library scope unbounded | Cap at ~40 records for D2 v1. Depth over breadth | Oct 14 | **Closed — absorbed, not cut.** The cap was never applied; 446 records, all written (T-024). Further records are opportunistic (§13) and nothing in the floor waits on them |
 | 4 | **DEC-002 deadlocks** | Ship WP1 encoding-neutral; implement reduction against the logical model; decide encoding later | Oct 28 | **Did not happen.** `ADR-0004` (Oct 25); the encoding-neutral schema is not owed (T-030 closed) |
 | 5 | WP4/WP5 (PGP, X.509 import) creep in | Already out of scope. Say no | ongoing | **Held.** T-090, T-091 parked |
-| 6 | Tag language over-scopes | ARCH-0001 DEC-004 already offers the out: opaque byte string + `bytes-equal` profile | Nov 4 | **Due, not taken.** DEC-004 is open and T-042 is `todo`; `R-0006` §4.7 asks whether `SPEC-0003` `delegation: 1` subsumes it. **At sign-off:** take the fallback for the demo floor (DEC-004 stays open), or move the date |
-| 7 | Threshold subjects prove hard | Implement *k*-of-*n* over keys only; no nested thresholds | Nov 11 | **At risk.** The engine parses the threshold form but does not reduce it (T-043 `todo`). **At sign-off:** keep *k*-of-*n* in the Nov 11 floor, or move it after |
+| 6 | Tag language over-scopes | ARCH-0001 DEC-004 already offers the out: opaque byte string + `bytes-equal` profile | Nov 4 | **Answered — floor met through `delegation: 1`; in review, #168.** As `R-0006` §4.7 argued, a `SPEC-0003` type with `delegation: 1` passes on only a range with the same canonical bytes the delegator holds: that is the `bytes-equal` floor, inside the accepted core. #168 implements and tests it (narrower, reordered and unbounded ranges are refused) and marks T-042 subsumed. **DEC-004 stays open**: nothing selects a tag language. Closed when #168 merges |
+| 7 | Threshold subjects prove hard | Implement *k*-of-*n* over keys only; no nested thresholds | Nov 11 | **Answered — built to the fallback's scope; in review, #167.** `reduce.py` evaluates *k*-of-*n* over keys, no nesting; the verdict names each key and whether it counted (T-043, TV-36, TV-37, E-11…E-19). Two readings of `SPEC-0004` §6.4 were taken narrowly and are owed a ruling (`DL-0042`). Not yet: a threshold as a hop in a chain, and threshold trusts from `mofn check`. Closed when #167 merges |
 | 8 | Transparency log / receipts | Defer to v2 (R-O-04 is already **C**). **Not in the demo floor** | Nov 11 | **Held.** T-092 parked |
 | 9 | Federation across libraries | Design and document only; do not build | Oct 14 | **Held.** T-093 parked |
-| 10 | App packaging | ~~Single-file Python zipapp~~ One PyInstaller build per OS, not an installer (#127 §6: zipapp cannot load PyNaCl) | Dec 1 | **In progress.** `release.yml` is W-6's open half |
-| 11 | **Delegation not in the engine** — the floor's "chain reduces; break a link" (T-047) needs more than one hop | Demo one hop through `demo/slice.sh` (it already breaks a link and names it); show the chain with the E-1…E-4 test walker | Nov 11 | **New.** `engine/reduce.py` is one hop; T-041 / W-3 `todo`. **At sign-off:** accept the fallback, or name who lands W-3 by Nov 11 |
+| 10 | App packaging | ~~Single-file Python zipapp~~ One PyInstaller build per OS, not an installer (#127 §6: zipapp cannot load PyNaCl) | Dec 1 | **Built; in review, #169.** `release.yml`: one self-contained build per OS, smoke-tested, `SHA256SUMS`, pre-release on `wallet-v*`. First tag `wallet-v0.8.1`, not `wallet-v0.2.0` (`DL-0043`; proposed as `wallet-v0.6.0`, moved as `main`'s version did). Closed when #169 merges and the first pre-release is published; #127 still owes a Pages link and a signing decision |
+| 11 | **Delegation not in the engine** — the floor's "chain reduces; break a link" (T-047) needs more than one hop | Demo one hop through `demo/slice.sh` (it already breaks a link and names it); show the chain with the E-1…E-4 test walker | Nov 11 | **Answered — fallback not needed; in review, #168.** `reduce.py` follows multi-hop chains per `SPEC-0004` §6.3, intersecting topic, range and validity; a broken hop is named in the verdict. E-1…E-7 run on the engine; `demo/slice.sh` shows a chain passing, expiring and widening (T-041, T-065, W-3, T-047). Not yet: revoking a hop, and reporting every broken hop. Closed when #168 merges |
 | 12 | A second UI | One UI: the Textual app (`mofn run`); no windowed GUI | Nov 9 | **Taken.** `DECISIONS-0001` item 28; W-5 rescoped |
+
+**Since 2026-11-16.** #168 (`dae3cfd`), #167 (`555ef42`) and #169 (`98a89b0`) have merged, so rows **6, 7 and 11 are closed**. Row 10 closes when `wallet-v0.8.1` is tagged and its pre-release is checked from a machine without a checkout. The table above is the 2026-11-14 reading and is not rewritten.
 
 **Hard floor that still passes:** D0–D6, done by **November 11** — harness,
 library, three reports, ~~encoding-neutral schema~~ the DEC-002 package
 (`ADR-0004`, `SPEC-0002` Appendix B), and a working reduction with test
 vectors. Everything after is upside.
+
+**Floor status 2026-11-14: missed on Nov 11, still not met.** Against
+`PLAN-0004` §7.2's D6 table: delegation chains (#168) and *k*-of-*n*
+thresholds (#167) were in review, and name resolution had merged (#165,
+T-040); #167 and #168 have since merged. Still owed and **not** answered by this version: issuer revocation
+(`ADR-0003` D5; the engine considers 0 revocation statements), and a recorded
+demo (`PROC-0004` §5). Those are `PLAN-0004` §7.2's to decide.
 
 ---
 
