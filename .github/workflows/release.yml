@@ -1,0 +1,152 @@
+name: release
+# The mofn wallet release (mofn#127 S2, BACKLOG W-6, PLAN-0004 §9, DL-0043).
+#
+# A `wallet-vX.Y.Z` tag builds one self-contained PyInstaller file per OS
+# (prototype/wallet/mofn.spec), smoke-tests each on a fresh runner that has no
+# checkout, and publishes them as a GitHub pre-release with SHA256SUMS. The
+# notes are that version's `## X.Y.Z — YYYY-MM-DD` section of
+# prototype/wallet/CHANGELOG.md. The tag must equal `__version__`.
+#
+# A pull request that touches the wallet, and a manual run, do everything but
+# publish. Nothing here signs the files: how releases are signed is open
+# (#127, PLAN-0004 §9).
+on:
+  push:
+    tags: ['wallet-v*']
+  pull_request:
+    paths:
+      - .github/workflows/release.yml
+      - prototype/wallet/**
+      - demo/slice.sh
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        name: the tag, __version__ and CHANGELOG.md agree
+        run: |
+          v=$(sed -n 's/^__version__ = "\(.*\)"$/\1/p' prototype/wallet/engine/__init__.py)
+          [ -n "$v" ] || { echo "::error::no __version__ in engine/__init__.py"; exit 1; }
+          if [ "$GITHUB_REF_TYPE" = tag ] && [ "$GITHUB_REF_NAME" != "wallet-v$v" ]; then
+            echo "::error::tag $GITHUB_REF_NAME, but __version__ is $v"; exit 1
+          fi
+          grep -q "^## $v — [0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}$" prototype/wallet/CHANGELOG.md \
+            || { echo "::error::CHANGELOG.md has no '## $v — YYYY-MM-DD' heading"; exit 1; }
+          echo "version=$v" >>"$GITHUB_OUTPUT"
+
+  build:
+    needs: version
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # 22.04 for its older glibc (2.35): the build runs on any newer one.
+          - {os: ubuntu-22.04, name: linux-x86_64}
+          - {os: macos-latest, name: macos-arm64}
+          - {os: windows-latest, name: windows-x86_64, ext: .exe}
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run: {shell: bash}
+    env:
+      FILE: mofn-${{ needs.version.outputs.version }}-${{ matrix.name }}${{ matrix.ext }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: one-file build (mofn.spec)
+        working-directory: prototype/wallet
+        run: |
+          python -m pip install -q -r requirements-release.txt
+          pyinstaller --clean --noconfirm mofn.spec
+          mkdir -p "$GITHUB_WORKSPACE/out"
+          cp "dist/mofn${{ matrix.ext }}" "$GITHUB_WORKSPACE/out/$FILE"
+      - name: the build says the version it was tagged with
+        run: |
+          out/"$FILE" --version | tee version.txt
+          grep -q "^mofn ${{ needs.version.outputs.version }} (prototype)$" version.txt
+      - name: demo slice against the build, both codecs (demo/slice.sh)
+        # slice.sh locks wallets with chmod 000, which NTFS ignores (ci.yml).
+        if: runner.os != 'Windows'
+        run: MOFN_BIN="$GITHUB_WORKSPACE/out/$FILE" bash demo/slice.sh
+      - name: the smoke folder, for a runner with no checkout
+        run: |
+          f=prototype/wallet/fixtures
+          mkdir -p smoke/golden
+          cp $f/artifact.bin $f/dv-1.def $f/tv-1-alice.pub.stmt $f/tv-3-define.stmt \
+             $f/tv-4-attestation.stmt smoke/
+          cp $f/golden/green.txt smoke/golden/
+          cp prototype/wallet/release/smoke.sh prototype/wallet/release/pty_run.py smoke/
+      - uses: actions/upload-artifact@v4
+        with: {name: '${{ matrix.name }}', path: 'out/${{ env.FILE }}', if-no-files-found: error}
+      - uses: actions/upload-artifact@v4
+        if: matrix.name == 'linux-x86_64'
+        with: {name: smoke, path: smoke/, if-no-files-found: error}
+
+  smoke:
+    # A runner that never saw the source: no checkout, no setup-python, no pip.
+    needs: [version, build]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: ubuntu-latest, name: linux-x86_64}
+          - {os: macos-latest, name: macos-arm64}
+          - {os: windows-latest, name: windows-x86_64, ext: .exe}
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run: {shell: bash}
+    steps:
+      - uses: actions/download-artifact@v4
+        with: {name: '${{ matrix.name }}', path: bin}
+      - uses: actions/download-artifact@v4
+        with: {name: smoke, path: smoke}
+      - name: --version, the menu, a check, and mofn run (release/smoke.sh)
+        run: |
+          f="$PWD/bin/mofn-${{ needs.version.outputs.version }}-${{ matrix.name }}${{ matrix.ext }}"
+          chmod +x "$f"
+          bash smoke/smoke.sh "$f" smoke
+
+  release:
+    if: github.ref_type == 'tag'
+    needs: [version, smoke]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: {pattern: '*-x86_64', path: dist, merge-multiple: true}
+      - uses: actions/download-artifact@v4
+        with: {name: macos-arm64, path: dist}
+      - name: SHA256SUMS and the notes
+        env:
+          V: ${{ needs.version.outputs.version }}
+        run: |
+          (cd dist && sha256sum mofn-* >SHA256SUMS && cat SHA256SUMS)
+          [ "$(grep -c . dist/SHA256SUMS)" = 3 ] || { echo "::error::wanted 3 builds"; exit 1; }
+          awk -v h="## $V — " 'index($0, h) == 1 {on = 1; next} on && /^## / {exit} on' \
+            prototype/wallet/CHANGELOG.md >notes.md
+          cat >>notes.md <<'EOF'
+
+          ---
+
+          Check a download against `SHA256SUMS` before running it: see the
+          Install section of `prototype/wallet/README.md`. These files are not
+          signed (#127, how releases are signed is open).
+          EOF
+          cat notes.md
+      - name: publish the pre-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          V: ${{ needs.version.outputs.version }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/* --prerelease --verify-tag \
+            --title "mofn $V (prototype)" --notes-file notes.md

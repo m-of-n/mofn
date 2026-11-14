@@ -11,3 +11,7 @@ docs/manifest.json
 
 # demo/slice.sh: rebuilt on every run, holds demo keys
 demo/wallets/
+
+# prototype/wallet/mofn.spec: PyInstaller output (release.yml, DL-0043)
+prototype/wallet/build/
+prototype/wallet/dist/

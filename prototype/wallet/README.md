@@ -8,6 +8,54 @@ nothing about DEC-004 or DEC-005**, which stay open in ARCH-0001, so it lives
 in `prototype/` and `src/` stays empty. The design input is #65 and the
 decisions posted on it; the design record is `design-log/0016-wallet-engine-v0/`.
 
+## Install
+
+> **Prototype.** DEC-004 and DEC-005 are open. Do not use real keys, and do
+> not rely on a verdict.
+
+Each pre-release on the [releases page](https://github.com/m-of-n/mofn/releases)
+(tags `wallet-vX.Y.Z`) has one file per OS and a `SHA256SUMS`. Each file is
+the whole of `mofn`, `mofn run` included, with its own Python and PyNaCl
+inside. Nothing else needs installing (#127 §6, DL-0043).
+
+| file | for |
+|---|---|
+| `mofn-X.Y.Z-linux-x86_64` | Linux, x86-64, glibc 2.35 or later |
+| `mofn-X.Y.Z-macos-arm64` | macOS on Apple silicon |
+| `mofn-X.Y.Z-windows-x86_64.exe` | Windows, x86-64 |
+
+Download the file for your OS and `SHA256SUMS` into one folder, then:
+
+```sh
+sha256sum --ignore-missing -c SHA256SUMS      # macOS: shasum -a 256 --ignore-missing -c SHA256SUMS
+chmod +x mofn-*                               # not on Windows
+./mofn-X.Y.Z-linux-x86_64 --version           # what this mofn is built from
+./mofn-X.Y.Z-linux-x86_64                     # the menu
+```
+
+On Windows: `certutil -hashfile mofn-X.Y.Z-windows-x86_64.exe SHA256`, compare
+with its line in `SHA256SUMS`, then `.\mofn-X.Y.Z-windows-x86_64.exe --version`.
+
+The checksum only shows that the file is the one the release built. The files
+are **not signed**: how releases are signed is open (#127). macOS and Windows
+will say the developer is unknown. On macOS a file a browser downloaded will
+not open until you clear its quarantine mark:
+`xattr -d com.apple.quarantine mofn-X.Y.Z-macos-arm64` (a `curl -LO` download
+has none). Each file unpacks itself to a temporary folder when it starts, so
+the first command takes a second or two.
+
+Rename the file to `mofn` and put it on your `PATH` if you like. Then
+`mofn run` opens the wallet as a terminal app, and first run offers the
+example vocabulary, so you can sign and check without a clone (below).
+
+To build one yourself, as `release.yml` does:
+
+```sh
+cd prototype/wallet
+python3 -m venv .venv && .venv/bin/pip install -r requirements-release.txt
+.venv/bin/pyinstaller --clean --noconfirm mofn.spec     # dist/mofn
+```
+
 ## Run
 
 ```sh
@@ -241,6 +289,8 @@ on Windows.
 | file | responsible for |
 |---|---|
 | `mofn` | finds the engine; one line if PyNaCl or PyYAML is missing |
+| `mofn.spec`, `requirements-release.txt` | the one-file PyInstaller build and its pins (`release.yml`) |
+| `release/` | the release smoke test: `smoke.sh` and `pty_run.py`, run on a runner with no checkout |
 | `cli.py` | arguments, printing, exit codes — nothing else |
 | `screens/app.py`, `forms.py`, `picker.py` | `mofn run`: tabs, first run, one form per command, the file and passphrase dialogs |
 | `screens/runner.py` | runs a form's argv through `cli.main` in process, and spells it as a shell would |

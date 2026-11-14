@@ -237,7 +237,7 @@ floor, is not in the engine.
 | I3 / D6 / #31 / #67: delegation in the engine | Nov 11 | David (engine); Paul (rewrite #67 and #31) | behind | `reduce.py` last changed in `b7600fe` (2026-11-01) and is one hop only; #148's `test_delegation.py` uses a test-only walker; #67 still uses retired `may-speak` terms; BACKLOG T-041 and T-065 are todo |
 | Issuer revocation (`ADR-0003` D5) | with the floor | David | not started | `check.py` hard-codes `revocations considered` to 0; #67 still says short expiry is the only revocation mechanism |
 | W-6 / #127: menu, `--version`, `mofn run`, CI matrix | Nov 11 | David | done | #131 (`724bb4b`, 2026-11-06) |
-| W-6 / #127: `release.yml`, downloads, README install | Nov 11 | Ndewedo | not started | no tags; no `.github/workflows/release.yml` |
+| W-6 / #127: `release.yml`, downloads, README install | Nov 11 | Ndewedo | not started → **in review, 2026-11-14** | at Nov 9: no tags; no `.github/workflows/release.yml`. Since: `release.yml` and the README Install section (DL-0043); no tag pushed yet |
 | I4 / D7 mappings; §7 archives domain through the same path | Nov 25 | David; #66 Paul and Ndewedo | not started | I4 has not begun; #66 is still open. The Oct 14 scenario half of #66 is already behind |
 | I5 / D8 five views and packaging; #69 GUI | Dec 1–4 | Ndewedo | not started | #69 unchanged since 2026-10-05 |
 | #68 weekly demo slice | every Monday | Ndewedo | on track for the current cases | `weekly-slice.yml`; automated post on #68, 2026-11-09. Delegation and revocation cases wait on the engine |
@@ -332,6 +332,18 @@ is the `mofn` Python CLI, run from a checkout (the command menu, `--version`,
 and the `mofn run` guided screen). There are no releases, no tags, and no
 `release.yml`. There is nothing to download.
 
+**Since, 2026-11-14 (DL-0043).** `.github/workflows/release.yml` exists. On a
+`wallet-vX.Y.Z` tag it checks the tag against `__version__` and
+`CHANGELOG.md`, builds `prototype/wallet/mofn.spec` (one PyInstaller file) on
+Ubuntu 22.04, macOS (arm64) and Windows, runs `demo/slice.sh` against the
+Linux and macOS builds, smoke-tests each build on a fresh runner with no
+checkout and no Python packages (`--version`, the menu, a green `check` of
+TV-4 against its golden, and `mofn run` opening Learn in a pty), and
+publishes a pre-release with `SHA256SUMS` and the changelog section as notes.
+A pull request that touches the wallet runs everything but the publish. No
+tag has been pushed. The first is `wallet-v0.6.0`: a tag runs the
+`release.yml` of the commit it names, and no 0.2.0 commit has one.
+
 What is automated:
 
 - `ci.yml` runs the wallet tests on Ubuntu, macOS and Windows for every pull
@@ -366,12 +378,12 @@ built. #69 is rescoped to the verdict's attribute associations inside
 
 | output | platform | built by | status |
 |---|---|---|---|
-| CLI, including `mofn run` — one PyInstaller build per OS (#127 §6; zipapp cannot load PyNaCl) | macOS, Linux (Windows only if decided) | proposed `release.yml` on a `wallet-v*` tag; Ndewedo, #127 | not started |
+| CLI, including `mofn run` — one PyInstaller build per OS (#127 §6; zipapp cannot load PyNaCl) | macOS arm64, Linux x86-64; Windows x86-64 built and published, supported only if decided | `release.yml` on a `wallet-v*` tag; Ndewedo, #127 | in review; no tag yet |
 | documentation site | Pages | `pages.yml` | in place |
 | weekly slice report | posted on #68 | `weekly-slice.yml` each Monday | in place |
 
-**Open items.** Cut a first tagged
-CLI release. Decide how release files are signed. Decide whether Windows is a
+**Open items.** Push the first tag,
+`wallet-v0.6.0`, and link the release from Pages (#127 §7). Decide how release files are signed. Decide whether Windows is a
 release target.
 
 ## What changed in v0.4.2 — 2026-11-14
