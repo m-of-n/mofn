@@ -38,6 +38,7 @@ from .schema import (
 
 ENUM = 1
 TEXT = 3
+NAME = 12
 BASE_KINDS = {
     1: "enum",
     2: "integer",
@@ -211,7 +212,13 @@ class Definition:
         if t[2] == TEXT:  # SPEC-0003 §6: any text, params 1 = maximum octets
             limit = t.get(12, {}).get(1)
             return isinstance(value, str) and (limit is None or len(value.encode()) <= limit)
+        if t[2] == NAME:  # SPEC-0003 §6.4: one label (SPEC-0002 §7.2)
+            return isinstance(value, str) and re.fullmatch(LABEL_RE, value) is not None
         return isinstance(value, str) and value in self._enum(label)
+
+    def is_naming(self, label: str) -> bool:
+        """SPEC-0003 §6.4: a naming type is one of base kind `name`."""
+        return label in self.types and self.types[label][2] == NAME
 
     def canonical_range(self, label: str, values: list[str]) -> list[str]:
         """Return the enum range holding `values`, in the order the type lists

@@ -353,6 +353,15 @@
       "envelope": "8401582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b95893a60104020103582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b90482015820d5f0b21718b21f79648f7f4a0325288209e6fd37fa2f90f9d29c4229e371f8c705a3011902310219029d031a02e4181006a10181a201a2015820eaf0ec4440c9c9bfbead12db82f44d1bd4ad74472f6c6014673c25f62a29672902646e616d6502646672656458402f339a835a529747b7fdb0582b467833215578bf0da2f82828f286c4b303c09b12b8095806c9c8a335393c54906d2b75acd5fa6f4f69b37dd46ac4aa89c0820a",
       "digest": "9217aa27e60a61d1d07b54c3fbef2f09060f060e25626200c7dd5b3deebaa0e2",
       "expect": "accept"
+    },
+    "TV-35": {
+      "note": "key-publish: bob2 publishes its key, so TV-8 links Bob to bob2 (SPEC-0004 \u00a77.2)",
+      "signer": "bob2",
+      "tbs": "a6010102010358209dcd2b600a6996b68623f46e19c60b6eb076c4a707df022e8479ef1d191b91f604820158209dcd2b600a6996b68623f46e19c60b6eb076c4a707df022e8479ef1d191b91f605a201190247031a0301515006a101a2010102582005da6bf466928fa468b1ecb00413a356c33502b70dc0620020fe98315cd1dfd8",
+      "sig": "a33e6a2f15e08e423f622daccc9fefaf89476baf270dce6ef6b5a554321658e7805f3e0b688d1313a5a231bfc3e64756efdadfbc98e09d635190c1c21c99590e",
+      "envelope": "850158209dcd2b600a6996b68623f46e19c60b6eb076c4a707df022e8479ef1d191b91f65882a6010102010358209dcd2b600a6996b68623f46e19c60b6eb076c4a707df022e8479ef1d191b91f604820158209dcd2b600a6996b68623f46e19c60b6eb076c4a707df022e8479ef1d191b91f605a201190247031a0301515006a101a2010102582005da6bf466928fa468b1ecb00413a356c33502b70dc0620020fe98315cd1dfd85840a33e6a2f15e08e423f622daccc9fefaf89476baf270dce6ef6b5a554321658e7805f3e0b688d1313a5a231bfc3e64756efdadfbc98e09d635190c1c21c99590e582005da6bf466928fa468b1ecb00413a356c33502b70dc0620020fe98315cd1dfd8",
+      "digest": "ac51b06c0bfc23eecae7f158537934bfcf31aefa86bdfebd4581bcd381d7ff71",
+      "expect": "accept"
     }
   },
   "negative": {
@@ -677,6 +686,64 @@
       "keys": [],
       "reason": "name-foreign",
       "note": "the only fred binding is Bob's; Bob cannot bind a label in Alice's namespace"
+    },
+    "R-8": {
+      "name": {
+        "issuer": "alice",
+        "labels": [
+          "fred"
+        ]
+      },
+      "statements": [
+        "TV-28",
+        "TV-8",
+        "TV-35"
+      ],
+      "at": "2026-10-25T12:00:00Z",
+      "keys": [
+        "bob2"
+      ],
+      "reason": null,
+      "note": "names follow rotation: TV-8 with TV-35 links Bob to bob2 from 2026-10-20"
+    },
+    "R-9": {
+      "name": {
+        "issuer": "alice",
+        "labels": [
+          "fred",
+          "sam"
+        ]
+      },
+      "statements": [
+        "TV-28",
+        "TV-29",
+        "TV-8",
+        "TV-35"
+      ],
+      "at": "2026-10-25T12:00:00Z",
+      "keys": [
+        "dave"
+      ],
+      "reason": null,
+      "note": "Bob's namespace continues as bob2's: TV-29 was issued before TV-8, so it is still used"
+    },
+    "R-10": {
+      "name": {
+        "issuer": "alice",
+        "labels": [
+          "fred"
+        ]
+      },
+      "statements": [
+        "TV-28",
+        "TV-8"
+      ],
+      "at": "2026-10-25T12:00:00Z",
+      "keys": [
+        "bob"
+      ],
+      "reason": null,
+      "note": "no key-publish for bob2, so TV-8 links nothing and fred is still Bob"
     }
   },
   "name_evaluations": {

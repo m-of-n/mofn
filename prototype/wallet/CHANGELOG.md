@@ -15,6 +15,26 @@ The wallet engine and its `mofn` command line, `prototype/wallet/` (#65, #127).
 Every release is a prototype: DEC-004 and DEC-005 are open; do not use real
 keys.
 
+## 0.6.0 — 2026-11-13
+
+Prototype: DEC-004 and DEC-005 are open; do not use real keys.
+
+The engine resolves SDSI names (T-040, SPEC-0004 §5.3, ADR-0008, DL-0040).
+
+- `engine/names.py`: `resolve(name, statements, definitions, at)` returns the
+  set of keys, the bindings used and each failing branch (`name-unresolved`,
+  `name-foreign`, `name-cycle`, `work-bound`). A binding is an attestation
+  under a type of base kind `name`; it needs no anchor. Bindings are dropped
+  when out of their window or revoked, and names follow a rotation whose
+  successor has its own `key-publish`.
+- `reduce.evaluate`: an anchor may trust a name. It is resolved first and
+  trusts each resulting key; an unresolved name is reported before the
+  coverage reasons. `Coverage.names` lists each resolution.
+- `definition.py`: a base-kind-`name` value is valid when it is one label;
+  `Definition.is_naming`.
+- `tests/test_names.py`: R-1…R-10 and E-8…E-10 from the vectors.
+- Not yet: `mofn check` and stored anchors take kids only.
+
 ## 0.5.0 — 2026-11-12
 
 Prototype: DEC-004 and DEC-005 are open; do not use real keys.

@@ -392,10 +392,15 @@ add("TV-33", "alice", bind("alice", name_target("alice", ["loop"]), "loop", "202
     "name binding: Alice's loop is Alice's loop, a cycle")
 add("TV-34", "alice", bind("alice", [T_KEY, kid("dave")], "fred", "2026-10-08T16:30:00Z"),
     "name binding: Alice's fred is also Dave's key; with TV-28, Alice's fred is the set {Bob, Dave}")
+add("TV-35", "bob2", statement("key-publish", "bob2", [T_KEY, kid("bob2")],
+    {1: {1: 1, 2: K["bob2"][1]}},
+    {1: t("2026-10-19T00:00:00Z"), 3: t("2026-10-19T18:30:00Z")}),
+    "key-publish: bob2 publishes its key, so TV-8 links Bob to bob2 (SPEC-0004 §7.2)", carry_pub=True)
 
-# Expected SPEC-0004 §5.3 resolutions. Declared, not computed: no resolver is run
-# here (T-040 owes one). DV-4 is held; every statement is verified and unrevoked.
+# Expected SPEC-0004 §5.3 resolutions. Declared, not computed here; the wallet
+# engine's resolver (engine/names.py, T-040) is checked against them. DV-4 is held; every statement is verified and unrevoked.
 NAME_AT = "2026-10-10T12:00:00Z"
+ROTATED_AT = "2026-10-25T12:00:00Z"
 RESOLUTIONS = [
     ("R-1", ("alice", ["fred"]), ["TV-28"], ["bob"], None, "one hop"),
     ("R-2", ("alice", ["fred", "sam"]), ["TV-28", "TV-29"], ["dave"], None,
@@ -410,7 +415,14 @@ RESOLUTIONS = [
      "Alice's loop is defined as itself"),
     ("R-7", ("alice", ["fred"]), ["TV-32"], [], "name-foreign",
      "the only fred binding is Bob's; Bob cannot bind a label in Alice's namespace"),
+    ("R-8", ("alice", ["fred"]), ["TV-28", "TV-8", "TV-35"], ["bob2"], None,
+     "names follow rotation: TV-8 with TV-35 links Bob to bob2 from 2026-10-20", ROTATED_AT),
+    ("R-9", ("alice", ["fred", "sam"]), ["TV-28", "TV-29", "TV-8", "TV-35"], ["dave"], None,
+     "Bob's namespace continues as bob2's: TV-29 was issued before TV-8, so it is still used", ROTATED_AT),
+    ("R-10", ("alice", ["fred"]), ["TV-28", "TV-8"], ["bob"], None,
+     "no key-publish for bob2, so TV-8 links nothing and fred is still Bob", ROTATED_AT),
 ]
+RESOLUTIONS = [r if len(r) == 7 else r + (NAME_AT,) for r in RESOLUTIONS]
 NAME_EVALS = [
     ("E-8", ["TV-30", "TV-28", "TV-29", "TV-19"], "reproducible", "yes", None, None,
      "TV-31 trusts Carol's builder, which resolves to Dave (R-3); Dave attests"),
@@ -518,10 +530,11 @@ out = {
                           "answer": ans, "reason": why, "at_statement": at_s, "note": note}
                       for e, s, this, val, ans, why, at_s, note in LIB_EVALS},
     "record_sha256": hx(RECORD),
-    # Kept out of `evaluations`: the W-1 engine has no resolver yet (T-040).
-    "resolutions": {r: {"name": {"issuer": iss, "labels": labels}, "statements": s, "at": NAME_AT,
+    # Kept out of `evaluations`: those are walked by the test-only delegation walker,
+    # these by the engine (T-040).
+    "resolutions": {r: {"name": {"issuer": iss, "labels": labels}, "statements": s, "at": at,
                         "keys": keys, "reason": why, "note": note}
-                    for r, (iss, labels), s, keys, why, note in RESOLUTIONS},
+                    for r, (iss, labels), s, keys, why, note, at in RESOLUTIONS},
     "name_evaluations": {e: {"anchor": "TV-31", "context": "releases-by-name", "statements": s,
                              "ask": {"this": "artifact", "build-provenance": val}, "at": NAME_AT,
                              "answer": ans, "reason": why, "at_statement": at_s, "note": note}
@@ -553,10 +566,10 @@ md += ["", "### Archives evaluations (ARCH-0001 §2.3.2; UC-3)", "",
        "| eval | statements | subject | value | answer | reason | at |", "|---|---|---|---|---|---|---|"]
 md += [f"| {e} | {', '.join(s)} | {this} | {val} | **{ans}** | {why or '—'} | {at_s or '—'} |" for e, s, this, val, ans, why, at_s, _ in LIB_EVALS]
 md += ["", "### Name resolutions (SPEC-0004 §5.3; mofn#143)", "",
-       f"DV-4 held; every statement listed is in the statement set, at {NAME_AT}.", "",
-       "| res | name | statements | keys | reason | case |", "|---|---|---|---|---|---|"]
-md += [f"| {r} | {iss}'s {' '.join(labels)} | {', '.join(s)} | {', '.join(keys) or '∅'} | {why or '—'} | {note} |"
-       for r, (iss, labels), s, keys, why, note in RESOLUTIONS]
+       "DV-4 held; every statement listed is in the statement set.", "",
+       "| res | name | statements | at | keys | reason | case |", "|---|---|---|---|---|---|---|"]
+md += [f"| {r} | {iss}'s {' '.join(labels)} | {', '.join(s)} | {at} | {', '.join(keys) or '∅'} | {why or '—'} | {note} |"
+       for r, (iss, labels), s, keys, why, note, at in RESOLUTIONS]
 md += ["", "### Name evaluations (SPEC-0004 Appendix A)", "",
        f"Anchor TV-31 (Carol's own trust to Carol's builder) in context `releases-by-name`; ask: is the artifact's "
        f"build-provenance the value shown, at {NAME_AT}.", "",
