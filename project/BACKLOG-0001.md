@@ -7,9 +7,9 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.14.1"
+version: "0.14.2"
 date: "2026-09-16"
-updated: "2026-11-15"
+updated: "2026-11-16"
 needs_review: true
 reviewed: false
 canonical_path: project/BACKLOG-0001.md
@@ -171,9 +171,10 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-066 | Renderer: show a description target (`SPEC-0002` §7.2 type 6) by its description, not as "a described object"; `SPEC-0003` §10 is silent — ARCH-0001 §2.3.2 | D6 | S2 | S | todo |
 | T-067 | Spec lane: propose ARCH-0001 §6 rows (R-0006 §2.5) and `SPEC-0003` §6 pattern containment — mofn#110, unassigned | D6 | — | M | todo |
 | T-065 | ~~Wallet engine: delegation paths (SPEC-0004 §6.3); move E-1…E-4 from the test walker to the engine~~ — `engine/reduce.py` `_walk`/`_follow` implement §6.2–§6.3 and §6.5; E-1…E-7 run on the engine and the walker is gone (`tests/test_delegation.py`); wallet 0.7.0; DL-0041 | D6 | S2 | M | review |
-| T-041 | ~~5-tuple reduction: tag ∩, validity ∩, delegation (§4.3 step 2)~~ — as `SPEC-0004` §6.3: topic and range ∩ (item 4), validity ∩ (`cap`, item 2), depth, key lists, no widening; a hop that fails is kept and named (`tests/test_paths.py`). Same deliverable as W-3. Threshold hops stay T-043; revocation of a hop is not read (short expiry instead) | D6 | S1 | L | review |
+| T-041 | ~~5-tuple reduction: tag ∩, validity ∩, delegation (§4.3 step 2)~~ — as `SPEC-0004` §6.3: topic and range ∩ (item 4), validity ∩ (`cap`, item 2), depth, key lists, no widening; a hop that fails is kept and named (`tests/test_paths.py`). Same deliverable as W-3. Threshold hops are T-095; revocation of a hop is not read (short expiry instead) | D6 | S1 | L | review |
 | T-042 | ~~Minimal tag profile — opaque bytes + `bytes-equal` (DEC-004 minimum)~~ **Subsumed** by `SPEC-0003` `delegation: 1`, as `R-0006` §4.7 argued: the engine compares a `delegation: 1` hop with what the delegator holds by KSA-CBOR bytes and nothing else (`reduce._same`); equal range → followed, narrower or permuted → refused, fails closed (`test_paths.py::test_delegation_same_is_bytes_equal`); `delegation: 2` narrows (`…scoped_narrows…`). **DEC-004 stays open**: this realises the floor over attribute ranges and selects no tag-language option (DL-0041) | D6 | S1 | M | review — subsumed |
-| T-043 | *k*-of-*n* threshold subjects, keys only, no nesting | D6 | S2 | L | todo |
+| T-043 | ~~*k*-of-*n* threshold subjects, keys only, no nesting~~ — engine done: a threshold anchor (`SPEC-0004` §4.2) is reduced under §6.4 in `reduce.py`; *k* distinct members, rotation-linked keys once, each member named with why it did or did not count; TV-36, TV-37 and E-11…E-19 pass (`tests/test_thresholds.py`); SPEC-0002 0.10.1, SPEC-0004 0.6.2, wallet 0.8.0; DL-0042. **Not yet:** a threshold *hop* and delegation onward from a threshold set (§6.4 second sentence) are T-095; `mofn check` and stored anchors take kids only, as for T-040. **Open in §6.4:** whether a member counts through keys it delegates to, and whether a rotation successor counts for its member (DL-0042) | D6 | S2 | L | review |
+| T-095 | Threshold sets on delegation paths: a threshold trust statement as a hop, and a threshold anchor's `may-delegate` (`SPEC-0004` §6.4 second sentence), on top of W-3's `_walk`. Members attest directly until then. Needs §6.4's open questions answered first (DL-0042) | D6 | S2 | M | todo |
 | T-044 | Statement acceptance (§4.3 step 3), kept separate from reduction — the verdict's `acceptance` line is already separate (W-1); template conformance only | D6 | S2 | M | doing |
 | T-045 | ~~Verifier output reports the three separately (R-O-06)~~ — done: the six-line verdict (integrity, authenticity, names, authorization, acceptance, semantics), W-1; `fixtures/golden/` | D6 | S2 | M | done |
 | T-046 | ~~Published test vectors under `spec/vectors/`~~ — done: `spec/vectors/ksa-core/` TV-1…20, N-1…11, E-1…4, checked in CI. `spec/vectors/README.md` still says "empty until DEC-002" | D6 | S1 | M | done |

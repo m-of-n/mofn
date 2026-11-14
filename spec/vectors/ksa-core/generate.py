@@ -397,6 +397,13 @@ add("TV-35", "bob2", statement("key-publish", "bob2", [T_KEY, kid("bob2")],
     {1: t("2026-10-19T00:00:00Z"), 3: t("2026-10-19T18:30:00Z")}),
     "key-publish: bob2 publishes its key, so TV-8 links Bob to bob2 (SPEC-0004 §7.2)", carry_pub=True)
 
+# Threshold reduction (SPEC-0004 §6.4; T-043; DL-0042). TV-36 is TV-9's form with
+# Bob and his successor bob2 both listed; TV-37 is bob2's attestation after TV-8.
+add("TV-36", "carol", threshold_trust(2, ["bob", "bob2", "dave"]),
+    "trust, threshold form: Carol trusts any 2 of {Bob, bob2, Dave}; TV-8 links Bob to bob2, so they count once (SPEC-0004 §6.4)")
+add("TV-37", "bob2", bp_attest("bob2", "reproducible", "2026-10-21T09:00:00Z"),
+    "attestation: bob2 says the artifact's build-provenance is reproducible")
+
 # Expected SPEC-0004 §5.3 resolutions. Declared, not computed here; the wallet
 # engine's resolver (engine/names.py, T-040) is checked against them. DV-4 is held; every statement is verified and unrevoked.
 NAME_AT = "2026-10-10T12:00:00Z"
@@ -430,6 +437,31 @@ NAME_EVALS = [
      "without TV-29 Carol's builder resolves to no key, so TV-31 starts no path"),
     ("E-10", ["TV-30", "TV-28", "TV-29", "TV-17"], "reproducible", "no", "no-path", "TV-17",
      "Bob is Alice's fred, not Carol's builder: a name grants nothing to the keys it passes through"),
+]
+
+# Expected SPEC-0004 §6.4 answers: the anchor is the threshold trust statement
+# shown, in Carol's context `releases-panel`. `counted` is every member that
+# counted, in member order. Declared, not computed; the wallet engine
+# (`reduce.py`, T-043) is checked against them.
+TH_EVALS = [
+    ("E-11", "TV-9", ["TV-4", "TV-17"], "reproducible", ASK_AT, "yes", None, ["alice", "bob"],
+     "2 of {Alice, Bob, Dave}: Alice (TV-4) and Bob (TV-17) agree"),
+    ("E-12", "TV-9", ["TV-4"], "reproducible", ASK_AT, "no", "threshold-not-met", ["alice"],
+     "only Alice: one member is not two"),
+    ("E-13", "TV-9", ["TV-4", "TV-15"], "reproducible", ASK_AT, "no", "threshold-not-met", ["alice"],
+     "Bob said attested (TV-15), not reproducible: members must agree on the same value"),
+    ("E-14", "TV-10", ["TV-4", "TV-17", "TV-19"], "reproducible", ASK_AT, "yes", None, ["alice", "bob", "dave"],
+     "k = n = 3: all three agree"),
+    ("E-15", "TV-10", ["TV-4", "TV-17"], "reproducible", ASK_AT, "no", "threshold-not-met", ["alice", "bob"],
+     "k = n = 3: two of three is not enough"),
+    ("E-16", "TV-11", ["TV-17"], "reproducible", ASK_AT, "yes", None, ["bob"],
+     "k = 1 of {Alice, Bob}: Bob alone"),
+    ("E-17", "TV-11", ["TV-19"], "reproducible", ASK_AT, "no", "threshold-not-met", [],
+     "Dave attests, but Dave is not a member of {Alice, Bob}"),
+    ("E-18", "TV-36", ["TV-8", "TV-35", "TV-17", "TV-37"], "reproducible", ROTATED_AT, "no", "threshold-not-met", ["bob"],
+     "Bob and bob2 both attest, but TV-8 links them, so they are one member"),
+    ("E-19", "TV-36", ["TV-8", "TV-35", "TV-17", "TV-37", "TV-19"], "reproducible", ROTATED_AT, "yes", None, ["bob", "dave"],
+     "Bob (once, with bob2) and Dave: two distinct members"),
 ]
 
 # ---------------------------------------------------------------- archives v2 (W-2b; DL-0046)
@@ -638,6 +670,12 @@ out = {
                              "ask": {"this": "artifact", "build-provenance": val}, "at": NAME_AT,
                              "answer": ans, "reason": why, "at_statement": at_s, "note": note}
                          for e, s, val, ans, why, at_s, note in NAME_EVALS},
+    # Kept out of `evaluations` for the same reason: the engine reads these (T-043).
+    "threshold_evaluations": {e: {"anchor": anc, "context": "releases-panel", "statements": s,
+                                  "ask": {"this": "artifact", "build-provenance": val}, "at": at,
+                                  "answer": ans, "reason": why, "at_statement": anc if why else None,
+                                  "counted": counted, "note": note}
+                              for e, anc, s, val, at, ans, why, counted, note in TH_EVALS},
 }
 (HERE / "vectors.json").write_text(json.dumps(out, indent=2) + "\n")
 
@@ -679,5 +717,11 @@ md += ["", "### Name evaluations (SPEC-0004 Appendix A)", "",
        f"build-provenance the value shown, at {NAME_AT}.", "",
        "| eval | statements | value | answer | reason | at |", "|---|---|---|---|---|---|"]
 md += [f"| {e} | {', '.join(s)} | {val} | **{ans}** | {why or '—'} | {at_s or '—'} |" for e, s, val, ans, why, at_s, _ in NAME_EVALS]
+md += ["", "### Threshold evaluations (SPEC-0004 §6.4; T-043)", "",
+       "The anchor is the threshold trust statement shown, in context `releases-panel`; ask: is the artifact's "
+       "build-provenance the value shown. `counted` lists the members that counted.", "",
+       "| eval | anchor | statements | value | at | answer | reason | counted |", "|---|---|---|---|---|---|---|---|"]
+md += [f"| {e} | {anc} | {', '.join(s)} | {val} | {at} | **{ans}** | {why or '—'} | {', '.join(counted) or '∅'} |"
+       for e, anc, s, val, at, ans, why, counted, _ in TH_EVALS]
 (HERE / "vectors.md").write_text("\n".join(md) + "\n")
 print(f"{len(V)} positive, {len(N)} negative; DV-1 id {hx(DV1_ID)[:16]}…; encoders agree on all positive vectors")

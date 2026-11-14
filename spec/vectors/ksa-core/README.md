@@ -103,5 +103,23 @@ reads. Reasoning: `design-log/0039-sdsi-names/`, `design-log/0040-names-resolver
 | E-8, E-9, E-10 | trust to a name: resolves; does not; passes through Bob | yes; no `name-unresolved`; no `no-path` |
 | N-12, N-13 | empty label list; label `Fred` | V7 `structure` |
 
+## Threshold anchors
+
+TV-36 is a threshold trust to any 2 of {Bob, bob2, Dave}; TV-37 is bob2's
+attestation after TV-8. `vectors.json` → `threshold_evaluations` gives
+E-11…E-19: each names its threshold anchor (TV-9, TV-10, TV-11 or TV-36) in
+context `releases-panel`, the answer, and `counted`, the members that counted.
+**Declared** here; `prototype/wallet/tests/test_thresholds.py` checks the
+engine (`reduce.py`, T-043) against them. Reasoning:
+`design-log/0042-k-of-n-thresholds/`.
+
+| eval | case | expected |
+|---|---|---|
+| E-11, E-12 | 2 of 3: two agree; one | yes; no `threshold-not-met` |
+| E-13 | a member said another value | no `threshold-not-met` |
+| E-14, E-15 | 3 of 3: all; two | yes; no |
+| E-16, E-17 | 1 of 2: a member; a non-member | yes; no |
+| E-18, E-19 | Bob and bob2 linked by TV-8: once; with Dave | no; yes |
+
 After regenerating, copy `vectors.md` into SPEC-0002 between the
 `VECTORS:BEGIN` / `VECTORS:END` markers.
