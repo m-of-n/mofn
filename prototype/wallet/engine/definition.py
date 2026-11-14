@@ -247,6 +247,20 @@ class Definition:
             return False
         return rng is None or (self.well_formed_range(label, rng) and value in rng)
 
+    def range_within(self, label: str, inner, outer) -> bool:
+        """SPEC-0003 §6 subset rule, for `delegation: 2` (SPEC-0004 §6.3
+        item 4). None is the unbounded range. A range that is not well formed
+        is within nothing, and contains nothing."""
+        if outer is None:
+            return True
+        if inner is None:
+            return False
+        try:
+            ok = self.well_formed_range(label, inner) and self.well_formed_range(label, outer)
+        except DefinitionError:
+            return False
+        return ok and set(inner) <= set(outer)
+
     def value_def(self, label: str, value) -> dict | None:
         for v in self.type(label).get(6, []):
             if v[1] == value:

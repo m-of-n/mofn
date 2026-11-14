@@ -32,6 +32,30 @@ def attestation(
     }
 
 
+def trust(
+    says: bytes,
+    this: list,
+    about: list[dict],
+    not_before: int,
+    not_on_or_after: int,
+    issued: int,
+    may_delegate: dict | None = None,
+) -> dict:
+    """A `trust` statement to one key or name (SPEC-0002 §8.6). Its validity
+    window is how the delegation ends: there is no revocation list."""
+    body = {1: about}
+    if may_delegate is not None:
+        body[2] = may_delegate
+    return {
+        1: schema.KIND["trust"],
+        2: suite.CODE,
+        3: says,
+        4: this,
+        5: {1: not_before, 2: not_on_or_after, 3: issued},
+        6: body,
+    }
+
+
 def key_publish(pub: bytes, issued: int) -> dict:
     kid = suite.kid(pub)
     return {

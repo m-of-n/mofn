@@ -8,10 +8,12 @@ code. It does no cryptography, no encoding and no evaluation of its own.
     init
     key gen LABEL [--controller KIND] [--passphrase-stdin] [-o OUT]
     key import FILE [--label NAME]
-    root add KEY --as LABEL --def FILE --type TYPE [--values V1,V2] [--context NAME] [--note TEXT]
+    root add KEY --as LABEL --def FILE --type TYPE [--values V1,V2] [--depth N] [--context NAME] [--note TEXT]
     root list [--context NAME]
     make --as LABEL --subject FILE --def FILE --type TYPE --value VALUE [--valid-days N] [-o OUT]
          [--passphrase-stdin]
+    delegate KEY --as LABEL --def FILE --type TYPE [--values V1,V2] [--depth N] [--valid-days N]
+         [-o OUT] [--passphrase-stdin]
     check STMT [STMT ...] --artifact FILE --def FILE [--context NAME] [--format text|json] [--at TIME]
     show FILE
 
@@ -71,6 +73,7 @@ COMMANDS = [
     ("root add KEY --as YOU ...", "trust a key about one kind of claim"),
     ("root list", "print your anchors in words"),
     ("make --as LABEL --subject FILE", "make and sign one attestation"),
+    ("delegate KEY --as YOU ...", "let another key say what you may, for a few days"),
     ("check STMT... --artifact FILE", "check the statements you were handed"),
     ("show FILE", "print a statement or definition, decoded"),
     ("hash FILE", "print a file's SHA-256, as a statement names it"),
@@ -240,14 +243,19 @@ def cmd_hash(a):
 
 
 def anchor_line(an: Anchor, labels: dict[bytes, str]) -> str:
-    scope = "; ".join(
-        r[1][2] + (" ∈ {" + ", ".join(r[3]) + "}" if 3 in r else " (any value)")
-        for r in an.about
-    )
+    scope = anchor_line_scope(an.about)
+    depth = (an.may_delegate or {}).get(1, 0)
+    onward = f", may delegate {depth} hop{'s' if depth > 1 else ''}" if depth else ""
     return (
         f"anchor: {short(an.trusts)} ({render.key_name(an.trusts, labels)}) trusted in {an.context} "
-        f"about {scope} — accepted by {render.key_name(an.accepted_by, labels)}"
+        f"about {scope}{onward} — accepted by {render.key_name(an.accepted_by, labels)}"
     )
+
+
+def about_range(d, label: str, values: str | None) -> dict:
+    tref = d.type_ref(label)
+    vs = [v for v in (values or "").split(",") if v]
+    return {1: tref, 3: d.canonical_range(label, vs)} if vs else {1: tref}
 
 
 def cmd_root_add(a):
@@ -255,10 +263,14 @@ def cmd_root_add(a):
     key, acceptor = w.find(a.key), w.find(a.as_)
     d = defs.load(Path(a.def_).read_bytes())
     tref = d.type_ref(a.type)
-    values = [v for v in (a.values or "").split(",") if v]
-    about = {1: tref, 3: d.canonical_range(a.type, values)} if values else {1: tref}
     anchor = Anchor(
-        a.context, key.kid, [about], acceptor.kid, ksatime.now(), note=a.note
+        a.context,
+        key.kid,
+        [about_range(d, a.type, a.values)],
+        acceptor.kid,
+        ksatime.now(),
+        note=a.note,
+        may_delegate={1: a.depth} if a.depth else None,
     )
     w.add_anchor(anchor)
     w.put_definition(d.id, d.data)
@@ -309,6 +321,52 @@ def cmd_make(a):
     out.write_bytes(codec.dump(envelope))
     print(f"wrote {out}")
     print(render.sentence(d, v.statement, w.labels(), a.lang))
+
+
+def cmd_delegate(a):
+    """Sign a trust statement (SPEC-0002 §8.6) from an owned persona to a
+    known key. Its validity window is how it ends: there is no revocation
+    list (W-3, mofn#67)."""
+    w = Wallet.open(locate(a.wallet))
+    codec = CODECS[a.codec]
+    p, to = w.find(a.as_), w.find(a.key)
+    if not p.owned:
+        raise WalletError(f"{a.as_} is not a persona this wallet owns")
+    if a.valid_days < 1:
+        raise WalletError("--valid-days must be at least 1")
+    d = defs.load(Path(a.def_).read_bytes())
+    now = ksatime.now()
+    s = statement.trust(
+        p.kid,
+        [1, to.kid],
+        [about_range(d, a.type, a.values)],
+        now,
+        ksatime.add_days(now, a.valid_days),
+        now,
+        {1: a.depth} if a.depth else None,
+    )
+    seed = w.unlock(p, unlock.passphrase(a.passphrase_stdin, given=a.given))
+    v = verify(signer.sign(seed, s), w.keystore())
+    w.put_statement(v.digest, v.envelope)
+    out = (
+        Path(a.out)
+        if a.out
+        else w.root / "statements" / f"{v.digest.hex()}{codec.suffix}"
+    )
+    out.write_bytes(codec.dump(v.envelope))
+    print(f"wrote {out}")
+    print(
+        f"{render.key_name(p.kid, w.labels())} trusts {render.key_name(to.kid, w.labels())} "
+        f"about {anchor_line_scope(s[6][1])} for {a.valid_days} days"
+        + (f", and lets it delegate {a.depth} hop(s) further" if a.depth else "")
+    )
+
+
+def anchor_line_scope(about: list[dict]) -> str:
+    return "; ".join(
+        r[1][2] + (" ∈ {" + ", ".join(r[3]) + "}" if 3 in r else " (any value)")
+        for r in about
+    )
 
 
 def cmd_check(a):
@@ -527,6 +585,7 @@ def parser() -> argparse.ArgumentParser:
     add.add_argument("--def", dest="def_", required=True, metavar="FILE")
     add.add_argument("--type", required=True)
     add.add_argument("--values")
+    add.add_argument("--depth", type=int, default=0, help="how many further hops it may delegate")
     add.add_argument("--context", default="default")
     add.add_argument("--note")
     add.set_defaults(run=cmd_root_add)
@@ -544,6 +603,21 @@ def parser() -> argparse.ArgumentParser:
     make.add_argument("-o", dest="out", metavar="OUT")
     make.add_argument("--passphrase-stdin", action="store_true")
     make.set_defaults(run=cmd_make)
+
+    dlg = sub.add_parser(
+        "delegate",
+        help="sign a trust statement: let another key say what you may, until it expires",
+    )
+    dlg.add_argument("key")
+    dlg.add_argument("--as", dest="as_", required=True, metavar="LABEL")
+    dlg.add_argument("--def", dest="def_", required=True, metavar="FILE")
+    dlg.add_argument("--type", required=True)
+    dlg.add_argument("--values")
+    dlg.add_argument("--depth", type=int, default=0, help="how many further hops it may delegate")
+    dlg.add_argument("--valid-days", type=int, default=30)
+    dlg.add_argument("-o", dest="out", metavar="OUT")
+    dlg.add_argument("--passphrase-stdin", action="store_true")
+    dlg.set_defaults(run=cmd_delegate)
 
     chk = sub.add_parser("check", help="evaluate the statements you were handed")
     chk.add_argument("stmt", nargs="+")

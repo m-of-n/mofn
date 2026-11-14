@@ -1,22 +1,34 @@
-"""Trust evaluation for v0: coverage (SPEC-0004 §10.2) over one context's
-anchors.
+"""Trust evaluation: delegation paths (SPEC-0004 §6) and coverage (§10.2)
+over one context's anchors.
 
-Only statements that passed V1–V9 reach this module. v0 has no delegation,
-so a path is one hop: an anchor in the evaluated context whose `trusts` is
-the attestation's speaker and whose `about` holds a range of the attribute's
-type that contains the value. An anchor may trust a name (SPEC-0004 §4.2):
-it is first resolved by `names.py` (§5.3) and then trusts each resulting key
-under its own `about`. Revocation and rotation are applied to name bindings
-only; for coverage, and for thresholds, they are not in v0, and the answer
-says 0 revocation statements were considered.
+Only statements that passed V1–V9 reach this module. A path starts at an
+anchor of the evaluated context (§6.2) and follows trust statements under
+§6.3 (`_walk`, `_follow`): each hop must be valid at the evaluation time,
+within what the delegator holds (topic *and* range), within its
+`may-delegate`, and must not widen it. A hop that fails is not followed, and
+is kept as a `Broken` link, so an answer can name the link that broke. An
+attestation is covered when a path reaches its speaker with a final scope that
+contains the value (`_cover`).
+
+An anchor may trust a name (§4.2), and a trust statement may target one
+(§6.3 item 1): both are resolved by `names.py` (§5.3). Revocation and
+rotation are applied to name bindings only; for paths and for thresholds they
+are not in this version, and the answer says 0 revocation statements were
+considered. **Short validity is the revocation mechanism here** (§7.1, §11.3).
+Threshold anchors and threshold trust statements (§6.4) start no path.
 """
 
 from dataclasses import dataclass, field, replace
 
 from . import ksatime
 from .definition import Definition, conforms_to_template
-from .names import T_NAME, Resolution, Resolver, valid_at
+from .encoding.ksa_cbor import encode
+from .names import T_KEY, T_NAME, Resolution, Resolver, valid_at
 from .verifier import Verified
+
+TRUST = 5
+MAX_EDGES = 16  # §6.5
+MAX_WORK = 4096  # trust-statement edges examined in one evaluation (§6.5, implementation-defined)
 
 
 @dataclass
@@ -28,7 +40,23 @@ class Anchor:
     accepted_at: int
     source: str = "local"
     note: str | None = None
+    may_delegate: dict | None = None  # delegation-constraints, SPEC-0002 §8.6
+    not_on_or_after: int | None = None  # the source statement's, §6.2 `cap`
 
+
+def anchor_from(v: Verified, context: str, accepted_by: bytes, accepted_at: int) -> Anchor:
+    """The anchor an accepted trust statement makes (§4.3, §6.2)."""
+    target = v.this[1] if v.this[0] == T_KEY else v.this
+    return Anchor(
+        context,
+        target,
+        v.body[1],
+        accepted_by,
+        accepted_at,
+        f"statement({v.digest.hex()})",
+        may_delegate=v.body.get(2),
+        not_on_or_after=v.statement.get(5, {}).get(2),
+    )
 
 @dataclass
 class Ask:
@@ -39,11 +67,50 @@ class Ask:
 
 
 @dataclass
+class Hop:
+    """One followed trust statement, and the scope after it (§10.3)."""
+
+    statement: Verified
+    key: bytes
+    scope: list[dict]
+
+
+@dataclass
+class Reach:
+    """The §6.1 state at one key, and the hops that reached it."""
+
+    anchor: Anchor
+    key: bytes
+    scope: list[dict]
+    deleg: dict | None
+    cap: int | None
+    allow: frozenset | None  # None: every key
+    exclude: frozenset
+    visited: frozenset
+    hops: tuple = ()
+
+
+@dataclass
+class Broken:
+    """A link not followed: a trust statement (or, if `link` is None, the
+    anchor itself) that failed §6.2 or §6.3, and the key it would have
+    reached."""
+
+    anchor: Anchor
+    link: Verified | None
+    to: bytes
+    code: str
+    detail: str
+    hops: tuple = ()
+
+
+@dataclass
 class Covered:
     attribute: dict
     statement: Verified
     anchor: Anchor
     scope: dict
+    path: tuple = ()  # the Hops after the anchor; () for one hop
 
 
 @dataclass
@@ -53,6 +120,8 @@ class Stopped:
     detail: str
     statement: Verified | None = None
     anchor: Anchor | None = None
+    link: Verified | None = None  # the trust statement where the chain broke
+    path: tuple = ()  # the Hops followed before it
 
 
 @dataclass
@@ -78,6 +147,13 @@ def evaluate(
     mine, unresolved = _resolve_anchors(
         [a for a in anchors if a.context == ask.context], statements, definitions, ask, result
     )
+    reached, broken, bounded = _walk(mine, statements, definitions, ask.at)
+    if bounded:  # §6.5: a bound yields no, never a partial yes
+        result.stopped += [
+            Stopped(a, "work-bound", f"more than {MAX_WORK} delegation edges to examine")
+            for a in ask.has
+        ]
+        return result
     for attr in ask.has:
         # §5.3.4: an unresolved name is reported first; it is why its anchor started no path.
         named = [
@@ -99,7 +175,7 @@ def evaluate(
             continue
         reasons = []
         for s in candidates:
-            hit = _cover(s, attr, ask, mine, definitions, attributed)
+            hit = _cover(s, attr, ask, reached, broken, definitions, attributed)
             if isinstance(hit, Covered):
                 result.covered.append(hit)
                 break
@@ -133,7 +209,8 @@ def _cover(
     s: Verified,
     attr: dict,
     ask: Ask,
-    anchors: list[Anchor],
+    reached: list[Reach],
+    broken: list[Broken],
     definitions: dict[bytes, Definition],
     attributed: set[bytes],
 ):
@@ -175,13 +252,164 @@ def _cover(
             f"{d.name} {d.version} has no verified define statement",
             s,
         )
-    trusted = [a for a in anchors if a.trusts == s.says]
-    for anchor in trusted:
-        for r in anchor.about:
+    trusted = [r for r in reached if r.key == s.says]
+    for p in trusted:
+        if not _before(ask.at, p.cap):  # §10.2 item 3
+            continue
+        for r in p.scope:
             if r[1] == tref and d.in_range(tref[2], value, r.get(3)):
-                return Covered(attr, s, anchor, r)
+                return Covered(attr, s, p.anchor, r, p.hops)
     if trusted:
+        p = trusted[0]
         return Stopped(
-            attr, "no-path", "trusted, but not about this value", s, trusted[0]
+            attr, "no-path", "trusted, but not about this value", s, p.anchor, path=p.hops
         )
+    cut = [b for b in broken if b.to == s.says]
+    if cut:  # the speaker was reachable but for this link (§10.3: name it)
+        b = cut[0]
+        return Stopped(attr, b.code, b.detail, s, b.anchor, b.link, b.hops)
     return Stopped(attr, "no-path", "no anchor in this context trusts the speaker", s)
+
+
+# ---------------------------------------------------------------- §6 paths
+
+
+def _before(at: int, cap: int | None) -> bool:
+    return cap is None or ksatime.to_seconds(at) < ksatime.to_seconds(cap)
+
+
+def _earliest(*caps):
+    real = [c for c in caps if c is not None]
+    return min(real, key=ksatime.to_seconds) if real else None
+
+
+def _walk(anchors: list[Anchor], statements: list[Verified], definitions, at: int):
+    """Every §6.1 state reachable from `anchors` (§6.2), breadth first, and
+    every link that was not followed (§6.3). Returns (reached, broken,
+    bounded); `bounded` is True when §6.5's work bound was exceeded."""
+    trusts = sorted(
+        (s for s in statements if s.kind == TRUST and s.this is not None),
+        key=lambda s: s.digest,
+    )
+    resolver = None
+    reached, broken, frontier, work = [], [], [], 0
+    for a in anchors:
+        if not isinstance(a.trusts, bytes):  # a threshold anchor (§6.4)
+            continue
+        if not _before(at, a.not_on_or_after):
+            broken.append(Broken(a, None, a.trusts, "not-valid-at-time", "the anchor's statement has expired"))
+            continue
+        frontier.append(
+            Reach(a, a.trusts, a.about, a.may_delegate, a.not_on_or_after,
+                  None, frozenset(), frozenset({a.trusts}))
+        )
+    while frontier:
+        r = frontier.pop(0)
+        reached.append(r)
+        for s in trusts:
+            if s.says != r.key:
+                continue
+            if s.this[0] == T_NAME:  # §6.3 item 1: each key a name resolves to is an edge
+                resolver = resolver or Resolver(statements, definitions, at)
+                targets = sorted(resolver.resolve(s.this).keys)
+            else:
+                targets = [s.this[1]] if s.this[0] == T_KEY else []
+            for k in targets:
+                if k in r.visited:
+                    continue
+                work += 1
+                if work > MAX_WORK:
+                    return reached, broken, True
+                nxt = _follow(r, s, k, definitions, at)
+                if isinstance(nxt, Reach):
+                    frontier.append(nxt)
+                else:
+                    broken.append(Broken(r.anchor, s, k, *nxt, r.hops))
+    return reached, broken, False
+
+
+def _follow(r: Reach, s: Verified, k: bytes, definitions, at: int):
+    """§6.3: the state at `k` after following `s` from `r`, or (code, detail)."""
+    if len(r.hops) + 1 >= MAX_EDGES:  # the anchor is the first edge
+        return ("work-bound", f"a path may have at most {MAX_EDGES} edges")
+    if not s.key_in_store:
+        return ("unverifiable", "the delegator's key is not in the key store")
+    if not valid_at(s, at):  # item 2; short expiry is how a delegation ends
+        after = 2 in s.statement.get(5, {}) and not _before(at, s.statement[5][2])
+        return ("not-valid-at-time", "the delegation has expired" if after else "the delegation is not yet valid")
+    d = r.deleg
+    if d is None or d.get(1, 0) < 1:  # item 3
+        return ("depth", "the delegator was not given the right to delegate"
+                if d is None else "no delegation depth remains")
+    if not _before(at, d.get(5)):
+        return ("not-valid-at-time", "the delegator's right to delegate has expired")
+    for rng in s.body[1]:  # item 4: topic and range
+        why = _range_ok(rng, r.scope, "what the delegator is trusted about", definitions)
+        if why is None and 2 in d:
+            why = _range_ok(rng, d[2], "what the delegator may pass on", definitions)
+        if why:
+            return why
+    allow = r.allow
+    if 3 in d:
+        allow = frozenset(d[3]) if allow is None else allow & frozenset(d[3])
+    exclude = r.exclude | frozenset(d.get(4, ()))
+    if allow is not None and k not in allow:  # item 5
+        return ("key-not-allowed", "the delegate's key is not one the chain allows")
+    if k in exclude:
+        return ("key-excluded", "the delegate's key is one the chain excludes")
+    onward = s.body.get(2)
+    if onward is not None:  # item 6
+        why = _onward_ok(onward, d, s.body[1], allow, exclude, definitions)
+        if why:
+            return why
+    cap = _earliest(r.cap, d.get(5), s.statement.get(5, {}).get(2))
+    return Reach(r.anchor, k, s.body[1], onward, cap, allow, exclude,
+                 r.visited | {k}, r.hops + (Hop(s, k, s.body[1]),))
+
+
+def _range_ok(rng: dict, pool: list[dict], where: str, definitions):
+    """§6.3 item 4 for one attribute range: delegable, and within some range
+    of the same type in `pool`; equal to it if the type's delegation is 1."""
+    tref = rng[1]
+    d = definitions.get(tref[1])
+    if d is None:
+        return ("definition-unobtainable", f"definition {tref[1].hex()[:16]}… is not held")
+    if tref[2] not in d.types:
+        return ("type-error", f"{d.name} {d.version} has no type {tref[2]!r}")
+    mode = d.types[tref[2]][8]  # SPEC-0003 §5.4
+    if mode == 0:
+        return ("type-error", f"{tref[2]} may not be delegated")
+    same = [p for p in pool if p[1] == tref]
+    if not same:
+        return ("widening", f"{tref[2]} is not a topic of {where}")
+    if mode == 1:
+        ok = any(_same(rng, p) for p in same)
+        return None if ok else ("widening", f"{tref[2]} may be delegated only with the same range as {where}")
+    ok = any(d.range_within(tref[2], rng.get(3), p.get(3)) for p in same)
+    return None if ok else ("widening", f"{_show_range(rng)} is not within {where}")
+
+
+def _same(a: dict, b: dict) -> bool:
+    """`delegation: 1`. Ranges are canonical (SPEC-0003 §6), so the same
+    range is the same bytes: this is the comparison, and nothing else is."""
+    return encode(a) == encode(b)
+
+
+def _onward_ok(onward: dict, d: dict, about: list[dict], allow, exclude, definitions):
+    """§6.3 item 6: `s.may-delegate` does not widen `deleg`."""
+    left = d.get(1, 0) - 1
+    if onward.get(1, 0) > left:
+        return ("widening", f"it passes on depth {onward.get(1, 0)} where at most {left} remains")
+    pool = d.get(2, about)
+    for rng in onward.get(2, []):
+        why = _range_ok(rng, pool, "what the delegator may pass on", definitions)
+        if why:
+            return why
+    for k in onward.get(3, []):
+        if (allow is not None and k not in allow) or k in exclude:
+            return ("widening", "its allow-keys admit a key the chain forbids")
+    return None
+
+
+def _show_range(rng: dict) -> str:
+    return rng[1][2] + (" {" + ", ".join(map(str, rng[3])) + "}" if 3 in rng else " (any value)")

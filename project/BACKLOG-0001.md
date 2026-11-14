@@ -7,9 +7,9 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.13.3"
+version: "0.14.0"
 date: "2026-09-16"
-updated: "2026-11-13"
+updated: "2026-11-14"
 needs_review: true
 reviewed: false
 canonical_path: project/BACKLOG-0001.md
@@ -54,6 +54,9 @@ each row names its evidence.
 **What actually stands between today and the demo floor (Nov 11):** the
 engine has no delegation, threshold reduction or name resolution
 (`engine/reduce.py` is one hop). T-047's "chain reduces" needs T-041 / W-3.
+*Update 2026-11-14:* delegation paths are in the engine (wallet 0.7.0, W-3,
+DL-0041); name resolution landed in 0.6.0 (T-040); threshold reduction is
+T-043.
 
 ## Status at 2026-10-11
 
@@ -167,14 +170,14 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-049 | Wallet test: DV-2/TV-13 rendered sentence — the clause `ADR-0007`'s acceptance test still owes | D6 | S2 | S | **done** 2026-11-07 (`test_delegation.py`, DL-0031) |
 | T-066 | Renderer: show a description target (`SPEC-0002` §7.2 type 6) by its description, not as "a described object"; `SPEC-0003` §10 is silent — ARCH-0001 §2.3.2 | D6 | S2 | S | todo |
 | T-067 | Spec lane: propose ARCH-0001 §6 rows (R-0006 §2.5) and `SPEC-0003` §6 pattern containment — mofn#110, unassigned | D6 | — | M | todo |
-| T-065 | Wallet engine: delegation paths (SPEC-0004 §6.3); move E-1…E-4 from the test walker to the engine | D6 | S2 | M | todo |
-| T-041 | 5-tuple reduction: tag ∩, validity ∩, delegation (§4.3 step 2) | D6 | S1 | L | todo |
-| T-042 | Minimal tag profile — opaque bytes + `bytes-equal` (DEC-004 minimum). *Possibly subsumed by `SPEC-0003` `delegation: 1` — `R-0006` §4.7; owner's call* | D6 | S1 | M | todo |
+| T-065 | ~~Wallet engine: delegation paths (SPEC-0004 §6.3); move E-1…E-4 from the test walker to the engine~~ — `engine/reduce.py` `_walk`/`_follow` implement §6.2–§6.3 and §6.5; E-1…E-7 run on the engine and the walker is gone (`tests/test_delegation.py`); wallet 0.7.0; DL-0041 | D6 | S2 | M | review |
+| T-041 | ~~5-tuple reduction: tag ∩, validity ∩, delegation (§4.3 step 2)~~ — as `SPEC-0004` §6.3: topic and range ∩ (item 4), validity ∩ (`cap`, item 2), depth, key lists, no widening; a hop that fails is kept and named (`tests/test_paths.py`). Same deliverable as W-3. Threshold hops stay T-043; revocation of a hop is not read (short expiry instead) | D6 | S1 | L | review |
+| T-042 | ~~Minimal tag profile — opaque bytes + `bytes-equal` (DEC-004 minimum)~~ **Subsumed** by `SPEC-0003` `delegation: 1`, as `R-0006` §4.7 argued: the engine compares a `delegation: 1` hop with what the delegator holds by KSA-CBOR bytes and nothing else (`reduce._same`); equal range → followed, narrower or permuted → refused, fails closed (`test_paths.py::test_delegation_same_is_bytes_equal`); `delegation: 2` narrows (`…scoped_narrows…`). **DEC-004 stays open**: this realises the floor over attribute ranges and selects no tag-language option (DL-0041) | D6 | S1 | M | review — subsumed |
 | T-043 | *k*-of-*n* threshold subjects, keys only, no nesting | D6 | S2 | L | todo |
 | T-044 | Statement acceptance (§4.3 step 3), kept separate from reduction — the verdict's `acceptance` line is already separate (W-1); template conformance only | D6 | S2 | M | doing |
 | T-045 | ~~Verifier output reports the three separately (R-O-06)~~ — done: the six-line verdict (integrity, authenticity, names, authorization, acceptance, semantics), W-1; `fixtures/golden/` | D6 | S2 | M | done |
 | T-046 | ~~Published test vectors under `spec/vectors/`~~ — done: `spec/vectors/ksa-core/` TV-1…20, N-1…11, E-1…4, checked in CI. `spec/vectors/README.md` still says "empty until DEC-002" | D6 | S1 | M | done |
-| T-047 | **Demo: chain reduces; break a link; verifier explains which and why** — `demo/slice.sh` breaks a link and the verdict names it, **for one hop**; a chain needs delegation in the engine (T-041 / W-3) | D6 | all | M | doing |
+| T-047 | **Demo: chain reduces; break a link; verifier explains which and why** — `demo/slice.sh` ④–⑥: you root yourself (`root add --depth 1`), `mofn delegate` to the key holder for 30 days → green through the chain; 31 days on → `authorization fail` naming *me → key holder* (`not-valid-at-time`); a delegation outside what you hold → names the link (`widening`). Goldens `chain-*.txt`; DL-0041 | D6 | all | M | review |
 
 ## I4 — Mappings & app · Nov 12–25 · D7
 
@@ -210,8 +213,8 @@ before it runs.**
 |---|---|---|---|---|---|---|
 | W-1 | ~~**Wallet engine v0**~~ — done: #65 closed 2026-11-04 (PRs #122, #125); `mofn` CLI, KSA-CBOR, V1–V9, six-line verdict, signature checking inside `check` | #65 | D6 | S1 | XL | done |
 | W-2 | **Second domain** — one-page scenario per MD-1 target (supply chain, archives/library) incl. the fail-authorization case and three personas; archives domain file v0 (`record-review`, renderings table, `--lang es`); five-view sketches replacing Product Spec §6.5 | #66 | D6/D8 | PL | L | review — APP-0002/0003 scenarios, `domains/archives/` through the same `make`/`check` with no engine change, `--lang` (wallet 0.4.0), APP-0004 sketches, PLAN-0002 0.4.0 §6.5 (DL-0032). Oct 14 part was 4 weeks late |
-| W-2b | **Converge the archives vocabularies — starts when W-3 merges.** DV-3 `library-review` (#152, vector) and `archives` v1 (#154, demo) become one published vocabulary (e.g. `library-review` v2 + `summarized`); the demo moves to it with its delegation path; `domains/archives/` retired or regenerated; APP-0003 § Setup/Steps and goldens updated (APP-0003 § *Two archives vocabularies*, DL-0033) | #66 | D6/D8 | PL | M | blocked — on W-3 (#67) |
-| W-3 | **Delegation with short expiry** — `may-speak` chains in `reduce`, intersecting topic *and* validity; expired or out-of-topic → `authorization FAIL` naming the broken link. **Short expiry is the revocation mechanism**; there is no revocation list | #67 | D6 | PL | L | todo — Nov 11 |
+| W-2b | **Converge the archives vocabularies — starts when W-3 merges.** DV-3 `library-review` (#152, vector) and `archives` v1 (#154, demo) become one published vocabulary (e.g. `library-review` v2 + `summarized`); the demo moves to it with its delegation path; `domains/archives/` retired or regenerated; APP-0003 § Setup/Steps and goldens updated (APP-0003 § *Two archives vocabularies*, DL-0033) | #66 | D6/D8 | PL | M | todo — **unblocked**: W-3's engine is in review (wallet 0.7.0); starts when it merges |
+| W-3 | **Delegation with short expiry** — delegation chains (`trust … about` with `may-delegate`; the issue's `may-speak` wording is retired, DL-0025) in `reduce`, intersecting topic *and* validity; expired or out-of-topic → `authorization FAIL` naming the broken link. **Short expiry is the revocation mechanism**; there is no revocation list | #67 | D6 | PL | L | review — wallet 0.7.0: engine (T-065/T-041), `mofn delegate`, `root add --depth`, slice ④–⑥ (DL-0041). Nov 11 missed by 3 days |
 | W-4 | **Weekly demo slice owner** — grow and run `demo/slice.sh` every Monday, post the output on the issue. Three cases minimum: green, `authorization FAIL`, `integrity FAIL` | #68 | D6 | S2 | M | done — slice runs from a clean clone, 5 cases × 2 codecs; weekly notes Nov 1, Nov 9; Monday cron retired when I3 ended (Nov 11), manual run kept (DL-0029); verdict wording findings → #157 |
 | W-5 | ~~**Mac GUI** — local desktop app~~ **Rescoped 2026-11-09 into `mofn run`** (`DECISIONS-0001` item 28: Textual is the UI). What #69 adds beyond W-6: on every verdict in the Check tab, the **attribute associations** — who signed (key / named principal), topic (domain + type), the subject's digest, and standing (root → delegation → key, or "no standing"). Calls the engine; reimplements no crypto | #69 | D8 | S2 | M | todo — Dec |
 | W-6 | **A way in to the engine** — a bare `mofn` prints the menu (= `mofn -h`), `mofn --version`, one line for a missing dependency; `mofn run`, the wallet as a terminal app — forms for keys, trust, sign and check, each showing the command it runs, and a Learn tab that runs nothing; DV-1 ships as the example vocabulary (0.2.0, DL-0023); `key list`, `key export`, `hash` from `gpg`, the rest of `gpg` mapped or left out (DL-0022); `ci.yml` on Linux, macOS and Windows. Chip: `release.yml`, one self-contained build per OS, `SHA256SUMS`, pre-releases from `wallet-v0.2.0` (David's half lands as one PR, `feat/w6-tui`, so `main` never holds 0.1.0 and there is no `wallet-v0.1.0`). Prototype only; `src/` stays empty | #127 | D6 | S1 engine, S2 release | L | doing — Nov 11 |

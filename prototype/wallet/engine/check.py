@@ -6,7 +6,8 @@
    digest, and the integrity line also checks that a verified attestation is
    about it (SPEC-0004 §10.4, as proposed in 0.2.0).
 3. Load the definition and check it is obtained, conforming and attributed.
-4. Coverage against this context's anchors (`reduce.py`).
+4. Coverage against this context's anchors (`reduce.py`), through any
+   delegation path the handed trust statements make (SPEC-0004 §6).
 5. Six verdict lines (SPEC-0004 §10.4). The answer is yes only if all six
    pass.
 
@@ -87,8 +88,17 @@ class Answer:
                                 "accepted-by": name(c.anchor.accepted_by),
                                 "key": name(c.anchor.trusts),
                                 "kid": c.anchor.trusts.hex(),
-                                "scope": {c.scope[1][2]: c.scope.get(3, "any")},
+                                "scope": _scope_json(c.anchor.about),
                             }
+                        ]
+                        + [
+                            {
+                                "trust": h.statement.digest.hex(),
+                                "key": name(h.key),
+                                "kid": h.key.hex(),
+                                "scope": _scope_json(h.scope),
+                            }
+                            for h in c.path
                         ],
                         "covered": {c.attribute[1][2]: c.attribute[2]},
                         "checks": ["verified", "types", "valid-at-time", "coverage"],
@@ -101,6 +111,7 @@ class Answer:
                         "attribute": {s.attribute[1][2]: s.attribute[2]},
                         "reason": s.code,
                         "detail": s.detail,
+                        **({"link": s.link.digest.hex()} if s.link else {}),
                     }
                 )
         for h in self.handed:
@@ -146,6 +157,10 @@ class Answer:
         }
 
 
+def _scope_json(about: list[dict]) -> dict:
+    return {r[1][2]: r.get(3, "any") for r in about}
+
+
 def handed(
     name: str, envelope: bytes | None, keystore, load_error: str | None = None
 ) -> Handed:
@@ -171,6 +186,7 @@ def run(
     subject = [2, 1, hashlib.sha256(artifact).digest()]
     attestations = [v for v in verified if v.kind == 4]
     about = [a for a in attestations if a.this == subject]
+    trusts = [v for v in verified if v.kind == 5]  # delegation hops (SPEC-0004 §6.3)
 
     d, def_error = None, None
     try:
@@ -188,9 +204,10 @@ def run(
             if a not in has:
                 has.append(a)
     ask = Ask(context, subject, has, at)
-    coverage = evaluate(ask, about, anchors, held, attributed) if about else None
+    coverage = evaluate(ask, about + trusts, anchors, held, attributed) if about else None
 
-    used = about + ([define] if define else [])
+    hops = [h.statement for c in (coverage.covered if coverage else []) for h in c.path]
+    used = about + hops + ([define] if define else [])
     lines = [
         _integrity(items, attestations, about, subject),
         _authenticity(items, used, labels),
@@ -291,16 +308,23 @@ def _authorization(about, coverage, d, context, labels, lang=None) -> Line:
             if rng
             else "any value"
         )
+        speaker = c.path[-1].key if c.path else c.anchor.trusts
+        via = (
+            f", through {_chain(c.anchor, c.path, labels)}" if c.path else ""
+        )
         return Line(
             "authorization",
             "pass",
-            f"{render.key_name(c.anchor.trusts, labels)} is trusted in "
-            f"context {context} about {render.type_name(d, label, lang)} ({scope})",
+            f"{render.key_name(speaker, labels)} is trusted in "
+            f"context {context} about {render.type_name(d, label, lang)} ({scope}){via}",
         )
     s = coverage.stopped[0]
     who = render.key_name(s.statement.says, labels) if s.statement else "the speaker"
     label = s.attribute[1][2]
-    if s.code == "no-path" and s.anchor is None:
+    if s.link is not None:  # W-3: name the link that broke
+        broke = f"{render.key_name(s.link.says, labels)} → {render.key_name(s.statement.says, labels)}"
+        text = f"the delegation {broke} is broken: {s.detail} ({s.code})"
+    elif s.code == "no-path" and s.anchor is None:
         text = (
             f"{who} was never given the right to say this: no anchor in context {context} trusts it "
             f"about {render.type_name(d, label, lang)}"
@@ -313,6 +337,11 @@ def _authorization(about, coverage, d, context, labels, lang=None) -> Line:
     else:
         text = f"{s.detail} ({s.code})"
     return Line("authorization", "fail", text)
+
+
+def _chain(anchor, path, labels) -> str:
+    keys = [anchor.trusts] + [h.key for h in path]
+    return " → ".join(render.key_name(k, labels) for k in keys)
 
 
 def _acceptance(about, held, lang=None) -> Line:
