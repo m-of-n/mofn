@@ -1,0 +1,12 @@
+kind: define
+suite: ksa-ed25519-sha256
+says: '0xd5f0b21718b21f79648f7f4a0325288209e6fd37fa2f90f9d29c4229e371f8c7'
+this: {definition: '0xb57a38821635d7637373727904c01d8d0dc82496293bf6217a070825d71f8be2'}
+valid:
+  not before: "2026-10-09T00:00:00Z"
+  issued: "2026-10-09T09:00:00Z"
+body:
+  name: library-review
+  version: "2"
+signed:
+  value: '0x5ecfc5f57fb34ef5346d47d544610f9790db6c8c56cc8b04418fc7bfc724541f8692597dc156b5af81d332d09161008111fc4a7e12751b7c00029aa55c6f090e'

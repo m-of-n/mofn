@@ -69,6 +69,17 @@ a work identified by its title, with its URL carried as a `locator` attribute.
 E-5 (yes), E-6 (`no-path`, UC-3's must-fail) and E-7 (yes, the description
 target) are in `evaluations`.
 
+**v2, the one archives vocabulary (W-2b, DL-0046).** DV-5 `library-review` v2
+(definer Dave) replaces DV-3's type `reviewed` (`yes · partial · no`) with
+`record-review` (`reviewed · summarized · unverified`), which the wallet demo
+ran as `archives` v1 until W-2b, and keeps `work`, `title`, `locator` and the
+template `record-reviewed`. TV-38 is Dave's `key-publish`; TV-39 defines DV-5;
+Carol's TV-40 is the v2 anchor; TV-41 lets Bob say only `summarized` or
+`unverified`. E-20 (yes), E-21 (`no-path`: Bob says `reviewed`) and E-22 (yes,
+a description target) are in `evaluations`. DV-3 and TV-21…26 are unchanged.
+`prototype/wallet/domains/archives/` copies DV-5, TV-38 and TV-39 and is
+checked against them.
+
 ## SDSI names
 
 DV-4 `naming` (definer Alice) has one type, `name`, of base kind 12 (`SPEC-0003`

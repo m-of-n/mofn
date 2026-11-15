@@ -1,23 +1,27 @@
-# domains/archives — the second domain (mofn#66, W-2)
+# domains/archives — the second domain (mofn#66, W-2, W-2b)
 
-The archives / library vocabulary of PLAN-0004 §3, and the files its author
-publishes. Scenario: `project/APP-0003-scenario-archives.md`. Design record:
-`design-log/0033-second-domain/`.
+The archives / library vocabulary of PLAN-0004 §3, as the wallet runs it.
+Scenario: `project/APP-0003-scenario-archives.md`. Design record:
+`design-log/0033-second-domain/` (v0) and `design-log/0046-archives-converge/`
+(W-2b).
 
 **The claim it tests:** one engine, two unrelated domains. This directory
-runs through the same `mofn make` and `mofn check` as DV-1, and **no engine
-code changed** for it: the commit that adds it touches nothing under
-`engine/` or `cli.py`. `--lang` arrived in the commit before it, as engine
-work allowed on 2026-11-09 (DL-0033), and works for every domain alike.
+runs through the same `mofn make`, `mofn delegate` and `mofn check` as DV-1,
+and **no engine code changed** for it.
+
+**Since W-2b there is one archives vocabulary:** the published DV-5
+`library-review` v2 (`spec/vectors/ksa-core`). Every vocabulary file here is a
+byte-for-byte copy of a vector, as `fixtures/` is for DV-1. The demo's own
+`archives` v1 and its archivist key are retired.
 
 | file | what it is |
 |---|---|
-| `archives.def` | definition `archives` v1: type `record-review` (`reviewed`, `summarized`, `unverified`), template `record-attestation`. Every word in English and Spanish |
-| `archivist.pub.stmt` | the definer's key-publish. The seed is published in `generate.py`: an example key only |
-| `archivist-define.stmt` | the define statement that says `archives.def` is the archivist's. `check` needs it, or semantics fails |
+| `library-review.def` | DV-5: type `record-review` (`reviewed`, `summarized`, `unverified`), plus `work`, `title`, `locator`, template `record-reviewed`. Every word of `record-review` in English and Spanish |
+| `dave.pub.stmt` | TV-38, the definer's key-publish. Dave's seed is published in the vectors: an example key only |
+| `dave-define.stmt` | TV-39, the define statement that says DV-5 is Dave's. `check` needs it, or semantics fails |
 | `record.yaml` | the subject: library record `w3c-prov-dm`, copied byte for byte from library@6dcbdb0 and frozen |
 | `golden/` | `check` outputs pinned by `tests/test_archives.py` |
-| `generate.py` | writes the first three; `--check` fails if any byte differs |
+| `generate.py` | copies the first three out of `vectors.json`; `--check` fails if any byte differs |
 
 `.stmt.yaml` files are the same statements in the review codec.
 
@@ -29,37 +33,52 @@ work allowed on 2026-11-09 (DL-0033), and works for every domain alike.
 | `reviewed` | read against its source and confirmed | cotejado con su fuente y confirmado |
 | `summarized` | summarized, but not read against its source | resumido, pero no cotejado con su fuente |
 | `unverified` | not checked against its source | no cotejado con su fuente |
-| sentence | {says} attests that the library record {this} was {record-review}. | {says} atestigua que el registro de la biblioteca {this} fue {record-review}. |
+| sentence | {says} attests that {this} was {record-review}. | {says} atestigua que {this} fue {record-review}. |
 
 ## Run it
 
-From `prototype/wallet`, in a scratch folder. Two issuers sign the same
-claim; the researcher trusts only the reviewer for `reviewed`.
+From `prototype/wallet`, in a scratch folder. The researcher anchors only the
+library lead, who delegates for 30 days: the reviewer for every value, the
+ingest agent for `summarized` and `unverified` only. Both issuers sign
+`reviewed`.
 
 ```sh
-M="$PWD/.venv/bin/python $PWD/mofn"; D=$PWD/domains/archives
+M="$PWD/.venv/bin/python $PWD/mofn"; D=$PWD/domains/archives; DEF=$D/library-review.def
 mkdir -p /tmp/mofn-archives && cd /tmp/mofn-archives && cp $D/record.yaml .
+$M --wallet w/lead init && $M --wallet w/lead key gen lead -o lead.pub.stmt
 $M --wallet w/reviewer init && $M --wallet w/reviewer key gen reviewer -o reviewer.pub.stmt
 $M --wallet w/agent init && $M --wallet w/agent key gen agent --controller service -o agent.pub.stmt
 for who in reviewer agent; do
-  $M --wallet w/$who make --as $who --subject record.yaml --def $D/archives.def \
+  $M --wallet w/$who make --as $who --subject record.yaml --def $DEF \
      --type record-review --value reviewed -o $who.stmt
 done
+$M --wallet w/lead key import reviewer.pub.stmt --label Reviewer
+$M --wallet w/lead key import agent.pub.stmt --label "ingest agent"
+$M --wallet w/lead delegate Reviewer --as lead --def $DEF --type record-review \
+   --values reviewed,summarized,unverified --valid-days 30 -o lead-reviewer.stmt
+$M --wallet w/lead delegate "ingest agent" --as lead --def $DEF --type record-review \
+   --values summarized,unverified --valid-days 30 -o lead-agent.stmt
 $M --wallet w/rp init && $M --wallet w/rp key gen researcher -o rp.pub.stmt
-$M --wallet w/rp key import $D/archivist.pub.stmt --label "Archivist (definer)"
+$M --wallet w/rp key import $D/dave.pub.stmt --label "Dave (definer)"
+$M --wallet w/rp key import lead.pub.stmt --label "Library lead"
 $M --wallet w/rp key import reviewer.pub.stmt --label Reviewer
 $M --wallet w/rp key import agent.pub.stmt --label "ingest agent"
-A="--as researcher --def $D/archives.def --type record-review --context library"
-$M --wallet w/rp root add Reviewer $A --values reviewed,summarized,unverified
-$M --wallet w/rp root add "ingest agent" $A --values summarized,unverified
-C="$D/archivist-define.stmt --artifact record.yaml --def $D/archives.def --context library"
-$M --wallet w/rp check reviewer.stmt $C              # answer: yes         golden/reviewed.txt
-$M --wallet w/rp check agent.stmt $C                 # authorization fail  golden/agent-not-entitled.txt
-$M --wallet w/rp --lang es check agent.stmt $C       # the same, in Spanish golden/agent-not-entitled-es.txt
+$M --wallet w/rp root add "Library lead" --as researcher --def $DEF --type record-review \
+   --values reviewed,summarized,unverified --depth 1 --context library
+C="$D/dave-define.stmt --artifact record.yaml --def $DEF --context library"
+$M --wallet w/rp check reviewer.stmt lead-reviewer.stmt $C          # yes                 golden/reviewed.txt
+$M --wallet w/rp check agent.stmt lead-agent.stmt $C                # authorization fail  golden/agent-not-entitled.txt
+$M --wallet w/rp --lang es check agent.stmt lead-agent.stmt $C      # the same, Spanish   golden/agent-not-entitled-es.txt
 ```
 
-The deciding line of the second check:
+`tests/test_archives.py` also pins the agent signing `summarized` (yes,
+`golden/agent-summarized.txt`) and the reviewer's chain checked 31 days on
+(the delegation has expired, `golden/reviewer-expired.txt`).
+
+The deciding lines:
 
 ```
+authorization  pass           Reviewer is trusted in context library about record review (reviewed, summarized, unverified), through Library lead → Reviewer
 authorization  fail           ingest agent is trusted in context library, but not about record review = reviewed
+authorization  fail           the delegation Library lead → Reviewer is broken: the delegation has expired (not-valid-at-time)
 ```

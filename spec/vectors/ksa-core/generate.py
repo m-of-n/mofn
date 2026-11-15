@@ -432,6 +432,101 @@ NAME_EVALS = [
      "Bob is Alice's fred, not Carol's builder: a name grants nothing to the keys it passes through"),
 ]
 
+# ---------------------------------------------------------------- archives v2 (W-2b; DL-0046)
+# One archives vocabulary: DV-5 `library-review` v2 takes the wallet demo's
+# `record-review` (reviewed · summarized · unverified) in place of DV-3's
+# `reviewed` (yes · partial · no), and keeps DV-3's `work`, `title` and
+# `locator` and its digest-or-description template. DV-3 and TV-21…26 stay
+# published and byte-identical; v2 supersedes v1 by version, not by edit.
+RR_VALUES = [
+    {1: "reviewed", 2: {"en": "Reviewed", "es": "Revisado"},
+     3: {"en": "read against its source and confirmed",
+         "es": "cotejado con su fuente y confirmado"}},
+    {1: "summarized", 2: {"en": "Summarized", "es": "Resumido"},
+     3: {"en": "summarized, but not read against its source",
+         "es": "resumido, pero no cotejado con su fuente"}},
+    {1: "unverified", 2: {"en": "Unverified", "es": "Sin verificar"},
+     3: {"en": "not checked against its source",
+         "es": "no cotejado con su fuente"}},
+]
+DV5 = {
+    1: kid("dave"), 2: "library-review", 3: "2",
+    5: [
+        [1, {1: "record-review", 2: 1,
+             3: {"en": "Record review", "es": "Revisión del registro"},
+             4: {"en": "How far a library record was checked against its source.",
+                 "es": "Hasta qué punto se cotejó un registro de la biblioteca con su fuente."},
+             6: RR_VALUES,
+             8: 2,
+             9: [{1: "source",
+                  2: {"en": "Do the bytes that were read have the digest the record names?",
+                      "es": "¿Tienen los bytes leídos el resumen que nombra el registro?"}}]}],
+        [1, {1: "title", 2: 3, 3: {"en": "Title"}, 4: {"en": "The work's title as published."}, 8: 0}],
+        [1, {1: "work", 2: 9,
+             3: {"en": "Work", "es": "Obra"},
+             4: {"en": "A published work, identified by its description.",
+                 "es": "Una obra publicada, identificada por su descripción."},
+             8: 0,
+             11: [{1: "title", 2: {2: "title"}, 3: True,
+                   4: {"en": "Title"}, 5: {"en": "The title as published."}}]}],
+        [1, {1: "locator", 2: 3,
+             3: {"en": "Locator", "es": "Localizador"},
+             4: {"en": "Where a copy may be found. Evidence, not identity.",
+                 "es": "Dónde puede hallarse una copia. Indicio, no identidad."},
+             8: 0}],
+        [2, {1: "record-reviewed", 2: 4,
+             3: {1: [T_DIGEST, 6]},
+             4: [{1: {2: "record-review"}, 2: True}, {1: {2: "locator"}, 2: False}],
+             5: 365 * 86400,
+             8: {"en": "{says} attests that {this} was {record-review}.",
+                 "es": "{says} atestigua que {this} fue {record-review}."},
+             9: {"en": "Record reviewed", "es": "Registro revisado"}}],
+    ],
+}
+DV5_BYTES = enc(DV5)
+DV5_ID = hashlib.sha256(DV5_BYTES).digest()
+DEFS["DV-5"] = ("definition `library-review` v2, definer Dave; supersedes DV-3", DV5_BYTES, DV5_ID)
+l2ref = lambda label: {1: DV5_ID, 2: label}
+WORK2 = [6, l2ref("work"), {"title": "Simple Public Key Certificate"}]
+REC2_TPL = {1: DV5_ID, 2: "record-reviewed"}
+def rec2_attest(signer, value, issued, this=None, extra=()):
+    body = {1: [{1: l2ref("record-review"), 2: value}, *extra], 3: REC2_TPL}
+    return statement("attestation", signer, this or [T_DIGEST, SHA256, RECORD], body,
+                     {**LIB_VALID, 3: t(issued)})
+def rr_trust(signer, to, rng, issued, deleg=None):
+    body = {1: [{1: l2ref("record-review"), **({3: rng} if rng else {})}]}
+    if deleg is not None: body[2] = deleg
+    return statement("trust", signer, [T_KEY, kid(to)], body, {**LIB_VALID, 3: t(issued)})
+
+add("TV-38", "dave", statement("key-publish", "dave", [T_KEY, kid("dave")],
+    {1: {1: 1, 2: K["dave"][1]}},
+    {1: t("2026-10-09T00:00:00Z"), 3: t("2026-10-09T08:30:00Z")}),
+    "key-publish: Dave, definer of DV-3 and DV-5, publishes his key, so a wallet can know it before it trusts anything he says", carry_pub=True)
+add("TV-39", "dave", statement("define", "dave", [T_DEFINITION, DV5_ID],
+    {1: "library-review", 2: "2"},
+    {1: t("2026-10-09T00:00:00Z"), 3: t("2026-10-09T09:00:00Z")}),
+    "define: Dave publishes definition DV-5 `library-review` v2")
+add("TV-40", "carol", rr_trust("carol", "dave", None, "2026-10-09T09:30:00Z", deleg={1: 1}),
+    "trust: Carol trusts Dave about record-review (unbounded), may delegate depth 1; her v2 anchor in context `library`")
+add("TV-41", "dave", rr_trust("dave", "bob", ["summarized", "unverified"], "2026-10-09T10:00:00Z"),
+    "trust: Dave delegates record-review in {summarized, unverified} to Bob: he may summarise, not review")
+add("TV-42", "bob", rec2_attest("bob", "reviewed", "2026-10-09T11:00:00Z"),
+    "attestation: Bob says the record has record-review = reviewed, from template record-reviewed; outside his scope")
+add("TV-43", "bob", rec2_attest("bob", "summarized", "2026-10-09T11:30:00Z"),
+    "attestation: Bob says the record has record-review = summarized, from template record-reviewed")
+add("TV-44", "dave", rec2_attest("dave", "reviewed", "2026-10-09T12:00:00Z", this=WORK2,
+    extra=({1: l2ref("locator"), 2: "https://www.rfc-editor.org/rfc/rfc2693"},)),
+    "attestation about a DESCRIPTION target under DV-5: Dave says the work titled \"Simple Public Key Certificate\" has record-review = reviewed")
+
+LIB2_EVALS = [
+    ("E-20", ["TV-41", "TV-43"], "record", "summarized", "yes", None, None,
+     "TV-40 → TV-41: Bob is within scope for summarized"),
+    ("E-21", ["TV-41", "TV-42"], "record", "reviewed", "no", "no-path", "TV-42",
+     "UC-3's must-fail under v2: Bob, delegated only {summarized, unverified}, asserts reviewed"),
+    ("E-22", ["TV-44"], "work-v2", "reviewed", "yes", None, None,
+     "Dave, anchored directly, attests a description target under DV-5"),
+]
+
 # ---------------------------------------------------------------- negative vectors
 N = {}
 def bad(name, env, why, step):
@@ -528,7 +623,11 @@ out = {
                    | {e: {"anchor": "TV-22", "context": "library", "statements": s,
                           "ask": {"this": this, "reviewed": val}, "at": LIB_AT,
                           "answer": ans, "reason": why, "at_statement": at_s, "note": note}
-                      for e, s, this, val, ans, why, at_s, note in LIB_EVALS},
+                      for e, s, this, val, ans, why, at_s, note in LIB_EVALS}
+                   | {e: {"anchor": "TV-40", "context": "library", "statements": s,
+                          "ask": {"this": this, "record-review": val}, "at": LIB_AT,
+                          "answer": ans, "reason": why, "at_statement": at_s, "note": note}
+                      for e, s, this, val, ans, why, at_s, note in LIB2_EVALS},
     "record_sha256": hx(RECORD),
     # Kept out of `evaluations`: those are walked by the test-only delegation walker,
     # these by the engine (T-040).
@@ -565,6 +664,11 @@ md += ["", "### Archives evaluations (ARCH-0001 §2.3.2; UC-3)", "",
        "`record` is the digest target `sha-256:` of the record; `work` is TV-26's description target.", "",
        "| eval | statements | subject | value | answer | reason | at |", "|---|---|---|---|---|---|---|"]
 md += [f"| {e} | {', '.join(s)} | {this} | {val} | **{ans}** | {why or '—'} | {at_s or '—'} |" for e, s, this, val, ans, why, at_s, _ in LIB_EVALS]
+md += ["", "### Archives v2 evaluations (DV-5; W-2b)", "",
+       f"Anchor TV-40 in context `library`; ask: does the subject have `record-review` = the value shown, at {LIB_AT}. "
+       "`record` is as above; `work-v2` is TV-44's description target.", "",
+       "| eval | statements | subject | value | answer | reason | at |", "|---|---|---|---|---|---|---|"]
+md += [f"| {e} | {', '.join(s)} | {this} | {val} | **{ans}** | {why or '—'} | {at_s or '—'} |" for e, s, this, val, ans, why, at_s, _ in LIB2_EVALS]
 md += ["", "### Name resolutions (SPEC-0004 §5.3; mofn#143)", "",
        "DV-4 held; every statement listed is in the statement set.", "",
        "| res | name | statements | at | keys | reason | case |", "|---|---|---|---|---|---|---|"]

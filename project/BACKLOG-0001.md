@@ -7,9 +7,9 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.14.0"
+version: "0.14.1"
 date: "2026-09-16"
-updated: "2026-11-14"
+updated: "2026-11-15"
 needs_review: true
 reviewed: false
 canonical_path: project/BACKLOG-0001.md
@@ -213,7 +213,7 @@ before it runs.**
 |---|---|---|---|---|---|---|
 | W-1 | ~~**Wallet engine v0**~~ — done: #65 closed 2026-11-04 (PRs #122, #125); `mofn` CLI, KSA-CBOR, V1–V9, six-line verdict, signature checking inside `check` | #65 | D6 | S1 | XL | done |
 | W-2 | **Second domain** — one-page scenario per MD-1 target (supply chain, archives/library) incl. the fail-authorization case and three personas; archives domain file v0 (`record-review`, renderings table, `--lang es`); five-view sketches replacing Product Spec §6.5 | #66 | D6/D8 | PL | L | review — APP-0002/0003 scenarios, `domains/archives/` through the same `make`/`check` with no engine change, `--lang` (wallet 0.4.0), APP-0004 sketches, PLAN-0002 0.4.0 §6.5 (DL-0032). Oct 14 part was 4 weeks late |
-| W-2b | **Converge the archives vocabularies — starts when W-3 merges.** DV-3 `library-review` (#152, vector) and `archives` v1 (#154, demo) become one published vocabulary (e.g. `library-review` v2 + `summarized`); the demo moves to it with its delegation path; `domains/archives/` retired or regenerated; APP-0003 § Setup/Steps and goldens updated (APP-0003 § *Two archives vocabularies*, DL-0033) | #66 | D6/D8 | PL | M | todo — **unblocked**: W-3's engine is in review (wallet 0.7.0); starts when it merges |
+| W-2b | **Converge the archives vocabularies — starts when W-3 merges.** DV-3 `library-review` (#152, vector) and `archives` v1 (#154, demo) become one published vocabulary (e.g. `library-review` v2 + `summarized`); the demo moves to it with its delegation path; `domains/archives/` retired or regenerated; APP-0003 § Setup/Steps and goldens updated (APP-0003 § *Two archives vocabularies*, DL-0033) | #66 | D6/D8 | PL | M | review — DV-5 `library-review` v2 (`reviewed · summarized · unverified`, ndewedo-newbury 2026-11-15), TV-38…44, E-20…22; SPEC-0002 0.10.0; `domains/archives/` copies DV-5; demo trusts the library lead, who delegates (W-3); APP-0003 0.2.0; DL-0046. **Left:** ARCH-0001 §2.3.2 AR-1…3 still cite DV-3 (propose-arch); APP-0004 redraw in I5 |
 | W-3 | **Delegation with short expiry** — delegation chains (`trust … about` with `may-delegate`; the issue's `may-speak` wording is retired, DL-0025) in `reduce`, intersecting topic *and* validity; expired or out-of-topic → `authorization FAIL` naming the broken link. **Short expiry is the revocation mechanism**; there is no revocation list | #67 | D6 | PL | L | review — wallet 0.7.0: engine (T-065/T-041), `mofn delegate`, `root add --depth`, slice ④–⑥ (DL-0041). Nov 11 missed by 3 days |
 | W-4 | **Weekly demo slice owner** — grow and run `demo/slice.sh` every Monday, post the output on the issue. Three cases minimum: green, `authorization FAIL`, `integrity FAIL` | #68 | D6 | S2 | M | done — slice runs from a clean clone, 5 cases × 2 codecs; weekly notes Nov 1, Nov 9; Monday cron retired when I3 ended (Nov 11), manual run kept (DL-0029); verdict wording findings → #157 |
 | W-5 | ~~**Mac GUI** — local desktop app~~ **Rescoped 2026-11-09 into `mofn run`** (`DECISIONS-0001` item 28: Textual is the UI). What #69 adds beyond W-6: on every verdict in the Check tab, the **attribute associations** — who signed (key / named principal), topic (domain + type), the subject's digest, and standing (root → delegation → key, or "no standing"). Calls the engine; reimplements no crypto | #69 | D8 | S2 | M | todo — Dec |
