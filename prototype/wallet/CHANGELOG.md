@@ -15,6 +15,20 @@ The wallet engine and its `mofn` command line, `prototype/wallet/` (#65, #127).
 Every release is a prototype: DEC-004 and DEC-005 are open; do not use real
 keys.
 
+## 0.8.1 — 2026-11-16
+
+Prototype: DEC-004 and DEC-005 are open; do not use real keys.
+
+The first release you can download (#127 S2, W-6, DL-0043). No engine,
+command or output change.
+
+- `release.yml` builds one PyInstaller file each for Linux x86-64 and macOS
+  arm64, smoke-tests each on a runner with no checkout, and publishes them as a
+  pre-release with `SHA256SUMS` and a build-provenance attestation. Windows is
+  built and tested but not published.
+- How to download and check a file: APP-0005 *Install the wallet* on Pages;
+  the README's Install section points there.
+
 ## 0.8.0 — 2026-11-16
 
 Prototype: DEC-004 and DEC-005 are open; do not use real keys.

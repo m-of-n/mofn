@@ -13,40 +13,22 @@ decisions posted on it; the design record is `design-log/0016-wallet-engine-v0/`
 > **Prototype.** DEC-004 and DEC-005 are open. Do not use real keys, and do
 > not rely on a verdict.
 
-Each pre-release on the [releases page](https://github.com/m-of-n/mofn/releases)
-(tags `wallet-vX.Y.Z`) has one file per OS and a `SHA256SUMS`. Each file is
-the whole of `mofn`, `mofn run` included, with its own Python and PyNaCl
-inside. Nothing else needs installing (#127 §6, DL-0043).
+Each pre-release (tags `wallet-vX.Y.Z`,
+[releases](https://github.com/m-of-n/mofn/releases?q=wallet-v&expanded=true))
+has one file each for macOS arm64 and Linux x86-64, `SHA256SUMS`, and a
+build-provenance attestation. Each file is the whole of `mofn`, `mofn run`
+included, with its own Python and PyNaCl inside. Windows is built and tested
+but not published (#127 D3).
 
-| file | for |
-|---|---|
-| `mofn-X.Y.Z-linux-x86_64` | Linux, x86-64, glibc 2.35 or later |
-| `mofn-X.Y.Z-macos-arm64` | macOS on Apple silicon |
-| `mofn-X.Y.Z-windows-x86_64.exe` | Windows, x86-64 |
-
-Download the file for your OS and `SHA256SUMS` into one folder, then:
+**How to download, check and run one:
+[APP-0005 *Install the wallet*](https://m-of-n.github.io/mofn/project/APP-0005-install-wallet/)**
+(`project/APP-0005-install-wallet.md`). In short:
 
 ```sh
-sha256sum --ignore-missing -c SHA256SUMS      # macOS: shasum -a 256 --ignore-missing -c SHA256SUMS
-chmod +x mofn-*                               # not on Windows
-./mofn-X.Y.Z-linux-x86_64 --version           # what this mofn is built from
-./mofn-X.Y.Z-linux-x86_64                     # the menu
+shasum -a 256 --ignore-missing -c SHA256SUMS          # Linux: sha256sum
+gh attestation verify mofn-X.Y.Z-macos-arm64 -R m-of-n/mofn
+chmod +x mofn-* && ./mofn-X.Y.Z-macos-arm64 --version && ./mofn-X.Y.Z-macos-arm64
 ```
-
-On Windows: `certutil -hashfile mofn-X.Y.Z-windows-x86_64.exe SHA256`, compare
-with its line in `SHA256SUMS`, then `.\mofn-X.Y.Z-windows-x86_64.exe --version`.
-
-The checksum only shows that the file is the one the release built. The files
-are **not signed**: how releases are signed is open (#127). macOS and Windows
-will say the developer is unknown. On macOS a file a browser downloaded will
-not open until you clear its quarantine mark:
-`xattr -d com.apple.quarantine mofn-X.Y.Z-macos-arm64` (a `curl -LO` download
-has none). Each file unpacks itself to a temporary folder when it starts, so
-the first command takes a second or two.
-
-Rename the file to `mofn` and put it on your `PATH` if you like. Then
-`mofn run` opens the wallet as a terminal app, and first run offers the
-example vocabulary, so you can sign and check without a clone (below).
 
 To build one yourself, as `release.yml` does:
 

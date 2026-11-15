@@ -17,7 +17,9 @@ empty.
 | `prototype/wallet/requirements-release.txt` | `-r requirements.txt` plus `pyinstaller==6.22.3`, `pyinstaller-hooks-contrib==2026.10`, `cffi==2.1.1` |
 | `prototype/wallet/release/smoke.sh` | the smoke test, run where there is no checkout |
 | `prototype/wallet/release/pty_run.py` | opens `mofn run` in a pty, opens Learn, quits on ctrl+q |
-| `prototype/wallet/README.md` | Install section; two rows in the file table |
+| `project/APP-0005-install-wallet.md` | the download page on Pages: download, `SHA256SUMS`, `gh attestation verify`, run, macOS quarantine (#127 D5) |
+| `prototype/wallet/README.md` | a short Install section linking APP-0005; two rows in the file table |
+| `prototype/wallet/engine/__init__.py`, `CHANGELOG.md` | 0.7.1, the first release (#127 D4) |
 | `demo/slice.sh` | `$MOFN_BIN`: run a built `mofn` instead of the source |
 | `.gitignore` | `prototype/wallet/build/`, `dist/` |
 
@@ -27,7 +29,8 @@ empty.
    (`engine/__init__.py`), and `CHANGELOG.md` must have a
    `## X.Y.Z — YYYY-MM-DD` heading for it.
 2. `build` — on `ubuntu-22.04` (glibc 2.35, so the file runs on newer
-   distributions), `macos-latest` (arm64) and `windows-latest`. Python 3.12,
+   distributions), `macos-14` (arm64; pinned, as #127 D1 says, so the build
+   does not move when `macos-latest` does) and `windows-latest`. Python 3.12,
    `pyinstaller mofn.spec`, then `--version` must print
    `mofn X.Y.Z (prototype)`, then `demo/slice.sh` runs against the build with
    `MOFN_BIN` (5 cases × 2 codecs; not on Windows, where `chmod 000` does
@@ -40,8 +43,12 @@ empty.
    Alice's label in place of "release machine"; then, where Python has
    `pty` (Linux, macOS), `pty_run.py` opens `mofn run`, presses `?` for Learn
    and ctrl+q, and fails on a non-zero exit or a traceback.
-4. `release` — only on a tag: `SHA256SUMS` over exactly three files, notes =
-   that version's CHANGELOG section plus a not-signed line,
+4. `release` — only on a tag: downloads the **Linux and macOS** builds only
+   (Windows is built and smoke-tested in 2–3 but never published, #127 D3);
+   `SHA256SUMS` over exactly two files; `actions/attest-build-provenance`
+   over each (`id-token: write`, `attestations: write`; Sigstore, keyless,
+   #127 D2); notes = that version's CHANGELOG section plus the prototype
+   warning, the two checks and the APP-0005 link;
    `gh release create --prerelease --verify-tag`.
 
 A pull request touching the wallet, `demo/slice.sh` or `release.yml` runs
@@ -67,10 +74,16 @@ from the pinned venv:
 Not verified: the Linux and Windows builds (no runner here; the PR's own
 `release` run is the first). Windows gets no `mofn run` smoke (no `pty`).
 
-**The first tag is `wallet-v0.6.0`, not `wallet-v0.2.0`.** A tag push runs
-the `release.yml` *of the tagged commit*. No commit at wallet 0.2.0 has a
-`release.yml`, so `wallet-v0.2.0` on that commit would run nothing; and
-`wallet-v0.2.0` on today's commit fails step 1, because `__version__` is
-0.6.0. The intent of "from 0.2.0" was "never a 0.1.0" (BACKLOG W-6); that
-still holds. This departs from the human's wording and is flagged for them
-in `review.md`.
+**The first tag is `wallet-v0.7.1`, not `wallet-v0.2.0`.** A tag push runs
+the `release.yml` *of the tagged commit*. No commit before this one has a
+`release.yml`, so `wallet-v0.2.0` on its commit would run nothing; and
+`wallet-v0.2.0` on today's commit fails step 1. The intent of "from 0.2.0"
+was "never a 0.1.0" (BACKLOG W-6); that still holds. The first draft of this
+PR said `wallet-v0.6.0`; #127 D4 made it a PATCH bump in this change, and
+`main` was at 0.7.0 when the PR was amended.
+
+**Amend, 2026-11-15.** Rebased onto `main` `dae3cfd` (conflicts in
+`design-log/README.md`, `BACKLOG-0001.md` and `PUBLISHING.md`, resolved by
+keeping both sides). The changes for D2–D5 are listed above. Not re-verified
+locally after the amend: the attestation step and the two-file publish run
+only on a tag, so the first tag is their first run.

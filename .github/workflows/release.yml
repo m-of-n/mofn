@@ -3,13 +3,15 @@ name: release
 #
 # A `wallet-vX.Y.Z` tag builds one self-contained PyInstaller file per OS
 # (prototype/wallet/mofn.spec), smoke-tests each on a fresh runner that has no
-# checkout, and publishes them as a GitHub pre-release with SHA256SUMS. The
+# checkout, and publishes the macOS and Linux files as a GitHub pre-release
+# with SHA256SUMS and a build-provenance attestation (Sigstore, keyless). The
 # notes are that version's `## X.Y.Z — YYYY-MM-DD` section of
 # prototype/wallet/CHANGELOG.md. The tag must equal `__version__`.
 #
-# A pull request that touches the wallet, and a manual run, do everything but
-# publish. Nothing here signs the files: how releases are signed is open
-# (#127, PLAN-0004 §9).
+# Windows is built and smoke-tested, as CI, but not published: it is not a
+# release target for wallet-v0.x (#127 D3). A pull request that touches the
+# wallet, and a manual run, do everything but publish. The m-of-n statement
+# over the release's own digest is #32's, once DEC-004/DEC-005 are decided.
 on:
   push:
     tags: ['wallet-v*']
@@ -50,7 +52,8 @@ jobs:
         include:
           # 22.04 for its older glibc (2.35): the build runs on any newer one.
           - {os: ubuntu-22.04, name: linux-x86_64}
-          - {os: macos-latest, name: macos-arm64}
+          - {os: macos-14, name: macos-arm64}
+          # Built and smoke-tested only; never published (#127 D3).
           - {os: windows-latest, name: windows-x86_64, ext: .exe}
     runs-on: ${{ matrix.os }}
     defaults:
@@ -120,10 +123,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write       # Sigstore keyless signing of the attestation
+      attestations: write
     steps:
       - uses: actions/checkout@v4
+      # Windows is not a release target (#127 D3): only these two are published.
       - uses: actions/download-artifact@v4
-        with: {pattern: '*-x86_64', path: dist, merge-multiple: true}
+        with: {name: linux-x86_64, path: dist}
       - uses: actions/download-artifact@v4
         with: {name: macos-arm64, path: dist}
       - name: SHA256SUMS and the notes
@@ -131,18 +137,23 @@ jobs:
           V: ${{ needs.version.outputs.version }}
         run: |
           (cd dist && sha256sum mofn-* >SHA256SUMS && cat SHA256SUMS)
-          [ "$(grep -c . dist/SHA256SUMS)" = 3 ] || { echo "::error::wanted 3 builds"; exit 1; }
+          [ "$(grep -c . dist/SHA256SUMS)" = 2 ] || { echo "::error::wanted 2 builds"; exit 1; }
           awk -v h="## $V — " 'index($0, h) == 1 {on = 1; next} on && /^## / {exit} on' \
             prototype/wallet/CHANGELOG.md >notes.md
           cat >>notes.md <<'EOF'
 
           ---
 
-          Check a download against `SHA256SUMS` before running it: see the
-          Install section of `prototype/wallet/README.md`. These files are not
-          signed (#127, how releases are signed is open).
+          Prototype: DEC-004 and DEC-005 are open; do not use real keys.
+
+          Before running a download, check it against `SHA256SUMS` and its
+          build provenance (`gh attestation verify FILE -R m-of-n/mofn`).
+          Steps: https://m-of-n.github.io/mofn/project/APP-0005-install-wallet/
           EOF
           cat notes.md
+      - name: build provenance for each file (Sigstore, keyless)
+        uses: actions/attest-build-provenance@v2
+        with: {subject-path: 'dist/mofn-*'}
       - name: publish the pre-release
         env:
           GH_TOKEN: ${{ github.token }}
