@@ -70,6 +70,7 @@ vectors, and tooling.
 | `0037-i3-close-status` | PLAN-0004 0.4.0 §7.2: I3 closed, D6 partly met; the floor is a milestone, not an event; decisions owed by the sponsor, pointed at PLAN-0001 §12; deleting the milestone rejected | **open**: sponsor review pending |
 | `0039-sdsi-names` | T-040s (mofn#143): SDSI names — SPEC-0002 0.9.0 target type 7, SPEC-0003 0.2.0 base kind `name`, SPEC-0004 0.6.0 §5.3 resolution; TV-27…34, R-1…7, E-8…10; `ADR-0008` proposed (accepted 2026-11-13, DL-0040). Rejected: name only as trust subject, policy-listed name types, anchor-covered bindings, ambiguity as error, `widening` for names | **open**: §5.3 second-reader review owed |
 | `0040-names-resolver` | T-040: `engine/names.py` resolves SPEC-0004 §5.3 and name anchors; TV-35 and R-8…R-10 (names across a rotation); SPEC-0002 0.9.1, SPEC-0004 0.6.1, wallet 0.6.0; `ADR-0008` accepted on the human's instruction. Rejected: resolving inside coverage, the test-only walker, store-only rotation links | **open**: code review of T-040 owed |
+| `0041-w3-delegation` | W-3 / T-065 / T-041: delegation paths in `engine/reduce.py` (SPEC-0004 §6.2–§6.3, §6.5), `mofn delegate`, slice ④–⑥, wallet 0.7.0; T-042 subsumed by `delegation: 1` bytes equality (DEC-004 stays open). Rejected: a revocation list, clipping a widening, set equality for `delegation: 1`, an opaque `AuthzCert` tag, `may-speak` | **open**: code review owed |
 
 **Two ids are shared: `0007` and `0012`.** `0007-library-harness-role` and
 `0007-rejecting-decoder-spike`, and later `0012-d3-context-and-mechanism`

@@ -1,85 +1,76 @@
 """Delegation evaluations E-1..E-7 (SPEC-0004 §6.3, Appendix A; mofn#136;
 ARCH-0001 §2.3) and the DV-2/TV-13 rendered sentence (ADR-0007; T-049).
 
-The engine v0 has no delegation (engine/reduce.py), so E-1..E-7 are checked by
-`walk` below: a test-only reading of §6.3 items 1, 3, 4 and 6 for one attribute
-type, single-key anchors, no key lists and no revocation. It is not the engine.
-When the engine gains delegation, these expectations move to it unchanged.
+E-1..E-7 run through the engine (`engine/reduce.py`, T-065). Until wallet
+0.7.0 they were checked by a test-only walker here; the expectations moved to
+the engine unchanged. The failing statement of a **no** is the broken link
+when the chain broke, and otherwise the attestation.
 """
 
 import pytest
 
 from conftest import VECTORS, keystore
-from engine import definition, render
+from engine import definition, ksatime, render
+from engine.reduce import Ask, anchor_from, evaluate
 from engine.verifier import verify
 
 POS = VECTORS["positive"]
 EVALS = VECTORS["evaluations"]
 ARTIFACT = bytes.fromhex(VECTORS["artifact_sha256"])
 RECORD = bytes.fromhex(VECTORS["record_sha256"])
-ALL = None  # the unbounded range: an attribute range with no `range`
+DEFS = {
+    d.id: d
+    for d in (
+        definition.load(bytes.fromhex(v["body"]), bytes.fromhex(v["id"]))
+        for v in VECTORS["definitions"].values()
+    )
+}
+
+
+def verified(name):
+    return verify(bytes.fromhex(POS[name]["envelope"]), keystore())
 
 
 def stmt(name):
-    return verify(bytes.fromhex(POS[name]["envelope"]), keystore()).statement
+    return verified(name).statement
 
 
-def ranges(body_part):
-    return set(body_part[0][3]) if 3 in body_part[0] else ALL
-
-
-def within(a, b):
-    return b is ALL or (a is not ALL and a <= b)
+def by_digest(v):
+    return next(n for n, p in POS.items() if bytes.fromhex(p["digest"]) == v.digest)
 
 
 def subject(name):
     return {"artifact": [2, 1, ARTIFACT], "record": [2, 1, RECORD]}.get(name) or stmt("TV-26")[4]
 
 
-def walk(anchor, names, label, value, this):
-    """Return ("yes", None, None) or ("no", reason, statement-name)."""
-    a = stmt(anchor)[6]
-    # state at the anchor's key (§6.2)
-    frontier = [(stmt(anchor)[4][1], ranges(a[1]), a.get(2))]
-    trusts = {n: stmt(n) for n in names if stmt(n)[1] == 5}
-    attests = {n: stmt(n) for n in names if stmt(n)[1] == 4}
-    failure = ("no", "no-path", None)
-    seen = set()
-    while frontier:
-        key, scope, deleg = frontier.pop()
-        seen.add(key)
-        for n, s in attests.items():
-            said = {a[1][2]: a[2] for a in s[6][1]}
-            if s[3] == key and s[4] == this and said.get(label) == value:
-                if scope is ALL or value in scope:
-                    return ("yes", None, None)
-                failure = ("no", "no-path", n)  # trusted, but not about this value
-        for n, s in trusts.items():
-            if s[3] != key or s[4][1] in seen:
-                continue
-            depth = (deleg or {}).get(1, 0)
-            if deleg is None or depth < 1:  # item 3
-                failure = ("no", "depth", n)
-                continue
-            about = ranges(s[6][1])
-            allowed = ranges(deleg[2]) if 2 in deleg else scope
-            if not (within(about, scope) and within(about, allowed)):  # item 4
-                failure = ("no", "widening", n)
-                continue
-            onward = s[6].get(2)
-            if onward is not None and onward.get(1, 0) > depth - 1:  # item 6, depth
-                failure = ("no", "widening", n)
-                continue
-            frontier.append((s[4][1], about, onward))
-    return failure
+def engine_eval(e):
+    tv = verified(e["anchor"])
+    anchor = anchor_from(tv, e["context"], tv.says, 0)
+    label = next(k for k in e["ask"] if k != "this")
+    tref = next(r[1] for r in tv.body[1] if r[1][2] == label)
+    ask = Ask(e["context"], subject(e["ask"]["this"]), [{1: tref, 2: e["ask"][label]}],
+              ksatime.from_text(e["at"]))
+    return evaluate(ask, [verified(n) for n in e["statements"]], [anchor], DEFS, set(DEFS))
 
 
 @pytest.mark.parametrize("name", sorted(EVALS))
 def test_delegation_evaluation(name):
     e = EVALS[name]
-    label = next(k for k in e["ask"] if k != "this")
-    got = walk(e["anchor"], e["statements"], label, e["ask"][label], subject(e["ask"]["this"]))
-    assert got == (e["answer"], e["reason"], e["at_statement"])
+    got = engine_eval(e)
+    if got.yes:
+        assert (e["answer"], e["reason"], e["at_statement"]) == ("yes", None, None)
+        return
+    first = got.stopped[0]
+    at = by_digest(first.link or first.statement)
+    assert ("no", first.code, at) == (e["answer"], e["reason"], e["at_statement"])
+
+
+def test_e2_path_names_each_hop():
+    """§10.3: the path is the anchor and each trust statement, with the scope after it."""
+    got = engine_eval(EVALS["E-2"])
+    (c,) = got.covered
+    assert [by_digest(h.statement) for h in c.path] == ["TV-16"]
+    assert c.path[0].scope[0][3] == ["reproducible"]
 
 
 def test_evaluations_cover_depth_and_widening():

@@ -313,6 +313,7 @@ class Wallet:
                             ksatime.from_text(a["accepted at"]),
                             a["source"],
                             a.get("note"),
+                            {1: a["may delegate"]["depth"]} if "may delegate" in a else None,
                         )
                     )
         return out
@@ -348,6 +349,8 @@ class Wallet:
         }
         if anchor.note:
             entry["note"] = anchor.note
+        if anchor.may_delegate:  # depth only, from `root add --depth`
+            entry["may delegate"] = {"depth": anchor.may_delegate.get(1, 0)}
         _write(f, items + [entry])
         return f
 

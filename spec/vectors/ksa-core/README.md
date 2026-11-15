@@ -49,7 +49,8 @@ TV-14…20 are trust and attestation statements under TV-5's
 `may-delegate {depth: 1, ranges: [reproducible]}`. `vectors.json` →
 `evaluations` gives E-1…E-4: the statement set, the ask, and the SPEC-0004
 answer, reason and failing statement. These are **declared**, not computed by
-this script; `prototype/wallet/tests/test_delegation.py` checks them
+this script; `prototype/wallet/tests/test_delegation.py` checks the wallet
+engine's delegation paths (`engine/reduce.py`, T-065) against them
 (SPEC-0004 Appendix A asks 3–6; mofn#136).
 
 | eval | case | expected |

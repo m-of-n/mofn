@@ -12,6 +12,13 @@
 #   ①  authorized     the relying party anchors the issuer's key   all six pass
 #   ③  tampered       first byte of the artifact becomes X         integrity fail
 #   ②′ other key      valid signature, a different unanchored key  authorization fail
+#   ④  chain          you root yourself, delegate to that key     all six pass
+#   ⑤  chain expired  the same, checked after the delegation ends  authorization fail, names the link
+#   ⑥  chain widened  a delegation outside what you hold           authorization fail, names the link
+#
+# ④–⑥ are W-3 (mofn#67): delegation paths in the engine (SPEC-0004 §6.3). The
+# delegation is a trust statement valid for 30 days; its expiry is how it
+# ends, and there is no revocation list.
 #
 # Prerequisites: Python 3.12 or later with prototype/wallet/requirements.txt
 # installed, in prototype/wallet/.venv (see prototype/wallet/README.md "Run"),
@@ -46,6 +53,12 @@ trap unlock_wallets EXIT
 
 failures=0
 
+# in_days N — the time N days from now, as `check --at` takes it.
+in_days() {
+  "$PY" -c 'import datetime as d, sys
+print((d.datetime.now(d.timezone.utc) + d.timedelta(days=int(sys.argv[1]))).strftime("%Y-%m-%dT%H:%M:%SZ"))' "$1"
+}
+
 # mofn WALLET ARGS... — one party acting on its own wallet.
 mofn() {
   local wallet=$1
@@ -67,8 +80,9 @@ expect() {
 
   (
     cd "$HANDOVER"
-    mofn "$RP" check "$STATEMENT" "tv-3-define$SUFFIX" \
-      --artifact "$FILE" --def dv-1.def
+    # shellcheck disable=SC2086 # EXTRA and AT_ARGS are word lists on purpose
+    mofn "$RP" check "$STATEMENT" $EXTRA "tv-3-define$SUFFIX" \
+      --artifact "$FILE" --def dv-1.def --context "$CONTEXT" $AT_ARGS
   ) >"$actual" 2>&1 || got=$?
   sed "s/release machine/$label/g" "$GOLDEN/$golden.txt" >"$wanted"
 
@@ -108,9 +122,10 @@ slice() {
   # The key-holder signs the same file with its own key, which nobody anchors.
   mofn "$HOLDER" init >/dev/null
   signing "$HOLDER" key gen holder -o "$HANDOVER/holder.pub.stmt" >/dev/null
+  # 90 days, so ⑤ can be checked after the 30-day delegation has ended.
   signing "$HOLDER" make --as holder --subject "$FIXTURES/artifact.bin" \
     --def "$FIXTURES/dv-1.def" --type build-provenance --value reproducible \
-    -o "$HANDOVER/holder.stmt" >/dev/null
+    --valid-days 90 -o "$HANDOVER/holder.stmt" >/dev/null
 
   # Published vocabulary: the definition, its author's key and `define`.
   cp "$FIXTURES/dv-1.def" "$FIXTURES/tv-1-alice.pub$SUFFIX" \
@@ -126,6 +141,9 @@ slice() {
 
   STATEMENT=prov.stmt
   FILE=release.bin
+  EXTRA=
+  CONTEXT=default
+  AT_ARGS=
   expect "②b speaker's key not handed over → authenticity fail" unknown-key 1
 
   mofn "$RP" key import "$HANDOVER/build.pub.stmt" --label "release machine" >/dev/null
@@ -145,6 +163,30 @@ slice() {
   expect "②′ valid signature, a different key with no root → authorization fail" \
     unauthorized 1 "key holder"
 
+  # ④–⑥: the relying party roots its own key in context `chain`, may delegate
+  # one hop, and delegates build provenance to the key holder for 30 days.
+  CONTEXT=chain
+  mofn "$RP" root add me --as me --def "$HANDOVER/dv-1.def" \
+    --type build-provenance --values reproducible --depth 1 --context chain >/dev/null
+  signing "$RP" delegate "key holder" --as me --def "$HANDOVER/dv-1.def" \
+    --type build-provenance --values reproducible --valid-days 30 \
+    -o "$HANDOVER/delegation.stmt" >/dev/null
+  signing "$RP" delegate "key holder" --as me --def "$HANDOVER/dv-1.def" \
+    --type build-provenance --values attested --valid-days 30 \
+    -o "$HANDOVER/delegation-attested.stmt" >/dev/null
+
+  EXTRA=delegation.stmt
+  expect "④ you → key holder, 30 days → all six pass" chain-green 0 "key holder"
+
+  AT_ARGS="--at $(in_days 31)"
+  expect "⑤ the same chain, 31 days on → authorization fail names the link" \
+    chain-expired 1 "key holder"
+
+  AT_ARGS=
+  EXTRA=delegation-attested.stmt
+  expect "⑥ a delegation outside what you hold → authorization fail names the link" \
+    chain-widened 1 "key holder"
+
   chmod 700 "$ISSUER" "$HOLDER"
 }
 
@@ -158,4 +200,4 @@ if [ "$failures" -ne 0 ]; then
   echo "slice: $failures case(s) FAILED"
   exit 1
 fi
-echo "slice: 5 cases passed under each of 2 codecs"
+echo "slice: 8 cases passed under each of 2 codecs"

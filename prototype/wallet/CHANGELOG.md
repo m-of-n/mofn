@@ -15,6 +15,29 @@ The wallet engine and its `mofn` command line, `prototype/wallet/` (#65, #127).
 Every release is a prototype: DEC-004 and DEC-005 are open; do not use real
 keys.
 
+## 0.7.0 — 2026-11-14
+
+Prototype: DEC-004 and DEC-005 are open; do not use real keys.
+
+The engine follows delegation paths (W-3 / mofn#67, T-065, T-041,
+SPEC-0004 §6.2–§6.3, §6.5, DL-0041).
+
+- `reduce.evaluate`: a path starts at an anchor and follows trust statements.
+  Each hop must be valid at the evaluation time, within the delegator's topic
+  and range (and its `may-delegate` ranges), allowed by depth and key lists,
+  and must not widen. A hop that fails is kept, and the answer names it:
+  `Stopped.link` is the trust statement, `Covered.path` the hops followed.
+  **Short expiry is the revocation mechanism**; no revocation is read.
+- `delegation: 1` hops are compared by KSA-CBOR bytes, so the same range is
+  the same bytes and nothing else passes (T-042 subsumed; DEC-004 stays open).
+- `check` feeds handed trust statements to the engine; the authorization line
+  shows the chain, or the broken link (*the delegation me → key holder is
+  broken: … (not-valid-at-time)*).
+- `mofn delegate KEY --as YOU --def … --type … [--values] [--depth] [--valid-days]`
+  signs a trust statement; `root add --depth N` lets an anchor delegate.
+- `demo/slice.sh` ④–⑥: a chain green, the same chain expired, a widened link.
+- E-1…E-7 run on the engine; the test-only walker is gone.
+
 ## 0.6.0 — 2026-11-13
 
 Prototype: DEC-004 and DEC-005 are open; do not use real keys.
