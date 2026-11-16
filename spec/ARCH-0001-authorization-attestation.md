@@ -8,10 +8,10 @@ description: "Canonical working architecture for a native model that is not X.50
 type: architecture
 category: security
 status: draft
-version: "0.3.1"
+version: "0.3.2"
 version_policy: "semver; PATCH = editorial; MINOR = additive requirements; MAJOR = breaking model change"
 date: "2026-09-15"
-updated: "2026-11-12"
+updated: "2026-11-16"
 authors:
   - role: architect
     id: conversation-brainpool256
@@ -91,7 +91,7 @@ scope:
 agent_checkpoint: true
 agent_notes: >
   Other agents: treat this file as the source of truth for architecture
-  state as of v0.3.1. v0.3.1 closes the SDSI-names gap in §5.5. v0.3.0 adds §2.3, the two target applications. v0.2.0 folded ARCH-0001-PROPOSAL-v0.2.0 in (now
+  state as of v0.3.2. v0.3.2 moves §2.3.2 to DV-5 `library-review` v2. v0.3.1 closes the SDSI-names gap in §5.5. v0.3.0 adds §2.3, the two target applications. v0.2.0 folded ARCH-0001-PROPOSAL-v0.2.0 in (now
   superseded) and carried ADR-0002, ADR-0003, ADR-0007 and the T-012c
   delegation decision into §4-§7. Where SPEC-0001..0005 and this file differ,
   §5.5 lists every known gap and which side owes the change. Do not invent accepted decisions. Open items are
@@ -101,7 +101,7 @@ agent_notes: >
 
 # ARCH-0001 — Authorization, local names, and artifact attestation
 
-**Status:** draft · **Version:** 0.3.1 · **Date:** 2026-09-15 · **Updated:** 2026-11-12  
+**Status:** draft · **Version:** 0.3.2 · **Date:** 2026-09-15 · **Updated:** 2026-11-16  
 **Canonical file:** `spec/ARCH-0001-authorization-attestation.md`  
 **Changelog:** `spec/ARCH-0001-CHANGELOG.md`
 
@@ -200,23 +200,33 @@ about a statement and does not change its meaning (§6). The mapping is WP3.
 
 #### 2.3.2 Archives and library (contrast)
 
-**Domain of discourse.** Definition DV-3 `library-review`, by the library
-lead's key (Dave): the type `reviewed` (`yes` / `partial` / `no`, named in
-English and Spanish, delegable with narrowing); the record type `work` (a
-published work by its `title`), which identifies a subject that has no bytes of
-its own; the text type `locator`; the template `record-reviewed`, whose targets
-are a digest or a description. This is the corpus the project already runs
-(`library/`).
+**Domain of discourse.** Definition DV-5 `library-review` v2, by the
+definer's key (Dave): the type `record-review` (`reviewed` / `summarized` /
+`unverified`, named in English and Spanish, delegable with narrowing); the
+record type `work` (a published work by its `title`), which identifies a
+subject that has no bytes of its own; the text type `locator`; the template
+`record-reviewed`, whose targets are a digest or a description. This is the
+corpus the project already runs (`library/`).
+
+*0.3.2 (W-2b, `DL-0046`, `DL-0048`):* DV-5 replaces DV-3 `library-review` v1
+here. DV-3's type was `reviewed` (`yes` / `partial` / `no`). The wallet demo
+ran a second vocabulary with `summarized`, and the two were merged into one
+by a new version, not by an edit. DV-3, TV-21…26 and E-5…E-7 stay published
+with their results. Nothing below depends on which version is cited: both
+carry the same types apart from the review values, and both answer through
+the same procedure.
 
 | # | Worked statement | Vector | Verifier question | Answer | UC |
 |---|---|---|---|---|---|
-| AR-1 | *Carol trusts Dave about reviewed, may delegate depth 1*; *Dave trusts Bob about reviewed ∈ {partial}*; *Bob says sha-256:record has reviewed = partial* | TV-22, TV-23, TV-25; E-5 | Has this library record been checked against its source, by someone entitled to say so? | yes | UC-3 |
-| AR-2 | as AR-1, but *Bob says sha-256:record has reviewed = yes* | TV-24; E-6 | The same | no, `no-path`: Bob was delegated only `partial` | UC-3 |
-| AR-3 | *Dave says the work titled "Simple Public Key Certificate" has reviewed = yes, locator = https://www.rfc-editor.org/rfc/rfc2693* | TV-26; E-7 | Has **the work** been reviewed, whatever copy one holds? | yes. The subject is a `description` target (R-M-11), and the URL is an attribute, not the subject (`SPEC-0002` §7.2) | UC-3 |
+| AR-1 | *Carol trusts Dave about record-review, may delegate depth 1*; *Dave trusts Bob about record-review ∈ {summarized, unverified}*; *Bob says sha-256:record has record-review = summarized* | TV-40, TV-41, TV-43; E-20 | How far has this library record been checked against its source, according to someone entitled to say so? | summarized: yes | UC-3 |
+| AR-2 | as AR-1, but *Bob says sha-256:record has record-review = reviewed* | TV-42; E-21 | The same | no, `no-path`: Bob was delegated only `summarized` and `unverified` | UC-3 |
+| AR-3 | *Dave says the work titled "Simple Public Key Certificate" has record-review = reviewed, locator = https://www.rfc-editor.org/rfc/rfc2693* | TV-44; E-22 | Has **the work** been reviewed, whatever copy one holds? | yes. The subject is a `description` target (R-M-11), and the URL is an attribute, not the subject (`SPEC-0002` §7.2) | UC-3 |
 
 AR-1 and SC-2 are answered by the same procedure, and AR-1's sentence is
-rendered from DV-3 by the renderer that renders SC-1 from DV-1 (`prototype/wallet`
-tests). That is the evidence MD-1 asked the second target for.
+rendered from DV-5 by the renderer that renders SC-1 from DV-1. The wallet
+demo runs the same definition, byte for byte, through `mofn make`,
+`mofn delegate` and `mofn check` (`prototype/wallet/domains/archives/`,
+APP-0003). That is the evidence MD-1 asked the second target for.
 
 **Found, not fixed.** AR-3's subject is rendered as "a described object": the
 renderer has no rule for showing a description target (`SPEC-0003` §10 is
@@ -720,4 +730,4 @@ their common principle. It is not a reason to merge them.
 - `draft-mih-scitt-agent-action-capsule-02` — ad hoc vocabulary inside SCITT (§3.3)  
 - RFC 9580 — OpenPGP (2024): §3.7, §5.2.3.7, §5.2.3.21, §5.2.3.24, §5.2.3.29, §5.2.5, §5.5.3, §5.5.4.3 (read for §3.4)
 
-End of ARCH-0001 v0.3.1
+End of ARCH-0001 v0.3.2

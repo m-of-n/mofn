@@ -76,6 +76,7 @@ vectors, and tooling.
 | `0045-cut-order-answers` | T-013 / mofn#7: PLAN-0001 0.7.1 §12 at 2026-11-14 — rows 6, 7, 10 and 11 answered by building (#167, #168, #169), row 3 closed as absorbed; #156 merged without a standing approval, so the order is still not agreed. Rejected: moving the dates; treating the dismissed approval as sign-off |
 | `0046-archives-converge` | W-2b: one archives vocabulary — DV-5 `library-review` v2 with the demo's `reviewed · summarized · unverified` (human's choice), TV-38…44, E-20…22, SPEC-0002 0.10.0; `domains/archives/` copies the vector; the demo anchors the library lead, who delegates. Rejected: editing DV-3, keeping `archives` v1, private-key import, moving ARCH-0001 §2.3.2 here | **open**: PR review; ARCH-0001 §2.3.2 proposal owed |
 | `0047-l-041-d7-extraction` | L-041 (library#136): FX-1 extraction of `in-toto-envelope-v1`, `slsa-provenance-1-2`, `slsa-vsa-1-2` opened ahead of I4; T-051…T-053 point at it. Rejected: rewriting T-052 to v1.2, folding into library#89, duplicating `in-toto-attestation-v1` | **open**: S1 confirmation owed |
+| `0048-arch-dv5-archives` | ARCH-0001 0.3.2: §2.3.2 AR-1…AR-3 cite DV-5 `library-review` v2 (TV-40…44, E-20…E-22); UC-0001 0.2.1. PATCH under ARCH-0001's own version policy. Rejected: a proposal file, citing both versions in the table | **open**: PR review |
 
 **Two ids are shared: `0007` and `0012`.** `0007-library-harness-role` and
 `0007-rejecting-decoder-spike`, and later `0012-d3-context-and-mechanism`
