@@ -7,7 +7,7 @@ date: "2026-11-14"
 model: "claude-opus-5-5"
 human: ndewedo-newbury
 outcome: "release.yml (macOS + Linux published, Windows tested, SHA256SUMS + build provenance); mofn.spec, requirements-release.txt, release/; APP-0005 Install the wallet; README Install; demo/slice.sh MOFN_BIN; wallet 0.8.1; BACKLOG-0001 0.14.3; PLAN-0004 0.5.0."
-status: open
+status: complete
 ---
 
 # DL-0043 — question
