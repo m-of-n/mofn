@@ -7,7 +7,7 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.14.2"
+version: "0.14.3"
 date: "2026-09-16"
 updated: "2026-11-16"
 needs_review: true
@@ -188,7 +188,7 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-051 | WP3 — `MAP-0002` in-toto Statement ↔ `ArtifactStatement` | D7 | S1 | L | todo |
 | T-052 | Round-trip a real SLSA v1.1 provenance from a public release | D7 | S1 | M | todo |
 | T-053 | Record interchange losses in the §6 matrix (R-I-01) | D7 | S1 | M | todo |
-| T-054 | App packaging — ~~single-file zipapp~~ **one PyInstaller build per OS**: #127 §6 rejected zipapp (cannot load PyNaCl's extension). Lands as W-6's `release.yml` | D8 | S2 | M | todo |
+| T-054 | App packaging — ~~single-file zipapp~~ **one PyInstaller build per OS**: #127 §6 rejected zipapp (cannot load PyNaCl's extension). Lands as W-6's `release.yml`: `prototype/wallet/mofn.spec`, Linux x86-64, macOS arm64, Windows x86-64, each smoke-tested on a runner with no checkout (DL-0043). Done when the first `wallet-v*` pre-release is published | D8 | S2 | M | review |
 | T-055 | ~~Demo: valid-but-**unauthorized** key → distinct verdict~~ — done: `fixtures/golden/unauthorized.txt`; slice case ②′ | D7 | S2 | M | done |
 
 ## I5 — Polish · Nov 26–Dec 4 · D8 D9 D10
@@ -218,7 +218,7 @@ before it runs.**
 | W-3 | **Delegation with short expiry** — delegation chains (`trust … about` with `may-delegate`; the issue's `may-speak` wording is retired, DL-0025) in `reduce`, intersecting topic *and* validity; expired or out-of-topic → `authorization FAIL` naming the broken link. **Short expiry is the revocation mechanism**; there is no revocation list | #67 | D6 | PL | L | review — wallet 0.7.0: engine (T-065/T-041), `mofn delegate`, `root add --depth`, slice ④–⑥ (DL-0041). Nov 11 missed by 3 days |
 | W-4 | **Weekly demo slice owner** — grow and run `demo/slice.sh` every Monday, post the output on the issue. Three cases minimum: green, `authorization FAIL`, `integrity FAIL` | #68 | D6 | S2 | M | done — slice runs from a clean clone, 5 cases × 2 codecs; weekly notes Nov 1, Nov 9; Monday cron retired when I3 ended (Nov 11), manual run kept (DL-0029); verdict wording findings → #157 |
 | W-5 | ~~**Mac GUI** — local desktop app~~ **Rescoped 2026-11-09 into `mofn run`** (`DECISIONS-0001` item 28: Textual is the UI). What #69 adds beyond W-6: on every verdict in the Check tab, the **attribute associations** — who signed (key / named principal), topic (domain + type), the subject's digest, and standing (root → delegation → key, or "no standing"). Calls the engine; reimplements no crypto | #69 | D8 | S2 | M | todo — Dec |
-| W-6 | **A way in to the engine** — a bare `mofn` prints the menu (= `mofn -h`), `mofn --version`, one line for a missing dependency; `mofn run`, the wallet as a terminal app — forms for keys, trust, sign and check, each showing the command it runs, and a Learn tab that runs nothing; DV-1 ships as the example vocabulary (0.2.0, DL-0023); `key list`, `key export`, `hash` from `gpg`, the rest of `gpg` mapped or left out (DL-0022); `ci.yml` on Linux, macOS and Windows. Chip: `release.yml`, one self-contained build per OS, `SHA256SUMS`, pre-releases from `wallet-v0.2.0` (David's half lands as one PR, `feat/w6-tui`, so `main` never holds 0.1.0 and there is no `wallet-v0.1.0`). Prototype only; `src/` stays empty | #127 | D6 | S1 engine, S2 release | L | doing — Nov 11 |
+| W-6 | **A way in to the engine** — a bare `mofn` prints the menu (= `mofn -h`), `mofn --version`, one line for a missing dependency; `mofn run`, the wallet as a terminal app — forms for keys, trust, sign and check, each showing the command it runs, and a Learn tab that runs nothing; DV-1 ships as the example vocabulary (0.2.0, DL-0023); `key list`, `key export`, `hash` from `gpg`, the rest of `gpg` mapped or left out (DL-0022); `ci.yml` on Linux, macOS and Windows. Chip: `release.yml`, one self-contained build per OS, `SHA256SUMS`, pre-releases (David's half lands as one PR, `feat/w6-tui`, so `main` never holds 0.1.0 and there is no `wallet-v0.1.0`). Prototype only; `src/` stays empty. **S1 done** (#131). **S2 in review (2026-11-15, DL-0043):** `release.yml` builds and smoke-tests per OS, and publishes macOS arm64 and Linux x86-64 on a `wallet-v*` tag with `SHA256SUMS` and build provenance (Windows tested, not published); APP-0005 *Install the wallet* on Pages; README Install section. The first tag is **`wallet-v0.8.1`, not `wallet-v0.2.0`**: a tag runs the `release.yml` of the commit it names, and no earlier commit has one (#127 D1–D5). Owed: a human pushes the first tag. Owners: David (S1), Chip (S2) | #127 | D6 | S1 engine, S2 release | L | review — S2 |
 
 **Overlap to resolve.** W-1 and W-3 restate T-041/T-044/T-045 (reduction,
 statement acceptance, separated verifier output) as application work, and W-2

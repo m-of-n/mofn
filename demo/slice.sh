@@ -24,6 +24,8 @@
 # installed, in prototype/wallet/.venv (see prototype/wallet/README.md "Run"),
 # or in the interpreter named by $MOFN_PYTHON, or in `python3` on the PATH.
 # This script installs nothing, and uses no network and no keychain.
+# $MOFN_BIN, if set, is a built mofn to run instead of the source; release.yml
+# runs the slice against each build that way (DL-0043).
 #
 # Wallets land in demo/wallets/, ignored by git and rebuilt on every run. The
 # passphrase below is for this demo only; it goes to `mofn` on stdin.
@@ -39,10 +41,12 @@ WALLETS=$ROOT/demo/wallets
 PASSPHRASE="slice demo passphrase, not a secret"
 
 PY=${MOFN_PYTHON:-}
-if [ -z "$PY" ]; then
+if [ -n "${MOFN_BIN:-}" ]; then
+  :
+elif [ -z "$PY" ]; then
   if [ -x "$ENGINE/.venv/bin/python" ]; then PY=$ENGINE/.venv/bin/python; else PY=python3; fi
 fi
-if ! "$PY" -c 'import nacl, yaml' 2>/dev/null; then
+if [ -z "${MOFN_BIN:-}" ] && ! "$PY" -c 'import nacl, yaml' 2>/dev/null; then
   echo "slice: $PY cannot import nacl and yaml." >&2
   echo "slice: install the prerequisites first; see prototype/wallet/README.md, Run." >&2
   exit 2
@@ -55,7 +59,8 @@ failures=0
 
 # in_days N — the time N days from now, as `check --at` takes it.
 in_days() {
-  "$PY" -c 'import datetime as d, sys
+  # Stdlib only, so python3 serves when MOFN_BIN leaves $PY unset.
+  "${PY:-python3}" -c 'import datetime as d, sys
 print((d.datetime.now(d.timezone.utc) + d.timedelta(days=int(sys.argv[1]))).strftime("%Y-%m-%dT%H:%M:%SZ"))' "$1"
 }
 
@@ -63,7 +68,11 @@ print((d.datetime.now(d.timezone.utc) + d.timedelta(days=int(sys.argv[1]))).strf
 mofn() {
   local wallet=$1
   shift
-  "$PY" "$ENGINE/mofn" --wallet "$wallet" --codec "$CODEC" "$@"
+  if [ -n "${MOFN_BIN:-}" ]; then
+    "$MOFN_BIN" --wallet "$wallet" --codec "$CODEC" "$@"
+  else
+    "$PY" "$ENGINE/mofn" --wallet "$wallet" --codec "$CODEC" "$@"
+  fi
 }
 
 # signing WALLET ARGS... — the same, with the passphrase on stdin.

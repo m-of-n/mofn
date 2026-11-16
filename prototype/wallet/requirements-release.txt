@@ -1,0 +1,6 @@
+# The one-file build (mofn.spec, release.yml, DL-0043). The runtime pins are
+# requirements.txt's; pytest is excluded from the build by mofn.spec.
+-r requirements.txt
+cffi==2.1.1
+pyinstaller==6.22.3
+pyinstaller-hooks-contrib==2026.10

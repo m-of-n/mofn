@@ -8,6 +8,36 @@ nothing about DEC-004 or DEC-005**, which stay open in ARCH-0001, so it lives
 in `prototype/` and `src/` stays empty. The design input is #65 and the
 decisions posted on it; the design record is `design-log/0016-wallet-engine-v0/`.
 
+## Install
+
+> **Prototype.** DEC-004 and DEC-005 are open. Do not use real keys, and do
+> not rely on a verdict.
+
+Each pre-release (tags `wallet-vX.Y.Z`,
+[releases](https://github.com/m-of-n/mofn/releases?q=wallet-v&expanded=true))
+has one file each for macOS arm64 and Linux x86-64, `SHA256SUMS`, and a
+build-provenance attestation. Each file is the whole of `mofn`, `mofn run`
+included, with its own Python and PyNaCl inside. Windows is built and tested
+but not published (#127 D3).
+
+**How to download, check and run one:
+[APP-0005 *Install the wallet*](https://m-of-n.github.io/mofn/project/APP-0005-install-wallet/)**
+(`project/APP-0005-install-wallet.md`). In short:
+
+```sh
+shasum -a 256 --ignore-missing -c SHA256SUMS          # Linux: sha256sum
+gh attestation verify mofn-X.Y.Z-macos-arm64 -R m-of-n/mofn
+chmod +x mofn-* && ./mofn-X.Y.Z-macos-arm64 --version && ./mofn-X.Y.Z-macos-arm64
+```
+
+To build one yourself, as `release.yml` does:
+
+```sh
+cd prototype/wallet
+python3 -m venv .venv && .venv/bin/pip install -r requirements-release.txt
+.venv/bin/pyinstaller --clean --noconfirm mofn.spec     # dist/mofn
+```
+
 ## Run
 
 ```sh
@@ -241,6 +271,8 @@ on Windows.
 | file | responsible for |
 |---|---|
 | `mofn` | finds the engine; one line if PyNaCl or PyYAML is missing |
+| `mofn.spec`, `requirements-release.txt` | the one-file PyInstaller build and its pins (`release.yml`) |
+| `release/` | the release smoke test: `smoke.sh` and `pty_run.py`, run on a runner with no checkout |
 | `cli.py` | arguments, printing, exit codes — nothing else |
 | `screens/app.py`, `forms.py`, `picker.py` | `mofn run`: tabs, first run, one form per command, the file and passphrase dialogs |
 | `screens/runner.py` | runs a form's argv through `cli.main` in process, and spells it as a shell would |

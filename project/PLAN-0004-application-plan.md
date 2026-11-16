@@ -7,9 +7,9 @@ description: "Whether APP-0001 is complete, and the plan that fills the gaps. Dr
 type: plan
 category: product
 status: draft
-version: "0.4.2"
+version: "0.5.0"
 date: "2026-10-02"
-updated: "2026-11-14"
+updated: "2026-11-16"
 needs_review: true
 reviewed: false
 canonical_path: project/PLAN-0004-application-plan.md
@@ -237,7 +237,7 @@ floor, is not in the engine.
 | I3 / D6 / #31 / #67: delegation in the engine | Nov 11 | David (engine); Paul (rewrite #67 and #31) | behind | `reduce.py` last changed in `b7600fe` (2026-11-01) and is one hop only; #148's `test_delegation.py` uses a test-only walker; #67 still uses retired `may-speak` terms; BACKLOG T-041 and T-065 are todo |
 | Issuer revocation (`ADR-0003` D5) | with the floor | David | not started | `check.py` hard-codes `revocations considered` to 0; #67 still says short expiry is the only revocation mechanism |
 | W-6 / #127: menu, `--version`, `mofn run`, CI matrix | Nov 11 | David | done | #131 (`724bb4b`, 2026-11-06) |
-| W-6 / #127: `release.yml`, downloads, README install | Nov 11 | Ndewedo | not started | no tags; no `.github/workflows/release.yml` |
+| W-6 / #127: `release.yml`, downloads, README install | Nov 11 | Ndewedo | not started → **in review, 2026-11-14** | at Nov 9: no tags; no `.github/workflows/release.yml`. Since: `release.yml`, APP-0005 *Install the wallet* and the README Install section (DL-0043); first tag `wallet-v0.8.1` owed after merge |
 | I4 / D7 mappings; §7 archives domain through the same path | Nov 25 | David; #66 Paul and Ndewedo | not started | I4 has not begun; #66 is still open. The Oct 14 scenario half of #66 is already behind |
 | I5 / D8 five views and packaging; #69 GUI | Dec 1–4 | Ndewedo | not started | #69 unchanged since 2026-10-05 |
 | #68 weekly demo slice | every Monday | Ndewedo | on track for the current cases | `weekly-slice.yml`; automated post on #68, 2026-11-09. Delegation and revocation cases wait on the engine |
@@ -332,6 +332,37 @@ is the `mofn` Python CLI, run from a checkout (the command menu, `--version`,
 and the `mofn run` guided screen). There are no releases, no tags, and no
 `release.yml`. There is nothing to download.
 
+**Since, 2026-11-15 (DL-0043).** `.github/workflows/release.yml` exists. On a
+`wallet-vX.Y.Z` tag it checks the tag against `__version__` and
+`CHANGELOG.md`, builds `prototype/wallet/mofn.spec` (one PyInstaller file) on
+Ubuntu 22.04, macOS 15 (arm64) and Windows, runs `demo/slice.sh` against the
+Linux and macOS builds, smoke-tests each build on a fresh runner with no
+checkout and no Python packages (`--version`, the menu, a green `check` of
+TV-4 against its golden, and `mofn run` opening Learn in a pty), and
+publishes the **macOS and Linux** files as a pre-release with `SHA256SUMS`, a
+build-provenance attestation (`actions/attest-build-provenance`, Sigstore,
+keyless) and the changelog section as notes. A pull request that touches the
+wallet runs everything but the publish. The download page is APP-0005
+*Install the wallet*, on Pages.
+
+**Release decisions, 2026-11-14** (#127 comment, Chip; Paul confirmed). None
+accepts a DEC-*.
+
+- **D1 packaging:** one PyInstaller `--onefile` build per OS. No zipapp, not
+  even as a fallback: it cannot bundle PyNaCl's native extension. Running from
+  a checkout stays the fallback.
+- **D2 signing:** `SHA256SUMS` plus build provenance. No GPG or minisign key.
+  An m-of-n statement over the release's own digest stays in #32, because it
+  would depend on DEC-004 and DEC-005.
+- **D3 Windows:** CI only. Built and smoke-tested, not published, for
+  `wallet-v0.x`.
+- **D4 first tag:** `wallet-v0.8.1`, the version this change sets. A tag runs
+  the `release.yml` of the commit it names, and no earlier commit has one, so
+  0.2.0–0.7.0 are not backfilled. The release changes the README that ships
+  inside the build, so it takes a PATCH bump rather than reusing 0.7.0.
+- **D5 download page:** APP-0005, not a section of this plan: a stranger
+  looking for install steps should not land in a plan.
+
 What is automated:
 
 - `ci.yml` runs the wallet tests on Ubuntu, macOS and Windows for every pull
@@ -366,13 +397,23 @@ built. #69 is rescoped to the verdict's attribute associations inside
 
 | output | platform | built by | status |
 |---|---|---|---|
-| CLI, including `mofn run` — one PyInstaller build per OS (#127 §6; zipapp cannot load PyNaCl) | macOS, Linux (Windows only if decided) | proposed `release.yml` on a `wallet-v*` tag; Ndewedo, #127 | not started |
+| CLI, including `mofn run` — one PyInstaller build per OS (#127 §6; zipapp cannot load PyNaCl) | macOS arm64, Linux x86-64 (Windows x86-64 built and tested, not published) | `release.yml` on a `wallet-v*` tag; Ndewedo, #127 | in review; first tag `wallet-v0.8.1` after merge |
 | documentation site | Pages | `pages.yml` | in place |
 | weekly slice report | posted on #68 | `weekly-slice.yml` each Monday | in place |
 
-**Open items.** Cut a first tagged
-CLI release. Decide how release files are signed. Decide whether Windows is a
-release target.
+**Open items.** Push the first tag, `wallet-v0.8.1`, on the merged commit and
+check the pre-release from a machine without a checkout. The self-attested
+release is #32.
+
+## What changed in v0.5.0 — 2026-11-16
+
+- §9: `release.yml` exists (DL-0043): what it builds, how each build is
+  tested, and where to download it (APP-0005). The release decisions D1–D5
+  from #127 are recorded: PyInstaller per OS, `SHA256SUMS` plus build
+  provenance, Windows CI only, first tag `wallet-v0.8.1`, APP-0005 as the
+  download page. Signing and Windows leave the open items. The §7.1 W-6
+  release row is marked in review, keeping its Nov 9 evidence. §7.2 is a
+  dated status and is unchanged.
 
 ## What changed in v0.4.2 — 2026-11-14
 
