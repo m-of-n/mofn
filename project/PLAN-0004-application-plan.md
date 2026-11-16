@@ -237,7 +237,7 @@ floor, is not in the engine.
 | I3 / D6 / #31 / #67: delegation in the engine | Nov 11 | David (engine); Paul (rewrite #67 and #31) | behind | `reduce.py` last changed in `b7600fe` (2026-11-01) and is one hop only; #148's `test_delegation.py` uses a test-only walker; #67 still uses retired `may-speak` terms; BACKLOG T-041 and T-065 are todo |
 | Issuer revocation (`ADR-0003` D5) | with the floor | David | not started | `check.py` hard-codes `revocations considered` to 0; #67 still says short expiry is the only revocation mechanism |
 | W-6 / #127: menu, `--version`, `mofn run`, CI matrix | Nov 11 | David | done | #131 (`724bb4b`, 2026-11-06) |
-| W-6 / #127: `release.yml`, downloads, README install | Nov 11 | Ndewedo | not started → **in review, 2026-11-14** | at Nov 9: no tags; no `.github/workflows/release.yml`. Since: `release.yml`, APP-0005 *Install the wallet* and the README Install section (DL-0043); first tag `wallet-v0.7.1` owed after merge |
+| W-6 / #127: `release.yml`, downloads, README install | Nov 11 | Ndewedo | not started → **in review, 2026-11-14** | at Nov 9: no tags; no `.github/workflows/release.yml`. Since: `release.yml`, APP-0005 *Install the wallet* and the README Install section (DL-0043); first tag `wallet-v0.8.1` owed after merge |
 | I4 / D7 mappings; §7 archives domain through the same path | Nov 25 | David; #66 Paul and Ndewedo | not started | I4 has not begun; #66 is still open. The Oct 14 scenario half of #66 is already behind |
 | I5 / D8 five views and packaging; #69 GUI | Dec 1–4 | Ndewedo | not started | #69 unchanged since 2026-10-05 |
 | #68 weekly demo slice | every Monday | Ndewedo | on track for the current cases | `weekly-slice.yml`; automated post on #68, 2026-11-09. Delegation and revocation cases wait on the engine |
@@ -356,7 +356,7 @@ accepts a DEC-*.
   would depend on DEC-004 and DEC-005.
 - **D3 Windows:** CI only. Built and smoke-tested, not published, for
   `wallet-v0.x`.
-- **D4 first tag:** `wallet-v0.7.1`, the version this change sets. A tag runs
+- **D4 first tag:** `wallet-v0.8.1`, the version this change sets. A tag runs
   the `release.yml` of the commit it names, and no earlier commit has one, so
   0.2.0–0.7.0 are not backfilled. The release changes the README that ships
   inside the build, so it takes a PATCH bump rather than reusing 0.7.0.
@@ -397,11 +397,11 @@ built. #69 is rescoped to the verdict's attribute associations inside
 
 | output | platform | built by | status |
 |---|---|---|---|
-| CLI, including `mofn run` — one PyInstaller build per OS (#127 §6; zipapp cannot load PyNaCl) | macOS arm64, Linux x86-64 (Windows x86-64 built and tested, not published) | `release.yml` on a `wallet-v*` tag; Ndewedo, #127 | in review; first tag `wallet-v0.7.1` after merge |
+| CLI, including `mofn run` — one PyInstaller build per OS (#127 §6; zipapp cannot load PyNaCl) | macOS arm64, Linux x86-64 (Windows x86-64 built and tested, not published) | `release.yml` on a `wallet-v*` tag; Ndewedo, #127 | in review; first tag `wallet-v0.8.1` after merge |
 | documentation site | Pages | `pages.yml` | in place |
 | weekly slice report | posted on #68 | `weekly-slice.yml` each Monday | in place |
 
-**Open items.** Push the first tag, `wallet-v0.7.1`, on the merged commit and
+**Open items.** Push the first tag, `wallet-v0.8.1`, on the merged commit and
 check the pre-release from a machine without a checkout. The self-attested
 release is #32.
 
@@ -410,7 +410,7 @@ release is #32.
 - §9: `release.yml` exists (DL-0043): what it builds, how each build is
   tested, and where to download it (APP-0005). The release decisions D1–D5
   from #127 are recorded: PyInstaller per OS, `SHA256SUMS` plus build
-  provenance, Windows CI only, first tag `wallet-v0.7.1`, APP-0005 as the
+  provenance, Windows CI only, first tag `wallet-v0.8.1`, APP-0005 as the
   download page. Signing and Windows leave the open items. The §7.1 W-6
   release row is marked in review, keeping its Nov 9 evidence. §7.2 is a
   dated status and is unchanged.

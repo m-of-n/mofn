@@ -6,7 +6,7 @@ title: "Wallet release builds: release.yml, one PyInstaller file per OS, SHA256S
 date: "2026-11-14"
 model: "claude-opus-5-5"
 human: ndewedo-newbury
-outcome: "release.yml (macOS + Linux published, Windows tested, SHA256SUMS + build provenance); mofn.spec, requirements-release.txt, release/; APP-0005 Install the wallet; README Install; demo/slice.sh MOFN_BIN; wallet 0.7.1; BACKLOG-0001 0.14.1; PLAN-0004 0.5.0."
+outcome: "release.yml (macOS + Linux published, Windows tested, SHA256SUMS + build provenance); mofn.spec, requirements-release.txt, release/; APP-0005 Install the wallet; README Install; demo/slice.sh MOFN_BIN; wallet 0.8.1; BACKLOG-0001 0.14.3; PLAN-0004 0.5.0."
 status: open
 ---
 
@@ -49,6 +49,6 @@ amend this PR rather than revise the comment or open a new PR:
 - **D3:** Windows is CI only, not a release target for `wallet-v0.x`.
 - **D4:** the first tag is the next PATCH, with a version bump in the same
   change (the comment said 0.6.1; `main` reached 0.7.0 before this amend, so
-  it is `wallet-v0.7.1`).
+  it is `wallet-v0.8.1`).
 - **D5:** a new APP-0005 *Install the wallet* on Pages; the README Install
   section stays short and links to it.

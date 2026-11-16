@@ -8,8 +8,8 @@ date: "2026-11-14"
 # DL-0043 — review
 
 **Owed from the human.** Review of the PR. Then the human, not the agent,
-pushes the first tag (`git tag -s wallet-v0.7.1 && git push origin
-wallet-v0.7.1` on the merged commit), checks the pre-release and runs
+pushes the first tag (`git tag -s wallet-v0.8.1 && git push origin
+wallet-v0.8.1` on the merged commit), checks the pre-release and runs
 `gh attestation verify` on both files from a machine with no checkout. Then
 the BACKLOG W-6 row goes to done and #127 can close.
 
@@ -17,7 +17,7 @@ the BACKLOG W-6 row goes to done and #127 can close.
 as listed in `question.md`. The first draft of this PR was written before
 them and was amended to match; what changed is below.
 
-**First tag `wallet-v0.7.1`, not `wallet-v0.2.0`** (#127 D4). See
+**First tag `wallet-v0.8.1`, not `wallet-v0.2.0`** (#127 D4). See
 `produced.md` for why the original tag cannot build. If a 0.2.0 file is wanted anyway, the way is a `workflow_dispatch`
 input naming an old ref and a separate publish; the agent did not build it,
 because nobody needs the 0.2.0 engine and it would be a second release path
@@ -113,3 +113,15 @@ the same PR:
   **Rejected: setting `PY` under `MOFN_BIN`** — `PY` would then be
   half-meaningful (no `nacl`/`yaml` check), and the import guard keys on it.
   This was missed locally because the slice was only run from source.
+
+## Rebase onto #167, 2026-11-16
+
+#167 (T-043, k-of-n thresholds) merged first and took wallet **0.8.0**. #127
+D4's rule is "a PATCH on whatever `main` is when this merges", so the first
+tag moves from `wallet-v0.7.1` to **`wallet-v0.8.1`**: `__version__`, the
+`CHANGELOG.md` heading `release.yml` reads, APP-0005, PLAN-0004 and the
+lines above. The rejected options above are left as written; they were
+right for the `main` of their date. **Rejected: keeping 0.7.1** — a version
+below `main`'s would make the release older than the code it ships.
+BACKLOG → 0.14.3. Rebased, not merged; rerere was off, because a cached
+resolution from a dry run had silently dropped #167's rows.

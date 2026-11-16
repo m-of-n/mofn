@@ -19,7 +19,7 @@ empty.
 | `prototype/wallet/release/pty_run.py` | opens `mofn run` in a pty, opens Learn, quits on ctrl+q |
 | `project/APP-0005-install-wallet.md` | the download page on Pages: download, `SHA256SUMS`, `gh attestation verify`, run, macOS quarantine (#127 D5) |
 | `prototype/wallet/README.md` | a short Install section linking APP-0005; two rows in the file table |
-| `prototype/wallet/engine/__init__.py`, `CHANGELOG.md` | 0.7.1, the first release (#127 D4) |
+| `prototype/wallet/engine/__init__.py`, `CHANGELOG.md` | 0.8.1, the first release (#127 D4) |
 | `demo/slice.sh` | `$MOFN_BIN`: run a built `mofn` instead of the source |
 | `.gitignore` | `prototype/wallet/build/`, `dist/` |
 
@@ -74,13 +74,13 @@ from the pinned venv:
 Not verified: the Linux and Windows builds (no runner here; the PR's own
 `release` run is the first). Windows gets no `mofn run` smoke (no `pty`).
 
-**The first tag is `wallet-v0.7.1`, not `wallet-v0.2.0`.** A tag push runs
+**The first tag is `wallet-v0.8.1`, not `wallet-v0.2.0`.** A tag push runs
 the `release.yml` *of the tagged commit*. No commit before this one has a
 `release.yml`, so `wallet-v0.2.0` on its commit would run nothing; and
 `wallet-v0.2.0` on today's commit fails step 1. The intent of "from 0.2.0"
 was "never a 0.1.0" (BACKLOG W-6); that still holds. The first draft of this
 PR said `wallet-v0.6.0`; #127 D4 made it a PATCH bump in this change, and
-`main` was at 0.7.0 when the PR was amended.
+`main` was at 0.7.0 when the PR was amended, and at 0.8.0 (#167) when it was rebased.
 
 **Amend, 2026-11-15.** Rebased onto `main` `dae3cfd` (conflicts in
 `design-log/README.md`, `BACKLOG-0001.md` and `PUBLISHING.md`, resolved by
