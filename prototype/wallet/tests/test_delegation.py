@@ -1,4 +1,4 @@
-"""Delegation evaluations E-1..E-7 (SPEC-0004 §6.3, Appendix A; mofn#136;
+"""Delegation evaluations E-1..E-7 and E-20..E-22 (SPEC-0004 §6.3, Appendix A; mofn#136;
 ARCH-0001 §2.3) and the DV-2/TV-13 rendered sentence (ADR-0007; T-049).
 
 E-1..E-7 run through the engine (`engine/reduce.py`, T-065). Until wallet
@@ -40,7 +40,8 @@ def by_digest(v):
 
 
 def subject(name):
-    return {"artifact": [2, 1, ARTIFACT], "record": [2, 1, RECORD]}.get(name) or stmt("TV-26")[4]
+    fixed = {"artifact": [2, 1, ARTIFACT], "record": [2, 1, RECORD]}
+    return fixed.get(name) or stmt({"work": "TV-26", "work-v2": "TV-44"}[name])[4]
 
 
 def engine_eval(e):

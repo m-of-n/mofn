@@ -1,0 +1,12 @@
+integrity      pass           every statement verified, and your file is the one described
+authenticity   pass           every speaker's key is in your key store, and each envelope agrees with its statement
+names          pass           every key is shown by your own label for it
+authorization  pass           ingest agent is trusted in context library about record review (summarized, unverified), through Library lead → ingest agent
+acceptance     pass           no template is named, so there is none to meet
+semantics      pass           library-review 2 is published by its definer, Dave (definer)
+
+answer: yes
+
+ingest agent attests that sha-256:538b22155838b2e4 was summarized, but not read against its source.
+
+This establishes who said it and whether they were entitled to say it; it does not establish that it is true.

@@ -7,10 +7,10 @@ description: "Wireframes of PLAN-0004 §5's five views (Wallet, Domain, Make, Pr
 type: design
 category: product
 status: draft
-version: "0.1.0"
+version: "0.1.1"
 version_policy: "semver; PATCH = editorial; MINOR = element or view added; MAJOR = a view changes"
 date: "2026-11-09"
-updated: "2026-11-09"
+updated: "2026-11-15"
 decision_makers: []
 reviewers: []
 needs_review: true
@@ -32,6 +32,16 @@ visual design. They fix **what each view shows and where each element comes
 from**, so the December UI (W-5, mofn#69) builds against them. A paper or
 Figma pass may restyle them. It must not add an element that has no source
 in the last column of a binding table.
+
+
+> **0.1.1 (2026-11-15, W-2b, DL-0046): the archives sketches show the retired
+> vocabulary.** The demo now runs DV-5 `library-review` v2 (`library-review.def`,
+> `dave.pub.stmt`, `dave-define.stmt`; definer `Dave (definer)`), and Tomás holds
+> one anchor, `Library lead`, depth 1, with Rosa's delegations handed over beside
+> each statement (APP-0003 0.2.0). Values, names and renderings of
+> `record-review` are unchanged. The wireframes below keep the v1 file names and
+> anchors until the views are built in I5 (PLAN-0004 §7, Dec 1–4); redraw them
+> then, from APP-0003.
 
 ## The rule every view follows
 
@@ -215,7 +225,7 @@ about «build provenance».* The rest of the screen is the same.
 |---|---|---|
 | four sketches: Verdict, Make, Delegation, Domain browser | PLAN-0004 §5's five: Wallet, Domain, Make, Present, Verdict | §5 is the plan of record; Wallet and Present had no sketch |
 | Delegation as a view | folded into Wallet (anchors) and Verdict (*Show anchors used*); a chain view waits for W-3 | v0 has no delegation (mofn#67) |
-| `library-review` domain, values `yes · partial · no` | `archives` v1, `reviewed · summarized · unverified` | what the domain file defines |
+| `library-review` domain, values `yes · partial · no` | `archives` v1, `reviewed · summarized · unverified`; since W-2b, DV-5 `library-review` v2 with those values | what the domain file defines |
 | "Signed, but NOT by a key with standing" | "Said, but not by a key with standing to say it" | a signature is what passed |
 | `– Acceptance not evaluated` beside ✘ Authorization | `✔ Acceptance` | the engine evaluates acceptance even when authorization fails (goldens) |
 | "Semantics: value in range" | "published by its definer" | range is authorization's job; semantics is the definition obtained, conforming and attributed (SPEC-0004 §10.4) |

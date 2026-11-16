@@ -1,12 +1,12 @@
 integrity      pass           every statement verified, and your file is the one described
 authenticity   pass           every speaker's key is in your key store, and each envelope agrees with its statement
 names          pass           every key is shown by your own label for it
-authorization  pass           Reviewer is trusted in context library about record review (reviewed, summarized, unverified)
+authorization  pass           Reviewer is trusted in context library about record review (reviewed, summarized, unverified), through Library lead → Reviewer
 acceptance     pass           no template is named, so there is none to meet
-semantics      pass           archives 1 is published by its definer, Archivist (definer)
+semantics      pass           library-review 2 is published by its definer, Dave (definer)
 
 answer: yes
 
-Reviewer attests that the library record sha-256:538b22155838b2e4 was read against its source and confirmed.
+Reviewer attests that sha-256:538b22155838b2e4 was read against its source and confirmed.
 
 This establishes who said it and whether they were entitled to say it; it does not establish that it is true.
