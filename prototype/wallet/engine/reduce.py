@@ -16,6 +16,16 @@ rotation are applied to name bindings only; for paths and for thresholds they
 are not in this version, and the answer says 0 revocation statements were
 considered. **Short validity is the revocation mechanism here** (§7.1, §11.3).
 Threshold anchors and threshold trust statements (§6.4) start no path.
+
+An anchor may also trust a threshold set (SPEC-0004 §4.2, §6.4; T-043):
+*k* of the listed kids. Keys only, no nesting: members are kids, never names
+or thresholds. An attribute is covered through it when *k* distinct members
+each made an attestation that would be covered by a one-key anchor to that
+member with the threshold's `about` — so the same target, type and value.
+Distinctness is by kid, and keys that a rotation links count once (§7.2).
+Members attest directly: a threshold anchor's `may-delegate`, and threshold
+trust statements as hops, are not followed yet (T-095). The answer names
+every member, whether it counted, and why not. Reasoning: DL-0042.
 """
 
 from dataclasses import dataclass, field, replace
@@ -31,10 +41,18 @@ MAX_EDGES = 16  # §6.5
 MAX_WORK = 4096  # trust-statement edges examined in one evaluation (§6.5, implementation-defined)
 
 
+@dataclass(frozen=True)
+class Threshold:
+    """`{ keys: [2* kid], threshold: uint }` (SPEC-0004 §4.2): any `k` of `keys`."""
+
+    keys: tuple[bytes, ...]
+    k: int
+
+
 @dataclass
 class Anchor:
     context: str
-    trusts: bytes | list  # a kid, or a name [7, kid, [label, ...]] (SPEC-0004 §4.2)
+    trusts: bytes | list | Threshold  # a kid, a name [7, kid, [label, ...]], or k of n kids (SPEC-0004 §4.2)
     about: list[dict]
     accepted_by: bytes
     accepted_at: int
@@ -125,8 +143,37 @@ class Stopped:
 
 
 @dataclass
+class Member:
+    """One member of a threshold set, as the answer reports it (§10.3)."""
+
+    key: bytes
+    counted: bool
+    detail: str
+    statement: Verified | None = None
+    code: str | None = None
+    same_as: bytes | None = None  # counted already, as a key a rotation links to this one
+
+
+@dataclass
+class ThresholdCovered:
+    attribute: dict
+    anchor: Anchor
+    scope: dict
+    members: list[Member]
+
+    @property
+    def statements(self) -> list[Verified]:
+        return [m.statement for m in self.members if m.counted]
+
+
+@dataclass
+class ThresholdStopped(Stopped):
+    members: list[Member] = field(default_factory=list)
+
+
+@dataclass
 class Coverage:
-    covered: list[Covered] = field(default_factory=list)
+    covered: list[Covered | ThresholdCovered] = field(default_factory=list)
     stopped: list[Stopped] = field(default_factory=list)
     revocations_considered: int = 0
     names: list[Resolution] = field(default_factory=list)  # §10.3: each name used
@@ -173,6 +220,7 @@ def evaluate(
                 )
             )
             continue
+        hit = None
         reasons = []
         for s in candidates:
             hit = _cover(s, attr, ask, reached, broken, definitions, attributed)
@@ -181,8 +229,79 @@ def evaluate(
                 break
             reasons.append(hit)
         else:
-            result.stopped += named + reasons
+            met, unmet = _thresholds(attr, ask, statements, mine, definitions, attributed)
+            if met:
+                result.covered.append(met)
+            else:
+                # A context that holds a threshold anchor is told first why it was not met.
+                result.stopped += named + unmet + reasons
     return result
+
+
+def _thresholds(attr, ask, statements, anchors, definitions, attributed):
+    """§6.4 for each threshold anchor: the first one met, else why each was not."""
+    unmet, resolver = [], None
+    for a in anchors:
+        if not isinstance(a.trusts, Threshold):
+            continue
+        resolver = resolver or Resolver(statements, definitions, ask.at)
+        got = _threshold(a, attr, ask, statements, definitions, attributed, resolver)
+        if isinstance(got, ThresholdCovered):
+            return got, []
+        unmet.append(got)
+    return None, unmet
+
+
+def _threshold(anchor, attr, ask, statements, definitions, attributed, resolver):
+    """Count members of `anchor.trusts` that each have a covered attestation.
+
+    Each member is checked as if the anchor were a one-key anchor to it, with
+    the threshold's `about` (§6.4: "reached as the start of a sub-path with
+    that scope"), so `_cover` gives the same reasons a one-key anchor would.
+    """
+    th: Threshold = anchor.trusts
+    members, heads, scope = [], {}, None
+    for key in dict.fromkeys(th.keys):  # distinct by kid
+        alone = replace(anchor, trusts=key)
+        # One hop only: members attest directly (no statements to walk), so the
+        # member is reached exactly as a one-key anchor to it would be.
+        reached, broken, _ = _walk([alone], [], definitions, ask.at)
+        cands = [
+            s
+            for s in statements
+            if s.kind == 4 and s.says == key and s.this == ask.subject and attr in s.body[1]
+        ]
+        why = None
+        for s in cands:
+            hit = _cover(s, attr, ask, reached, broken, definitions, attributed)
+            if isinstance(hit, Covered):
+                head = resolver.successor(key)
+                if head in heads:
+                    why = Member(key, False, f"a rotation links it to {_short(heads[head])}, counted already",
+                                 s, same_as=heads[head])
+                else:
+                    heads[head] = key
+                    scope = scope or hit.scope
+                    why = Member(key, True, "made a covered attestation", s)
+                break
+            why = why or Member(key, False, hit.detail, s, hit.code)
+        members.append(why or Member(key, False, "no verified attestation by this key assigns this value",
+                                     code="not-verified"))
+    counted = [m for m in members if m.counted]
+    if len(counted) >= th.k:
+        return ThresholdCovered(attr, anchor, scope, members)
+    return ThresholdStopped(
+        attr,
+        "threshold-not-met",
+        f"{th.k} of {len(members)} keys needed, {len(counted)} counted: "
+        + "; ".join(f"{_short(m.key)} " + ("counted" if m.counted else f"not counted, {m.detail}") for m in members),
+        anchor=anchor,
+        members=members,
+    )
+
+
+def _short(kid: bytes) -> str:
+    return f"key:{kid.hex()[:16]}…"
 
 
 def _resolve_anchors(anchors, statements, definitions, ask, result):

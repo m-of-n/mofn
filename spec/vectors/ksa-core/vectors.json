@@ -367,6 +367,24 @@
       "digest": "ac51b06c0bfc23eecae7f158537934bfcf31aefa86bdfebd4581bcd381d7ff71",
       "expect": "accept"
     },
+    "TV-36": {
+      "note": "trust, threshold form: Carol trusts any 2 of {Bob, bob2, Dave}; TV-8 links Bob to bob2, so they count once (SPEC-0004 \u00a76.4)",
+      "signer": "carol",
+      "tbs": "a501050201035820c7b66369c87c115e8f8ab2fd27540d1a8a28cc475aab29b58ba0caf47910e20705a20119022d031a02de457006a30181a201a2015820517007656a617b3b5ab7cc376275a46ad88d14594f6846df88a34f2c8b3a717502706275696c642d70726f76656e616e636503826c726570726f64756369626c656861747465737465640383582039f713d0a644253f04529421b9f51b9b08979d08295959c4f3990ee617f5139f58209dcd2b600a6996b68623f46e19c60b6eb076c4a707df022e8479ef1d191b91f65820d5f0b21718b21f79648f7f4a0325288209e6fd37fa2f90f9d29c4229e371f8c70402",
+      "sig": "32c29de382eaaa2d9aa9f0c4f37df6310dbc95c71dc29d3a264735c4dc927d178b019335892e8df3330c0cae14568e920944507f8f2dce16630167096de8830b",
+      "envelope": "84015820c7b66369c87c115e8f8ab2fd27540d1a8a28cc475aab29b58ba0caf47910e20758f2a501050201035820c7b66369c87c115e8f8ab2fd27540d1a8a28cc475aab29b58ba0caf47910e20705a20119022d031a02de457006a30181a201a2015820517007656a617b3b5ab7cc376275a46ad88d14594f6846df88a34f2c8b3a717502706275696c642d70726f76656e616e636503826c726570726f64756369626c656861747465737465640383582039f713d0a644253f04529421b9f51b9b08979d08295959c4f3990ee617f5139f58209dcd2b600a6996b68623f46e19c60b6eb076c4a707df022e8479ef1d191b91f65820d5f0b21718b21f79648f7f4a0325288209e6fd37fa2f90f9d29c4229e371f8c70402584032c29de382eaaa2d9aa9f0c4f37df6310dbc95c71dc29d3a264735c4dc927d178b019335892e8df3330c0cae14568e920944507f8f2dce16630167096de8830b",
+      "digest": "ab09a2171bdd7884cf638f4fae631873ad0f96dd238fb17c5d3b9d20b16136ec",
+      "expect": "accept"
+    },
+    "TV-37": {
+      "note": "attestation: bob2 says the artifact's build-provenance is reproducible",
+      "signer": "bob2",
+      "tbs": "a6010402010358209dcd2b600a6996b68623f46e19c60b6eb076c4a707df022e8479ef1d191b91f604830201582048dfc39586b0c4f9e905b3b60f59a30b7c0c7408e44f7cb4df2a09fbf3e67ba705a30119022d02190261031a03058c2006a10181a201a2015820517007656a617b3b5ab7cc376275a46ad88d14594f6846df88a34f2c8b3a717502706275696c642d70726f76656e616e6365026c726570726f64756369626c65",
+      "sig": "85d800b2b0a740df4459e6eda754a25875e2ae5403deb81cd1f7d6e4ebca4238dd5c07a713390e8307304d61c9301801a9eed0874bdb85e74a3ec028e07f9a03",
+      "envelope": "840158209dcd2b600a6996b68623f46e19c60b6eb076c4a707df022e8479ef1d191b91f658a8a6010402010358209dcd2b600a6996b68623f46e19c60b6eb076c4a707df022e8479ef1d191b91f604830201582048dfc39586b0c4f9e905b3b60f59a30b7c0c7408e44f7cb4df2a09fbf3e67ba705a30119022d02190261031a03058c2006a10181a201a2015820517007656a617b3b5ab7cc376275a46ad88d14594f6846df88a34f2c8b3a717502706275696c642d70726f76656e616e6365026c726570726f64756369626c65584085d800b2b0a740df4459e6eda754a25875e2ae5403deb81cd1f7d6e4ebca4238dd5c07a713390e8307304d61c9301801a9eed0874bdb85e74a3ec028e07f9a03",
+      "digest": "23a58042890a0dac08473a099fc47312a62b084e3d3166d6052c2c6e40e274f2",
+      "expect": "accept"
+    },
     "TV-38": {
       "note": "key-publish: Dave, definer of DV-3 and DV-5, publishes his key, so a wallet can know it before it trusts anything he says",
       "signer": "dave",
@@ -919,6 +937,194 @@
       "reason": "no-path",
       "at_statement": "TV-17",
       "note": "Bob is Alice's fred, not Carol's builder: a name grants nothing to the keys it passes through"
+    }
+  },
+  "threshold_evaluations": {
+    "E-11": {
+      "anchor": "TV-9",
+      "context": "releases-panel",
+      "statements": [
+        "TV-4",
+        "TV-17"
+      ],
+      "ask": {
+        "this": "artifact",
+        "build-provenance": "reproducible"
+      },
+      "at": "2026-10-10T12:00:00Z",
+      "answer": "yes",
+      "reason": null,
+      "at_statement": null,
+      "counted": [
+        "alice",
+        "bob"
+      ],
+      "note": "2 of {Alice, Bob, Dave}: Alice (TV-4) and Bob (TV-17) agree"
+    },
+    "E-12": {
+      "anchor": "TV-9",
+      "context": "releases-panel",
+      "statements": [
+        "TV-4"
+      ],
+      "ask": {
+        "this": "artifact",
+        "build-provenance": "reproducible"
+      },
+      "at": "2026-10-10T12:00:00Z",
+      "answer": "no",
+      "reason": "threshold-not-met",
+      "at_statement": "TV-9",
+      "counted": [
+        "alice"
+      ],
+      "note": "only Alice: one member is not two"
+    },
+    "E-13": {
+      "anchor": "TV-9",
+      "context": "releases-panel",
+      "statements": [
+        "TV-4",
+        "TV-15"
+      ],
+      "ask": {
+        "this": "artifact",
+        "build-provenance": "reproducible"
+      },
+      "at": "2026-10-10T12:00:00Z",
+      "answer": "no",
+      "reason": "threshold-not-met",
+      "at_statement": "TV-9",
+      "counted": [
+        "alice"
+      ],
+      "note": "Bob said attested (TV-15), not reproducible: members must agree on the same value"
+    },
+    "E-14": {
+      "anchor": "TV-10",
+      "context": "releases-panel",
+      "statements": [
+        "TV-4",
+        "TV-17",
+        "TV-19"
+      ],
+      "ask": {
+        "this": "artifact",
+        "build-provenance": "reproducible"
+      },
+      "at": "2026-10-10T12:00:00Z",
+      "answer": "yes",
+      "reason": null,
+      "at_statement": null,
+      "counted": [
+        "alice",
+        "bob",
+        "dave"
+      ],
+      "note": "k = n = 3: all three agree"
+    },
+    "E-15": {
+      "anchor": "TV-10",
+      "context": "releases-panel",
+      "statements": [
+        "TV-4",
+        "TV-17"
+      ],
+      "ask": {
+        "this": "artifact",
+        "build-provenance": "reproducible"
+      },
+      "at": "2026-10-10T12:00:00Z",
+      "answer": "no",
+      "reason": "threshold-not-met",
+      "at_statement": "TV-10",
+      "counted": [
+        "alice",
+        "bob"
+      ],
+      "note": "k = n = 3: two of three is not enough"
+    },
+    "E-16": {
+      "anchor": "TV-11",
+      "context": "releases-panel",
+      "statements": [
+        "TV-17"
+      ],
+      "ask": {
+        "this": "artifact",
+        "build-provenance": "reproducible"
+      },
+      "at": "2026-10-10T12:00:00Z",
+      "answer": "yes",
+      "reason": null,
+      "at_statement": null,
+      "counted": [
+        "bob"
+      ],
+      "note": "k = 1 of {Alice, Bob}: Bob alone"
+    },
+    "E-17": {
+      "anchor": "TV-11",
+      "context": "releases-panel",
+      "statements": [
+        "TV-19"
+      ],
+      "ask": {
+        "this": "artifact",
+        "build-provenance": "reproducible"
+      },
+      "at": "2026-10-10T12:00:00Z",
+      "answer": "no",
+      "reason": "threshold-not-met",
+      "at_statement": "TV-11",
+      "counted": [],
+      "note": "Dave attests, but Dave is not a member of {Alice, Bob}"
+    },
+    "E-18": {
+      "anchor": "TV-36",
+      "context": "releases-panel",
+      "statements": [
+        "TV-8",
+        "TV-35",
+        "TV-17",
+        "TV-37"
+      ],
+      "ask": {
+        "this": "artifact",
+        "build-provenance": "reproducible"
+      },
+      "at": "2026-10-25T12:00:00Z",
+      "answer": "no",
+      "reason": "threshold-not-met",
+      "at_statement": "TV-36",
+      "counted": [
+        "bob"
+      ],
+      "note": "Bob and bob2 both attest, but TV-8 links them, so they are one member"
+    },
+    "E-19": {
+      "anchor": "TV-36",
+      "context": "releases-panel",
+      "statements": [
+        "TV-8",
+        "TV-35",
+        "TV-17",
+        "TV-37",
+        "TV-19"
+      ],
+      "ask": {
+        "this": "artifact",
+        "build-provenance": "reproducible"
+      },
+      "at": "2026-10-25T12:00:00Z",
+      "answer": "yes",
+      "reason": null,
+      "at_statement": null,
+      "counted": [
+        "bob",
+        "dave"
+      ],
+      "note": "Bob (once, with bob2) and Dave: two distinct members"
     }
   }
 }

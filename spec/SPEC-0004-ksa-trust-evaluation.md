@@ -7,10 +7,10 @@ description: "How a relying party decides whether to believe a verified statemen
 type: specification
 category: security
 status: draft
-version: "0.6.1"
+version: "0.6.2"
 version_policy: "semver; MAJOR = any change to an evaluation result; MINOR = additive; PATCH = editorial"
 date: "2026-10-14"
-updated: "2026-11-13"
+updated: "2026-11-14"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -107,6 +107,11 @@ target changes its answer, so MINOR.
 after the rotation. The resolutions are now computed by the prototype
 wallet's resolver as well as declared (T-040, DL-0040). No rule changes, so
 PATCH.
+**0.6.2 (2026-11-14):** Appendix A gains asks 10–18 (E-11…E-19), threshold
+anchors under §6.4, over SPEC-0002 TV-9…11, TV-36 and TV-37. They are computed
+by the prototype wallet as well as declared (T-043, DL-0042). The appendix
+states the reading of §6.4 they rest on, and the two questions §6.4 leaves
+open; neither is decided here. No rule changes, so PATCH.
 
 ---
 
@@ -813,3 +818,38 @@ verdict:
   acceptance: pass     # TV-19 names no template
   semantics: pass      # DV-1 (TV-3), DV-4 (TV-27), both published by Alice
 ```
+
+**Asks 10–18: threshold anchors** (§6.4). Context `releases-panel` in Carol's
+wallet; its one anchor is the threshold trust statement shown, Carol's own:
+TV-9 is any 2 of {Alice, Bob, Dave}, TV-10 all 3 of them, TV-11 any 1 of
+{Alice, Bob}, and TV-36 any 2 of {Bob, bob2, Dave}. Each is about
+`build-provenance` in `[reproducible, attested]`. Ask: is the artifact's
+`build-provenance` `reproducible`, at 2026-10-10T12:00:00Z, or at
+2026-10-25T12:00:00Z for asks 17 and 18, after TV-8 links Bob to bob2.
+Machine-readable as `threshold_evaluations` in `vectors.json`.
+
+| ask | anchor | statements | answer | reason | counted | why |
+|---|---|---|---|---|---|---|
+| 10 (E-11) | TV-9 | TV-4, TV-17 | **yes** | — | Alice, Bob | two distinct members agree |
+| 11 (E-12) | TV-9 | TV-4 | **no** | `threshold-not-met` | Alice | one member is not two |
+| 12 (E-13) | TV-9 | TV-4, TV-15 | **no** | `threshold-not-met` | Alice | Bob said `attested`: members count only for the same target, type and value |
+| 13 (E-14) | TV-10 | TV-4, TV-17, TV-19 | **yes** | — | Alice, Bob, Dave | k = n |
+| 14 (E-15) | TV-10 | TV-4, TV-17 | **no** | `threshold-not-met` | Alice, Bob | k = n, and Dave said nothing |
+| 15 (E-16) | TV-11 | TV-17 | **yes** | — | Bob | k = 1 |
+| 16 (E-17) | TV-11 | TV-19 | **no** | `threshold-not-met` | ∅ | Dave attests, but is not a member |
+| 17 (E-18) | TV-36 | TV-8, TV-35, TV-17, TV-37 | **no** | `threshold-not-met` | Bob | Bob and bob2 both attest, but a rotation links them, so they are one member |
+| 18 (E-19) | TV-36 | TV-8, TV-35, TV-17, TV-37, TV-19 | **yes** | — | Bob, Dave | bob2 is not counted again; Dave makes two |
+
+For a **no**, `because` names every member, whether it counted, and the reason
+each one that did not count was stopped (the reason a one-key anchor to that
+member would have given, or "no attestation by this key assigns this value").
+
+**The reading these asks rest on.** §6.4 says each member is "reached as the
+start of a sub-path with that scope". These asks read the sub-path as the
+member itself: the member's own attestation counts, and the threshold anchor
+has no `may-delegate`. Whether a member may count through keys it delegates
+to, and what a threshold anchor's `may-delegate` would govern, are **open**.
+So is whether a member's rotation successor counts for it (§7.2, "trust
+follows the key") or only is not counted twice; asks 17 and 18 rely on the
+second, which holds under either answer. DL-0042 records both questions.
+

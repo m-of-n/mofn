@@ -23,7 +23,7 @@ from dataclasses import dataclass, field
 from . import definition as defs, render
 from .definition import Definition
 from .errors import DefinitionError, Rejected
-from .reduce import Anchor, Ask, Coverage, evaluate
+from .reduce import Anchor, Ask, Coverage, Member, ThresholdCovered, evaluate
 from .verifier import Verified, verify
 
 # A vacuous pass (SPEC-0004 §10.4, DL-0020 A1): the sentence says why there
@@ -79,6 +79,9 @@ class Answer:
         because = []
         if self.coverage:
             for c in self.coverage.covered:
+                if isinstance(c, ThresholdCovered):
+                    because.append(_threshold_json(c, name))
+                    continue
                 because.append(
                     {
                         "used": [c.statement.digest.hex()],
@@ -112,6 +115,11 @@ class Answer:
                         "reason": s.code,
                         "detail": s.detail,
                         **({"link": s.link.digest.hex()} if s.link else {}),
+                        **(
+                            {"members": [_member_json(m, name) for m in s.members]}
+                            if hasattr(s, "members")
+                            else {}
+                        ),
                     }
                 )
         for h in self.handed:
@@ -159,6 +167,36 @@ class Answer:
 
 def _scope_json(about: list[dict]) -> dict:
     return {r[1][2]: r.get(3, "any") for r in about}
+
+
+def _member_json(m: Member, name) -> dict:
+    return {
+        "key": name(m.key),
+        "kid": m.key.hex(),
+        "counted": m.counted,
+        "statement": m.statement.digest.hex() if m.statement else None,
+        "reason": m.code,
+        "detail": m.detail,
+    }
+
+
+def _threshold_json(c: ThresholdCovered, name) -> dict:
+    """§10.3 for a threshold: every member, and the statement each counted with."""
+    th = c.anchor.trusts
+    return {
+        "used": [s.digest.hex() for s in c.statements],
+        "path": [
+            {
+                "anchor": c.anchor.source,
+                "accepted-by": name(c.anchor.accepted_by),
+                "threshold": {"k": th.k, "n": len(set(th.keys))},
+                "members": [_member_json(m, name) for m in c.members],
+                "scope": {c.scope[1][2]: c.scope.get(3, "any")},
+            }
+        ],
+        "covered": {c.attribute[1][2]: c.attribute[2]},
+        "checks": ["verified", "types", "valid-at-time", "coverage", "threshold"],
+    }
 
 
 def handed(
@@ -308,6 +346,14 @@ def _authorization(about, coverage, d, context, labels, lang=None) -> Line:
             if rng
             else "any value"
         )
+        if isinstance(c, ThresholdCovered):
+            who = ", ".join(render.key_name(s.says, labels) for s in c.statements)
+            return Line(
+                "authorization",
+                "pass",
+                f"{c.anchor.trusts.k} of {len(set(c.anchor.trusts.keys))} keys are trusted together in "
+                f"context {context} about {render.type_name(d, label, lang)} ({scope}), and {who} agree",
+            )
         speaker = c.path[-1].key if c.path else c.anchor.trusts
         via = (
             f", through {_chain(c.anchor, c.path, labels)}" if c.path else ""
@@ -333,6 +379,16 @@ def _authorization(about, coverage, d, context, labels, lang=None) -> Line:
         text = (
             f"{who} is trusted in context {context}, but not about {render.type_name(d, label, lang)} "
             f"= {render.value_text(d, label, s.attribute[2], 2, lang).lower()}"
+        )
+    elif s.code == "threshold-not-met":
+        th = s.anchor.trusts
+        counted = [render.key_name(m.key, labels) for m in s.members if m.counted]
+        missing = [render.key_name(m.key, labels) for m in s.members if not m.counted]
+        text = (
+            f"{th.k} of {len(s.members)} keys must agree in context {context} about "
+            f"{render.type_name(d, label, lang)}, and {len(counted)} did"
+            + (f" ({', '.join(counted)})" if counted else "")
+            + f"; not counted: {', '.join(missing)} (threshold-not-met)"
         )
     else:
         text = f"{s.detail} ({s.code})"

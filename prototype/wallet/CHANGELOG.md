@@ -15,6 +15,27 @@ The wallet engine and its `mofn` command line, `prototype/wallet/` (#65, #127).
 Every release is a prototype: DEC-004 and DEC-005 are open; do not use real
 keys.
 
+## 0.8.0 — 2026-11-16
+
+Prototype: DEC-004 and DEC-005 are open; do not use real keys.
+
+The engine reduces *k*-of-*n* threshold anchors (T-043, SPEC-0004 §6.4,
+DL-0042). Keys only, no nesting.
+
+- `reduce.Threshold(keys, k)` is an anchor's `trusts` in the threshold form
+  (SPEC-0004 §4.2). An attribute is covered when *k* distinct members each
+  made an attestation a one-key anchor to that member, with the threshold's
+  `about`, would cover. Keys that a rotation links count as one member.
+- The answer names every member: `ThresholdCovered.members` on a yes, and
+  `ThresholdStopped` (`threshold-not-met`) on a no, each with the statement
+  used and, where a member did not count, the reason. `check` prints them in
+  `because` and in the authorization line.
+- One-key anchors are tried first, unchanged. A threshold anchor's
+  `may-delegate` is not followed, and a threshold *hop* is not yet reduced:
+  members attest directly. Both are T-095, on top of the delegation paths
+  of 0.7.0.
+- `tests/test_thresholds.py`: E-11…E-19 and the member reasons.
+
 ## 0.7.0 — 2026-11-14
 
 Prototype: DEC-004 and DEC-005 are open; do not use real keys.

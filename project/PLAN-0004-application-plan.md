@@ -7,9 +7,9 @@ description: "Whether APP-0001 is complete, and the plan that fills the gaps. Dr
 type: plan
 category: product
 status: draft
-version: "0.4.1"
+version: "0.4.2"
 date: "2026-10-02"
-updated: "2026-11-12"
+updated: "2026-11-14"
 needs_review: true
 reviewed: false
 canonical_path: project/PLAN-0004-application-plan.md
@@ -303,6 +303,10 @@ passed.
 2. **Name resolution** (`NameCert` chains, #143). Re-date it with delegation,
    or record it as cut from D6.
 3. **Thresholds.** Confirm the cut that APP-0001 already allows.
+   *Since 2026-11-14* the engine reduces threshold anchors (T-043, DL-0042),
+   so the cut is no longer forced; whether thresholds count toward D6 is
+   still the sponsor's call. The table above is the Nov 12 reading and is
+   not rewritten.
 4. **The recording.** PROC-0004 §5 asks for a recorded demo. *Recommended:*
    Ndewedo records the one-hop slice now, and again once delegation lands.
 5. **#31 and #67.** Rewrite them to match (1)–(4), or close #31 as partly met
@@ -369,6 +373,11 @@ built. #69 is rescoped to the verdict's attribute associations inside
 **Open items.** Cut a first tagged
 CLI release. Decide how release files are signed. Decide whether Windows is a
 release target.
+
+## What changed in v0.4.2 — 2026-11-14
+
+- §7.2 decision 3: a dated note that threshold anchors now reduce in the
+  engine (T-043, DL-0042). The Nov 12 table is a snapshot and is unchanged.
 
 ## What changed in v0.4.0 — 2026-11-12
 
