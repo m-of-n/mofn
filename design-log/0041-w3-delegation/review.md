@@ -40,3 +40,7 @@ request; this file records what was rejected while building it.
 - A ruling on the `delegation: 1` vs `deleg.ranges` reading (produced.md).
 - `PLAN-0004` §7 status rows, `APP-0001` and `PLAN-0002`'s `may-speak` text
   are dated or outside this change and left as they are.
+
+## Closed 2026-11-16
+
+Code review: #168 approved by davidhsiaotw and merged 2026-11-15. Recorded in the BACKLOG-0001 0.15.2 close-out.

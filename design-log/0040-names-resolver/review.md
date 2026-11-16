@@ -32,3 +32,7 @@ The human was offered no new forks. The agent rejected these:
 - A second reader's review of `SPEC-0004` §5.3 (still owed from `DL-0039`).
 - A review of `engine/names.py` against §5.3. T-040 is in review.
 - `mofn check` with name anchors, and the `names` line showing a resolved name.
+
+## Closed 2026-11-16
+
+Code review: #165 approved by davidhsiaotw and merged 2026-11-14. Recorded in the BACKLOG-0001 0.15.2 close-out.
