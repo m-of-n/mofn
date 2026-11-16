@@ -335,7 +335,7 @@ and the `mofn run` guided screen). There are no releases, no tags, and no
 **Since, 2026-11-15 (DL-0043).** `.github/workflows/release.yml` exists. On a
 `wallet-vX.Y.Z` tag it checks the tag against `__version__` and
 `CHANGELOG.md`, builds `prototype/wallet/mofn.spec` (one PyInstaller file) on
-Ubuntu 22.04, macOS 14 (arm64) and Windows, runs `demo/slice.sh` against the
+Ubuntu 22.04, macOS 15 (arm64) and Windows, runs `demo/slice.sh` against the
 Linux and macOS builds, smoke-tests each build on a fresh runner with no
 checkout and no Python packages (`--version`, the menu, a green `check` of
 TV-4 against its golden, and `mofn run` opening Learn in a pty), and

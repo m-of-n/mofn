@@ -29,7 +29,7 @@ empty.
    (`engine/__init__.py`), and `CHANGELOG.md` must have a
    `## X.Y.Z — YYYY-MM-DD` heading for it.
 2. `build` — on `ubuntu-22.04` (glibc 2.35, so the file runs on newer
-   distributions), `macos-14` (arm64; pinned, as #127 D1 says, so the build
+   distributions), `macos-15` (arm64; pinned, as #127 D1 says, so the build
    does not move when `macos-latest` does) and `windows-latest`. Python 3.12,
    `pyinstaller mofn.spec`, then `--version` must print
    `mofn X.Y.Z (prototype)`, then `demo/slice.sh` runs against the build with

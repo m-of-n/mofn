@@ -96,3 +96,20 @@ the record stays here.
   from source" holds.
 - **Publishing on every push to `main`** or a rolling `latest`. Rejected: a
   release is a human act, a tag.
+
+## CI on #169, 2026-11-15
+
+The first run of `release.yml` on the PR failed in two places, both fixed in
+the same PR:
+
+- **`macos-14` is no longer offered** ("configuration
+  'macos-14-arm64-us-default' is not supported"). Pinned to `macos-15`
+  instead. **Rejected: `macos-latest`** — #127 D1 asks for a pin so the
+  build does not move under us; a retired pin is replaced by a newer pin.
+- **`demo/slice.sh` ④–⑥ died with "`: command not found`"** under
+  `MOFN_BIN`: `in_days` calls `$PY`, which the `MOFN_BIN` path leaves empty.
+  `in_days` now falls back to `python3` (stdlib only). **Rejected: `date -d`
+  / `date -v`** — GNU and BSD `date` differ, and the slice runs on both.
+  **Rejected: setting `PY` under `MOFN_BIN`** — `PY` would then be
+  half-meaningful (no `nacl`/`yaml` check), and the import guard keys on it.
+  This was missed locally because the slice was only run from source.

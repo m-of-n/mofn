@@ -59,7 +59,8 @@ failures=0
 
 # in_days N — the time N days from now, as `check --at` takes it.
 in_days() {
-  "$PY" -c 'import datetime as d, sys
+  # Stdlib only, so python3 serves when MOFN_BIN leaves $PY unset.
+  "${PY:-python3}" -c 'import datetime as d, sys
 print((d.datetime.now(d.timezone.utc) + d.timedelta(days=int(sys.argv[1]))).strftime("%Y-%m-%dT%H:%M:%SZ"))' "$1"
 }
 
