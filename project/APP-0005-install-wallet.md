@@ -3,14 +3,14 @@ schema: "archdoc/v1"
 id: APP-0005
 title: "Install the wallet — download, check, run"
 short_title: "Install the wallet"
-description: "How to download a mofn wallet pre-release for macOS or Linux, check it against SHA256SUMS and its build provenance, and run it without a checkout. The download page PLAN-0002 M6 asks for (#127 §7)."
+description: "How to download a mofn wallet pre-release — the macOS desktop app, or the CLI for macOS or Linux — check it against SHA256SUMS and its build provenance, and run it without a checkout. The download page PLAN-0002 M6 asks for (#127 §7)."
 type: design
 category: product
 status: draft
-version: "0.1.0"
+version: "0.2.0"
 version_policy: "semver; PATCH = editorial; MINOR = a platform or check added; MAJOR = the install path changes"
 date: "2026-11-15"
-updated: "2026-11-15"
+updated: "2026-11-17"
 decision_makers: []
 reviewers: []
 needs_review: true
@@ -21,7 +21,7 @@ companion:
   - project/PLAN-0002-product-spec.md
   - project/BACKLOG-0001.md
 defers_to: ARCH-0001
-backlog: W-6
+backlog: [W-6, W-7]
 ---
 
 # Install the wallet
@@ -30,10 +30,17 @@ backlog: W-6
     DEC-004 and DEC-005 are open in ARCH-0001. Do not use real keys, and do
     not rely on a verdict.
 
-`mofn` is the wallet's command line, and `mofn run` opens it as a terminal
-app. Each release is one file per OS with its own Python and PyNaCl inside.
-Nothing else needs installing, and you do not need a clone of this repository
-(#127, PLAN-0004 §9, DL-0043).
+A release has two kinds of download, built from the same engine at the same
+version:
+
+- **the desktop app**, `m-of-n Wallet.app`, for macOS (W-7 #179, DL-0050) —
+  start here if you want a window;
+- **`mofn`**, the command line, with `mofn run` as a terminal app — one file per
+  OS (#127, DL-0043).
+
+Each has its own Python and PyNaCl inside. Nothing else needs installing, and
+you do not need a clone of this repository (PLAN-0004 §9). Both use the same
+wallet folders: a wallet made in one opens in the other.
 
 ## 1. Download
 
@@ -46,7 +53,8 @@ one folder.
 
 | file | for |
 |---|---|
-| `mofn-X.Y.Z-macos-arm64` | macOS on Apple silicon |
+| `mofn-wallet-X.Y.Z-macos-arm64.zip` | **the desktop app**, macOS 13 or later on Apple silicon |
+| `mofn-X.Y.Z-macos-arm64` | the CLI, macOS on Apple silicon |
 | `mofn-X.Y.Z-linux-x86_64` | Linux, x86-64, glibc 2.35 or later (Ubuntu 22.04 and newer) |
 
 Windows and Intel Macs are not release targets for `wallet-v0.x` (#127 D3).
@@ -74,6 +82,29 @@ release that carries an m-of-n statement over its own digest, checked by
 `mofn` itself, is #32, and waits on DEC-004 and DEC-005.
 
 ## 3. Run it
+
+### The desktop app
+
+Unzip it (double-click, or `ditto -x -k mofn-wallet-X.Y.Z-macos-arm64.zip .`)
+and move **m-of-n Wallet.app** to Applications.
+
+The app is **not signed with an Apple Developer ID and not notarized**, so on
+first launch macOS says it cannot verify the developer and will not open it.
+Do one of these, once:
+
+- open it, then **System Settings → Privacy & Security**, and at the bottom
+  **Open Anyway** (macOS 15 no longer offers Control-click → Open); or
+- remove the quarantine mark the browser added:
+
+  ```sh
+  xattr -dr com.apple.quarantine "/Applications/m-of-n Wallet.app"
+  ```
+
+Its first wallet is `~/Projects/wallet/mofn`; the menu at the foot of the
+sidebar opens or creates others. To check a download without opening it:
+`"m-of-n Wallet.app/Contents/MacOS/mofn-wallet" --self-test`.
+
+### The CLI
 
 ```sh
 chmod +x mofn-X.Y.Z-macos-arm64
@@ -105,9 +136,16 @@ without a clone.
   `prototype/wallet/CHANGELOG.md`.
 - **Tested** on a fresh runner with no checkout and no Python packages:
   `--version`, the menu, a green `check` of TV-4 against its golden, and
-  `mofn run` opening Learn.
+  `mofn run` opening Learn. The app: unzipped on a fresh macOS runner,
+  `--self-test` (a wallet, a key, TV-4 green with who signed, topic, digest
+  and standing; then every page built offscreen).
 - **Decisions** D1–D5 for the release are on #127 and in
   `design-log/0043-release-builds/`.
+
+## What changed in v0.2.0 — 2026-11-17
+
+- The desktop app (W-7 #179, DL-0050): the `.zip` in §1, how to open an app
+  that is not notarized in §3, and its smoke test.
 
 ## What changed in v0.1.0 — 2026-11-15
 

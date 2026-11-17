@@ -7,10 +7,10 @@ description: "Every open decision across both repos, ranked by what it blocks. T
 type: process
 category: process
 status: active
-version: "0.7.1"
+version: "0.8.0"
 version_policy: "semver; MINOR = decisions added or closed"
 date: "2026-09-22"
-updated: "2026-11-12"
+updated: "2026-11-17"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -267,9 +267,17 @@ supply-chain profile first (T1-A), then accept P7 or correct it.
 | 23 | **`enforce_admins`** is `false` on both repos. Set so a single member could bootstrap; three admins now exist, so the reason has expired. **Still off at 2026-10-05** (`BACKLOG-0001` T-006c). | ready to flip |
 | 24 | **Signed commits** — `CONTRIBUTING.md` asks for them; the requirement is off so students are not blocked on key setup. | deliberate |
 | 25 | **`~/cb/.claude/rules/usf-provenance.md`** written but uncommitted — `~/cb` has your in-flight manifest work. | yours to commit |
-| ~~**28**~~ | **DECIDED 2026-11-09 — Python throughout; Tauri withdrawn.** Was: *Wallet GUI framework — Tauri, tentative (MD-7); PySide6 the fallback.* MD-7 was never confirmed, and W-6 shipped `mofn run` in Textual with PyInstaller builds (#127 §6). Decided by `ndewedo-newbury` (`DL-0038`): every UI is Python and calls the engine in process — no Rust, no TypeScript, no sidecar. **The Textual app is the Fall 2026 UI** (same day): `mofn run` is the GUI for D8, shipped as PyInstaller builds; there is no desktop window and no PySide6. W-5 (#69) is rescoped into `mofn run`. | decided |
+| ~~**28**~~ | **DECIDED 2026-11-09 — Python throughout; Tauri withdrawn.** Was: *Wallet GUI framework — Tauri, tentative (MD-7); PySide6 the fallback.* MD-7 was never confirmed, and W-6 shipped `mofn run` in Textual with PyInstaller builds (#127 §6). Decided by `ndewedo-newbury` (`DL-0038`): every UI is Python and calls the engine in process — no Rust, no TypeScript, no sidecar. **The Textual app is the Fall 2026 UI** (same day): `mofn run` is the GUI for D8, shipped as PyInstaller builds; there is no desktop window and no PySide6. W-5 (#69) is rescoped into `mofn run`. **Amended 2026-11-16** by `ndewedo-newbury` (W-7 #179, `DL-0050`): *Python throughout* stands, but the December audience needs a desktop window a non-engineer can use, and W-8/W-9 need one to land in. So a **PySide6 (Qt) + PyInstaller** macOS app is built at `prototype/wallet-app/`, importing `prototype/wallet/` in process (every action runs the `mofn` command it shows, as `mofn run` does); `mofn run` stays the CLI's UI. Same repo until the engine ships as a pip package; released on the same `wallet-v*` tag, not a tag of its own (2026-11-17). Rejected: Toga/BeeWare, SwiftUI, reviving Tauri, a separate repo now, closing #69 — reasons in `DL-0050`. | decided, amended |
 
 ---
+
+## What changed in v0.8.0 — 2026-11-17
+
+**Item 28 amended** by `ndewedo-newbury` (`DL-0050`, W-7 #179): the desktop
+window item 28 ruled out on 2026-11-09 is built after all, in Python —
+PySide6 + PyInstaller at `prototype/wallet-app/`, on the `wallet-v*` tag.
+*Python throughout* stands; `mofn run` stays the CLI's UI. No item is added or
+closed; open DEC-* items are unchanged.
 
 ## What changed in v0.7.1 — 2026-11-12
 
