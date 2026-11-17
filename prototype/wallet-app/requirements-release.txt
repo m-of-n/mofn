@@ -1,0 +1,4 @@
+# The macOS .app build (mofn-wallet.spec, release.yml). pytest is excluded
+# from the build by the spec.
+-r requirements.txt
+-r ../wallet/requirements-release.txt

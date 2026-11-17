@@ -1,0 +1,5 @@
+# The desktop wallet (W-7, mofn#179): the engine's runtime pins, and Qt.
+# PySide6-Essentials is the Qt subset the app uses (widgets, SVG icons);
+# the full PySide6 adds ~300 MB of modules it never imports.
+-r ../wallet/requirements.txt
+PySide6-Essentials==6.12.0

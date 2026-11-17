@@ -1,0 +1,4 @@
+# The app's tests: pytest-qt drives the real window headless
+# (QT_QPA_PLATFORM=offscreen).
+-r requirements.txt
+pytest-qt==4.5.0
