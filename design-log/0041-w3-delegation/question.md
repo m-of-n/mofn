@@ -7,7 +7,7 @@ date: "2026-11-14"
 model: "claude-opus-5-5"
 human: ndewedo-newbury
 outcome: "wallet 0.7.0 (engine/reduce.py delegation paths, mofn delegate, root add --depth); demo/slice.sh ④–⑥; BACKLOG-0001 0.14.0."
-status: open
+status: closed
 ---
 
 # DL-0041 — question

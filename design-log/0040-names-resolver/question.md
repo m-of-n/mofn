@@ -7,7 +7,7 @@ date: "2026-11-13"
 model: "claude-opus-5-5"
 human: ndewedo-newbury
 outcome: "wallet 0.6.0 (engine/names.py); SPEC-0002 0.9.1 (TV-35); SPEC-0004 0.6.1 (R-8…R-10); ADR-0008 accepted; BACKLOG-0001 0.13.3."
-status: open
+status: closed
 ---
 
 # DL-0040 — question
