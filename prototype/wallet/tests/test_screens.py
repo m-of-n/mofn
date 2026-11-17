@@ -484,3 +484,57 @@ def test_open_hashes_a_file_that_is_not_a_statement(here, spy):
 
     drive(script)
     assert ["hash", "example/artifact.bin", "--format", "json"] in ran(spy)
+
+
+def test_check_tab_shows_the_four_associations_and_matches_the_cli(here, spy):
+    """W-5 (mofn#69): for the W-4 slice cases, green, authorization fail and
+    integrity fail, the Check tab shows who signed, topic, digest and standing
+    on the verdict, and that verdict is the one the CLI gives."""
+    (here / "tampered.bin").write_bytes(b"X" + (WALLET / "fixtures" / "artifact.bin").read_bytes()[1:])
+    seen = {}
+
+    async def check(app, pilot, c, artifact, case):
+        await set_(c, pilot, file=artifact, at="2026-10-15T00:00:00Z")
+        await pilot.click("#check-go")
+        await pilot.pause()
+        shown = str(c.query_one("#check-result", Static).content)
+        cli_out = run_mofn("--wallet", here / "wallet", *app.last.argv, cwd=here)
+        assert json.loads(cli_out.stdout) == json.loads(app.last.out)
+        seen[case] = (json.loads(app.last.out), shown)
+
+    async def script(app, pilot):
+        await first_run(app, pilot)
+        await tab(app, pilot, "check")
+        c = app.query_one(forms.Check)
+        await set_(c, pilot, add="example/alice.stmt")
+        await pilot.click("#check-add-go")
+        await pilot.pause()
+        await check(app, pilot, c, "example/artifact.bin", "authorization")
+        await check(app, pilot, c, "tampered.bin", "integrity")
+        await tab(app, pilot, "trust")
+        t = app.query_one(forms.Trust)
+        await set_(t, pilot, whose="Alice (definer)")
+        t.w("values").select("reproducible")
+        await pilot.pause()
+        await pilot.click("#trust-go")
+        await pilot.pause()
+        await tab(app, pilot, "check")
+        await check(app, pilot, c, "example/artifact.bin", "green")
+
+    drive(script)
+    want = {"green": ("yes", None), "authorization": ("no", "authorization"), "integrity": ("no", "integrity")}
+    for case, (answer, failing) in want.items():
+        j, shown = seen[case]
+        assert j["answer"] == answer and f"answer: {answer}" in shown
+        if failing:
+            assert j["verdict"][failing]["result"] == "fail"
+            assert f"▶ {forms.LINES.index(failing) + 1} {failing}" in shown
+        assert j["associations"], case
+        for a in j["associations"]:
+            assert f"who signed  {a['signed-by']['key']}" in shown
+            assert f"topic       {a['topic']['domain']} · {a['topic']['type-name']}" in shown
+            assert f"digest      {a['subject']['digest']}" in shown
+            assert f"standing    {a['standing']['text']}" in shown
+    assert seen["green"][0]["associations"][0]["standing"]["result"] == "standing"
+    assert seen["authorization"][0]["associations"][0]["standing"]["result"] == "no-standing"
+    assert "≠ your file" in seen["integrity"][1]

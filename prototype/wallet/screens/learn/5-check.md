@@ -8,6 +8,8 @@ and the limit of what that proves.
 
 <!-- readme: What the six lines mean -->
 
+<!-- readme: Who signed, topic, digest, standing -->
+
 Here is a check that passes every line. The sender is a build machine its
 receiver labelled *release machine*:
 
