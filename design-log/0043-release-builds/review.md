@@ -7,8 +7,8 @@ date: "2026-11-14"
 
 # DL-0043 — review
 
-**Owed from the human.** Review of the PR. Then the human, not the agent,
-pushes the first tag (`git tag -s wallet-v0.8.1 && git push origin
+**Owed from the human** (done 2026-11-16, see *Released* below). Review of
+the PR. Then the human, not the agent, pushes the first tag (`git tag -s wallet-v0.8.1 && git push origin
 wallet-v0.8.1` on the merged commit), checks the pre-release and runs
 `gh attestation verify` on both files from a machine with no checkout. Then
 the BACKLOG W-6 row goes to done and #127 can close.
@@ -125,3 +125,23 @@ right for the `main` of their date. **Rejected: keeping 0.7.1** — a version
 below `main`'s would make the release older than the code it ships.
 BACKLOG → 0.14.3. Rebased, not merged; rerere was off, because a cached
 resolution from a dry run had silently dropped #167's rows.
+
+## Released, 2026-11-16
+
+#169 merged as `98a89b0`. The human pushed `wallet-v0.8.1` on it; the tag
+run of `release.yml` passed (version gate, three builds, three smokes on
+fresh runners, publish). The pre-release, by `github-actions[bot]`, holds
+`mofn-0.8.1-linux-x86_64`, `mofn-0.8.1-macos-arm64` and `SHA256SUMS`, and no
+Windows file (D3). Its notes are the 0.8.1 CHANGELOG section plus the
+prototype warning and the APP-0005 link. APP-0005 is live on Pages.
+
+Checked by the agent on a Mac (arm64), in a scratch folder with no checkout,
+under `env -i PATH=/usr/bin:/bin`: `shasum -a 256 --ignore-missing -c
+SHA256SUMS` → OK; `gh attestation verify mofn-0.8.1-macos-arm64 -R
+m-of-n/mofn` → exit 0, one attestation on record; `--version` → `mofn 0.8.1
+(prototype)`; a bare `mofn` → the menu, exit 0. **Not checked by hand: the
+Linux file** (no Linux machine here); its only evidence is the tag run's
+smoke job on a fresh `ubuntu-latest` runner.
+
+The release half of #127 is complete. #32 (the self-attested release) is
+unchanged by it.
