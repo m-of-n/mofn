@@ -15,6 +15,26 @@ The wallet engine and its `mofn` command line, `prototype/wallet/` (#65, #127).
 Every release is a prototype: DEC-004 and DEC-005 are open; do not use real
 keys.
 
+## 0.10.0 — 2026-11-17
+
+Prototype: DEC-004 and DEC-005 are open; do not use real keys.
+
+**The desktop wallet** (W-7, mofn#179, DL-0050): a macOS window over this
+engine, for people who would rather not use a terminal.
+
+- `mofn-wallet-0.10.0-macos-arm64.zip` holds **m-of-n Wallet.app** (PySide6,
+  `prototype/wallet-app/`). It is not notarized: on first launch use *System
+  Settings → Privacy & Security → Open Anyway* (APP-0005 §3).
+- Identity sidebar (+ New identity), Overview, Keys (import, send yours),
+  Trust (roots, with values and delegation depth), Sign, Verify, Show, Learn.
+  Verify shows authorization, the five other checks, the subject, who signed,
+  and standing as a chain or in words — read from `check --format json`.
+- Every action runs the `mofn` command shown in the status bar, in the same
+  process, against the same wallet folder the CLI uses. The passphrase is a
+  masked field, never on argv or in the environment.
+- The engine and the `mofn` CLI are unchanged; 0.9.0 was not released, so its
+  notes below are new in this release too.
+
 ## 0.9.0 — 2026-11-16
 
 Prototype: DEC-004 and DEC-005 are open; do not use real keys.

@@ -8,6 +8,12 @@ name: release
 # notes are that version's `## X.Y.Z — YYYY-MM-DD` section of
 # prototype/wallet/CHANGELOG.md. The tag must equal `__version__`.
 #
+# The same tag also builds the desktop wallet (W-7, mofn#179, DL-0050):
+# prototype/wallet-app/mofn-wallet.spec on macOS, zipped with ditto, smoke-
+# tested on a fresh runner (`--self-test`: engine and window, offscreen), and
+# published in the same pre-release, under the same SHA256SUMS. One version,
+# one tag: the app is the engine's, at the engine's version.
+#
 # Windows is built and smoke-tested, as CI, but not published: it is not a
 # release target for wallet-v0.x (#127 D3). A pull request that touches the
 # wallet, and a manual run, do everything but publish. The m-of-n statement
@@ -19,6 +25,7 @@ on:
     paths:
       - .github/workflows/release.yml
       - prototype/wallet/**
+      - prototype/wallet-app/**
       - demo/slice.sh
   workflow_dispatch:
 
@@ -117,9 +124,53 @@ jobs:
           chmod +x "$f"
           bash smoke/smoke.sh "$f" smoke
 
+  app:
+    # The desktop wallet's .app (W-7). macOS arm64 only; not notarized (no
+    # Apple Developer ID), so APP-0005 documents the Gatekeeper step.
+    needs: version
+    runs-on: macos-15
+    env:
+      FILE: mofn-wallet-${{ needs.version.outputs.version }}-macos-arm64.zip
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: the app's tests, headless (pytest-qt)
+        working-directory: prototype/wallet-app
+        env: {QT_QPA_PLATFORM: offscreen}
+        run: |
+          python -m pip install -q -r requirements-release.txt -r requirements-test.txt
+          pytest -q
+      - name: .app build (mofn-wallet.spec), zipped with ditto
+        working-directory: prototype/wallet-app
+        run: |
+          pyinstaller --clean --noconfirm mofn-wallet.spec
+          mkdir -p "$GITHUB_WORKSPACE/out"
+          ditto -c -k --keepParent "dist/m-of-n Wallet.app" "$GITHUB_WORKSPACE/out/$FILE"
+      - name: the build says the version it was tagged with
+        run: |
+          "prototype/wallet-app/dist/m-of-n Wallet.app/Contents/MacOS/mofn-wallet" --version | tee version.txt
+          grep -q "^mofn-wallet ${{ needs.version.outputs.version }} (prototype" version.txt
+      - uses: actions/upload-artifact@v4
+        with: {name: macos-arm64-app, path: 'out/${{ env.FILE }}', if-no-files-found: error}
+
+  app-smoke:
+    # A runner that never saw the source: unzip the app and run its self-test
+    # (a wallet, a key, Alice trusted, TV-4 green with the four attributes;
+    # then every page built offscreen).
+    needs: [version, app]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: {name: macos-arm64-app, path: zip}
+      - name: unzip and --self-test
+        run: |
+          ditto -x -k zip/mofn-wallet-*.zip app
+          "app/m-of-n Wallet.app/Contents/MacOS/mofn-wallet" --self-test
+
   release:
     if: github.ref_type == 'tag'
-    needs: [version, smoke]
+    needs: [version, smoke, app-smoke]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -127,17 +178,19 @@ jobs:
       attestations: write
     steps:
       - uses: actions/checkout@v4
-      # Windows is not a release target (#127 D3): only these two are published.
+      # Windows is not a release target (#127 D3): these two CLIs and the macOS app are published.
       - uses: actions/download-artifact@v4
         with: {name: linux-x86_64, path: dist}
       - uses: actions/download-artifact@v4
         with: {name: macos-arm64, path: dist}
+      - uses: actions/download-artifact@v4
+        with: {name: macos-arm64-app, path: dist}
       - name: SHA256SUMS and the notes
         env:
           V: ${{ needs.version.outputs.version }}
         run: |
           (cd dist && sha256sum mofn-* >SHA256SUMS && cat SHA256SUMS)
-          [ "$(grep -c . dist/SHA256SUMS)" = 2 ] || { echo "::error::wanted 2 builds"; exit 1; }
+          [ "$(grep -c . dist/SHA256SUMS)" = 3 ] || { echo "::error::wanted 2 builds and the app"; exit 1; }
           awk -v h="## $V — " 'index($0, h) == 1 {on = 1; next} on && /^## / {exit} on' \
             prototype/wallet/CHANGELOG.md >notes.md
           cat >>notes.md <<'EOF'
@@ -149,6 +202,9 @@ jobs:
           Before running a download, check it against `SHA256SUMS` and its
           build provenance (`gh attestation verify FILE -R m-of-n/mofn`).
           Steps: https://m-of-n.github.io/mofn/project/APP-0005-install-wallet/
+
+          The desktop app (`mofn-wallet-*-macos-arm64.zip`) is not notarized:
+          macOS blocks its first launch. APP-0005 gives the one-time step.
           EOF
           cat notes.md
       - name: build provenance for each file (Sigstore, keyless)
