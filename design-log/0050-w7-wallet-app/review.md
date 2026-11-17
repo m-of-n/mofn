@@ -73,8 +73,9 @@ one PR. **Verdict on the code:** pending (PR review, David).
   recommended "engine seam", which the human approved ("do your pick").
   Reversed while building: `screens/runner.py` already runs `cli.main` in
   process, so calling it gives the CLI's verdict by construction and changes
-  no shared file, which is the smaller review the human asked for. **The human
-  has not yet seen this reversal; it is flagged in the PR for review.**
+  no shared file, which is the smaller review the human asked for. **Accepted by the
+  human on 2026-11-17** after the PR was opened: "i am okay with the CLI
+  in-process".
 - **Bundling `screens` wholesale in the spec.** `collect_submodules("screens")`
   pulls `screens.app` and with it Textual; the spec names the three Qt-free
   modules instead.
