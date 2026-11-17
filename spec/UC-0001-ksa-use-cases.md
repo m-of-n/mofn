@@ -7,10 +7,10 @@ description: "Eight scenarios — release attestation, review panels, archive re
 type: specification
 category: security
 status: draft
-version: "0.2.0"
+version: "0.2.1"
 version_policy: "semver; MINOR = scenario added; PATCH = editorial"
 date: "2026-10-14"
-updated: "2026-11-09"
+updated: "2026-11-16"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -141,10 +141,12 @@ with the same screens and engine as UC-1.
 **Personas.** Library lead L (person: define, delegate); student reviewer S
 (person: claim); reader R (person: rely).
 
-**Flow.** L publishes `library-review` with type `reviewed`
-(`yes / partial / no`, each with names and meanings in English and Spanish) and
-template `record-reviewed` (target: digest of the record's `record.yaml`). L
-delegates `reviewed` to S. S issues *S says sha-256:record has reviewed = yes*.
+**Flow.** L publishes `library-review` v2 with type `record-review`
+(`reviewed / summarized / unverified`, each with names and meanings in English
+and Spanish) and template `record-reviewed` (target: digest of the record's
+`record.yaml`). L delegates `record-review` to S. S issues *S says
+sha-256:record has record-review = reviewed*. *(0.2.1: v1's type was `reviewed`,
+`yes / partial / no`; W-2b, DL-0046.)*
 
 **Ask.** Has this record been reviewed?
 
@@ -152,8 +154,9 @@ delegates `reviewed` to S. S issues *S says sha-256:record has reviewed = yes*.
 the **same** wallet code that rendered UC-1 — no domain-specific code (SPEC-0003
 §7.2). This is the evidence that the vocabulary mechanism generalises.
 
-**Must fail.** A reviewer delegated only for `reviewed ∈ [partial]` asserting
-`yes` → `no-path` (value outside scope).
+**Must fail.** A key delegated only for `record-review ∈ [summarized,
+unverified]` asserting `reviewed` → `no-path` (value outside scope). In the
+wallet demo that key is the library's ingestion agent (APP-0003).
 
 ---
 
@@ -300,5 +303,5 @@ traces its worked statements to these use cases and to published vectors
 |---|---|---|
 | UC-1 | SC-1, SC-2 | TV-4, TV-5, TV-7, TV-16, TV-17; E-1…E-4 |
 | UC-2 | SC-3 (illustrative) | TV-6, TV-9 |
-| UC-3 | AR-1, AR-2, AR-3 | DV-3, TV-21…26; E-5…E-7 |
+| UC-3 | AR-1, AR-2, AR-3 | DV-5, TV-38…44; E-20…E-22 (v1: DV-3, TV-21…26; E-5…E-7) |
 | UC-4 | §1, motivation only | — |

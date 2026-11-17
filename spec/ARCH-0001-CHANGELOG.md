@@ -5,15 +5,26 @@ title: "ARCH-0001 changelog"
 type: changelog
 parent: ARCH-0001
 status: active
-version: "0.3.1"
+version: "0.3.2"
 date: "2026-09-15"
-updated: "2026-11-12"
+updated: "2026-11-16"
 canonical_path: spec/ARCH-0001-CHANGELOG.md
 ---
 
 # ARCH-0001 changelog
 
 Format: newest first. Versions match the architecture document.
+
+## 0.3.2 — 2026-11-16
+
+PATCH. W-2b follow-up (mofn#66, mofn#172). §2.3.2 now cites DV-5
+`library-review` v2, whose type `record-review` (`reviewed` / `summarized` /
+`unverified`) replaces DV-3's `reviewed` (`yes` / `partial` / `no`). AR-1…AR-3
+move from TV-22…26 and E-5…E-7 to TV-40…44 and E-20…E-22. The same three cases
+hold: delegated within range, delegated outside range (`no-path`), and a
+description target. DV-3 stays published. No requirement is added, amended or
+withdrawn, and no DEC-* moves. The values were chosen by `ndewedo-newbury` on
+2026-11-15 (`DL-0046`). The agent drafted the text, recorded in `DL-0048`.
 
 ## 0.3.1 — 2026-11-12
 
