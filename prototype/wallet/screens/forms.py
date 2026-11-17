@@ -517,8 +517,35 @@ class Check(Vocabulary):
             out.append(f"\n{render.OTHER_FILE}")
         for s in j.get("sentences", []):
             out.append(f"\n{s}\n")
+        associations(out, j.get("associations", []))
         out.append(f"\n{j['limit']}\n", "dim")
         return out
+
+
+def associations(out: Text, items: list[dict]) -> None:
+    """W-5: who signed, topic, digest and standing, as `check --format json`
+    gives them. Rendered as given; nothing here is decided again."""
+    if not items:
+        out.append(
+            "\nwho signed, topic, digest, standing: none to show; no verified "
+            "attestation was handed over\n",
+            "dim",
+        )
+        return
+    for a in items:
+        who, topic, subj, st = a["signed-by"], a["topic"], a["subject"], a["standing"]
+        signer = who["key"] + (f" ({who['principal']})" if who.get("principal") else "")
+        out.append(f"\n{a.get('file') or 'statement:' + a['statement'][:16]}\n", "bold")
+        out.append(f"  who signed  {signer}   key:{who['kid'][:16]}\n")
+        out.append(
+            f"  topic       {topic['domain']} · {topic['type-name']} = {topic['value-name']}\n"
+        )
+        mark = "" if subj["matches"] else f"   ≠ your file {subj['yours']}"
+        out.append(f"  digest      {subj['digest']}{mark}\n", "" if subj["matches"] else "bold red")
+        out.append(
+            f"  standing    {st['text']}\n",
+            "green" if st["result"] == "standing" else "bold",
+        )
 
 
 class Show(Form):

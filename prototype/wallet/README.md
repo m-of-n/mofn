@@ -176,6 +176,62 @@ usage or wallet error, `3` a handed statement was invalid.
 The last line of every result is the limit of what this proves: who said it
 and whether they were entitled to say it, not that it is true.
 
+### Who signed, topic, digest, standing
+
+Under the six lines, every check shows four things for each verified
+attestation it describes (W-5, mofn#69). `mofn run`'s Check tab shows them as
+`check --format json` gives them; it works none of them out again.
+
+| | what it is | where it comes from |
+|---|---|---|
+| who signed | the speaker's key, by your name for it or its fingerprint, and the named principal when an anchor trusts that key through a name | the verified statement's `says`; names from the reduction |
+| topic | the vocabulary (domain), the claim (type) and the value | the attribute, and the definition you hold |
+| digest | the full digest the statement is about, and your file's when they differ | the statement's `this`, and your copy of the file |
+| standing | your root → each delegation → the signing key; or **no standing**, and why | the reduction's own path, or the link that broke |
+
+A statement that did not verify has none of the four: what it says about who
+signed it is not yet known to be true. A statement that is not about your file
+shows its digest beside yours, and standing *not evaluated*.
+
+### The verdict as JSON
+
+`check --format json` prints one object: `answer`, `at`, `context`,
+`subject`, `because` (the §10.3 trace), `verdict` (the six lines),
+`statements`, `sentences`, `sentences_about_your_file`, **`associations`** and
+`limit`. `associations` is the stable surface `mofn run` and W-7 (#179)
+render: one entry per attestation and attribute the answer describes, in
+statement order, and `[]` when no attestation verified. W-7 reads these
+names: rename or remove one only with a CHANGELOG line, and tell W-7's owner.
+
+```json
+{
+  "statement": "<64 hex: the statement digest>",
+  "file": "prov.stmt",
+  "signed-by": {"key": "release machine", "kid": "<64 hex>", "label": "release machine", "principal": null},
+  "topic": {"domain": "supply-chain 1", "definition": "<64 hex>", "type": "build-provenance",
+            "type-name": "build provenance", "value": "reproducible", "value-name": "Reproducible"},
+  "subject": {"digest": "sha-256:<64 hex>", "yours": "sha-256:<64 hex>", "matches": true},
+  "standing": {"result": "standing", "text": "me (root, accepted by me) → key holder",
+               "chain": [{"role": "root", "anchor": "local", "accepted-by": "me", "key": "me", "kid": "<64 hex>"},
+                         {"role": "delegation", "trust": "<64 hex>", "key": "key holder", "kid": "<64 hex>"}],
+               "reason": null, "detail": null}
+}
+```
+
+| field | values |
+|---|---|
+| `signed-by.label` | your label for the key, or `null`; `key` falls back to `key:<16 hex>` |
+| `signed-by.principal` | `"<whose>'s <name>"` when a name anchor resolved to this key (SPEC-0004 §5.3), else `null` |
+| `topic.domain` | `"<name> <version>"` of the definition you hold, or `definition:<16 hex>` when it is not the one named |
+| `subject.matches` | `false` is the integrity failure: `digest` is what was signed, `yours` is your file |
+| `standing.result` | `standing`, `no-standing` (with `reason`, a §10.3 code, and `detail`), or `not-evaluated` (no statement is about your file, or another statement covered the value) |
+| `standing.chain` | the root first, then each delegation hop; the last `key` is the signer. A threshold root adds `threshold: {k, n}`. On a no, the hops followed before the break |
+| `standing.broken` | on a no that a delegation caused: `trust` (its digest), `from`, `to` |
+| `standing.text` | the line `mofn run` prints, so every renderer says the same thing |
+
+Goldens: `fixtures/golden/associations-{green,unauthorized,tampered}.json`
+(`tests/test_associations.py`).
+
 ### A second domain
 
 `domains/archives/` runs the same commands over a different vocabulary:

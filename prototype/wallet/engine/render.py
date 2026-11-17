@@ -52,6 +52,11 @@ def key_name(kid: bytes, labels: dict[bytes, str]) -> str:
     return labels.get(kid) or fingerprint(kid)
 
 
+def name_text(name: list, labels: dict[bytes, str]) -> str:
+    """A name `[7, kid, [label, ...]]` (SPEC-0004 §5.3): whose, and which."""
+    return f"{key_name(name[1], labels)}'s " + " ".join(name[2])
+
+
 def target(t: list, labels: dict[bytes, str]) -> str:
     kind = t[0]
     if kind == 1:

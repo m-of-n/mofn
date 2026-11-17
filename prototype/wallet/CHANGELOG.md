@@ -15,6 +15,27 @@ The wallet engine and its `mofn` command line, `prototype/wallet/` (#65, #127).
 Every release is a prototype: DEC-004 and DEC-005 are open; do not use real
 keys.
 
+## 0.9.0 — 2026-11-16
+
+Prototype: DEC-004 and DEC-005 are open; do not use real keys.
+
+Every verdict names who signed, the topic, the subject's digest and standing
+(W-5, mofn#69, DL-0049).
+
+- `check --format json` adds `associations`: one entry per attestation and
+  attribute the answer describes, with `signed-by` (key, kid, your label, the
+  named principal), `topic` (domain, type, value), `subject` (the digest
+  signed, yours, whether they match) and `standing` (root → delegation → key,
+  or no standing and the §10.3 reason, or not evaluated). Read from the
+  reduction's result; it decides nothing. The shape is in the README, *The
+  verdict as JSON*, and W-7 (#179) reuses it. Every other key is unchanged.
+- `mofn run`'s Check tab prints the four under every verdict.
+- The text verdict and `fixtures/golden/*.txt` are unchanged.
+- `tests/test_associations.py` with goldens
+  `fixtures/golden/associations-*.json`; a pilot test that the Check tab
+  shows the four and matches the CLI for green, authorization fail and
+  integrity fail.
+
 ## 0.8.1 — 2026-11-16
 
 Prototype: DEC-004 and DEC-005 are open; do not use real keys.

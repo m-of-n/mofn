@@ -1,0 +1,39 @@
+[
+  {
+    "statement": "c539ace6b96e917b73074266f4ec46c69d07348c8d75d1660cbbaa6a1aaf6922",
+    "signed-by": {
+      "key": "Alice",
+      "kid": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+      "label": "Alice",
+      "principal": null
+    },
+    "topic": {
+      "domain": "supply-chain 1",
+      "definition": "517007656a617b3b5ab7cc376275a46ad88d14594f6846df88a34f2c8b3a7175",
+      "type": "build-provenance",
+      "type-name": "build provenance",
+      "value": "reproducible",
+      "value-name": "Reproducible"
+    },
+    "subject": {
+      "digest": "sha-256:48dfc39586b0c4f9e905b3b60f59a30b7c0c7408e44f7cb4df2a09fbf3e67ba7",
+      "yours": "sha-256:48dfc39586b0c4f9e905b3b60f59a30b7c0c7408e44f7cb4df2a09fbf3e67ba7",
+      "matches": true
+    },
+    "standing": {
+      "result": "standing",
+      "chain": [
+        {
+          "role": "root",
+          "anchor": "local",
+          "accepted-by": "me",
+          "key": "Alice",
+          "kid": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9"
+        }
+      ],
+      "text": "Alice (root, accepted by me)",
+      "reason": null,
+      "detail": null
+    }
+  }
+]

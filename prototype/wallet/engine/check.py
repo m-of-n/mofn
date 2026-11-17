@@ -63,6 +63,10 @@ class Answer:
     # False when no verified attestation is about the relying party's copy, so
     # the sentences describe another file (mofn#157 F-1, SPEC-0004 §10.4).
     sentences_about_your_file: bool = True
+    # The verified attestations the answer describes, and the definition held
+    # for them: what `associations` reads (W-5, mofn#69).
+    described: list = field(default_factory=list)
+    definition: Definition | None = None
 
     @property
     def yes(self) -> bool:
@@ -161,8 +165,178 @@ class Answer:
             ],
             "sentences": self.sentences,
             "sentences_about_your_file": self.sentences_about_your_file,
+            "associations": associations(self),
             "limit": render.LIMIT,
         }
+
+
+# ------------------------------------------------- attribute associations (W-5)
+#
+# One entry per (attestation, attribute) the answer describes: who signed,
+# the topic, the subject's digest, and standing. Read from the reduction's own
+# result (`Coverage`); nothing here decides coverage. The shape is documented in
+# README.md, "The verdict as JSON", and is what `mofn run` and W-7 render.
+
+
+def associations(answer: Answer) -> list[dict]:
+    files = {h.verified.digest: h.name for h in answer.handed if h.verified}
+    d = answer.definition
+    out = []
+    for s in answer.described:
+        for a in s.body.get(1, []):
+            out.append(
+                {
+                    "statement": s.digest.hex(),
+                    "file": files.get(s.digest),
+                    "signed-by": _signed_by(s.says, answer),
+                    "topic": _topic(a, d),
+                    "subject": _subject(s.this, answer.subject),
+                    "standing": _standing(s, a, answer),
+                }
+            )
+    return out
+
+
+def _signed_by(kid: bytes, answer: Answer) -> dict:
+    names = answer.coverage.names if answer.coverage else []
+    principal = next(
+        (render.name_text(r.name, answer.labels) for r in names if kid in r.keys), None
+    )
+    return {
+        "key": render.key_name(kid, answer.labels),
+        "kid": kid.hex(),
+        "label": answer.labels.get(kid),
+        "principal": principal,
+    }
+
+
+def _topic(a: dict, d: Definition | None) -> dict:
+    tref, value = a[1], a[2]
+    known = d is not None and d.id == tref[1]
+    return {
+        "domain": f"{d.name} {d.version}" if known else f"definition:{tref[1][:8].hex()}",
+        "definition": tref[1].hex(),
+        "type": tref[2],
+        "type-name": render.type_name(d if known else None, tref[2]),
+        "value": value.hex() if isinstance(value, bytes) else value,
+        "value-name": render.value_text(d if known else None, tref[2], value, 2),
+    }
+
+
+def _subject(this, yours: list) -> dict:
+    def full(t):
+        if t and t[0] == 2:
+            return render.target(t, {}).split(":")[0] + ":" + t[2].hex()
+        return render.target(t, {}) if t else None
+
+    return {"digest": full(this), "yours": full(yours), "matches": this == yours}
+
+
+def _standing(s, a: dict, answer: Answer) -> dict:
+    """What the reduction found for this statement and attribute (§10.3)."""
+    name = lambda k: render.key_name(k, answer.labels)
+    cov = answer.coverage
+    if cov is None:
+        return {
+            "result": "not-evaluated",
+            "chain": [],
+            "text": "no standing: not evaluated, the statement is not about your file",
+            "reason": None,
+            "detail": "no verified statement handed over is about your file",
+        }
+    for c in cov.covered:
+        if c.attribute != a:
+            continue
+        if isinstance(c, ThresholdCovered):
+            if s.digest not in {x.digest for x in c.statements}:
+                continue
+            th = c.anchor.trusts
+            chain = [
+                _root(c.anchor, s.says, name)
+                | {"threshold": {"k": th.k, "n": len(set(th.keys))}}
+            ]
+        elif c.statement.digest == s.digest:
+            chain = [_root(c.anchor, c.anchor.trusts, name)] + _hops(c.path, name)
+        else:
+            continue
+        return {
+            "result": "standing",
+            "chain": chain,
+            "text": _chain_text(chain),
+            "reason": None,
+            "detail": None,
+        }
+    for st in cov.stopped:
+        if st.attribute != a:
+            continue
+        mine = st.statement is not None and st.statement.digest == s.digest
+        member = any(
+            m.statement is not None and m.statement.digest == s.digest
+            for m in getattr(st, "members", [])
+        )
+        if not (mine or member or st.statement is None):
+            continue
+        chain = []
+        if st.anchor is not None and isinstance(st.anchor.trusts, bytes):
+            chain = [_root(st.anchor, st.anchor.trusts, name)] + _hops(st.path, name)
+        out = {
+            "result": "no-standing",
+            "chain": chain,
+            "text": f"no standing: {st.detail} ({st.code})",
+            "reason": st.code,
+            "detail": st.detail,
+        }
+        if st.link is not None:  # name the link that broke (W-3)
+            out["broken"] = {
+                "trust": st.link.digest.hex(),
+                "from": name(st.link.says),
+                "to": name(s.says),
+            }
+            out["text"] = (
+                f"no standing: {_chain_text(chain)} ✗ {name(s.says)}: "
+                f"{st.detail} ({st.code})"
+            )
+        return out
+    return {
+        "result": "not-evaluated",
+        "chain": [],
+        "text": "no standing: not evaluated, another statement covered this value",
+        "reason": None,
+        "detail": "another statement handed over covered this value",
+    }
+
+
+def _root(anchor: Anchor, key: bytes, name) -> dict:
+    return {
+        "role": "root",
+        "anchor": anchor.source,
+        "accepted-by": name(anchor.accepted_by),
+        "key": name(key),
+        "kid": key.hex(),
+    }
+
+
+def _hops(path, name) -> list[dict]:
+    return [
+        {
+            "role": "delegation",
+            "trust": h.statement.digest.hex(),
+            "key": name(h.key),
+            "kid": h.key.hex(),
+        }
+        for h in path
+    ]
+
+
+def _chain_text(chain: list[dict]) -> str:
+    root = chain[0]
+    first = (
+        f"{root['threshold']['k']} of {root['threshold']['n']} keys, rooted by "
+        f"{root['accepted-by']}; {root['key']} counted"
+        if "threshold" in root
+        else f"{root['key']} (root, accepted by {root['accepted-by']})"
+    )
+    return " → ".join([first] + [h["key"] for h in chain[1:]])
 
 
 def _scope_json(about: list[dict]) -> dict:
@@ -259,7 +433,8 @@ def run(
         for s in (about or attestations)
     ]
     return Answer(
-        context, at, subject, items, lines, sentences, coverage, labels, bool(about)
+        context, at, subject, items, lines, sentences, coverage, labels, bool(about),
+        described=about or attestations, definition=held.get(d.id) if d else None,
     )
 
 
