@@ -15,3 +15,7 @@ demo/wallets/
 # prototype/wallet/mofn.spec: PyInstaller output (release.yml, DL-0043)
 prototype/wallet/build/
 prototype/wallet/dist/
+
+# prototype/wallet-app/mofn-wallet.spec: PyInstaller output (W-7, DL-0050)
+prototype/wallet-app/build/
+prototype/wallet-app/dist/

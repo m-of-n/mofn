@@ -53,6 +53,22 @@ jobs:
         # slice.sh locks wallets with chmod 000, which NTFS ignores.
         if: runner.os != 'Windows'
         run: bash demo/slice.sh
+  wallet-app:
+    # The desktop wallet (W-7, mofn#179): its tests drive the real window
+    # headless, and the app's verdicts must equal the CLI's. macOS is its
+    # only target; the .app itself is built by release.yml.
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: app tests (pytest-qt, offscreen) and self-test
+        working-directory: prototype/wallet-app
+        env: {QT_QPA_PLATFORM: offscreen}
+        run: |
+          python -m pip install -q -r requirements-test.txt
+          pytest -q
+          python mofn-wallet --self-test
   dco:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'

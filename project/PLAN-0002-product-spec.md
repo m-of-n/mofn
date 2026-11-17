@@ -7,9 +7,9 @@ description: "The CS690 Fall 2026 Product Specification, in the course template'
 type: plan
 category: process
 status: draft
-version: "0.4.1"
+version: "0.5.0"
 date: "2026-09-25"
-updated: "2026-11-12"
+updated: "2026-11-17"
 needs_review: true
 reviewed: false
 canonical_path: project/PLAN-0002-product-spec.md
@@ -237,10 +237,10 @@ distribution.
 | question | answer |
 |---|---|
 | Development environment | macOS / Linux laptops |
-| Deployment | a downloadable desktop application from the project site (GitHub Pages) |
+| Deployment | a downloadable desktop application from the project site (GitHub Pages): the macOS app `m-of-n Wallet.app`, and the `mofn` CLI per OS, all on one `wallet-v*` pre-release (APP-0005) |
 | Languages | **Python throughout** — engine, CLI and UI (`DECISIONS-0001` item 28, 2026-11-09) |
 | Code frameworks | a vetted CBOR library; `cryptography` for signatures |
-| UI framework | **Textual** — `mofn run` (W-6) is the application's UI, a terminal app, shipped as one PyInstaller build per OS. No windowed GUI this semester; ~~Tauri~~ withdrawn 2026-11-09 |
+| UI framework | **PySide6 (Qt)** for the desktop window (W-7 #179, `prototype/wallet-app/`), built with PyInstaller as a macOS `.app` — `DECISIONS-0001` item 28 as amended 2026-11-16 (`DL-0050`). **Textual** stays the CLI's UI, `mofn run` (W-6). Both call the engine in process. ~~Tauri~~ withdrawn 2026-11-09 |
 | Database | **None, by design** — files in `~/.mofn` (§6.4) |
 | Why this stack | Python because the prototype exists and reduction logic changes weekly; one language, so the UI calls the engine in process and PyInstaller builds one file per OS; CBOR because DEC-002 selected option 5 (reduced CBOR, no IANA tags) for byte-exact hashing |
 

@@ -7,9 +7,9 @@ description: "Whether APP-0001 is complete, and the plan that fills the gaps. Dr
 type: plan
 category: product
 status: draft
-version: "0.5.1"
+version: "0.6.0"
 date: "2026-10-02"
-updated: "2026-11-16"
+updated: "2026-11-17"
 needs_review: true
 reviewed: false
 canonical_path: project/PLAN-0004-application-plan.md
@@ -102,8 +102,17 @@ Personas, all three required by the product spec, mapped onto those two:
 **Python engine + CLI first. Thin local UI later.**
 
 **The UI is Python too** (`DECISIONS-0001` item 28, 2026-11-09; a
-Tauri/TypeScript shell was considered and withdrawn). The UI is the Textual
-app, `mofn run`; no windowed GUI is built this semester. Every cryptographic and
+Tauri/TypeScript shell was considered and withdrawn). There are two, over one
+engine:
+
+- **The desktop window** — `prototype/wallet-app/`, PySide6 (Qt), a macOS
+  `.app` built with PyInstaller (item 28 as amended 2026-11-16, W-7 #179,
+  `DL-0050`). This is what the December audience uses, and where W-8 (#180,
+  personas) and W-9 (#181, groups) land.
+- **The terminal app** — `mofn run`, Textual, inside the CLI build (W-6).
+
+Both run the `mofn` command each action names through `cli.main` in the same
+process, so a verdict in either is the CLI's verdict. Every cryptographic and
 reduction step stays in the engine; the UI only displays wallet state and
 verdicts. Do not put a knowledge graph behind that shell.
 Do not start the shell before the two scenarios in §3 can be run from the CLI.
@@ -120,6 +129,37 @@ Five views. Nothing else for Fall 2026.
 3. **Make** — pick key, subject, type, value; write a statement file.
 4. **Present** — choose the statement set to hand a relying party.
 5. **Verdict** — six dimensions, the rendered sentence, and the limit line: this proves origin and integrity, not truth.
+
+### 5.1 The desktop window (W-7, decided 2026-11-17)
+
+The five views above, as the desktop app draws them. Chosen by
+`ndewedo-newbury` from three rounds of mockups (`DL-0050`, where the rejected
+options are recorded).
+
+- **Look.** Graphite dark (near-black, neutral grey cards, violet accent),
+  with a light theme and *System*; green for pass, red for fail. The prototype
+  warning is always on screen, at the foot of the sidebar.
+- **Sidebar, top to bottom.** The active **identity** and its switcher, with
+  *+ New identity* (`key gen`) — the scaffold W-8's personas build on; then
+  *Wallet*: Overview, Keys, Trust; then *Act*: Sign, Verify, Show, Learn; then
+  the **wallet** switcher (any folder is a wallet; the first is
+  `~/Projects/wallet/mofn`). The sidebar folds to icons.
+- **Status bar.** The `mofn` command the last action ran, so the same step can
+  be typed in a terminal against the same wallet.
+- **Verify (view 5) is rows, not columns:** (1) **Authorization** with YES/NO,
+  prominent; (2) the five other lines in one row; (3) **Subject** — the
+  sentence, the file and whether it matches, its digest, the claim, the
+  vocabulary; (4) **Signed by**; (5) **Standing**, as timeline rows (root →
+  each delegation → the signer, a broken link dashed red with the engine's
+  reason), with an *In words* toggle that says the same chain as sentences;
+  (6) the limit line. 3–5 are W-5's `associations`, as given.
+- **Context** is not on Overview: a verdict is computed in one context,
+  chosen under *More options* on Verify and Trust. W-8 gives contexts their own
+  page, as communities.
+- **Other pages.** Keys (table; import; send yours), Trust (roots table; trust
+  a key with values, delegation depth, note), Sign (as the active identity;
+  digest shown live; masked passphrase), Show (decode a statement or `.def`, or
+  hash any file), Learn (the six `mofn run` pages).
 
 ## 6. On disk
 
@@ -325,7 +365,8 @@ Those edits are documentation. They do not accept DEC-002 or any other open deci
 
 **Proposed, 2026-11-09**, except where it restates what is already in the repo
 or in PLAN-0001 and PLAN-0002. It accepts no DEC-*. Decision #28 has closed
-since (2026-11-09, `DL-0038`): the Textual app is the UI.
+since (2026-11-09, `DL-0038`) and was amended (2026-11-16, `DL-0050`): a
+PySide6 desktop window, with the Textual app as the CLI's UI.
 
 **Current state**, verified 2026-11-09 at main `c84a0e7`. The only application
 is the `mofn` Python CLI, run from a checkout (the command menu, `--version`,
@@ -367,6 +408,8 @@ What is automated:
 
 - `ci.yml` runs the wallet tests on Ubuntu, macOS and Windows for every pull
   request and every push to `main`, and checks the menu and version.
+- `ci.yml` also runs the desktop app's tests on macOS (`pytest-qt`, headless):
+  every page, and the app's verdict equal to the CLI's for the slice cases.
 - `weekly-slice.yml` runs `demo/slice.sh` offline each Monday and posts the
   result on #68.
 - `pages.yml` publishes the documentation site.
@@ -390,14 +433,22 @@ an install still needs a Python (CI uses 3.12) and at least `pip install
 pynacl`, or a per-OS build that includes the wheel. How to handle that is an
 open question; BACKLOG W-6 already asks for one self-contained build per OS.
 
-**GUI.** Decided 2026-11-09 (decision #28, `DL-0038`): **the Textual app,
-`mofn run`, is the UI.** Python throughout; Tauri, PySide6 and SwiftUI are not
-built. #69 is rescoped to the verdict's attribute associations inside
-`mofn run`. There is no separate GUI package: the CLI build carries it.
+**GUI.** Decided 2026-11-09 (decision #28, `DL-0038`), amended 2026-11-16
+(`DL-0050`, W-7 #179): **a PySide6 desktop window** at `prototype/wallet-app/`,
+and `mofn run` (Textual) as the CLI's UI. Python throughout; Tauri and SwiftUI
+are not built. The window is a macOS arm64 `.app` from
+`prototype/wallet-app/mofn-wallet.spec`, built by `release.yml` on the same
+`wallet-v*` tag as the CLI, at the engine's version: one tag, one
+`SHA256SUMS`, one changelog (decided 2026-11-17 instead of a separate
+`wallet-app-v*` tag). It is **not signed with an Apple Developer ID nor
+notarized**; APP-0005 gives the one-time Gatekeeper step. A fresh macOS runner
+unzips it and runs `--self-test` (the engine end to end, then every page built
+offscreen) before anything is published.
 
 | output | platform | built by | status |
 |---|---|---|---|
 | CLI, including `mofn run` — one PyInstaller build per OS (#127 §6; zipapp cannot load PyNaCl) | macOS arm64, Linux x86-64 (Windows x86-64 built and tested, not published) | `release.yml` on a `wallet-v*` tag; Ndewedo, #127 | published: [`wallet-v0.8.1`](https://github.com/m-of-n/mofn/releases/tag/wallet-v0.8.1), 2026-11-16 |
+| desktop wallet — `m-of-n Wallet.app`, zipped (`mofn-wallet-X.Y.Z-macos-arm64.zip`) | macOS arm64 | `release.yml` on a `wallet-v*` tag; Ndewedo, W-7 #179 | built from 0.10.0; first published with `wallet-v0.10.0` |
 | documentation site | Pages | `pages.yml` | in place |
 | weekly slice report | posted on #68 | `weekly-slice.yml` each Monday | in place |
 
@@ -410,6 +461,14 @@ checkout (DL-0043).
 
 **Open items.** The self-attested release (an m-of-n statement over its own
 digest) is #32 and waits on DEC-004 and DEC-005.
+
+## What changed in v0.6.0 — 2026-11-17
+
+- §4: two UIs over one engine — the PySide6 desktop window (W-7 #179) and
+  `mofn run` — after `DECISIONS-0001` item 28's amendment (`DL-0050`).
+- §5.1 added: the desktop window's layout, as decided from the W-7 mockups.
+- §9: the GUI paragraph, the outputs table (the `.app` on the `wallet-v*`
+  tag) and `ci.yml`'s app job.
 
 ## What changed in v0.5.1 — 2026-11-16
 

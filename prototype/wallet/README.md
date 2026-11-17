@@ -19,6 +19,9 @@ has one file each for macOS arm64 and Linux x86-64, `SHA256SUMS`, and a
 build-provenance attestation. Each file is the whole of `mofn`, `mofn run`
 included, with its own Python and PyNaCl inside. Windows is built and tested
 but not published (#127 D3).
+From 0.10.0 each release also holds the **desktop app** for macOS,
+`mofn-wallet-X.Y.Z-macos-arm64.zip`: the same engine in a window
+(`prototype/wallet-app/README.md`, W-7).
 
 **How to download, check and run one:
 [APP-0005 *Install the wallet*](https://m-of-n.github.io/mofn/project/APP-0005-install-wallet/)**
