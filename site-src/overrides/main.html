@@ -1,0 +1,17 @@
+{#- Status banner on every page (#177, PROC-0004 §9: "nothing draft reads as
+    settled"). Reads archdoc/v1 front matter; pages without it get none. -#}
+{% extends "base.html" %}
+{% block content %}
+  {%- set m = page.meta or {} -%}
+  {%- if m.status -%}
+  <div class="mofn-status mofn-status--{{ m.status | lower }}">
+    <span class="mofn-status__state">{{ m.status }}</span>
+    {%- if m.id %}<span class="mofn-status__id">{{ m.id }}</span>{% endif -%}
+    {%- if m.version %}<span>v{{ m.version }}</span>{% endif -%}
+    {%- if m.updated %}<span>updated {{ m.updated }}</span>{% endif -%}
+    {%- if m.reviewed is defined and not m.reviewed %}<span>not yet reviewed</span>{% endif -%}
+    {%- if m.canonical_path %}<a href="https://github.com/m-of-n/mofn/blob/main/{{ m.canonical_path }}">source</a>{% endif -%}
+  </div>
+  {%- endif -%}
+  {{ super() }}
+{% endblock %}

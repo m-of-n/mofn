@@ -31,6 +31,12 @@ for f in library/index/bibliography.md library/exports/references.json; do
 done
 bin/manifest                      # nav + manifest, now that the library views exist
 mkdir -p docs/architecture docs/project docs/research docs/library
+# Site-only pages (landing, download) and assets (CSS) are authored in
+# site-src/ and staged like everything else, so docs/ is wholly generated.
+# They used to be tracked inside docs/, the one directory CLAUDE.md says never
+# to edit, and the landing page's status line went two months stale (#177).
+cp site-src/*.md docs/
+mkdir -p docs/assets && cp -R site-src/assets/. docs/assets/
 cp spec/*.md docs/architecture/
 cp project/*.md docs/project/
 # Stage the research tree root AND each NNNN-slug/report.md, matching the globs
