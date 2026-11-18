@@ -8,10 +8,10 @@ description: "Canonical working architecture for a native model that is not X.50
 type: architecture
 category: security
 status: draft
-version: "0.3.2"
+version: "0.3.3"
 version_policy: "semver; PATCH = editorial; MINOR = additive requirements; MAJOR = breaking model change"
 date: "2026-09-15"
-updated: "2026-11-16"
+updated: "2026-11-17"
 authors:
   - role: architect
     id: conversation-brainpool256
@@ -91,7 +91,7 @@ scope:
 agent_checkpoint: true
 agent_notes: >
   Other agents: treat this file as the source of truth for architecture
-  state as of v0.3.2. v0.3.2 moves §2.3.2 to DV-5 `library-review` v2. v0.3.1 closes the SDSI-names gap in §5.5. v0.3.0 adds §2.3, the two target applications. v0.2.0 folded ARCH-0001-PROPOSAL-v0.2.0 in (now
+  state as of v0.3.3. v0.3.3 adds inputs to DEC-005 (no option selected). v0.3.2 moves §2.3.2 to DV-5 `library-review` v2. v0.3.1 closes the SDSI-names gap in §5.5. v0.3.0 adds §2.3, the two target applications. v0.2.0 folded ARCH-0001-PROPOSAL-v0.2.0 in (now
   superseded) and carried ADR-0002, ADR-0003, ADR-0007 and the T-012c
   delegation decision into §4-§7. Where SPEC-0001..0005 and this file differ,
   §5.5 lists every known gap and which side owes the change. Do not invent accepted decisions. Open items are
@@ -101,7 +101,7 @@ agent_notes: >
 
 # ARCH-0001 — Authorization, local names, and artifact attestation
 
-**Status:** draft · **Version:** 0.3.2 · **Date:** 2026-09-15 · **Updated:** 2026-11-16  
+**Status:** draft · **Version:** 0.3.3 · **Date:** 2026-09-15 · **Updated:** 2026-11-17  
 **Canonical file:** `spec/ARCH-0001-authorization-attestation.md`  
 **Changelog:** `spec/ARCH-0001-CHANGELOG.md`
 
@@ -644,6 +644,78 @@ v0.1 may ship **tag as opaque byte string** plus one profile (`urn:…:tag:bytes
 
 Options: DSSE (in-toto world), COSE_Sign1 (SCITT world), both with a single unsigned payload schema.
 
+**Inputs the DEC-005 ADR must answer**: added 0.3.3 from the FX-1 extraction
+of in-toto `envelope.md` v1.2.0 (library record `in-toto-envelope-v1`,
+`distilled/design-notes.md`, library#141 at `23c0d40`; not yet merged, and
+`reviewed_by` is empty). The provenance and VSA records (library#143, #144)
+corroborate the last item. These notes are additive. They select, rank and
+withdraw no option, and they amend no requirement.
+
+- **The scope is already settled: export only.** `ADR-0004` item 4 says
+  *"COSE_Sign1 and DSSE are export envelopes only. Which envelope remains
+  DEC-005."* `R-0006` §5.2 read DEC-005 two ways, either as answered by the
+  native envelope or as an export choice. `ADR-0004` took the second, so the
+  native `[suite, says, tbs, sig, ? pub]` of `SPEC-0002` §5 is not a
+  candidate. It could not be one anyway: it carries one signature over a TBS
+  that names one speaker, and an in-toto envelope must be able to carry several
+  (record X-01).
+- **An option the list omits: COSE_Sign.** in-toto names **COSE_Sign** (the
+  multi-signer structure, RFC 9052 §4.1) as a compliant envelope. It names
+  **COSE_Sign1** as non-compliant (record A-04, C-03). So in the in-toto world
+  the COSE option is COSE_Sign, which this list does not offer. Compliance is
+  asserted by in-toto, not shown against its own rules (record Q-05). P5.2 is
+  owed against COSE `crit` for COSE_Sign exactly as for COSE_Sign1
+  (`ARCH-0002` P5.2). Listed here as an input, not as option 4.
+- **No single envelope serves both worlds.** DSSE is in-toto's envelope and
+  not SCITT's. COSE_Sign1 is SCITT's (§3.2) and not in-toto's. COSE_Sign is
+  in-toto's and not SCITT's. Only *both* serves both, and then an in-toto
+  Statement registered with SCITT travels in two envelopes (record §4). R-I-03
+  already pairs in-toto with DSSE and COSE_Sign1 with CWT, and never pairs
+  in-toto with COSE_Sign1. Picking one envelope therefore picks one ecosystem
+  for v1.
+- **Which payload is "the single unsigned payload schema"?** There are two
+  distinct export products (record K-01, Q-10). **E1** is DSSE over the KSA
+  TBS under a `payloadType` of our own: R-O-05 holds, but no in-toto consumer
+  reads it. That is what §6's DSSE row, *wire only*, describes. **E2** is an
+  in-toto Statement in DSSE, made by `MAP-0002`, which is what R-I-03 asks for.
+  R-O-05's first clause cannot hold for E2: what is signed is a second object,
+  with its own bytes and digest. The ADR says which of E1 and E2 it means, or
+  both. If E2, it records R-O-05's first clause as not applying to an export,
+  as an accepted loss under R-I-01.
+- **Which key signs an export?** The native signature never verifies as a
+  DSSE one, because PAE and the DS label prefix differ, so every export signs
+  again (record K-02, Q-11). The options:
+  - the speaker's own key, against `SPEC-0001` §5.3's SHOULD (one key per
+    protocol) and under its MUST to record the use on the key; or
+  - a separate export key. Nothing in `SPEC-0002` would link it to the
+    speaker: no kind in §8.1 and no usage code in §12.7 says that one key
+    exports for another.
+
+  The ADR picks one, or owes `SPEC-0002` the link.
+- **Whether import is in scope**, since §6 marks both DSSE and COSE_Sign1 as
+  **I**. If it is, the ADR inherits:
+  - a round trip is byte-faithful only if the received envelope is kept
+    (record C-04);
+  - real attestations arrive in Sigstore Bundles, a container in-toto calls
+    non-compliant (record C-05);
+  - they are signed with ECDSA, which no KSA suite has, so the signer has no
+    `kid` that R-O-01 can name (record C-06);
+  - an imported statement's identity is the hash of its payload with
+    `payloadType`, never of the envelope text (record Q-13);
+  - P5.2 covers the envelope exterior only. Foreign predicates ignore unknown
+    fields *inside* the payload (`slsa-provenance-1-2` K-01, `slsa-vsa-1-2`
+    K-02), and P5.2 calls that interior ours, which an imported predicate is
+    not.
+
+**Proposed acceptance test**: drafted with these inputs and not yet agreed.
+DEC-005 has had none. One is proposed so that the ADR has something to meet:
+
+1. TV-4, exported in each chosen envelope, verifies under that ecosystem's
+   reference verifier with no KSA code.
+2. Its R-I-01 loss rows are published in §6.
+3. The ADR's answer on the signing key is shown, by a vector, to let a KSA
+   verifier tell which native statement an export came from.
+
 ### DEC-006 — withdrawn before filing
 
 Drafted in `ARCH-0001-PROPOSAL-v0.2.0` rev.1 as "authoring and display surface".
@@ -730,4 +802,4 @@ their common principle. It is not a reason to merge them.
 - `draft-mih-scitt-agent-action-capsule-02` — ad hoc vocabulary inside SCITT (§3.3)  
 - RFC 9580 — OpenPGP (2024): §3.7, §5.2.3.7, §5.2.3.21, §5.2.3.24, §5.2.3.29, §5.2.5, §5.5.3, §5.5.4.3 (read for §3.4)
 
-End of ARCH-0001 v0.3.2
+End of ARCH-0001 v0.3.3
