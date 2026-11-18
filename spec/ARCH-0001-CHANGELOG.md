@@ -5,15 +5,36 @@ title: "ARCH-0001 changelog"
 type: changelog
 parent: ARCH-0001
 status: active
-version: "0.3.2"
+version: "0.3.3"
 date: "2026-09-15"
-updated: "2026-11-16"
+updated: "2026-11-17"
 canonical_path: spec/ARCH-0001-CHANGELOG.md
 ---
 
 # ARCH-0001 changelog
 
 Format: newest first. Versions match the architecture document.
+
+## 0.3.3 — 2026-11-17
+
+PATCH, under this document's version policy. §7 DEC-005 gains **Inputs the
+DEC-005 ADR must answer**, taken from the FX-1 extraction of in-toto
+`envelope.md` v1.2.0 (library record `in-toto-envelope-v1`, library#141; the
+provenance and VSA records in library#143 and #144 corroborate the import
+item). The inputs:
+
+- the scope is already export-only, by `ADR-0004` item 4;
+- an omitted option, COSE_Sign, is listed as an input, not as option 4;
+- no single envelope serves both in-toto and SCITT;
+- export product E1 (the KSA TBS) and E2 (an in-toto Statement) are told
+  apart, and R-O-05's first clause cannot hold for E2;
+- the export's signing key (Q-11) is an open sub-question;
+- if import is in scope, the ADR inherits the costs listed there.
+
+A proposed acceptance test is added, because DEC-005 had none. No option is
+selected, ranked or withdrawn. No requirement is added, amended or withdrawn.
+R-I-03 and the §6 rows are unchanged, and no other DEC-* moves. The agent
+drafted the text at `ndewedo-newbury`'s instruction. Recorded in `DL-0052`.
 
 ## 0.3.2 — 2026-11-16
 
