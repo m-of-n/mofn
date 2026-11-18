@@ -2,7 +2,7 @@
 
 # Publishing manifest
 
-47 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
+48 documents published to [https://m-of-n.github.io/mofn](https://m-of-n.github.io/mofn/).
 
 A document is published because it **exists and declares a status** in its
 front matter — not because someone remembered to add it to a nav list. Set
@@ -22,6 +22,7 @@ front matter — not because someone remembered to add it to a nav list. Set
 | [SDSI names in KSA: a name target, a naming base kind, and resolution without anchors](https://m-of-n.github.io/mofn/architecture/ADR-0008-sdsi-names/) | `ADR-0008` | accepted | 1.0.0 | 2026-11-13 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ADR-0008-sdsi-names.md) |
 | [ARCH-0001 changelog](https://m-of-n.github.io/mofn/architecture/ARCH-0001-CHANGELOG/) | `ARCH-0001-CHANGELOG` | active | 0.3.2 | 2026-11-16 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-CHANGELOG.md) |
 | [Proposed ARCH-0001 v0.2.0 — key-relative extension points, predicate rendering, subject identity, citation corrections](https://m-of-n.github.io/mofn/architecture/ARCH-0001-PROPOSAL-v0.2.0/) | `ARCH-0001-PROPOSAL-v0.2.0` | superseded | 0.2.0-proposed.7 | 2026-11-07 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-PROPOSAL-v0.2.0.md) |
+| [Proposed ARCH-0001 v0.4.0: groups with a steward, enrollment by consent, group thresholds, and SPEC-0004 §6.4's open questions answered](https://m-of-n.github.io/mofn/architecture/ARCH-0001-PROPOSAL-v0.4.0/) | `ARCH-0001-PROPOSAL-v0.4.0` | proposed ⚠️ | 0.4.0-proposed.1 | 2026-11-17 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-PROPOSAL-v0.4.0.md) |
 | [Authorization, local names, and artifact attestation — architecture checkpoint](https://m-of-n.github.io/mofn/architecture/ARCH-0001-authorization-attestation/) | `ARCH-0001` | draft ⚠️ | 0.3.2 | 2026-11-16 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0001-authorization-attestation.md) |
 | [ARCH-0002 changelog](https://m-of-n.github.io/mofn/architecture/ARCH-0002-CHANGELOG/) | `ARCH-0002-CHANGELOG` | active | 0.10.0 | 2026-11-06 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0002-CHANGELOG.md) |
 | [Key-relative naming, types, and domains of discourse](https://m-of-n.github.io/mofn/architecture/ARCH-0002-key-relative-naming/) | `ARCH-0002` | draft ⚠️ | 0.10.0 | 2026-11-06 | [source](https://github.com/m-of-n/mofn/blob/main/spec/ARCH-0002-key-relative-naming.md) |
@@ -72,7 +73,7 @@ front matter — not because someone remembered to add it to a nav list. Set
 
 ## Status
 
-⚠️ **34 of 47 published documents are draft or proposed.**
+⚠️ **35 of 48 published documents are draft or proposed.**
 They are public and marked as such. Nothing here is accepted; an open
 `DEC-*` is not settled because it appears on a website.
 

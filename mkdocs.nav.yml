@@ -26,6 +26,7 @@ nav:
       - "Proposals and changelogs":
           - "ARCH-0001 changelog": architecture/ARCH-0001-CHANGELOG.md
           - "ARCH-0001 v0.2.0 proposal": architecture/ARCH-0001-PROPOSAL-v0.2.0.md
+          - "ARCH-0001 v0.4.0 proposal (groups)": architecture/ARCH-0001-PROPOSAL-v0.4.0.md
           - "ARCH-0002 changelog": architecture/ARCH-0002-CHANGELOG.md
   - Planning:
       - "Plans":
