@@ -14,10 +14,16 @@ Everything is open source. No proprietary data, no NDA.
 
 ## Status
 
-**Pre-implementation.** The architecture is at v0.1.0 draft. **DEC-001 … DEC-005
-and DEC-007 are open** — no encoding, tag language, or envelope has been
-selected. Documents published here are drafts and are marked as such. Do not
-cite an open decision as settled.
+**Research prototype.** The architecture is a **draft** and every page on this
+site says what state it is in, in the banner under its title.
+
+- **Decided:** a decision is accepted only by an ADR, listed under
+  *Architecture → Decisions* in the navigation. Anything without one is open.
+- **Open:** listed, with what each one blocks, in the
+  [decision register](project/DECISIONS-0001.md). Do not cite an open decision
+  as settled.
+- **Software:** the wallet ships as prototype pre-releases — see
+  [Download](download.md). Do not use real keys.
 
 ## The problem
 
@@ -38,5 +44,6 @@ This project builds the native model that has both.
 ## Read next
 
 - [ARCH-0001](architecture/ARCH-0001-authorization-attestation.md) — architecture, the source of truth
-- [Open proposal v0.2.0](architecture/ARCH-0001-PROPOSAL-v0.2.0.md) — under review
+- [Decision register](project/DECISIONS-0001.md) — what is open, and what it blocks
+- [Bibliography](library/bibliography.md) — the literature the design rests on
 - [Plan](project/PLAN-0001-project-plan.md) · [Backlog](project/BACKLOG-0001.md)

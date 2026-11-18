@@ -1,0 +1,36 @@
+/* m-of-n site styles (#177). Theme colours and fonts are set in mkdocs.yml;
+   this file only covers what the theme settings cannot. */
+
+:root {
+  --mofn-draft: #b26a00;
+  --mofn-accepted: #2e7d32;
+  --mofn-superseded: #757575;
+}
+[data-md-color-scheme="slate"] {
+  --mofn-draft: #ffb74d;
+  --mofn-accepted: #81c784;
+  --mofn-superseded: #bdbdbd;
+}
+
+/* Status banner (site-src/overrides/main.html) */
+.mofn-status {
+  display: flex; flex-wrap: wrap; gap: .4rem .9rem; align-items: center;
+  margin: 0 0 1.2rem; padding: .45rem .8rem;
+  font-size: .72rem; border-left: 4px solid var(--mofn-draft);
+  background: var(--md-code-bg-color); border-radius: 2px;
+}
+.mofn-status__state { font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--mofn-draft); }
+.mofn-status__id { font-family: var(--md-code-font-family); }
+.mofn-status--accepted { border-left-color: var(--mofn-accepted); }
+.mofn-status--accepted .mofn-status__state { color: var(--mofn-accepted); }
+.mofn-status--active { border-left-color: var(--md-primary-fg-color); }
+.mofn-status--active .mofn-status__state { color: var(--md-primary-fg-color); }
+.mofn-status--superseded { border-left-color: var(--mofn-superseded); }
+.mofn-status--superseded .mofn-status__state { color: var(--mofn-superseded); }
+
+/* Specs carry wide tables; scroll them inside the page, never the page itself. */
+.md-typeset__table { display: block; max-width: 100%; overflow-x: auto; }
+.md-typeset table:not([class]) { font-size: .68rem; }
+
+/* Long ids and digests must not push the layout sideways on a phone. */
+.md-typeset code { overflow-wrap: anywhere; }
