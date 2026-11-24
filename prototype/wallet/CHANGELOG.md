@@ -20,7 +20,7 @@ keys.
 Prototype: DEC-004 and DEC-005 are open; do not use real keys.
 
 **Statements about a key, and one persona's anchors** (W-8, mofn#180,
-DL-0053): what the desktop app needs to hold several personas.
+DL-0054): what the desktop app needs to hold several personas.
 
 - `make --subject-key KEY` and `check --subject-key KEY` make and check a
   statement whose subject is a **key** — `this = [1, kid]`, SPEC-0002 §7.2

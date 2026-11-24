@@ -108,4 +108,4 @@ pyinstaller --clean --noconfirm mofn-wallet.spec    # dist/m-of-n Wallet.app
 
 It reimplements no cryptography, encoding or reduction. Decisions:
 `DECISIONS-0001` item 28 (amended 2026-11-17), `PLAN-0004` §4–§5, `DL-0050`;
-several personas, received tags and communities are W-8 (#180, `DL-0053`).
+several personas, received tags and communities are W-8 (#180, `DL-0054`).
