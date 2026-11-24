@@ -4,7 +4,14 @@ the CLI's verdict with the four attributes for the slice cases."""
 
 import pytest
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QApplication, QLabel, QLineEdit
+from PySide6.QtWidgets import (
+    QApplication,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QTableWidget,
+    QWidget,
+)
 
 from conftest import AT, FIXTURES, PASS, STATEMENTS, VOCAB
 
@@ -30,7 +37,8 @@ def texts(widget) -> str:
 
 
 def test_every_page_opens(win):
-    for name in ["Overview", "Keys", "Trust", "Sign", "Verify", "Show", "Learn"]:
+    for name in ["Overview", "Personas", "Keys", "Trust", "Communities",
+                 "Sign", "Verify", "Show", "Learn"]:
         win.go(name)
         assert win.stack.currentWidget() is win.pages[name]
         assert win.title.text() == name
@@ -206,3 +214,141 @@ def test_theme_switches(win):
 def test_the_prototype_warning_is_always_shown(win):
     assert "PROTOTYPE" in win.badge.text()
     assert "DEC-004" in win.badge.toolTip()
+
+
+# ------------------------------------------------- W-8: several personas
+
+
+@pytest.fixture
+def win2(qtbot, two):
+    """The window on a wallet with two owned personas (W-8, mofn#180)."""
+    from mofn_app.window import Window
+
+    w = Window(two.session.root)
+    qtbot.addWidget(w)
+    w.show()
+    w.pick_identity("me")  # "me" sorts first, but say so rather than rely on it
+    return w
+
+
+def test_personas_page_lists_both_with_their_fingerprints(win2):
+    win2.go("Personas")
+    p = win2.pages["Personas"]
+    assert p.mine.rowCount() == 2
+    names = {p.mine.item(i, 1).text() for i in range(2)}
+    assert names == {"me", "work"}
+    prints = {p.mine.item(i, 3).text() for i in range(2)}
+    assert len(prints) == 2 and all(f.startswith("key:") for f in prints)
+    kinds = {p.mine.item(i, 2).text() for i in range(2)}
+    assert kinds == {"person · self-claimed", "organisation · self-claimed"}
+    assert "SPEC-0001 §3.1" in texts(p), "the unlinkability sentence is on screen"
+
+
+def test_the_sidebar_offers_both_identities(win2):
+    actions = [a for a in win2.who.menu().actions() if a.isCheckable()]
+    assert {a.text().split(" ")[0] for a in actions} >= {"me", "work"}
+    assert sum(1 for a in actions if a.isChecked()) == 1
+
+
+def test_acting_as_another_persona_switches_the_signing_key(win2, two, qtbot):
+    win2.go("Personas")
+    win2.pages["Personas"].fill()
+    buttons = [b for b in win2.pages["Personas"].acts.findChildren(QPushButton)]
+    assert [b.text() for b in buttons] == ["Act as work"]
+    buttons[0].click()
+    assert win2.identity.label == "work"
+
+    win2.go("Sign")
+    s = win2.pages["Sign"]
+    s.subject.set(two.app)
+    s.claim.setCurrentText("build-provenance")
+    s.value.setCurrentText("reproducible")
+    qtbot.keyClicks(s.passphrase, PASS.decode())
+    qtbot.keyClick(s.passphrase, Qt.Key.Key_Return)
+    assert " make --as work " in win2.cmd.text()
+
+
+def test_switching_persona_clears_a_verdict_computed_as_the_other(win2, two):
+    two.trust_alice()  # accepted by "me" only
+    win2.refresh()
+    v = win2.pages["Verify"]
+    win2.go("Verify")
+    v.statements.set("; ".join(STATEMENTS))
+    v.subject.set(two.app)
+    v.vocab.set(VOCAB)
+    v.at.setText(AT)
+    v.verify()
+    assert v.json is not None and v.json["answer"] == "yes"
+    assert " --as me " in win2.cmd.text() + " "
+
+    win2.pick_identity("work")
+    assert v.json is None, "a verdict computed as `me` is not `work`'s verdict"
+    assert "work" in win2.state.text()
+    v.verify()
+    assert v.json["answer"] == "no", "work trusts nobody"
+    assert " --as work " in win2.cmd.text() + " "
+
+
+def test_the_context_list_follows_the_persona(win2, two):
+    s = two.session
+    assert s.root_add("Alice", "work", VOCAB, "build-provenance", [], context="studio").ok
+    win2.refresh()
+    v = win2.pages["Verify"]
+    win2.go("Verify")
+    offered = [v.context.itemText(i) for i in range(v.context.count())]
+    assert offered == ["default"], "me has no studio"
+    win2.pick_identity("work")
+    offered = [v.context.itemText(i) for i in range(v.context.count())]
+    assert offered == ["default", "studio"]
+
+
+def test_a_received_tag_shows_the_six_lines(win2, two):
+    two.trust_alice()
+    assert two.session.root_add("me", "me", VOCAB, "build-provenance", ["reproducible"]).ok
+    two.tag("me", "work")
+    win2.pick_identity("work")
+    win2.go("Personas")
+    p = win2.pages["Personas"]
+    rows = p.tags_box.findChildren(QWidget)
+    row = next(w for w in p.tags_box.children() if hasattr(w, "check"))
+    assert "me" in texts(row) and "says" in texts(row)
+    row.check()
+    shown = texts(row)
+    for line in core.LINES:
+        assert line.capitalize() in shown or line in shown.lower(), line
+    assert "YES" in shown or "NO" in shown
+    assert " --subject-key work " in win2.cmd.text() + " "
+    assert " --as work " in win2.cmd.text() + " "
+
+
+def test_communities_keeps_the_spec_word_and_says_members_are_derived(win2, two):
+    two.trust_alice()
+    win2.refresh()
+    win2.go("Communities")
+    shown = texts(win2.pages["Communities"])
+    assert "SPEC-0004" in shown and "context" in shown.lower()
+    assert "derived" in shown.lower()
+    # The members are a table, not labels: read the cells.
+    table = win2.pages["Communities"].list.itemAt(0).widget().findChildren(QTableWidget)[0]
+    names = {table.item(i, 0).text() for i in range(table.rowCount())}
+    assert names == {"me (yours)", "Alice"}
+
+
+def test_communities_follow_the_active_persona(win2, two):
+    s = two.session
+    two.trust_alice()
+    assert s.root_add("Alice", "work", VOCAB, "build-provenance", [], context="studio").ok
+    win2.refresh()
+    win2.go("Communities")
+    assert "DEFAULT" in texts(win2.pages["Communities"])
+    assert "STUDIO" not in texts(win2.pages["Communities"])
+    win2.pick_identity("work")
+    win2.go("Communities")
+    assert "STUDIO" in texts(win2.pages["Communities"])
+
+
+def test_the_prototype_warning_is_on_the_new_pages(win2):
+    for name in ("Personas", "Communities"):
+        win2.go(name)
+        assert win2.badge.isVisibleTo(win2)
+        assert "DEC-004" in win2.badge.toolTip() and "DEC-005" in win2.badge.toolTip()

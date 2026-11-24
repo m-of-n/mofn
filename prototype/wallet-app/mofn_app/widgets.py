@@ -191,6 +191,11 @@ class Page(QScrollArea):
     def reload(self) -> None:  # called when the wallet or identity changes
         pass
 
+    def restyle(self) -> None:
+        """Called when the theme changes. Only pages that drew colour
+        literals from `tokens` need to do anything."""
+        pass
+
     def add(self, w: QWidget) -> QWidget:
         self.body.addWidget(w)
         return w

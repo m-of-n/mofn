@@ -63,9 +63,46 @@ def world(tmp_path):
             assert s.root_add("Alice", "me", VOCAB, "build-provenance", ["reproducible"]).ok
 
         @staticmethod
+        def add_persona(label, controller="person"):
+            assert s.key_gen(label, controller, PASS).ok
+            return s.find(label)
+
+        @staticmethod
+        def tag(says, about, value="reproducible", type_="build-provenance"):
+            """`says` tags `about`'s identity key: a tag `about` received."""
+            r = s.sign(says, None, VOCAB, type_, value, 30, PASS, subject_key=about)
+            assert r.ok, r.err
+            return r
+
+        @staticmethod
+        def cli_key_json(subject_key, *statements, as_=None, at=None):
+            """The same check in the CLI's own process: the reference.
+
+            `at` is pinned by the caller because the verdict carries the
+            evaluation time, and two runs a second apart would differ."""
+            args = ["--wallet", s.root, "check", *statements, "--subject-key",
+                    subject_key, "--def", VOCAB, "--format", "json"]
+            if as_:
+                args += ["--as", as_]
+            if at:
+                args += ["--at", at]
+            p = mofn(*args)
+            return p.returncode, json.loads(p.stdout)
+
+        @staticmethod
         def cli_json(artifact):
             p = mofn("--wallet", s.root, "check", *STATEMENTS, "--artifact", artifact,
                      "--def", VOCAB, "--at", AT, "--format", "json")
             return p.returncode, json.loads(p.stdout)
 
     return World
+
+
+@pytest.fixture
+def two(world):
+    """`world` plus a second owned persona, so personas can be switched.
+
+    `world` keeps exactly one, so the W-7 tests go on meaning what they
+    meant; the two-persona cases ask for this fixture instead."""
+    world.add_persona("work", "organisation")
+    return world

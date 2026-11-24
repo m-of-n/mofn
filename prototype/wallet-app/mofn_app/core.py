@@ -37,11 +37,13 @@ if str(WALLET_SOURCE) not in sys.path:
 
 import cli  # noqa: E402
 import engine  # noqa: E402
-from engine import render, statement  # noqa: E402
+from engine import ksatime, render, statement  # noqa: E402
+from engine import definition as defs  # noqa: E402
 from engine.codecs import CODECS, DEFAULT  # noqa: E402
 from engine.errors import EncodingError, Rejected, StructureError, WalletError  # noqa: E402
 from engine.schema import KINDS  # noqa: E402
 from engine.store import CONTROLLERS, WALLET_FILE, Persona, Wallet  # noqa: E402
+from engine.reduce import Threshold  # noqa: E402
 from engine.verifier import verify  # noqa: E402
 from screens import data, learn, runner  # noqa: E402
 
@@ -83,6 +85,58 @@ class Result:
             return json.loads(self.out)
         except ValueError:
             return None
+
+
+@dataclass
+class Member:
+    """One key a context's anchors name, and how they name it.
+
+    **Derived, never declared.** A context has no roster (SPEC-0004 §4.1): a
+    key is shown here because an anchor in this context names it."""
+
+    kid: bytes
+    name: str
+    role: str
+    about: str
+    threshold: str
+    accepted_by: str
+    known: bool
+    owned: bool
+
+
+@dataclass
+class Community:
+    """A SPEC-0004 context, in the words the Communities page shows.
+
+    "Community" is this app's word for it; it is not a term in any SPEC.
+    `acts` is None because a persona publishes that it acts in a context as a
+    `self` or `speaks` statement (SPEC-0001 §6.3) and no command writes one,
+    so this wallet can only show where a persona *relies*."""
+
+    context: str
+    persona: str
+    anchors: list
+    members: list
+    relies: bool
+    acts: bool | None = None
+
+
+@dataclass
+class Tag:
+    """One attestation held here whose subject is a persona's identity key:
+    a tag someone gave that persona (W-8, mofn#180)."""
+
+    path: str
+    digest: str
+    says: str
+    says_kid: bytes
+    from_self: bool
+    claim: str
+    definition: str | None
+    definition_id: bytes
+    defines: list
+    not_before: str
+    not_on_or_after: str
 
 
 @dataclass
@@ -140,26 +194,46 @@ class Session:
         return w.personas() if w else []
 
     def owned(self) -> list[Persona]:
-        return [p for p in self.personas() if p.owned]
+        """By label. The store sorts personas by kid, which is random, so
+        "the first identity" would otherwise be a coin flip once a wallet
+        holds more than one (W-8)."""
+        return sorted((p for p in self.personas() if p.owned), key=_by_label)
 
     def known(self) -> list[Persona]:
-        return [p for p in self.personas() if not p.owned]
+        return sorted((p for p in self.personas() if not p.owned), key=_by_label)
+
+    def find(self, label: str) -> Persona | None:
+        return next((p for p in self.personas() if p.label == label), None)
 
     def keys(self) -> list[dict]:
         w = self.wallet()
         return cli.key_rows(w) if w else []
 
-    def contexts(self) -> list[str]:
+    def contexts(self, persona: str | None = None) -> list[str]:
+        """The contexts of one owned persona, or of the wallet. A context is
+        a scope in which an owned persona acts and relies (SPEC-0001 §6.3)."""
         w = self.wallet()
-        return sorted({"default", *(w.contexts() if w else [])})
+        if not w:
+            return ["default"]
+        kid = self._kid(persona)
+        if persona and kid is None:
+            return ["default"]
+        return sorted({"default", *w.contexts(kid)})
 
-    def anchors(self, context: str = "default") -> list[Anchored]:
+    def _kid(self, persona: str | None) -> bytes | None:
+        p = self.find(persona) if persona else None
+        return p.kid if p is not None and p.owned else None
+
+    def anchors(self, context: str = "default", persona: str | None = None) -> list[Anchored]:
         w = self.wallet()
         if not w:
             return []
+        kid = self._kid(persona)
+        if persona and kid is None:
+            return []
         labels = w.labels()
         out = []
-        for an in w.anchors(context):
+        for an in w.anchors(context, kid):
             trusts = an.trusts if isinstance(an.trusts, bytes) else None
             for r in an.about:
                 out.append(
@@ -234,16 +308,22 @@ class Session:
     def sign(
         self,
         as_: str,
-        subject: str,
+        subject: str | None,
         definition: str,
         type_: str,
         value: str,
         valid_days: int,
         passphrase: bytes,
         out: str | None = None,
+        *,
+        subject_key: str | None = None,
     ) -> Result:
+        if bool(subject) == bool(subject_key):
+            raise ValueError("sign takes a subject file or a subject key, not both")
         args = [
-            "make", "--as", as_, "--subject", subject, "--def", definition,
+            "make", "--as", as_,
+            *(["--subject-key", subject_key] if subject_key else ["--subject", subject]),
+            "--def", definition,
             "--type", type_, "--value", value, "--valid-days", valid_days,
         ]
         if out:
@@ -253,12 +333,25 @@ class Session:
     def check(
         self,
         statements: list[str],
-        subject: str,
-        definition: str,
+        subject: str | None = None,
+        definition: str = "",
         context: str = "default",
         at: str | None = None,
+        *,
+        subject_key: str | None = None,
+        as_: str | None = None,
     ) -> tuple[Result, dict | None]:
-        args = ["check", *statements, "--artifact", subject, "--def", definition]
+        """`--as` is what makes the verdict the active persona's: it uses only
+        that persona's anchors (SPEC-0001 §6.3, SPEC-0004 §4.1)."""
+        if bool(subject) == bool(subject_key):
+            raise ValueError("check takes an artifact or a subject key, not both")
+        args = [
+            "check", *statements,
+            *(["--subject-key", subject_key] if subject_key else ["--artifact", subject]),
+            "--def", definition,
+        ]
+        if as_:
+            args += ["--as", as_]
         if context and context != "default":
             args += ["--context", context]
         if at:
@@ -303,8 +396,168 @@ class Session:
         )
         return out
 
+    # ------------------------------------------- personas and communities
+
+    def held(self) -> list:
+        """Every statement this wallet holds that still verifies, as
+        `(path, Verified)`. Read-only through the engine, as `screens/data.py`
+        does; nothing here decides anything."""
+        w = self.wallet()
+        if not w:
+            return []
+        keystore = w.keystore()
+        out = []
+        for f in sorted((self.root / "statements").glob("*")):
+            try:
+                v = verify(CODECS[self.codec].load(f.read_bytes()), keystore)
+            except (EncodingError, Rejected, StructureError, ValueError, OSError):
+                continue
+            out.append((str(f), v))
+        return out
+
+    def received(self, persona: str) -> list[Tag]:
+        """The tags this persona was given: attestations held here whose
+        subject is its identity key (`this = [1, kid]`).
+
+        `key-publish` carries the very same target for every key in the
+        wallet (`statement.key_publish`), so kind is checked first: a key's
+        own publication is not a tag anyone gave it."""
+        w = self.wallet()
+        p = self.find(persona)
+        if not w or p is None:
+            return []
+        labels, out = w.labels(), []
+        defines = {}
+        for _, v in self.held():
+            if v.kind == 8 and v.this and v.this[0] == 4:
+                defines.setdefault(bytes(v.this[1]), []).append(v)
+        for path, v in self.held():
+            if v.kind != 4 or not v.this or v.this[0] != 1 or v.this[1] != p.kid:
+                continue
+            for a in v.body.get(1, []):
+                did = a[1][1]
+                f = self.root / "definitions" / f"{did.hex()}.def"
+                d = None
+                if f.is_file():
+                    try:
+                        d = defs.load(f.read_bytes())
+                    except Exception:
+                        d = None
+                out.append(
+                    Tag(
+                        path=path,
+                        digest=v.digest.hex(),
+                        says=render.key_name(v.says, labels),
+                        says_kid=v.says,
+                        from_self=v.says == p.kid,
+                        claim=tag_claim(a, d),
+                        definition=str(f) if f.is_file() else None,
+                        definition_id=did,
+                        defines=[s for s in defines.get(did, [])],
+                        not_before=ksatime.to_text(v.statement[5][1]),
+                        not_on_or_after=(
+                            ksatime.to_text(v.statement[5][2])
+                            if 2 in v.statement[5] else "no end"
+                        ),
+                    )
+                )
+        return sorted(out, key=lambda t: t.not_before, reverse=True)
+
+    def community(self, context: str, persona: str | None = None) -> Community:
+        w = self.wallet()
+        anchors = self.anchors(context, persona)
+        labels = w.labels() if w else {}
+        owned = {p.kid for p in self.owned()}
+        known = {p.kid for p in self.personas()}
+        raw = w.anchors(context, self._kid(persona)) if w else []
+        return Community(
+            context=context,
+            persona=persona or "",
+            anchors=anchors,
+            members=members(raw, labels, owned, known),
+            relies=bool(anchors),
+            acts=None,
+        )
+
+    def communities(self, persona: str | None = None) -> list[Community]:
+        return [self.community(c, persona) for c in self.contexts(persona)]
+
 
 # ----------------------------------------------------------------- helpers
+
+
+def _by_label(p: Persona):
+    return (p.label or "", p.kid)
+
+
+def tag_claim(a: dict, d) -> str:
+    """"Build provenance = Reproducible", through the held definition when
+    there is one, else the labels the statement itself carries."""
+    tref, value = a[1], a[2]
+    known = d is not None and d.id == tref[1]
+    name = render.type_name(d if known else None, tref[2])
+    text = render.value_text(d if known else None, tref[2], value, 2)
+    return f"{name} = {text}"
+
+
+def members(anchors: list, labels: dict, owned: set, known: set) -> list[Member]:
+    """The keys a context's anchors name, deduped by kid.
+
+    This is the whole of what "who is in this community" means: a context has
+    no roster, so membership is read off the anchors the persona accepted
+    (SPEC-0004 §4.1, §4.2). Three anchor forms name keys — one kid, a
+    threshold's set, and a name binding (`engine/reduce.py`)."""
+    out: dict[bytes, Member] = {}
+
+    def add(kid, role, about, threshold, accepted_by):
+        m = out.get(kid)
+        if m is None:
+            out[kid] = Member(
+                kid=kid,
+                name=render.key_name(kid, labels),
+                role=role,
+                about=about,
+                threshold=threshold,
+                accepted_by=accepted_by,
+                known=kid in known,
+                owned=kid in owned,
+            )
+        elif about and about not in m.about:
+            m.about = f"{m.about}; {about}"
+
+    for an in anchors:
+        who = render.key_name(an.accepted_by, labels)
+        add(an.accepted_by, "accepts anchors here", "", "", who)
+        scope = "; ".join(
+            r[1][2] + (" ∈ {" + ", ".join(r[3]) + "}" if 3 in r else " (any value)")
+            for r in an.about
+        )
+        trusts = an.trusts
+        if isinstance(trusts, bytes):
+            add(trusts, "trusted", scope, "", who)
+        elif isinstance(trusts, Threshold):
+            th = f"any {trusts.k} of {len(set(trusts.keys))}"
+            for kid in dict.fromkeys(trusts.keys):
+                add(kid, "one of a k-of-n set", scope, th, who)
+        elif isinstance(trusts, list) and trusts and trusts[0] == 7:
+            named = render.name_text(trusts, labels)
+            add(trusts[1], f"names {named}", scope, "", who)
+    return list(out.values())
+
+
+def example_definition_id() -> bytes | None:
+    """The id of the vocabulary this app ships, so a tag using it can be
+    recognised wherever its bytes were read from."""
+    try:
+        return defs.load(EXAMPLE_VOCABULARY.read_bytes()).id
+    except Exception:
+        return None
+
+
+def fingerprint(kid: bytes) -> str:
+    """A key as the engine prints it when the wallet has no label: the
+    `key:<16 hex>` form (`render.fingerprint`)."""
+    return render.fingerprint(kid)
 
 
 def digest_text(path: str) -> str:

@@ -30,9 +30,11 @@ from PySide6.QtWidgets import (
 )
 
 from . import core, theme
+from .pages.communities import Communities
 from .pages.keys import Keys
 from .pages.learn import Learn
 from .pages.overview import Overview
+from .pages.personas import Personas
 from .pages.show import Show
 from .pages.sign import Sign
 from .pages.trust import Trust
@@ -40,7 +42,13 @@ from .pages.verify import Verify
 from .widgets import Rows, Toggle, holder, label
 
 PAGES = [
-    ("WALLET", [("Overview", "overview", Overview), ("Keys", "keys", Keys), ("Trust", "trust", Trust)]),
+    ("WALLET", [
+        ("Overview", "overview", Overview),
+        ("Personas", "personas", Personas),
+        ("Keys", "keys", Keys),
+        ("Trust", "trust", Trust),
+        ("Communities", "communities", Communities),
+    ]),
     ("ACT", [("Sign", "sign", Sign), ("Verify", "verify", Verify), ("Show", "show", Show), ("Learn", "learn", Learn)]),
 ]
 RECENT = 6
@@ -372,10 +380,8 @@ class Window(QMainWindow):
             b.setIcon(theme.icon(icon, self.tokens["soft"]))
         self.fold.setIcon(theme.icon("sidebar", self.tokens["soft"]))
         self.fill_identities()
-        page = self.stack.currentWidget()
-        if isinstance(page, Verify) and page.json:
-            page.clear()
-            page.render(page.json)
+        for p in self.pages.values():
+            p.restyle()
 
     def set_collapsed(self, yes: bool):
         self.collapsed = yes
