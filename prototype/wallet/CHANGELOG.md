@@ -15,6 +15,42 @@ The wallet engine and its `mofn` command line, `prototype/wallet/` (#65, #127).
 Every release is a prototype: DEC-004 and DEC-005 are open; do not use real
 keys.
 
+## 0.11.0 — 2026-11-23
+
+Prototype: DEC-004 and DEC-005 are open; do not use real keys.
+
+**Statements about a key, and one persona's anchors** (W-8, mofn#180,
+DL-0053): what the desktop app needs to hold several personas.
+
+- `make --subject-key KEY` and `check --subject-key KEY` make and check a
+  statement whose subject is a **key** — `this = [1, kid]`, SPEC-0002 §7.2
+  target type 1 — which is how a tag given to a persona is written. KEY is
+  your label for a key, a kid prefix, or a full 64-digit kid, so a tag given
+  to a key this wallet has not met can still be checked. The wire form is not
+  new: `KIND_TARGETS[4]` is every target type, and TV-13's own note in the
+  published vectors reads *"attestation about a KEY"*. Only the way in was
+  missing. `--subject`/`--subject-key` and `--artifact`/`--subject-key` are
+  now a required, mutually exclusive pair.
+- **The integrity line with a key subject** reports verification alone:
+  *"every statement verified; the subject is a key, so there is no copy of
+  yours to compare"*. SPEC-0004 §10.4 conditions its comparison clause on a
+  digest target, and with a key subject there is no copy of the relying
+  party's to substitute. Whether any statement is about that key is reported
+  by authorization and acceptance, which §10.4 assigns it to.
+- `check --as LABEL` and `root list --as LABEL` use **one owned persona's**
+  anchors. A context is a scope in which an owned persona acts and relies
+  (SPEC-0001 §6.3) and every evaluation is relative to one context
+  (SPEC-0004 §4.1). Anchors have always been stored per persona
+  (`personas/<kid>/trusts/<context>.yaml`); only reading them unioned every
+  owned persona. Without `--as`, that union is still the default, so no
+  existing command changes.
+- JSON gains `subject-target` and `subject-key` at the top level, and
+  `associations[].subject` gains `target`/`key`/`kid`/`label` **for a key ask
+  only** — a digest ask keeps exactly the shape W-5 fixed (DL-0049).
+- New fixtures DV-2, TV-12, TV-13 and goldens `key-subject.txt`,
+  `key-subject-other.txt`, `associations-key-subject.json`. **Every existing
+  golden is byte-identical**, under both codecs.
+
 ## 0.10.0 — 2026-11-17
 
 Prototype: DEC-004 and DEC-005 are open; do not use real keys.

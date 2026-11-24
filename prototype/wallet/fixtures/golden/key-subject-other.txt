@@ -1,0 +1,13 @@
+integrity      pass           every statement verified; the subject is a key, so there is no copy of yours to compare
+authenticity   pass           every speaker's key is in your key store, and each envelope agrees with its statement
+names          pass           every key is shown by your own label for it
+authorization  not evaluated  no verified statement handed over is about that key
+acceptance     not evaluated  no verified statement handed over is about that key
+semantics      pass           names 1 is published by its definer, Alice
+
+answer: no
+
+The statements handed over are about another subject, not the key you named:
+Alice says that for key:39f713d0a644253f, name is fred.
+
+This establishes who said it and whether they were entitled to say it; it does not establish that it is true.

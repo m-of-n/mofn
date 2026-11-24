@@ -4,7 +4,10 @@
    statements go further (SPEC-0004 §5.1).
 2. Hash the relying party's own copy of the artifact. The ask is about that
    digest, and the integrity line also checks that a verified attestation is
-   about it (SPEC-0004 §10.4, as proposed in 0.2.0).
+   about it (SPEC-0004 §10.4, as proposed in 0.2.0). Where the ask is about a
+   key instead (`--subject-key`, W-8), the subject is that kid and there is no
+   copy to hash: §10.4 conditions the comparison on a digest target, so the
+   integrity line reports verification alone.
 3. Load the definition and check it is obtained, conforming and attributed.
 4. Coverage against this context's anchors (`reduce.py`), through any
    delegation path the handed trust statements make (SPEC-0004 §6).
@@ -17,13 +20,14 @@ sentences (`render.lang`); it changes no result.
 Exit codes: 0 yes, 1 no, 3 a handed statement was invalid.
 """
 
-import hashlib
 from dataclasses import dataclass, field
 
-from . import definition as defs, render
+from . import definition as defs, render, statement
 from .definition import Definition
 from .errors import DefinitionError, Rejected
 from .reduce import Anchor, Ask, Coverage, Member, ThresholdCovered, evaluate
+from . import schema
+from .schema import TARGET
 from .verifier import Verified, verify
 
 # A vacuous pass (SPEC-0004 §10.4, DL-0020 A1): the sentence says why there
@@ -145,6 +149,12 @@ class Answer:
             "at": render.time_text(self.at),
             "context": self.context,
             "subject": render.target(self.subject, {}),
+            # Which target type the ask was about, and the kid itself when it
+            # was a key (W-8). `subject` stays the string it has always been.
+            "subject-target": schema.TARGETS[self.subject[0]],
+            "subject-key": (
+                self.subject[1].hex() if self.subject[0] == TARGET["key"] else None
+            ),
             "because": because,
             "verdict": {
                 ln.name: {
@@ -190,7 +200,7 @@ def associations(answer: Answer) -> list[dict]:
                     "file": files.get(s.digest),
                     "signed-by": _signed_by(s.says, answer),
                     "topic": _topic(a, d),
-                    "subject": _subject(s.this, answer.subject),
+                    "subject": _subject(s.this, answer.subject, answer.labels),
                     "standing": _standing(s, a, answer),
                 }
             )
@@ -223,12 +233,33 @@ def _topic(a: dict, d: Definition | None) -> dict:
     }
 
 
-def _subject(this, yours: list) -> dict:
+def _subject(this, yours: list, labels: dict | None = None) -> dict:
+    """What the statement is about, and what you asked about.
+
+    A digest ask keeps exactly the shape W-5 fixed (DL-0049), so the goldens
+    do not move. A key ask adds the key in the same words `signed-by` uses,
+    and keeps `digest` present as null so a reader written for W-7 does not
+    raise (W-8, mofn#180)."""
+
     def full(t):
-        if t and t[0] == 2:
+        if t and t[0] == TARGET["digest"]:
             return render.target(t, {}).split(":")[0] + ":" + t[2].hex()
+        if t and t[0] == TARGET["key"]:
+            return t[1].hex()
         return render.target(t, {}) if t else None
 
+    if yours and yours[0] == TARGET["key"]:
+        names = labels or {}
+        is_key = bool(this) and this[0] == TARGET["key"]
+        return {
+            "target": "key",
+            "key": render.key_name(this[1], names) if is_key else None,
+            "kid": this[1].hex() if is_key else None,
+            "label": names.get(this[1]) if is_key else None,
+            "digest": full(this) if this and not is_key else None,
+            "yours": full(yours),
+            "matches": this == yours,
+        }
     return {"digest": full(this), "yours": full(yours), "matches": this == yours}
 
 
@@ -240,9 +271,11 @@ def _standing(s, a: dict, answer: Answer) -> dict:
         return {
             "result": "not-evaluated",
             "chain": [],
-            "text": "no standing: not evaluated, the statement is not about your file",
+            "text": "no standing: not evaluated, the statement is not about "
+            + _about_what(answer.subject),
             "reason": None,
-            "detail": "no verified statement handed over is about your file",
+            "detail": "no verified statement handed over is about "
+            + _about_what(answer.subject),
         }
     for c in cov.covered:
         if c.attribute != a:
@@ -393,9 +426,16 @@ def run(
     context: str,
     at: int,
     lang: str | None = None,
+    subject_key: bytes | None = None,
 ) -> Answer:
+    if (artifact is None) == (subject_key is None):
+        raise ValueError("check takes an artifact or a subject key, not both")
     verified = [h.verified for h in items if h.verified]
-    subject = [2, 1, hashlib.sha256(artifact).digest()]
+    subject = (
+        statement.key_target(subject_key)
+        if artifact is None
+        else statement.digest_target(artifact)
+    )
     attestations = [v for v in verified if v.kind == 4]
     about = [a for a in attestations if a.this == subject]
     trusts = [v for v in verified if v.kind == 5]  # delegation hops (SPEC-0004 §6.3)
@@ -424,8 +464,8 @@ def run(
         _integrity(items, attestations, about, subject),
         _authenticity(items, used, labels),
         _names(used, labels),
-        _authorization(about, coverage, d, context, labels, lang),
-        _acceptance(about, held, lang),
+        _authorization(about, coverage, d, context, labels, lang, subject),
+        _acceptance(about, held, lang, subject),
         _semantics(d, def_error, referenced, define, labels),
     ]
     sentences = [
@@ -438,6 +478,12 @@ def run(
     )
 
 
+def _about_what(subject) -> str:
+    """The noun §10.4's sentences use for the ask's subject. A digest ask is
+    about the relying party's own file; a key ask is about a key."""
+    return "your file" if subject is None or subject[0] == TARGET["digest"] else "that key"
+
+
 def _integrity(items, attestations, about, subject) -> Line:
     bad = [h for h in items if h.result == "invalid" and h.reason in INTEGRITY]
     if bad:
@@ -447,6 +493,26 @@ def _integrity(items, attestations, about, subject) -> Line:
             "integrity",
             "fail",
             f"{h.name} is invalid at {h.step} ({h.reason}) and was not used{more}",
+        )
+    if subject[0] != TARGET["digest"]:
+        # SPEC-0004 §10.4 conditions the comparison clause on a digest target:
+        # "every statement used decoded canonically and its signature verified,
+        # AND, WHERE THE SUBJECT IS A DIGEST TARGET ... at least one is about
+        # the relying party's own copy". With a key subject there is no copy of
+        # the verifier's to substitute, so the first clause stands alone.
+        # Whether any statement is about that key is authorization's and
+        # acceptance's question, which §10.4 assigns to them.
+        if not attestations:
+            return Line(
+                "integrity",
+                "not evaluated",
+                "no verified attestation was handed over",
+            )
+        return Line(
+            "integrity",
+            "pass",
+            "every statement verified; the subject is a key, so there is no "
+            "copy of yours to compare",
         )
     if attestations and not about:
         claimed = render.target(attestations[0].this, {})
@@ -505,12 +571,12 @@ def _names(used, labels) -> Line:
     return Line("names", "pass", "keys you have not labelled are shown by fingerprint")
 
 
-def _authorization(about, coverage, d, context, labels, lang=None) -> Line:
+def _authorization(about, coverage, d, context, labels, lang=None, subject=None) -> Line:
     if not about or coverage is None:
         return Line(
             "authorization",
             "not evaluated",
-            "no verified statement handed over is about your file",
+            f"no verified statement handed over is about {_about_what(subject)}",
         )
     if coverage.yes:
         c = coverage.covered[0]
@@ -575,12 +641,12 @@ def _chain(anchor, path, labels) -> str:
     return " → ".join(render.key_name(k, labels) for k in keys)
 
 
-def _acceptance(about, held, lang=None) -> Line:
+def _acceptance(about, held, lang=None, subject=None) -> Line:
     if not about:
         return Line(
             "acceptance",
             "not evaluated",
-            "no verified statement handed over is about your file",
+            f"no verified statement handed over is about {_about_what(subject)}",
         )
     for s in about:
         if 3 in s.body:

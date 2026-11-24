@@ -1,0 +1,13 @@
+kind: attestation
+suite: ksa-ed25519-sha256
+says: '0x21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9'
+this: {key: '0x39f713d0a644253f04529421b9f51b9b08979d08295959c4f3990ee617f5139f'}
+valid:
+  not before: "2026-10-06T00:00:00Z"
+  issued: "2026-10-06T13:00:00Z"
+body:
+  has:
+    - type: {definition: '0xde31bf2eb08018aa6a24175a240a6d1fc5d56561bef8b45201b6b075064cf741', label: name}
+      value: fred
+signed:
+  value: '0x1f880dd24d488638117b37af44659458dcce10d412811398f2fd8e6c7990d35c60708ad0470dbaf2e7eb18ebc83392bd55463983cacdc000c516012d5e64d30b'

@@ -9,6 +9,12 @@ The fixtures are copies of published vectors, never edited by hand: DV-1
 define of DV-1), TV-4 (Alice's attestation about the example artifact), and
 the artifact bytes. The `.stmt.yaml` files are the same statements written by
 the review-yaml codec.
+
+For statements about a key (W-8, mofn#180): DV-2 (the naming definition),
+TV-12 (Alice's define of DV-2) and TV-13, the published vector whose own note
+reads "attestation about a KEY" — Alice says Bob's key has the name "fred".
+Neither TV-12 nor TV-13 carries `not-on-or-after`, so goldens built from them
+never expire.
 """
 
 import json
@@ -26,6 +32,8 @@ STATEMENTS = {
     "TV-1": "tv-1-alice.pub",
     "TV-3": "tv-3-define",
     "TV-4": "tv-4-attestation",
+    "TV-12": "tv-12-define-names",
+    "TV-13": "tv-13-name",
 }
 
 
@@ -33,6 +41,7 @@ def wanted() -> dict[str, bytes]:
     v = json.loads(VECTORS.read_text(encoding="utf-8"))
     out = {
         "dv-1.def": bytes.fromhex(v["definitions"]["DV-1"]["body"]),
+        "dv-2.def": bytes.fromhex(v["definitions"]["DV-2"]["body"]),
         "artifact.bin": ARTIFACT,
     }
     for name, stem in STATEMENTS.items():

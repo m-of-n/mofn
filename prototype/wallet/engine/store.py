@@ -277,21 +277,30 @@ class Wallet:
     def labels(self) -> dict[bytes, str]:
         return {p.kid: p.label for p in self.personas() if p.label}
 
-    def contexts(self) -> list[str]:
-        """The contexts in which any of this wallet's own personas has an
-        anchor, from the names of their trusts/ files."""
+    def contexts(self, persona: bytes | None = None) -> list[str]:
+        """The contexts in which this wallet's own personas have an anchor,
+        from the names of their trusts/ files. With `persona` (an owned kid),
+        only that persona's: a context is a scope in which **one owned
+        persona** acts and relies (SPEC-0001 §6.3)."""
+        where = "*" if persona is None else persona.hex()
         return sorted(
             {
                 f.stem
-                for f in (self.root / "personas").glob("*/trusts/*.yaml")
+                for f in (self.root / "personas").glob(f"{where}/trusts/*.yaml")
                 if CONTEXT.fullmatch(f.stem)
             }
         )
 
-    def anchors(self, context: str) -> list[Anchor]:
+    def anchors(self, context: str, persona: bytes | None = None) -> list[Anchor]:
+        """The anchors of `context`. With `persona` (an owned kid), only that
+        persona's — every evaluation is relative to exactly one context
+        (SPEC-0004 §4.1), and a context belongs to one owned persona
+        (SPEC-0001 §6.3). Without it, every owned persona's, as before."""
         _context(context)
         out = []
         for p in self.personas():
+            if persona is not None and p.kid != persona:
+                continue
             f = _trusts(self._dir(p.kid), context)
             if p.owned and f.is_file():
                 for a in _read(f) or []:

@@ -9,13 +9,26 @@ code. It does no cryptography, no encoding and no evaluation of its own.
     key gen LABEL [--controller KIND] [--passphrase-stdin] [-o OUT]
     key import FILE [--label NAME]
     root add KEY --as LABEL --def FILE --type TYPE [--values V1,V2] [--depth N] [--context NAME] [--note TEXT]
-    root list [--context NAME]
-    make --as LABEL --subject FILE --def FILE --type TYPE --value VALUE [--valid-days N] [-o OUT]
-         [--passphrase-stdin]
+    root list [--context NAME] [--as LABEL]
+    make --as LABEL (--subject FILE | --subject-key KEY) --def FILE --type TYPE --value VALUE
+         [--valid-days N] [-o OUT] [--passphrase-stdin]
     delegate KEY --as LABEL --def FILE --type TYPE [--values V1,V2] [--depth N] [--valid-days N]
          [-o OUT] [--passphrase-stdin]
-    check STMT [STMT ...] --artifact FILE --def FILE [--context NAME] [--format text|json] [--at TIME]
+    check STMT [STMT ...] (--artifact FILE | --subject-key KEY) --def FILE [--context NAME]
+          [--as LABEL] [--format text|json] [--at TIME]
     show FILE
+
+`--subject-key KEY` makes or checks a statement about a key instead of a file:
+`this = [1, kid]` (SPEC-0002 §7.2, target type 1), the form a persona's
+received tags take. KEY is your label for a key, a kid prefix of at least 8 hex
+digits, or a full 64-digit kid for a key this wallet does not hold. With a key
+subject there is no copy of yours to hash, so the integrity line reports
+verification alone (SPEC-0004 §10.4).
+
+`check --as LABEL` and `root list --as LABEL` use one owned persona's anchors.
+A context is a scope in which an owned persona acts and relies (SPEC-0001
+§6.3), and every evaluation is relative to one context (SPEC-0004 §4.1).
+Without `--as`, every owned persona's anchors are used, as before.
 
 `--lang TAG` picks the language of the vocabulary's names and sentences
 (`make`, `check`), falling back to English; the engine's own words stay
@@ -242,6 +255,35 @@ def cmd_hash(a):
     print(f"{alg}:{t[2].hex()}  {a.file}")
 
 
+def kid_of(w: Wallet, ref: str) -> bytes:
+    """A key named on a command line: a persona of this wallet, by label or by
+    a kid prefix (`Wallet.find`), else a full 64-digit kid — so a statement
+    about a key this wallet has not met can still be made or checked."""
+    try:
+        return w.find(ref).kid
+    except WalletError:
+        # Not a persona here. A full kid is still a key we can name, so a tag
+        # given to a key this wallet never met can be checked. Anything else
+        # keeps `find`'s own message, which says what the user got wrong.
+        try:
+            kid = bytes.fromhex(ref.lower().removeprefix("0x"))
+        except ValueError:
+            kid = b""
+        if len(kid) != 32:
+            raise
+        return kid
+
+
+def owned_persona(w: Wallet, ref: str | None) -> bytes | None:
+    """`--as LABEL`: the owned persona whose anchors an evaluation uses."""
+    if not ref:
+        return None
+    p = w.find(ref)
+    if not p.owned:
+        raise WalletError(f"{ref} is not a persona this wallet owns")
+    return p.kid
+
+
 def anchor_line(an: Anchor, labels: dict[bytes, str]) -> str:
     scope = anchor_line_scope(an.about)
     depth = (an.may_delegate or {}).get(1, 0)
@@ -279,10 +321,13 @@ def cmd_root_add(a):
 
 def cmd_root_list(a):
     w = Wallet.open(locate(a.wallet))
-    anchors, labels = w.anchors(a.context), w.labels()
+    persona = owned_persona(w, a.as_)
+    anchors, labels = w.anchors(a.context, persona), w.labels()
     if not anchors:
+        who = f" for {render.key_name(persona, labels)}" if persona else ""
         print(
-            f"no anchors in context {a.context}: you trust no key about anything here"
+            f"no anchors in context {a.context}{who}: "
+            f"you trust no key about anything here"
         )
     for an in anchors:
         print(f"{anchor_line(an, labels)} on {ksatime.to_text(an.accepted_at)}")
@@ -301,9 +346,14 @@ def cmd_make(a):
         allowed = ", ".join(v[1] for v in d.type(a.type).get(6, []))
         raise WalletError(f"{a.value!r} is not a value of {a.type}; allowed: {allowed}")
     now = ksatime.now()
+    this = (
+        statement.key_target(kid_of(w, a.subject_key))
+        if a.subject_key
+        else statement.digest_target(Path(a.subject).read_bytes())
+    )
     s = statement.attestation(
         p.kid,
-        statement.digest_target(Path(a.subject).read_bytes()),
+        this,
         [{1: d.type_ref(a.type), 2: a.value}],
         now,
         ksatime.add_days(now, a.valid_days),
@@ -379,15 +429,17 @@ def cmd_check(a):
         except EncodingError as e:
             items.append(checking.handed(f, None, keystore, str(e)))
     at = ksatime.from_text(a.at) if a.at else ksatime.now()
+    persona = owned_persona(w, a.as_)
     answer = checking.run(
         items,
-        Path(a.artifact).read_bytes(),
+        Path(a.artifact).read_bytes() if a.artifact else None,
         Path(a.def_).read_bytes(),
         w.labels(),
-        w.anchors(a.context),
+        w.anchors(a.context, persona),
         a.context,
         at,
         a.lang,
+        subject_key=kid_of(w, a.subject_key) if a.subject_key else None,
     )
     sys.stdout.write(
         render.verdict_json(answer)
@@ -591,11 +643,23 @@ def parser() -> argparse.ArgumentParser:
     add.set_defaults(run=cmd_root_add)
     ls = root.add_parser("list", help="print the anchors of a context")
     ls.add_argument("--context", default="default")
+    ls.add_argument(
+        "--as", dest="as_", metavar="LABEL", help="only this owned persona's anchors"
+    )
     ls.set_defaults(run=cmd_root_list)
 
     make = sub.add_parser("make", help="make and sign one attestation")
     make.add_argument("--as", dest="as_", required=True, metavar="LABEL")
-    make.add_argument("--subject", required=True, metavar="FILE")
+    about = make.add_mutually_exclusive_group(required=True)
+    about.add_argument(
+        "--subject", metavar="FILE", help="the file this statement is about"
+    )
+    about.add_argument(
+        "--subject-key",
+        dest="subject_key",
+        metavar="KEY",
+        help="a key this statement is about: your label, a kid prefix, or a full kid",
+    )
     make.add_argument("--def", dest="def_", required=True, metavar="FILE")
     make.add_argument("--type", required=True)
     make.add_argument("--value", required=True)
@@ -621,9 +685,24 @@ def parser() -> argparse.ArgumentParser:
 
     chk = sub.add_parser("check", help="evaluate the statements you were handed")
     chk.add_argument("stmt", nargs="+")
-    chk.add_argument("--artifact", required=True, metavar="FILE")
+    ask = chk.add_mutually_exclusive_group(required=True)
+    ask.add_argument(
+        "--artifact", metavar="FILE", help="your own copy of the file they are about"
+    )
+    ask.add_argument(
+        "--subject-key",
+        dest="subject_key",
+        metavar="KEY",
+        help="check statements about a key instead: your label, a kid prefix, or a full kid",
+    )
     chk.add_argument("--def", dest="def_", required=True, metavar="FILE")
     chk.add_argument("--context", default="default")
+    chk.add_argument(
+        "--as",
+        dest="as_",
+        metavar="LABEL",
+        help="evaluate with this owned persona's anchors (default: every owned persona's)",
+    )
     chk.add_argument("--format", choices=("text", "json"), default="text")
     chk.add_argument(
         "--at",
