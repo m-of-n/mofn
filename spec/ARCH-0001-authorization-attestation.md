@@ -8,10 +8,10 @@ description: "Canonical working architecture for a native model that is not X.50
 type: architecture
 category: security
 status: draft
-version: "0.3.3"
+version: "0.3.4"
 version_policy: "semver; PATCH = editorial; MINOR = additive requirements; MAJOR = breaking model change"
 date: "2026-09-15"
-updated: "2026-11-17"
+updated: "2026-11-23"
 authors:
   - role: architect
     id: conversation-brainpool256
@@ -91,7 +91,7 @@ scope:
 agent_checkpoint: true
 agent_notes: >
   Other agents: treat this file as the source of truth for architecture
-  state as of v0.3.3. v0.3.3 adds inputs to DEC-005 (no option selected). v0.3.2 moves §2.3.2 to DV-5 `library-review` v2. v0.3.1 closes the SDSI-names gap in §5.5. v0.3.0 adds §2.3, the two target applications. v0.2.0 folded ARCH-0001-PROPOSAL-v0.2.0 in (now
+  state as of v0.3.4. v0.3.4 adds §6 row notes and §6.1 (mofn#110; no requirement or DEC-* moves). v0.3.3 adds inputs to DEC-005 (no option selected). v0.3.2 moves §2.3.2 to DV-5 `library-review` v2. v0.3.1 closes the SDSI-names gap in §5.5. v0.3.0 adds §2.3, the two target applications. v0.2.0 folded ARCH-0001-PROPOSAL-v0.2.0 in (now
   superseded) and carried ADR-0002, ADR-0003, ADR-0007 and the T-012c
   delegation decision into §4-§7. Where SPEC-0001..0005 and this file differ,
   §5.5 lists every known gap and which side owes the change. Do not invent accepted decisions. Open items are
@@ -101,7 +101,7 @@ agent_notes: >
 
 # ARCH-0001 — Authorization, local names, and artifact attestation
 
-**Status:** draft · **Version:** 0.3.3 · **Date:** 2026-09-15 · **Updated:** 2026-11-17  
+**Status:** draft · **Version:** 0.3.4 · **Date:** 2026-09-15 · **Updated:** 2026-11-23  
 **Canonical file:** `spec/ARCH-0001-authorization-attestation.md`  
 **Changelog:** `spec/ARCH-0001-CHANGELOG.md`
 
@@ -503,16 +503,114 @@ Legend: **I** import, **E** export, **—** out of scope this version, **P** par
 | OpenPGP key + UIDs + sigs | I | P | Key, NameCert, Endorse | No tag language; trust values are local to importer |
 | X.509 EE / CA cert | I | — | Key + NameCert (DN as labels under a `x509:` namespace of the *importer*, not of the CA) + provenance | Do not treat CA bit as AuthzCert |
 | X.509 attribute certificate | I | P | AuthzCert (tag profile TBD) | Attributes ≠ SPKI tags |
-| in-toto Statement | I | E | attestation | Subjects = artifacts. **Export loss:** a `description` subject (R-M-11) has no in-toto digest-set form. `predicateType` URI ↔ `type-ref` is a lossy mapping (`ARCH-0002` P1) |
-| DSSE envelope | I | E | wire only | Not an information-model type |
-| COSE_Sign1 + CWT | I | E | wire + issuer/sub/exp | `kid` per `ADR-0005`. **Export loss:** key-relative identifiers map to registry-allocated COSE labels and CWT claim keys only lossily (`ADR-0004`; `ARCH-0002` P1) |
+| in-toto Statement | I | E | attestation | Subjects = artifacts. **Export loss:** a `description` subject (R-M-11) has no in-toto digest-set form. `predicateType` URI ↔ `type-ref` is a lossy mapping (`ARCH-0002` P1). **Import:** a digest set may hold non-cryptographic types, so an import names the digest algorithms it accepts (note 1) |
+| DSSE envelope | I | E | wire only | Not an information-model type. Carries *n* signatures and never *k*, so threshold meaning is never read from a signature count (note 2). `keyid` is unauthenticated: the principal travels in the payload (`ARCH-0002` P5.2). Unknown exterior fields: import rejects, export emits none (P5.2) |
+| COSE_Sign1 + CWT | I | E | wire + issuer/sub/exp | `kid` per `ADR-0005`. **Export loss:** key-relative identifiers map to registry-allocated COSE labels and CWT claim keys only lossily (`ADR-0004`; `ARCH-0002` P1). **SCITT profile:** `iss` and `sub` are mandatory, in the protected CWT Claims header; `x5chain` may be unprotected (note 3). **`kid` and `cnf`:** a foreign `kid` is a hint, never a principal, and export emits no `cnf` (`ARCH-0002` P1.1, draft) |
 | SLSA provenance v1 | I | E | ArtifactStatement predicate | |
 | SPDX / CycloneDX | I | E | ArtifactStatement predicate | |
-| PICS label | I | — | ArtifactStatement | Historic; import profile only if needed |
-| W3C VC | I | C | ArtifactStatement or NameCert depending on type | Context must be pinned |
-| SCITT receipt (RFC 9943) | I | C | evidence attached to an attestation | Does not change meaning of statement |
+| PICS label | I | — | ArtifactStatement | Historic; import profile only if needed. A label binds content only optionally, and the binding is often outside what is signed. Both PICS signature forms canonicalise at verification (note 6) |
+| W3C VC | I | C | ArtifactStatement or NameCert depending on type | Context must be pinned, by digest. Two securing routes that score differently against R-O-05: enveloping (VC-JOSE-COSE) and embedded (Data Integrity) (note 5) |
+| SCITT receipt (RFC 9943) | I | C | evidence attached to an attestation | Does not change meaning of statement. Proves inclusion only: not truth, freshness or log honesty. Never stands in for issuer authorization (note 4) |
 
 **Forbidden native mapping:** X.509 certificate path validation as the native reducer.
+
+**Not a foreign object: the KSA envelope.** Added 0.3.4 (mofn#110). The KSA
+core's own envelope, `SPEC-0002` §5's `[suite, says, tbs, sig, ? pub]`, has no
+row, because this table maps foreign objects and that envelope is native. It
+is neither DSSE nor COSE_Sign1, and no foreign verifier reads it. It is not a
+DEC-005 candidate (`ADR-0004` item 4; §7 DEC-005, first input). A native
+signature never verifies as a foreign one, so every export signs again (§7
+DEC-005, the signing-key input). **Which envelope an export uses is DEC-005,
+which is open.** Nothing in this section assumes an option.
+
+### 6.1 Notes to the rows
+
+Added 0.3.4 (mofn#110), from `R-0006` §2.5 and the library records named in
+each note. They record **evidence and the limits it puts on a mapping**. They
+are not mapping specifications (WP3 and the R-I-01 tables), and they add,
+amend or withdraw no requirement.
+
+1. **in-toto: "binds a content digest" is not one property** (`R-0006` §2.3,
+   fourth point). An in-toto subject's digest set may carry non-cryptographic
+   types, such as a `gitCommit`. An import that mapped every entry to a digest
+   target would meet R-M-07 in form and not in substance. An import profile
+   therefore names the digest algorithms it accepts. An entry under any other
+   algorithm does not become a digest target. The same rule covers the
+   MD5 and SHA-1 digests of note 6.
+2. **DSSE** (`R-0006` §5.1, §5.2; library `secure-systems-lab-dsse`). The
+   threshold `t` is a verifier-side parameter, not a field, and an envelope's
+   signatures are *"equivalent to separate envelopes with individual
+   signatures"*. An intermediary may therefore split or merge them. Under every
+   encoding, *k* and the member set travel inside the signed payload (R-M-06;
+   `SPEC-0002` §8.6). `KEYID` *"MUST NOT be used for security decisions"*, the
+   opposite of our `kid` (R-M-02). P5.2 is accepted, and its acceptance test
+   asks for both rules in this table, which this row now states. P5.2's
+   negative fixture is still owed.
+3. **COSE_Sign1 + CWT in the SCITT profile** (RFC 9943 §6; library `rfc-9943`,
+   requirements R-0016, R-0017, R-0031, R-0036 to R-0038; that extraction's
+   `reviewed_by` is empty). The protected header MUST carry the CWT Claims
+   parameter (label 15), and it MUST hold `iss` (1) and `sub` (2). The issuer
+   is identified in the protected header by `x5t` or `x5chain`, or by `kid`
+   when neither is present. An `x5chain` MAY sit in the unprotected header, so
+   it is unauthenticated. Its X.509 content is at most a foreign identity
+   assertion (R-I-05), never a principal. P1.1 states the `kid` and `cnf`
+   rules. Its acceptance test asks for one row for each, and the cell carries
+   both while P1.1 stays draft. Two things are not decided here. One is how a
+   KSA `kid` is written as `iss` and `sub`: that is the mapping (WP3) under
+   DEC-005. The other is COSE `crit`, which P5.2 says is owed if COSE is
+   chosen.
+4. **SCITT receipt** (`R-0006` §2.4; library `rfc-9942`, `rfc-9943`, both
+   with empty `reviewed_by`). An inclusion receipt proves *"the entry's
+   inclusion in the VDS"*. It does not prove that the statement is true,
+   fresh or unrevoked, and it does not prove that the log is honest. Statement
+   acceptance (§4.3 step 3) never treats *"has a receipt"* as *"issuer
+   authorized for this `PredicateType`"*. Every proof guarantee is inherited
+   from RFC 9162, which is a stub in the library and is not checked here.
+   R-O-04 stays *Could*.
+5. **W3C VC.** This note was ∅ in `R-0006` and is evidenced now by
+   library `w3c-vc-data-model-2-0`, `w3c-vc-data-integrity-1-0` and
+   `w3c-vc-jose-cose`. All three are distilled, and their `reviewed_by` is
+   empty.
+   - **The data model secures nothing itself.** It delegates securing to two
+     classes of mechanism (VC DM 2.0 §4.12).
+   - **Pinning has a source.** The base context is treated as already
+     retrieved, and its SHA2-256 is printed in the specification (VC DM 2.0
+     Appendix B.1). Every other context is pinned the same way, by digest.
+   - **Enveloping, VC-JOSE-COSE.** The VC is the opaque payload of a JWS, an
+     SD-JWT or a COSE_Sign1. Nothing is canonicalised, and the verifier
+     returns the decoded verified bytes (§5.1, §5.3). That meets R-O-05's
+     verification clause. Its type indicator, `typ`, is only a SHOULD, so an
+     export profile makes `typ` mandatory and checks it before decoding.
+   - **Embedded, Data Integrity.** What is protected is *"the transformed
+     data"* (§5.7), and the verifier transforms what it received. It
+     canonicalises at verification by construction. A verifier that imports
+     this route therefore conflicts with R-O-05. Whether that import is
+     refused or carved out is **owed to an import profile, and not decided
+     here**.
+   - **Entitlement is out of band.** Neither route carries, in its signed
+     bytes, anything a verifier could reduce to *"this signer may say this"*
+     (VC-JOSE-COSE §3.1.3, §5.4). An imported VC is evidence under R-I-02,
+     not a delegation.
+   - R-I-06's export of a subset of `AuthzCert` names no route. This note
+     records only that the enveloping route is the one consistent with
+     R-O-05.
+6. **PICS label.** This note was ∅ in `R-0006` and is evidenced now by
+   library `pics-1-1-labels` and `pics-dsig-1-0`, both summarized and both
+   historic.
+   - **PICS 1.1.** It binds content only by the optional `MIC-md5` option.
+     The `signature-RSA-MD5` option signs only the options the service
+     chooses, and the text expects `mic-md5` to be commonly omitted. A signed
+     label therefore often binds no content.
+   - **DSig 1.0.** It binds content by `resinfo`, and the binding is signed by
+     default. An `exclude` can drop it, and the signature still verifies. The
+     whole `sigblock` is unsigned, so the suite, the signer and the signing
+     time are unauthenticated.
+   - **Both canonicalise the label at verification**, from received input.
+     That conflicts with R-O-05.
+   - **An import profile, if one is ever written**, maps a label to an
+     `ArtifactStatement` only where a content digest is present, signed and
+     under an accepted algorithm (note 1; R-M-07). Without one, it is evidence
+     only.
 
 ---
 
@@ -802,4 +900,4 @@ their common principle. It is not a reason to merge them.
 - `draft-mih-scitt-agent-action-capsule-02` — ad hoc vocabulary inside SCITT (§3.3)  
 - RFC 9580 — OpenPGP (2024): §3.7, §5.2.3.7, §5.2.3.21, §5.2.3.24, §5.2.3.29, §5.2.5, §5.5.3, §5.5.4.3 (read for §3.4)
 
-End of ARCH-0001 v0.3.3
+End of ARCH-0001 v0.3.4
