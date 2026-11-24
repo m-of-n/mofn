@@ -7,10 +7,10 @@ description: "How a key publishes what statements mean: hash-identified definiti
 type: specification
 category: security
 status: draft
-version: "0.2.0"
+version: "0.3.0"
 version_policy: "semver; MAJOR = any change to hashed bytes or evaluation results; MINOR = additive registry entries; PATCH = editorial"
 date: "2026-10-14"
-updated: "2026-11-12"
+updated: "2026-11-24"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -48,7 +48,7 @@ related_rfcs: [RFC5646, RFC5890, RFC5952, RFC8949]
 
 # KSA Definitions — vocabularies, types, human-readable semantics, constraints and templates
 
-**Specification SPEC-0003 · version 0.2.0 · draft**
+**Specification SPEC-0003 · version 0.3.0 · draft**
 
 ## Abstract
 
@@ -78,6 +78,18 @@ ADR-0008). A type of that kind is a naming type: SPEC-0004 §5.3 reads an
 attribute of it as a name binding. No hashed bytes change: DV-1's bytes and
 DefinitionId are unchanged, and DV-2's `name`, base kind text, stays a plain
 attribute. Additive registry entry, so MINOR.
+**0.3.0 (2026-11-24):** §6 pattern containment (mofn#110 part 2, DL-0056).
+Within is defined once, for every pattern kind, as §6.3 already defined it for
+email. §6.1–§6.3 each give the equivalent decision procedure. Patterns that
+match nothing MUST be rejected. An ip-prefix range MUST be maximally
+aggregated and is sorted IPv4 first, then by address octets. Without that
+rule, "equal ranges have equal bytes" was false for ip-prefix, and
+`delegation: 1` equality (SPEC-0004 §6.3 item 4) relies on that sentence. All
+three changes reject inputs that 0.2.0 accepted. That is a change in
+evaluation results, which is MAJOR under this document's policy. It is
+numbered MINOR because no published definition or vector uses kind 4, 5 or
+11, so no published result changes. The reviewer decides whether 1.0.0 is
+owed instead (DL-0056). DV-1's bytes and DefinitionId are unchanged.
 
 ---
 
@@ -260,7 +272,18 @@ from anyone.
 In every base kind, a range is written as an array and the unbounded range is
 written by **omitting** `range` from an attribute range (SPEC-0002 §7.4). An
 empty array is not a range and MUST be rejected. Ranges MUST be canonical as
-stated for each kind, so that equal ranges have equal bytes.
+stated for each kind, so that equal ranges have equal bytes: two ranges of one
+kind that have the same members have the same encoding. *0.3.0: for ip-prefix
+this needed the aggregation rule of §6.2, without which the sentence was false
+(mofn#110).*
+
+**Patterns** (kinds 4, 5 and 11). The elements of a dns-name, ip-prefix or
+email range are patterns; an ip-prefix pattern is a prefix. A pattern **P is
+within** a pattern Q if every assignment P matches is matched by Q. §6.1–§6.3
+each give a decision procedure that is equivalent to this definition. A
+pattern that matches no assignment MUST be rejected. Within is therefore
+antisymmetric on patterns: P within Q and Q within P only when P and Q are the
+same pattern.
 
 | code | base kind | assignment | range | member | within |
 |---|---|---|---|---|---|
@@ -288,6 +311,20 @@ with **one or more** further labels below it (`*.foo.com` matches `a.foo.com` an
 A name or pattern not in this form MUST be rejected, not normalised: `Foo.com`
 and `foo.com.` are invalid, not equal to `foo.com`.
 
+The shortest name `*.L` matches is `a.L`, which is two octets longer than
+`L`. So `*.L` matches nothing when `L` is longer than 251 octets, and such a
+pattern MUST be rejected (§6).
+
+Within, for patterns (§6), where `n` and `m` are names:
+
+- `n` is within `m` if and only if `n` = `m`;
+- `n` is within `*.m` if and only if `n` ends with `.m`;
+- `*.n` is within `*.m` if and only if `n` = `m` or `n` ends with `.m`;
+- `*.n` is never within `m`.
+
+"Ends with" is octet comparison of whole labels. `xfoo.com` does not end with
+`.foo.com`.
+
 ### 6.2 ip-prefix
 
 An assignment is an IPv4 address in dotted-decimal form with no leading zeros,
@@ -297,6 +334,30 @@ address followed by `/` and a length, with every bit beyond the length zero
 *length* bits are equal. IPv4 and IPv6 never match each other. Non-canonical
 forms MUST be rejected.
 
+Every prefix matches at least one address, so no prefix is empty. A prefix
+`a/x` is within `b/y` if and only if both are of one family, `y ≤ x`, and the
+first `y` bits of `a` and `b` are equal.
+
+A range is canonical when every condition below holds:
+
+1. no prefix in it is within another (the table in §6);
+2. it holds no two **sibling** prefixes. Siblings have the same length
+   `x ≥ 1` and are equal in their first `x − 1` bits. They MUST be written as
+   their common parent, of length `x − 1`. So `[10.0.0.0/9, 10.128.0.0/9]` is
+   not canonical, and `[10.0.0.0/8]` is;
+3. it is sorted with every IPv4 prefix before every IPv6 prefix. Within one
+   family, prefixes are sorted by their address octets in network order,
+   compared as unsigned bytes. No two prefixes in a canonical range share an
+   address, since one would be within the other.
+
+Under conditions 1 and 2, a range is the unique set of maximal prefixes that
+covers its addresses. If a prefix's parent were covered, then its sibling
+would be covered by prefixes inside the sibling. The longest of those has a
+sibling of its own, and that sibling must also be covered. Following this down
+always ends at a sibling pair, which condition 2 forbids. So equal ranges have
+equal bytes (§6). A range that is not canonical MUST be rejected, not
+aggregated.
+
 ### 6.3 email
 
 An assignment is `local@domain`, where `domain` is a dns-name assignment (§6.1)
@@ -305,8 +366,21 @@ since a mail system may distinguish case in it. A pattern is an address — whic
 matches only that address — or `*@` followed by a dns-name **pattern** (§6.1):
 `*@foo.com` matches every address at `foo.com`; `*@*.foo.com` every address at
 any name below `foo.com`. A pattern is within another if every address it matches
-is matched by the other. Quoted local parts and comments are not supported in this
+is matched by the other. That is the definition §6 now gives for all three
+pattern kinds. Quoted local parts and comments are not supported in this
 version and MUST be rejected.
+
+`*@p` is subject to §6.1's rule for `p`, so `*@*.L` with `L` longer than 251
+octets MUST be rejected. Within, as a decision procedure, where `l@d` is an
+address and `p` and `q` are dns-name patterns:
+
+- `l@d` is within `l′@d′` if and only if they are equal;
+- `l@d` is within `*@q` if and only if `q` matches `d` (§6.1);
+- `*@p` is within `*@q` if and only if `p` is within `q` (§6.1);
+- `*@p` is never within an address.
+
+The last rule holds because `*@p` matches every local part, and an address
+has exactly one.
 
 This is the type behind the email-delegation scenario in UC-0001 §UC-5: a domain
 owner trusted about `*@foo.com` may delegate `*@eng.foo.com`, and not
