@@ -14,6 +14,13 @@ name: release
 # published in the same pre-release, under the same SHA256SUMS. One version,
 # one tag: the app is the engine's, at the engine's version.
 #
+# The desktop wallet also ships as a disk image (mofn-wallet-X.Y.Z-macos-
+# arm64.dmg: the app and an Applications shortcut). When the signing secrets
+# are set (see APP-0005 and the `app` job) the app is signed with a Developer
+# ID Application certificate, hardened runtime, notarized and stapled, and so
+# is the DMG; without them both are built unsigned and the release notes say
+# so. Signing never runs for pull requests.
+#
 # Windows is built and smoke-tested, as CI, but not published: it is not a
 # release target for wallet-v0.x (#127 D3). A pull request that touches the
 # wallet, and a manual run, do everything but publish. The m-of-n statement
@@ -125,52 +132,223 @@ jobs:
           bash smoke/smoke.sh "$f" smoke
 
   app:
-    # The desktop wallet's .app (W-7). macOS arm64 only; not notarized (no
-    # Apple Developer ID), so APP-0005 documents the Gatekeeper step.
+    # The desktop wallet (W-7): the .app, zipped, and a DMG. macOS arm64 only.
+    # Signing and notarization are optional and gated on repository secrets:
+    #   MACOS_CERT_P12_BASE64   base64 of a "Developer ID Application" .p12
+    #   MACOS_CERT_PASSWORD     that .p12's password
+    #   APPLE_TEAM_ID           the 10-character team id (optional: picks the
+    #                           identity when the .p12 holds more than one)
+    # and, to notarize, one of
+    #   ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8   an App Store Connect API key
+    #                           (.p8 base64-encoded, as weft-apple stores it)
+    #   APPLE_ID, APPLE_APP_PASSWORD, APPLE_TEAM_ID   an app-specific password
+    # Not for pull requests: a PR run builds unsigned and is given no secrets.
     needs: version
     runs-on: macos-15
+    outputs:
+      signed: ${{ steps.flags.outputs.signed }}
+      notarized: ${{ steps.flags.outputs.notarized }}
     env:
+      V: ${{ needs.version.outputs.version }}
       FILE: mofn-wallet-${{ needs.version.outputs.version }}-macos-arm64.zip
+      DMG: mofn-wallet-${{ needs.version.outputs.version }}-macos-arm64.dmg
+      APP: m-of-n Wallet.app
+      EVENT: ${{ github.event_name }}
+      MACOS_CERT_P12_BASE64: ${{ github.event_name != 'pull_request' && secrets.MACOS_CERT_P12_BASE64 || '' }}
+      MACOS_CERT_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.MACOS_CERT_PASSWORD || '' }}
+      APPLE_TEAM_ID: ${{ github.event_name != 'pull_request' && secrets.APPLE_TEAM_ID || '' }}
+      ASC_KEY_ID: ${{ github.event_name != 'pull_request' && secrets.ASC_KEY_ID || '' }}
+      ASC_ISSUER_ID: ${{ github.event_name != 'pull_request' && secrets.ASC_ISSUER_ID || '' }}
+      ASC_KEY_P8: ${{ github.event_name != 'pull_request' && secrets.ASC_KEY_P8 || '' }}
+      APPLE_ID: ${{ github.event_name != 'pull_request' && secrets.APPLE_ID || '' }}
+      APPLE_APP_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.APPLE_APP_PASSWORD || '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
+      - name: what can be signed and notarized, from the secrets present
+        id: flags
+        run: |
+          signed=false; notarized=false; notary=none
+          if [ "$EVENT" != pull_request ] && [ -n "$MACOS_CERT_P12_BASE64" ] && [ -n "$MACOS_CERT_PASSWORD" ]; then
+            signed=true
+            if [ -n "$ASC_KEY_ID" ] && [ -n "$ASC_ISSUER_ID" ] && [ -n "$ASC_KEY_P8" ]; then
+              notary=apikey
+            elif [ -n "$APPLE_ID" ] && [ -n "$APPLE_APP_PASSWORD" ] && [ -n "$APPLE_TEAM_ID" ]; then
+              notary=appleid
+            fi
+            [ "$notary" = none ] || notarized=true
+          fi
+          echo "signed=$signed" >>"$GITHUB_OUTPUT"
+          echo "notarized=$notarized" >>"$GITHUB_OUTPUT"
+          echo "NOTARY=$notary" >>"$GITHUB_ENV"
+          echo "SIGNED=$signed" >>"$GITHUB_ENV"
+          echo "signed=$signed notarized=$notarized (notary credentials: $notary)"
+          [ "$signed" = true ] || echo "::notice::unsigned build: no Developer ID secrets for this run"
       - name: the app's tests, headless (pytest-qt)
         working-directory: prototype/wallet-app
         env: {QT_QPA_PLATFORM: offscreen}
         run: |
           python -m pip install -q -r requirements-release.txt -r requirements-test.txt
           pytest -q
-      - name: .app build (mofn-wallet.spec), zipped with ditto
+      - name: .app build (mofn-wallet.spec)
         working-directory: prototype/wallet-app
-        run: |
-          pyinstaller --clean --noconfirm mofn-wallet.spec
-          mkdir -p "$GITHUB_WORKSPACE/out"
-          ditto -c -k --keepParent "dist/m-of-n Wallet.app" "$GITHUB_WORKSPACE/out/$FILE"
+        run: pyinstaller --clean --noconfirm mofn-wallet.spec
       - name: the build says the version it was tagged with
         run: |
-          "prototype/wallet-app/dist/m-of-n Wallet.app/Contents/MacOS/mofn-wallet" --version | tee version.txt
-          grep -q "^mofn-wallet ${{ needs.version.outputs.version }} (prototype" version.txt
+          "prototype/wallet-app/dist/$APP/Contents/MacOS/mofn-wallet" --version | tee version.txt
+          grep -q "^mofn-wallet $V (prototype" version.txt
+      - name: import the Developer ID certificate into a temporary keychain
+        if: env.SIGNED == 'true'
+        run: |
+          set -eu
+          umask 077
+          kc="$RUNNER_TEMP/mofn-sign.keychain-db"
+          pw=$(uuidgen)
+          echo "$MACOS_CERT_P12_BASE64" | base64 --decode >"$RUNNER_TEMP/cert.p12"
+          security create-keychain -p "$pw" "$kc"
+          security set-keychain-settings -lut 3600 "$kc"
+          security unlock-keychain -p "$pw" "$kc"
+          security import "$RUNNER_TEMP/cert.p12" -k "$kc" -P "$MACOS_CERT_PASSWORD" -T /usr/bin/codesign -T /usr/bin/security
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$pw" "$kc" >/dev/null
+          security list-keychains -d user -s "$kc" login.keychain-db
+          rm -f "$RUNNER_TEMP/cert.p12"
+          # The identity: the Developer ID Application certificate (not the
+          # Apple Distribution one TestFlight uses), for the team if given.
+          pat='Developer ID Application'; [ -z "$APPLE_TEAM_ID" ] || pat="$pat.*($APPLE_TEAM_ID)"
+          id=$(security find-identity -v -p codesigning "$kc" | grep -E "$pat" | head -1 | awk '{print $2}')
+          [ -n "$id" ] || { echo "::error::no 'Developer ID Application' identity in MACOS_CERT_P12_BASE64"; exit 1; }
+          echo "IDENTITY=$id" >>"$GITHUB_ENV"
+          echo "KEYCHAIN=$kc" >>"$GITHUB_ENV"
+      - name: notary credentials
+        if: env.NOTARY == 'apikey'
+        run: |
+          umask 077
+          echo "$ASC_KEY_P8" | base64 --decode >"$RUNNER_TEMP/AuthKey.p8"
+          echo "NOTARY_ARGS=--key $RUNNER_TEMP/AuthKey.p8 --key-id $ASC_KEY_ID --issuer $ASC_ISSUER_ID" >>"$GITHUB_ENV"
+      - name: notary credentials (Apple ID)
+        if: env.NOTARY == 'appleid'
+        run: echo "NOTARY_ARGS=--apple-id $APPLE_ID --password $APPLE_APP_PASSWORD --team-id $APPLE_TEAM_ID" >>"$GITHUB_ENV"
+      - name: sign the app (Developer ID, hardened runtime), inside out
+        if: env.SIGNED == 'true'
+        working-directory: prototype/wallet-app
+        run: |
+          set -euo pipefail
+          app="dist/$APP"
+          # Every Mach-O file, deepest first, then each bundle, then the app.
+          # (`codesign --deep` is deprecated and misses PyInstaller's layout.)
+          find "$app" -type f ! -type l -print0 | while IFS= read -r -d '' f; do
+            if file -b "$f" | grep -q 'Mach-O'; then echo "$f"; fi
+          done | awk '{print length($0) "\t" $0}' | sort -rn | cut -f2- | while IFS= read -r f; do
+            codesign --force --timestamp --options runtime --sign "$IDENTITY" --keychain "$KEYCHAIN" "$f"
+          done
+          find "$app" -type d \( -name '*.framework' -o -name '*.bundle' \) | awk '{print length($0) "\t" $0}' | sort -rn | cut -f2- | while IFS= read -r d; do
+            codesign --force --timestamp --options runtime --sign "$IDENTITY" --keychain "$KEYCHAIN" "$d"
+          done
+          codesign --force --timestamp --options runtime --entitlements entitlements.plist \
+            --sign "$IDENTITY" --keychain "$KEYCHAIN" "$app"
+          codesign --verify --deep --strict --verbose=2 "$app"
+          codesign -dv --verbose=4 "$app" 2>&1 | grep -E 'Authority|TeamIdentifier|flags'
+      - name: notarize and staple the app
+        if: env.NOTARY != 'none'
+        working-directory: prototype/wallet-app
+        run: |
+          set -eu
+          ditto -c -k --keepParent "dist/$APP" "$RUNNER_TEMP/notarize-app.zip"
+          xcrun notarytool submit "$RUNNER_TEMP/notarize-app.zip" $NOTARY_ARGS --wait --timeout 30m
+          xcrun stapler staple "dist/$APP"
+          xcrun stapler validate "dist/$APP"
+      - name: zip the app with ditto, and build the DMG
+        working-directory: prototype/wallet-app
+        run: |
+          set -eu
+          mkdir -p "$GITHUB_WORKSPACE/out"
+          # A plain zip breaks the bundle's symlinks and signature.
+          ditto -c -k --keepParent "dist/$APP" "$GITHUB_WORKSPACE/out/$FILE"
+          # The disk image: the app and a shortcut to /Applications.
+          rm -rf dmg-root && mkdir dmg-root
+          ditto "dist/$APP" "dmg-root/$APP"
+          ln -s /Applications dmg-root/Applications
+          for try in 1 2 3; do
+            hdiutil create -volname "m-of-n Wallet $V" -srcfolder dmg-root -fs HFS+ -format UDZO -ov \
+              "$GITHUB_WORKSPACE/out/$DMG" && break
+            echo "hdiutil failed (try $try); retrying"; sleep 10
+            [ "$try" -lt 3 ] || exit 1
+          done
+          hdiutil verify "$GITHUB_WORKSPACE/out/$DMG"
+      - name: sign, notarize and staple the DMG
+        if: env.SIGNED == 'true'
+        run: |
+          set -eu
+          dmg="out/$DMG"
+          codesign --force --timestamp --sign "$IDENTITY" --keychain "$KEYCHAIN" "$dmg"
+          codesign --verify --verbose=2 "$dmg"
+          if [ "$NOTARY" != none ]; then
+            xcrun notarytool submit "$dmg" $NOTARY_ARGS --wait --timeout 30m
+            xcrun stapler staple "$dmg"
+            xcrun stapler validate "$dmg"
+          fi
+      - name: clean up the keychain and keys
+        if: always()
+        run: |
+          [ -z "${KEYCHAIN:-}" ] || security delete-keychain "$KEYCHAIN" || true
+          rm -f "$RUNNER_TEMP/AuthKey.p8" "$RUNNER_TEMP/cert.p12"
       - uses: actions/upload-artifact@v4
-        with: {name: macos-arm64-app, path: 'out/${{ env.FILE }}', if-no-files-found: error}
+        with:
+          name: macos-arm64-app
+          path: |
+            out/${{ env.FILE }}
+            out/${{ env.DMG }}
+          if-no-files-found: error
 
   app-smoke:
-    # A runner that never saw the source: unzip the app and run its self-test
-    # (a wallet, a key, Alice trusted, TV-4 green with the four attributes;
-    # then every page built offscreen).
+    # A runner that never saw the source: open the DMG (the app and an
+    # Applications shortcut), copy the app out, unzip the zip, and run the
+    # self-test of each (a wallet, a key, Alice trusted, TV-4 green with the
+    # four attributes; then every page built offscreen). When the build was
+    # signed, check the signature; when notarized, that Gatekeeper accepts it.
     needs: [version, app]
     runs-on: macos-latest
+    env:
+      V: ${{ needs.version.outputs.version }}
+      SIGNED: ${{ needs.app.outputs.signed }}
+      NOTARIZED: ${{ needs.app.outputs.notarized }}
     steps:
       - uses: actions/download-artifact@v4
-        with: {name: macos-arm64-app, path: zip}
+        with: {name: macos-arm64-app, path: dl}
       - name: unzip and --self-test
         run: |
-          ditto -x -k zip/mofn-wallet-*.zip app
+          ditto -x -k "dl/mofn-wallet-$V-macos-arm64.zip" app
           "app/m-of-n Wallet.app/Contents/MacOS/mofn-wallet" --self-test
+      - name: mount the DMG, copy the app out, --self-test
+        run: |
+          set -eu
+          dmg="dl/mofn-wallet-$V-macos-arm64.dmg"
+          hdiutil verify "$dmg"
+          mnt=$(hdiutil attach "$dmg" -nobrowse -readonly | awk -F'\t' '/\/Volumes\//{print $NF}' | tail -1)
+          echo "mounted at: $mnt"; ls -la "$mnt"
+          [ -d "$mnt/m-of-n Wallet.app" ] || { echo "::error::no app in the DMG"; exit 1; }
+          [ "$(readlink "$mnt/Applications")" = /Applications ] || { echo "::error::no Applications shortcut in the DMG"; exit 1; }
+          mkdir fromdmg && ditto "$mnt/m-of-n Wallet.app" "fromdmg/m-of-n Wallet.app"
+          hdiutil detach "$mnt"
+          "fromdmg/m-of-n Wallet.app/Contents/MacOS/mofn-wallet" --self-test
+      - name: signature, notarization ticket and Gatekeeper
+        if: env.SIGNED == 'true'
+        run: |
+          set -eu
+          codesign --verify --deep --strict --verbose=2 "fromdmg/m-of-n Wallet.app"
+          codesign -dv --verbose=4 "fromdmg/m-of-n Wallet.app" 2>&1 | grep -E 'Authority|TeamIdentifier|flags'
+          codesign --verify --verbose=2 "dl/mofn-wallet-$V-macos-arm64.dmg"
+          if [ "$NOTARIZED" = true ]; then
+            xcrun stapler validate "fromdmg/m-of-n Wallet.app"
+            xcrun stapler validate "dl/mofn-wallet-$V-macos-arm64.dmg"
+            spctl -a -t exec -vv "fromdmg/m-of-n Wallet.app"
+            spctl -a -t open --context context:primary-signature -vv "dl/mofn-wallet-$V-macos-arm64.dmg"
+          fi
 
   release:
     if: github.ref_type == 'tag'
-    needs: [version, smoke, app-smoke]
+    needs: [version, app, smoke, app-smoke]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -178,7 +356,7 @@ jobs:
       attestations: write
     steps:
       - uses: actions/checkout@v4
-      # Windows is not a release target (#127 D3): these two CLIs and the macOS app are published.
+      # Windows is not a release target (#127 D3): these two CLIs and the macOS app (zip and DMG) are published.
       - uses: actions/download-artifact@v4
         with: {name: linux-x86_64, path: dist}
       - uses: actions/download-artifact@v4
@@ -188,9 +366,11 @@ jobs:
       - name: SHA256SUMS and the notes
         env:
           V: ${{ needs.version.outputs.version }}
+          NOTARIZED: ${{ needs.app.outputs.notarized }}
+          SIGNED: ${{ needs.app.outputs.signed }}
         run: |
           (cd dist && sha256sum mofn-* >SHA256SUMS && cat SHA256SUMS)
-          [ "$(grep -c . dist/SHA256SUMS)" = 3 ] || { echo "::error::wanted 2 builds and the app"; exit 1; }
+          [ "$(grep -c . dist/SHA256SUMS)" = 4 ] || { echo "::error::wanted 2 builds, the app's zip and its DMG"; exit 1; }
           awk -v h="## $V — " 'index($0, h) == 1 {on = 1; next} on && /^## / {exit} on' \
             prototype/wallet/CHANGELOG.md >notes.md
           cat >>notes.md <<'EOF'
@@ -203,9 +383,15 @@ jobs:
           build provenance (`gh attestation verify FILE -R m-of-n/mofn`).
           Steps: https://m-of-n.github.io/mofn/project/APP-0005-install-wallet/
 
-          The desktop app (`mofn-wallet-*-macos-arm64.zip`) is not notarized:
-          macOS blocks its first launch. APP-0005 gives the one-time step.
           EOF
+          if [ "$NOTARIZED" = true ]; then
+            app="The desktop app is the DMG (\`mofn-wallet-$V-macos-arm64.dmg\`): open it and drag m-of-n Wallet to Applications. It is signed with a Developer ID and notarized by Apple, so it opens without a warning. The same app is in the .zip."
+          elif [ "$SIGNED" = true ]; then
+            app="The desktop app is the DMG (\`mofn-wallet-$V-macos-arm64.dmg\`): open it and drag m-of-n Wallet to Applications. It is signed with a Developer ID but not notarized, so macOS blocks its first launch; APP-0005 gives the one-time step."
+          else
+            app="The desktop app is the DMG (\`mofn-wallet-$V-macos-arm64.dmg\`): open it and drag m-of-n Wallet to Applications. It is not signed or notarized, so macOS blocks its first launch; APP-0005 gives the one-time step. The same app is in the .zip."
+          fi
+          printf '\n%s\n' "$app" >>notes.md
           cat notes.md
       - name: build provenance for each file (Sigstore, keyless)
         uses: actions/attest-build-provenance@v2
