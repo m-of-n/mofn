@@ -3,8 +3,9 @@
 #   cd prototype/wallet-app && pyinstaller --clean --noconfirm mofn-wallet.spec
 #
 # writes "dist/m-of-n Wallet.app". `.github/workflows/release.yml` runs exactly
-# this on macOS and zips the app with `ditto` (a plain zip breaks the bundle's
-# symlinks and its ad-hoc signature). Pins: requirements-release.txt.
+# this on macOS, then signs and notarizes it when the Developer ID secrets are
+# set (entitlements.plist), and zips it with `ditto` and makes the DMG (a plain
+# zip breaks the bundle's symlinks and its signature). Pins: requirements-release.txt.
 #
 # The engine, `cli` and the Qt-free parts of `screens` come from
 # ../wallet, placed at the bundle root, where their own __file__ arithmetic

@@ -3,14 +3,14 @@ schema: "archdoc/v1"
 id: APP-0005
 title: "Install the wallet — download, check, run"
 short_title: "Install the wallet"
-description: "How to download a mofn wallet pre-release — the macOS desktop app, or the CLI for macOS or Linux — check it against SHA256SUMS and its build provenance, and run it without a checkout. The download page PLAN-0002 M6 asks for (#127 §7)."
+description: "How to download a mofn wallet pre-release — the macOS desktop app (a DMG, or a zip), or the CLI for macOS or Linux — check it against SHA256SUMS and its build provenance, and run it without a checkout. The download page PLAN-0002 M6 asks for (#127 §7)."
 type: design
 category: product
 status: draft
-version: "0.2.0"
+version: "0.3.0"
 version_policy: "semver; PATCH = editorial; MINOR = a platform or check added; MAJOR = the install path changes"
 date: "2026-11-15"
-updated: "2026-11-17"
+updated: "2026-11-25"
 decision_makers: []
 reviewers: []
 needs_review: true
@@ -33,8 +33,8 @@ backlog: [W-6, W-7]
 A release has two kinds of download, built from the same engine at the same
 version:
 
-- **the desktop app**, `m-of-n Wallet.app`, for macOS (W-7 #179, DL-0050) —
-  start here if you want a window;
+- **the desktop app**, `m-of-n Wallet.app`, for macOS (W-7 #179, DL-0050), as
+  a disk image (DMG) — start here if you want a window;
 - **`mofn`**, the command line, with `mofn run` as a terminal app — one file per
   OS (#127, DL-0043).
 
@@ -53,7 +53,8 @@ one folder.
 
 | file | for |
 |---|---|
-| `mofn-wallet-X.Y.Z-macos-arm64.zip` | **the desktop app**, macOS 13 or later on Apple silicon |
+| `mofn-wallet-X.Y.Z-macos-arm64.dmg` | **the desktop app**, macOS 13 or later on Apple silicon: a disk image with the app and an Applications shortcut |
+| `mofn-wallet-X.Y.Z-macos-arm64.zip` | the same app, zipped |
 | `mofn-X.Y.Z-macos-arm64` | the CLI, macOS on Apple silicon |
 | `mofn-X.Y.Z-linux-x86_64` | Linux, x86-64, glibc 2.35 or later (Ubuntu 22.04 and newer) |
 
@@ -75,7 +76,12 @@ sha256sum --ignore-missing -c SHA256SUMS          # Linux
 
 ```sh
 gh attestation verify mofn-X.Y.Z-macos-arm64 -R m-of-n/mofn
+gh attestation verify mofn-wallet-X.Y.Z-macos-arm64.dmg -R m-of-n/mofn
 ```
+
+The checksum and the provenance are of the file as published, so check the
+DMG (or zip) *before* you open it. If the app is also notarized (§3), macOS
+checks Apple's side as well; that is a separate check, not a replacement.
 
 Both checks say where the file came from. Neither is an m-of-n statement: a
 release that carries an m-of-n statement over its own digest, checked by
@@ -85,20 +91,34 @@ release that carries an m-of-n statement over its own digest, checked by
 
 ### The desktop app
 
-Unzip it (double-click, or `ditto -x -k mofn-wallet-X.Y.Z-macos-arm64.zip .`)
-and move **m-of-n Wallet.app** to Applications.
+Open the **DMG** (double-click it), then drag **m-of-n Wallet** onto the
+**Applications** shortcut in the same window, and eject the disk. Start the
+app from Applications. (The `.zip` holds the same app: unzip it with a
+double-click or `ditto -x -k mofn-wallet-X.Y.Z-macos-arm64.zip .`, and move
+the app to Applications.)
 
-The app is **not signed with an Apple Developer ID and not notarized**, so on
-first launch macOS says it cannot verify the developer and will not open it.
-Do one of these, once:
+Each release's notes say whether its app is **signed with an Apple Developer
+ID and notarized**:
 
-- open it, then **System Settings → Privacy & Security**, and at the bottom
-  **Open Anyway** (macOS 15 no longer offers Control-click → Open); or
-- remove the quarantine mark the browser added:
+- **Notarized:** it opens with no warning on first launch (macOS may say it
+  was downloaded from the internet and ask you to confirm).
+- **Not notarized** (a build made without the signing secrets, or one that
+  is signed but not notarized): macOS says it cannot verify the developer and
+  will not open it. Do one of these, once:
 
-  ```sh
-  xattr -dr com.apple.quarantine "/Applications/m-of-n Wallet.app"
-  ```
+  - open it, then **System Settings → Privacy & Security**, and at the bottom
+    **Open Anyway** (macOS 15 no longer offers Control-click → Open); or
+  - remove the quarantine mark the browser added:
+
+    ```sh
+    xattr -dr com.apple.quarantine "/Applications/m-of-n Wallet.app"
+    ```
+
+To see what a build is: `codesign -dv --verbose=2 "/Applications/m-of-n Wallet.app"`
+(an unsigned build shows an ad-hoc signature, `Signature=adhoc`; a signed one
+names its *Developer ID Application* authority and team), and
+`spctl -a -t exec -vv "/Applications/m-of-n Wallet.app"` (*accepted, source=Notarized
+Developer ID* when notarized).
 
 Its first wallet is `~/Projects/wallet/mofn`; the menu at the foot of the
 sidebar opens or creates others. To check a download without opening it:
@@ -136,11 +156,28 @@ without a clone.
   `prototype/wallet/CHANGELOG.md`.
 - **Tested** on a fresh runner with no checkout and no Python packages:
   `--version`, the menu, a green `check` of TV-4 against its golden, and
-  `mofn run` opening Learn. The app: unzipped on a fresh macOS runner,
-  `--self-test` (a wallet, a key, TV-4 green with who signed, topic, digest
-  and standing; then every page built offscreen).
+  `mofn run` opening Learn. The app: the DMG mounted (the app and the
+  Applications shortcut are there) and the zip unzipped on a fresh macOS
+  runner, then `--self-test` of each (a wallet, a key, TV-4 green with who
+  signed, topic, digest and standing; then every page built offscreen). A
+  signed build is also checked with `codesign`, and a notarized one with
+  `stapler validate` and `spctl`.
+- **Signed and notarized** by the same workflow when the repository has the
+  Developer ID secrets (`MACOS_CERT_P12_BASE64`, `MACOS_CERT_PASSWORD`,
+  `APPLE_TEAM_ID`, and an App Store Connect API key `ASC_KEY_ID`,
+  `ASC_ISSUER_ID`, `ASC_KEY_P8` or `APPLE_ID` + `APPLE_APP_PASSWORD`):
+  hardened runtime, `prototype/wallet-app/entitlements.plist`, `notarytool`,
+  `stapler`. Without them the files are built unsigned, and never for a pull
+  request. The certificate is a *Developer ID Application* one, which is not
+  the *Apple Distribution* certificate TestFlight uses.
 - **Decisions** D1–D5 for the release are on #127 and in
   `design-log/0043-release-builds/`.
+
+## What changed in v0.3.0 — 2026-11-25
+
+- The desktop app is also a DMG (the app and an Applications shortcut): §1,
+  §3. The workflow can sign and notarize it (Developer ID, hardened runtime);
+  §3 says how to tell, and what to do when it is not notarized.
 
 ## What changed in v0.2.0 — 2026-11-17
 
