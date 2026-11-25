@@ -5,15 +5,38 @@ title: "ARCH-0001 changelog"
 type: changelog
 parent: ARCH-0001
 status: active
-version: "0.3.3"
+version: "0.3.4"
 date: "2026-09-15"
-updated: "2026-11-17"
+updated: "2026-11-23"
 canonical_path: spec/ARCH-0001-CHANGELOG.md
 ---
 
 # ARCH-0001 changelog
 
 Format: newest first. Versions match the architecture document.
+
+## 0.3.4 — 2026-11-23
+
+PATCH, under this document's version policy. mofn#110 part 1, the §6 rows
+that `R-0006` §2.5 and §8 handed on as one proposal. Seven changes:
+
+- the *Loss / notes* cells of six rows gain the evidence: in-toto, DSSE,
+  COSE_Sign1 + CWT, PICS, W3C VC and SCITT receipt;
+- a paragraph says why the KSA envelope (`SPEC-0002` §5) has no row, and
+  that DEC-005 stays open;
+- a new §6.1, *Notes to the rows*, holds the evidence and its limits.
+
+The VC and PICS rows were blocked on ingestion when mofn#110 was filed. They
+are evidenced now from library records `w3c-vc-data-model-2-0`,
+`w3c-vc-data-integrity-1-0`, `w3c-vc-jose-cose`, `pics-1-1-labels` and
+`pics-dsig-1-0`, at the pinned library commit `212d336`. The COSE row carries
+`ARCH-0002` P1.1's `kid` and `cnf` rules; P1.1 is still draft. The DSSE
+row carries P5.2's; P5.2 is accepted. Neither clause changes. No
+requirement is added, amended or withdrawn. No DEC-* is opened, ranked or
+accepted. Two questions are recorded as owed, not decided: whether an import
+of Data Integrity-secured VCs is refused or carved out under R-O-05, and how a
+`kid` is written as CWT `iss` and `sub`. The agent drafted the text at
+`ndewedo-newbury`'s instruction. Recorded in `DL-0055`.
 
 ## 0.3.3 — 2026-11-17
 

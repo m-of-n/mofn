@@ -7,7 +7,7 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.17.0"
+version: "0.17.1"
 date: "2026-09-16"
 updated: "2026-11-23"
 needs_review: true
@@ -169,7 +169,7 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-048 | ~~SPEC-0002 §7.2: a locator target must travel with a digest or description (R-M-07)~~ — done: SPEC-0002 0.6.0 withdraws target type 5; N-11; DL-0030 — mofn#144 | D6 | S2 | S | done |
 | T-049 | Wallet test: DV-2/TV-13 rendered sentence — the clause `ADR-0007`'s acceptance test still owes | D6 | S2 | S | **done** 2026-11-07 (`test_delegation.py`, DL-0031) |
 | T-066 | Renderer: show a description target (`SPEC-0002` §7.2 type 6) by its description, not as "a described object"; `SPEC-0003` §10 is silent — ARCH-0001 §2.3.2 | D6 | S2 | S | todo |
-| T-067 | Spec lane: propose ARCH-0001 §6 rows (R-0006 §2.5) and `SPEC-0003` §6 pattern containment — mofn#110, unassigned | D6 | — | M | todo |
+| T-067 | Spec lane: propose ARCH-0001 §6 rows (R-0006 §2.5) and `SPEC-0003` §6 pattern containment — mofn#110, ndewedo-newbury. Part 1: ARCH-0001 0.3.4 (DL-0055); part 2: SPEC-0003 §6 (separate PR) | D6 | — | M | doing |
 | T-065 | ~~Wallet engine: delegation paths (SPEC-0004 §6.3); move E-1…E-4 from the test walker to the engine~~ — `engine/reduce.py` `_walk`/`_follow` implement §6.2–§6.3 and §6.5; E-1…E-7 run on the engine and the walker is gone (`tests/test_delegation.py`); wallet 0.7.0; DL-0041 | D6 | S2 | M | done — #168 merged 2026-11-15, approved davidhsiaotw |
 | T-041 | ~~5-tuple reduction: tag ∩, validity ∩, delegation (§4.3 step 2)~~ — as `SPEC-0004` §6.3: topic and range ∩ (item 4), validity ∩ (`cap`, item 2), depth, key lists, no widening; a hop that fails is kept and named (`tests/test_paths.py`). Same deliverable as W-3. Threshold hops are T-095; revocation of a hop is not read (short expiry instead) | D6 | S1 | L | done — #168 merged 2026-11-15, approved davidhsiaotw |
 | T-042 | ~~Minimal tag profile — opaque bytes + `bytes-equal` (DEC-004 minimum)~~ **Subsumed** by `SPEC-0003` `delegation: 1`, as `R-0006` §4.7 argued: the engine compares a `delegation: 1` hop with what the delegator holds by KSA-CBOR bytes and nothing else (`reduce._same`); equal range → followed, narrower or permuted → refused, fails closed (`test_paths.py::test_delegation_same_is_bytes_equal`); `delegation: 2` narrows (`…scoped_narrows…`). **DEC-004 stays open**: this realises the floor over attribute ranges and selects no tag-language option (DL-0041) | D6 | S1 | M | done — subsumed; #168 merged 2026-11-15, approved davidhsiaotw |
