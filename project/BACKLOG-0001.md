@@ -77,7 +77,7 @@ library#66 (`gaps.md` refresh). T-029e closes with #82.
 ## Status at 2026-10-05 — I1 closes Oct 14
 
 This file had not moved since 2026-09-22. Brought up to date from the repos,
-merged PRs and the 2026-09-28 decisions (MD-1…MD-7, `project/meetings/`).
+merged PRs and the 2026-09-28 decisions (MD-1…MD-7, recorded in `DECISIONS-0001`).
 
 **At risk for Oct 14 (I1):**
 - **D3 research reports (T-025–T-027) — not started.** No student report exists
@@ -116,7 +116,7 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-005 | ~~DCO check in CI~~ — done, both repos | D0 | S1 | S | done |
 | T-006 | ~~Issue + PR templates; labels; milestones~~ — done | D0 | S2 | M | done |
 | T-006a | ~~Repo `admin` for both students~~ — done, both repos and the org | D0 | PL | S | done |
-| T-006b | Decide faculty access for Mario Lin (read? admin?) — not yet a collaborator or invitee | D0 | PL | S | todo |
+| T-006b | Decide faculty access for Mario Lim (read? admin?) — not yet a collaborator or invitee | D0 | PL | S | todo |
 | T-006c | Turn on `enforce_admins` now a second reviewer exists — still off in both repos (2026-10-05) | D0 | PL | S | todo |
 | T-006d | ~~**Students review each other's PRs**~~ — done: cross-approvals on #122, #124, #131, #145, #147, #149 (2026-11) | D0 | S1+S2 | S | done |
 | T-007 | ~~`bin/validate-archdoc` in CI~~ — done | D0 | S1 | M | done |

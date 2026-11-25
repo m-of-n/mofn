@@ -85,7 +85,7 @@ assumptions; §11.1–§11.3.
 | `spec/ARCH-0002-key-relative-naming.md` v0.6.0 | §3.2's P5.1 note and §5.2's P5.2 resolution |
 | `spec/ADR-0002-provisional-principles.md` §4 | §3.12 — P4 is held, and the cost of holding it moved to the critical path |
 | `research/0001-signatures-and-attestation/report.md` §9, §11, §12 | §4 in full — the accumulation table, the semantic-shift argument, problem 2 |
-| `PLAN-0001` §13; `project/meetings/2026-09-28.md` | §3.9 — the two human decisions the evidence postdates |
+| `PLAN-0001` §13; the 2026-09-28 sponsor meeting (minutes not published) | §3.9 — the two human decisions the evidence postdates |
 
 ## 4. Claims carried as withdrawals
 

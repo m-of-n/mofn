@@ -203,7 +203,7 @@ answer back here.
 
 1. ~~**Who runs the lanes — students, or the sponsor?**~~ **Answered
    2026-09-28 by MD-4: students drive**, with named lanes
-   (`project/meetings/2026-09-28.md`; DECISIONS-0001 Tier 1 #3). The teaching
+   (DECISIONS-0001 Tier 1 #3). The teaching
    reading was taken over the throughput one.
 2. **Which records get stage 8?** Generating code from every spec is not
    affordable. Proposed: only where a specification defines an algorithm or a

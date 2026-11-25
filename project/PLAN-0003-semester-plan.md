@@ -15,7 +15,6 @@ reviewed: false
 canonical_path: project/PLAN-0003-semester-plan.md
 companion:
   - project/PLAN-0001-project-plan.md
-  - project/meetings/2026-09-28.md
 defers_to: ARCH-0001
 ---
 
@@ -36,7 +35,7 @@ differ, this page and the dated decisions (MD-n) win until PLAN-0001 is updated.
 | **Targets** (MD-1) | Software supply chain + archives/library. Short scenarios (email delegation, …) feed schema design only. |
 | **Principles** (MD-2) | ARCH-0002 P1 accepted; P2, P3, P5, P6 provisional; P4, P7 held. |
 | **Encoding** (MD-3) | Option 5: reduced CBOR, no IANA tags, COSE export only; YAML is the human form. |
-| **Name / due** (MD-6) | *Key-centric Semantic Attestations* · instructor Mario Lin · Dec 4 |
+| **Name / due** (MD-6) | *Key-centric Semantic Attestations* · instructor Mario Lim · Dec 4 |
 
 ## Schedule
 
@@ -78,6 +77,7 @@ Nothing downstream of D5 can freeze until the encoding ADR is accepted, so
 
 ## Cadence
 
-Weekly Monday 16:00 PT, 30 min: decisions and unblocking. Notes are committed
-the same day under `project/meetings/`, and each meeting updates this page's
+Weekly Monday 16:00 PT, 30 min: decisions and unblocking. Notes are
+kept by the sponsor and not published; decisions that bind the project are
+recorded in `DECISIONS-0001`, and each meeting updates this page's
 status column when a milestone moves.

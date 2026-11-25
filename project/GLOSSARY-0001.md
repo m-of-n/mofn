@@ -70,7 +70,7 @@ The one that passed the test above, and the only one that has.
 
 | sense | where | was | is now |
 |---|---|---|---|
-| **dated decision** | the weekly minutes, `project/meetings/` | `D-1 … D-7` | **`MD-1 … MD-7`** |
+| **dated decision** | the weekly sponsor meeting (minutes not published; decisions recorded in `DECISIONS-0001`) | `D-1 … D-7` | **`MD-1 … MD-7`** |
 | **deliverable** | `PLAN-0001` §9, `PLAN-0003`, `PROC-0004`, the backlog's `del` column, issue titles | `D0 … D10` | unchanged |
 
 **Why it collided where `tags` and `topic` did not.** Both senses were live in

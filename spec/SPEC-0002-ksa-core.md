@@ -7,10 +7,10 @@ description: "The KSA statement: its data model, deterministic encoding, signed 
 type: specification
 category: security
 status: draft
-version: "0.10.1"
+version: "0.11.0"
 version_policy: "semver; MAJOR = any change to signed or hashed bytes; MINOR = additive registry entries or requirements; PATCH = editorial"
 date: "2026-10-14"
-updated: "2026-11-16"
+updated: "2026-11-25"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -121,6 +121,16 @@ their results: v2 supersedes v1 by version, not by edit. Additive, so MINOR.
 {Bob, bob2, Dave}, and TV-37, bob2's attestation, for the threshold asks of
 SPEC-0004 Appendix A (T-043, DL-0042). No rule changes, and every existing
 vector is byte-identical, so PATCH.
+
+**0.11.0 (2026-11-25):** delegation is a requirement (`PLAN-0002` §4.1.1).
+Appendix A gains TV-45, a trust that has expired at the ask; TV-46, an anchor
+that may delegate depth 2; and TV-47, a hop that passes depth 1 on. Evaluations
+E-23 (an expired hop, `not-valid-at-time`), E-24 (a chain of two hops, yes) and
+E-25 (the same chain without onward delegation, `depth`) complete E-1…E-4.
+§8.6 names the threshold `k`, not `n`, as `ARCH-0001` §7 does; the rule is
+unchanged. The vectors block is regenerated whole, which also drops a
+duplicated threshold-evaluations table. Every existing vector is
+byte-identical and keeps its result. Additive, so MINOR.
 
 Nothing in this draft is final until its version leaves `0.x`.
 
@@ -604,8 +614,9 @@ a name (§7.2), the trust is extended to each key the name resolves to at the
 evaluation time (SPEC-0004 §5.3), as if a statement to that key had been made:
 the speaker delegates the choice of key to the name's issuer. In the
 **threshold form**, `this` is absent, `trusts` lists two or more keys, and
-`threshold` is an integer `n` with 1 ≤ n ≤ the number of keys: the trust is
-extended to any `n` of them acting together (SPEC-0004 §6.4). Otherwise `this`
+`threshold` is an integer `k` with 1 ≤ k ≤ n, where `n` is the number of keys
+(`ARCH-0001` §7's letters): the trust is extended to any `k` of them acting
+together (SPEC-0004 §6.4). Otherwise `this`
 MUST be present and `trusts` and `threshold` MUST be absent.
 
 `about` MUST NOT be empty: unlimited trust is written as an attribute range with
@@ -1000,8 +1011,8 @@ check. Machine-readable form: `spec/vectors/ksa-core/vectors.json`. A conforming
 verifier MUST return **verified** for every positive vector and **invalid** at
 the stated step for every negative vector.
 
-The threshold vectors use `ARCH-0001`'s letters: `k` is `threshold` (the `n` of
-§8.6) and `n` is the length of `trusts`. **V8 owns `1 ≤ k ≤ n`** (N-7, N-8).
+The threshold vectors use `ARCH-0001`'s letters: `k` is `threshold` (§8.6) and `n`
+is the length of `trusts`. **V8 owns `1 ≤ k ≤ n`** (N-7, N-8).
 `n = len(members)` holds by construction, because §8.6 has no `n` field: `n` is
 the array head of `trusts`. Writing a disagreement takes a field the closed map
 refuses (N-9, V7) or a head the decoder refuses (N-10, V5).
@@ -1853,6 +1864,60 @@ a601040201035820d5f0b21718b21f79648f7f4a0325288209e6fd37fa2f90f9d29c4229e371f8c7
 ```
 - expected: **accept**
 
+### TV-45 — trust: Alice trusts Bob about build-provenance in {reproducible}, as TV-16, but valid only until 2026-10-09: expired at the ask (SPEC-0004 §6.3 item 2)
+
+- signer: alice
+- statement digest = SHA-256(TBS): `9a12c301fd6a87a795f948681f0f3ef7ca11b60aa0f0ea76d393a99641145a38`
+- TBS:
+```
+a60105020103582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9048201582039f713d0a644253f04529421b9f51b9b08979d08295959c4f3990ee617f5139f05a30119022d02190233031a02e0b73806a10181a201a2015820517007656a617b3b5ab7cc376275a46ad88d14594f6846df88a34f2c8b3a717502706275696c642d70726f76656e616e636503816c726570726f64756369626c65
+```
+- signature over DS ‖ TBS:
+```
+0670e6f470e57670c8349b8967043520dba8fc618fa3c2ee968f7c0dd69eaab5677fe1124b7cbe0fe92c3b8cf88231589de1aaab7e74a4dff2cced194e19cd01
+```
+- envelope `[suite, says, tbs, sig, ? pub]`:
+```
+8401582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b958a8a60105020103582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9048201582039f713d0a644253f04529421b9f51b9b08979d08295959c4f3990ee617f5139f05a30119022d02190233031a02e0b73806a10181a201a2015820517007656a617b3b5ab7cc376275a46ad88d14594f6846df88a34f2c8b3a717502706275696c642d70726f76656e616e636503816c726570726f64756369626c6558400670e6f470e57670c8349b8967043520dba8fc618fa3c2ee968f7c0dd69eaab5677fe1124b7cbe0fe92c3b8cf88231589de1aaab7e74a4dff2cced194e19cd01
+```
+- expected: **accept**
+
+### TV-46 — trust: Carol trusts Alice about build-provenance in {reproducible, attested}; may delegate depth 2 within {reproducible}
+
+- signer: carol
+- statement digest = SHA-256(TBS): `e737c71a067b265f8f9113844d73025703df3dab4cf33c8b8d79fe9e9295037b`
+- TBS:
+```
+a601050201035820c7b66369c87c115e8f8ab2fd27540d1a8a28cc475aab29b58ba0caf47910e207048201582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b905a20119022d031a02de457006a20181a201a2015820517007656a617b3b5ab7cc376275a46ad88d14594f6846df88a34f2c8b3a717502706275696c642d70726f76656e616e636503826c726570726f64756369626c6568617474657374656402a301020281a201a2015820517007656a617b3b5ab7cc376275a46ad88d14594f6846df88a34f2c8b3a717502706275696c642d70726f76656e616e636503816c726570726f64756369626c650519029d
+```
+- signature over DS ‖ TBS:
+```
+bcd175f249a934c5efd8812a7cee76a5c7232b3eb2ab8bfefdd13628d17efdb33a0e9577ef0f8b72522beb5f5a1026f853ae3e132be577589b9a681a7bd34a04
+```
+- envelope `[suite, says, tbs, sig, ? pub]`:
+```
+84015820c7b66369c87c115e8f8ab2fd27540d1a8a28cc475aab29b58ba0caf47910e20758fea601050201035820c7b66369c87c115e8f8ab2fd27540d1a8a28cc475aab29b58ba0caf47910e207048201582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b905a20119022d031a02de457006a20181a201a2015820517007656a617b3b5ab7cc376275a46ad88d14594f6846df88a34f2c8b3a717502706275696c642d70726f76656e616e636503826c726570726f64756369626c6568617474657374656402a301020281a201a2015820517007656a617b3b5ab7cc376275a46ad88d14594f6846df88a34f2c8b3a717502706275696c642d70726f76656e616e636503816c726570726f64756369626c650519029d5840bcd175f249a934c5efd8812a7cee76a5c7232b3eb2ab8bfefdd13628d17efdb33a0e9577ef0f8b72522beb5f5a1026f853ae3e132be577589b9a681a7bd34a04
+```
+- expected: **accept**
+
+### TV-47 — trust: Alice trusts Bob about {reproducible} with may-delegate depth 1; under TV-46 (depth 2) at most 1 may pass on, so it is not widening
+
+- signer: alice
+- statement digest = SHA-256(TBS): `f3ea589d0fed914f9fc93448fe3415322615a79e7bf1724256b5b0d03960f92f`
+- TBS:
+```
+a60105020103582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9048201582039f713d0a644253f04529421b9f51b9b08979d08295959c4f3990ee617f5139f05a30119022d02190261031a02e1049006a20181a201a2015820517007656a617b3b5ab7cc376275a46ad88d14594f6846df88a34f2c8b3a717502706275696c642d70726f76656e616e636503816c726570726f64756369626c6502a10101
+```
+- signature over DS ‖ TBS:
+```
+32f0b8f38a280a3a447d50322644f612d7a9fe229c9392847e849e671ccdf768129348ff835e7860b824854f5e5e41bb8d93269621d6a5678aeba64fe663110d
+```
+- envelope `[suite, says, tbs, sig, ? pub]`:
+```
+8401582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b958aca60105020103582021fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9048201582039f713d0a644253f04529421b9f51b9b08979d08295959c4f3990ee617f5139f05a30119022d02190261031a02e1049006a20181a201a2015820517007656a617b3b5ab7cc376275a46ad88d14594f6846df88a34f2c8b3a717502706275696c642d70726f76656e616e636503816c726570726f64756369626c6502a10101584032f0b8f38a280a3a447d50322644f612d7a9fe229c9392847e849e671ccdf768129348ff835e7860b824854f5e5e41bb8d93269621d6a5678aeba64fe663110d
+```
+- expected: **accept**
+
 ### Negative vectors
 
 #### N-1 — reject at V5 canonical decode
@@ -1957,6 +2022,16 @@ Anchor TV-5 in context `releases`; ask: is the artifact's build-provenance the v
 | E-3 | TV-16, TV-18, TV-19 | reproducible | **no** | depth | TV-18 |
 | E-4 | TV-20, TV-17 | reproducible | **no** | widening | TV-20 |
 
+### Delegation evaluations — expiry and chains (SPEC-0004 §6.3)
+
+Anchor as shown, in context `releases`; ask: is the artifact's build-provenance the value shown, at 2026-10-10T12:00:00Z.
+
+| eval | anchor | statements | value | answer | reason | at |
+|---|---|---|---|---|---|---|
+| E-23 | TV-5 | TV-45, TV-17 | reproducible | **no** | not-valid-at-time | TV-45 |
+| E-24 | TV-46 | TV-47, TV-18, TV-19 | reproducible | **yes** | — | — |
+| E-25 | TV-46 | TV-16, TV-18, TV-19 | reproducible | **no** | depth | TV-18 |
+
 ### Archives evaluations (ARCH-0001 §2.3.2; UC-3)
 
 Anchor TV-22 in context `library`; ask: does the subject have `reviewed` = the value shown, at 2026-10-15T12:00:00Z. `record` is the digest target `sha-256:` of the record; `work` is TV-26's description target.
@@ -2003,22 +2078,6 @@ Anchor TV-31 (Carol's own trust to Carol's builder) in context `releases-by-name
 | E-8 | TV-30, TV-28, TV-29, TV-19 | reproducible | **yes** | — | — |
 | E-9 | TV-30, TV-28, TV-19 | reproducible | **no** | name-unresolved | TV-31 |
 | E-10 | TV-30, TV-28, TV-29, TV-17 | reproducible | **no** | no-path | TV-17 |
-
-### Threshold evaluations (SPEC-0004 §6.4; T-043)
-
-The anchor is the threshold trust statement shown, in context `releases-panel`; ask: is the artifact's build-provenance the value shown. `counted` lists the members that counted.
-
-| eval | anchor | statements | value | at | answer | reason | counted |
-|---|---|---|---|---|---|---|---|
-| E-11 | TV-9 | TV-4, TV-17 | reproducible | 2026-10-10T12:00:00Z | **yes** | — | alice, bob |
-| E-12 | TV-9 | TV-4 | reproducible | 2026-10-10T12:00:00Z | **no** | threshold-not-met | alice |
-| E-13 | TV-9 | TV-4, TV-15 | reproducible | 2026-10-10T12:00:00Z | **no** | threshold-not-met | alice |
-| E-14 | TV-10 | TV-4, TV-17, TV-19 | reproducible | 2026-10-10T12:00:00Z | **yes** | — | alice, bob, dave |
-| E-15 | TV-10 | TV-4, TV-17 | reproducible | 2026-10-10T12:00:00Z | **no** | threshold-not-met | alice, bob |
-| E-16 | TV-11 | TV-17 | reproducible | 2026-10-10T12:00:00Z | **yes** | — | bob |
-| E-17 | TV-11 | TV-19 | reproducible | 2026-10-10T12:00:00Z | **no** | threshold-not-met | ∅ |
-| E-18 | TV-36 | TV-8, TV-35, TV-17, TV-37 | reproducible | 2026-10-25T12:00:00Z | **no** | threshold-not-met | bob |
-| E-19 | TV-36 | TV-8, TV-35, TV-17, TV-37, TV-19 | reproducible | 2026-10-25T12:00:00Z | **yes** | — | bob, dave |
 
 ### Threshold evaluations (SPEC-0004 §6.4; T-043)
 

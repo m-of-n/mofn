@@ -26,7 +26,7 @@ defers_to: ARCH-0001
 | **Project** | Key-centric Semantic Attestations (KSA) |
 | **Sponsor** | Paul Lambert — personal capacity, no company, no NDA |
 | **Team** | David Hsiao · Ndewedo Newbury |
-| **Class** | CS690 Fall 2026 — Instructor: Mario Lin |
+| **Class** | CS690 Fall 2026 — Instructor: Mario Lim |
 | **Date** | 2026-09-28 (draft 0.2) |
 | **Export as** | `ProductSpec_Fall2026_KSA.pdf` |
 
@@ -40,9 +40,9 @@ defers_to: ARCH-0001
 
 ### 1.1 Sponsor
 - **Primary sponsor:** Paul Lambert, paul@nymbus.net. No one else in a sponsor
-  organisation; advisory contact with Prof. Mario Lin.
-- **Company:** none. The project is sponsored in a personal capacity; results
-  are open source.
+  organisation; advisory contact with Prof. Mario Lim.
+- **Company:** none. The project is sponsored in a personal capacity; code is
+  licensed Apache-2.0 and documentation CC-BY-4.0 (`LICENSE`, `LICENSE-docs`).
 
 ### 1.2 Project Motivation (Why)
 **System overview.** Digital signatures prove only that *a key was used over
@@ -147,8 +147,8 @@ Each runs in wallet engine 0.4.0 and quotes pinned goldens:
   reproducible` about a release file, and the relying party's anchor covers
   it, so the answer is yes. A release engineer's key signs the same claim and
   holds no anchor: integrity and authenticity pass, **authorization fails**.
-  The delegation version (a maintainer delegates, a link is missing) waits
-  for W-3, mofn#67.
+  The delegation version (a maintainer delegates, a link is missing) is
+  W-3, mofn#67, built in wallet 0.7.0 and run by `demo/slice.sh`.
 - *Archives / library* — **APP-0003.** A student's key and the ingestion
   agent's key each sign `record-review = reviewed` about a library record,
   by digest. The relying party trusts the agent only for `summarized` and
@@ -190,16 +190,50 @@ Full list: `GLOSSARY-0001`. The essentials:
 ## 4. Project Functionality
 
 ### 4.1 Core Features — MVP
-The MVP is the **I3 demo floor (Nov 11)** (APP-0001 §6):
+The MVP is the **I3 demo floor (Nov 11)** (APP-0001 §6), as the wallet's
+`mofn` command line implements it (`prototype/wallet/`):
 
 | feature | command |
 |---|---|
-| define a domain: types, allowed values, descriptions | `domain init / add-type` |
+| define a domain: types, allowed values, descriptions | a signed definition (`SPEC-0003`); `fixtures/dv-1.def`, `domains/archives/` |
+| create a persona and know other keys | `key gen`, `key import`, `key list` |
+| trust a key about one kind of claim | `root add`, `root list` |
 | make and sign a statement | `make` |
-| delegate the right to speak on a topic | `make --type …:may-speak` |
-| render a statement in plain language (EN/ES) | `render` |
-| check a statement — six separate verdict lines | `check` |
-| reduce a delegation chain and answer a question | `reduce --ask` |
+| delegate the right to speak on a topic | `delegate KEY --as YOU --type … --depth N --valid-days D` |
+| render a statement in plain language (EN/ES) | `show`, `--lang` |
+| check statements — six separate verdict lines, through delegation chains and *k*-of-*n* thresholds | `check` |
+
+#### 4.1.1 Required: delegation
+**Delegation is a firm requirement**, not an extended feature (sponsor,
+2026-11-25). A relying party must be able to trust a key that was *delegated*
+the right to speak, through a chain of trust statements from one of its
+anchors. Whether the terminal UI offers a delegation form (mofn#173, closed
+not planned) is optional; the specification and the tests must cover it
+regardless.
+
+- **D-1 Chains.** A path starts at an anchor of the evaluated context and
+  follows trust statements hop by hop (`SPEC-0004` §6.2–§6.3).
+- **D-2 Depth.** Each hop carries `may-delegate`; a hop deeper than its
+  delegator allowed is not followed (§6.3).
+- **D-3 No widening.** A hop's topic and range must be within what its
+  delegator holds; a wider hop is refused, never narrowed silently (§6.3).
+- **D-4 Expiry.** Each hop must be valid at the evaluation time, and a path's
+  validity is the intersection of its hops' (§6.3 item 2).
+- **D-5 Named failure.** A hop that fails is kept and named, so an answer can
+  say which link broke (§6.5).
+- **D-6 Tests.** Each of D-1…D-5 has a published vector (`spec/vectors/`
+  E-1…E-7 and DV-2) and a wallet test (`tests/test_delegation.py`,
+  `tests/test_paths.py`), and `demo/slice.sh` runs the green, expired and
+  widened cases.
+
+#### 4.1.2 Required: revocation
+**Revocation is a requirement.** A relying party must be able to learn that
+an issuer withdrew a statement (`SPEC-0004` §7.1; `ADR-0003` D5). Today the
+engine applies revocation to name bindings only; for delegation paths,
+thresholds and attestations it considers none, and the verdict says
+"0 revocations considered" — **short validity is the only mechanism**
+(`LIMITATIONS.md`). Tracked as a GitHub issue; until it lands, every
+delegation is issued with a short validity (`delegate --valid-days`).
 
 ### 4.2 User Stories (proposed)
 - As a **relying party**, I want to see whether a signer was *entitled* to make
@@ -215,9 +249,10 @@ The MVP is the **I3 demo floor (Nov 11)** (APP-0001 §6):
 
 ### 4.3 Extended Features
 In priority order (PLAN-0001 cut order): graphic UI polish; SLSA/in-toto import
-(D7); thresholds (*k*-of-*n*) in reduction; validity windows; a third domain.
-Out of scope: revocation, key management, OpenPGP and X.509 import, networked
-distribution.
+(D7); a third domain. Thresholds (*k*-of-*n*) in reduction and validity
+windows are built (wallet 0.7.0 onward). Revocation moved to §4.1.2 as a
+requirement. Out of scope: key management beyond the wallet's own store,
+OpenPGP and X.509 import, networked distribution.
 
 ### 4.4 Non-functional Requirements
 - **Performance** (proposed): no hard requirement — verification is local and
@@ -290,20 +325,16 @@ The project is the whole system; it plugs into existing ecosystems only
 through import/export (§1.5).
 
 ### 6.3 Project Modules & Interfaces
-| module | responsibility | today |
+| module | responsibility | today (`prototype/wallet/`) |
 |---|---|---|
-| `encoding` | YAML ↔ option-5 CBOR, deterministic | `prototype/statements/rcbor.py` |
-| `statement` | build and sign *A says B has C* | `statement.py` |
-| `domain` | types, value ranges, descriptions, domain hash | `labeltype.py` |
-| `reduce` | name resolution + delegation reduction | `reduce.py` |
-| `verifier` | six-dimension check | partial |
-| `render` | plain-language output, multilingual | partial |
-| `wallet` | GUI + CLI over the above | not started |
+| `encoding` | KSA-CBOR (`ADR-0004`) and the human-review YAML form, deterministic | `engine/encoding/ksa_cbor.py`, `review_yaml.py` |
+| `statement` | build and sign *A says B has C* | `engine/statement.py`, `signer.py` |
+| `domain` | types, value ranges, descriptions, DefinitionId | `engine/definition.py` |
+| `reduce` | name resolution + delegation reduction + thresholds | `engine/names.py`, `engine/reduce.py` |
+| `verifier` | V1–V9 and the six-line verdict | `engine/verifier.py`, `engine/check.py` |
+| `render` | plain-language output, multilingual (EN/ES) | `engine/render.py` |
+| `wallet` | CLI, terminal UI and desktop app over the above | `cli.py`, `screens/`, `prototype/wallet-app/` |
 | `interchange` | in-toto/SLSA import, COSE export | not started (D7) |
-
-**External APIs:** none at runtime. **Other systems relied on:** GitHub for
-hosting and Pages. **API developed:** a Python library API matching the CLI
-commands in §4.1; no network API.
 
 ### 6.4 Data
 - **Key groups:** keys; trust roots; statements; domains; the bibliographic
@@ -368,7 +399,8 @@ appears as anchors in ① and *Show anchors used* in ⑤ until W-3 (mofn#67).
 
 ### 7.3 Sponsor Meetings
 Weekly, 30 minutes, Mondays 16:00 PT, for decisions and unblocking. Notes are
-committed the same day under `project/meetings/`. Architecture is reviewed
+kept by the sponsor and not published; decisions that bind the project are
+recorded in `DECISIONS-0001`. Architecture is reviewed
 asynchronously through pull requests.
 
 ---
@@ -398,7 +430,7 @@ asynchronously through pull requests.
 ### 8.2 Project Milestones
 | date | milestone |
 |---|---|
-| ▲ **GAP-6** | second status review · midterm presentation — *dates from Prof. Lin* |
+| ▲ **GAP-6** | second status review · midterm presentation — *dates from Prof. Lim* |
 | Oct 5 | schema scenarios |
 | Oct 14 | **I1** — library v1, research reports (D1–D3) |
 | Oct 21 | encoding-neutral schema (D4) |

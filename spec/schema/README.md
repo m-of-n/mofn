@@ -7,7 +7,8 @@
 *without* committing to a wire format.
 
 This is deliberate and it is the main schedule hedge: reduction (WP6, the demo
-floor) can be built against the logical model while DEC-002 is still open.
+floor) could be built against the logical model while DEC-002 was open.
 
-Concrete encodings are added once DEC-002 is accepted, as sibling files, with
-the neutral schema remaining normative.
+DEC-002 is accepted (`ADR-0004`, 2026-10-25): the concrete encoding is
+KSA-CBOR, specified in `SPEC-0002` §4 with its CDDL in `SPEC-0002` Appendix B.
+The neutral schema here remains normative for the logical types.

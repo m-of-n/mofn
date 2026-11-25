@@ -50,6 +50,7 @@ nav:
           - "Fall 2026 deliverables": project/PROC-0004-community-launch.md
       - "Reference":
           - "Glossary": project/GLOSSARY-0001.md
+          - "Publishing manifest": project/PUBLISHING.md
       - "Retrospectives":
           - "Retro 1": project/RETRO-0001.md
   - Research:

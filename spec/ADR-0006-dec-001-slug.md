@@ -42,8 +42,8 @@ second reader has **reviewed** it.
 
 ## Scope: what this does not decide
 
-- **Not the protocol's name.** The protocol is *key-centric semantic
-  assertions* (KSA), and its encoding is KSA-CBOR (`ADR-0004`). DEC-001 names
+- **Not the protocol's name.** The protocol is *Key-centric Semantic
+  Attestations* (KSA), and its encoding is KSA-CBOR (`ADR-0004`). DEC-001 names
   the project and its repositories, not the protocol.
 - **Not a product name.** `ARCH-0001` `scope.out` keeps product naming out of
   scope. A product name, if one is ever needed, is a new decision.

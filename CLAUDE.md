@@ -1,6 +1,6 @@
 # m-of-n
 
-Key-centric semantic assertions. Read this before touching anything.
+Key-centric Semantic Attestations. Read this before touching anything.
 
 ## The one rule
 
@@ -9,8 +9,9 @@ architecture. Everything else defers to it. Read it before proposing anything.
 
 **DEC-001 is accepted** (`ADR-0006`: slug `m-of-n`, short form `mofn`),
 **DEC-002 is accepted** (`ADR-0004`: KSA-CBOR, option 5) and **DEC-003 is
-accepted** (`ADR-0005`: `kid` = SHA-256 of the suite public-key encoding).
-**DEC-004, DEC-005 and DEC-007 are open.** No tag language or export
+accepted** (`ADR-0005`: `kid` = SHA-256 of the suite public-key encoding);
+**DEC-007 is accepted** (`ADR-0007`). **DEC-004, DEC-005, DEC-008 and DEC-009
+are open.** No tag language or export
 envelope has been selected. Do not write code or documents that assume one.
 
 ## Never
