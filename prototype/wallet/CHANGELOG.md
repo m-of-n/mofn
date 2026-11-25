@@ -15,6 +15,23 @@ The wallet engine and its `mofn` command line, `prototype/wallet/` (#65, #127).
 Every release is a prototype: DEC-004 and DEC-005 are open; do not use real
 keys.
 
+## 0.11.1 — 2026-11-25
+
+Prototype: DEC-004 and DEC-005 are open; do not use real keys.
+
+**The desktop app as a DMG** (W-7, mofn#179): no change to the engine or the
+app.
+
+- `mofn-wallet-0.11.1-macos-arm64.dmg` is a disk image holding **m-of-n
+  Wallet.app** and an Applications shortcut: open it and drag the app across.
+  The `.zip` is still there. Both are in `SHA256SUMS` and have build
+  provenance.
+- `release.yml` can sign the app (Developer ID Application, hardened runtime)
+  and notarize and staple it and the DMG when the repository has the signing
+  secrets; these release notes say whether this one is. APP-0005 0.3.0 says
+  how to check, and what to do when it is not notarized (§3).
+- A Download page on the site.
+
 ## 0.11.0 — 2026-11-23
 
 Prototype: DEC-004 and DEC-005 are open; do not use real keys.
