@@ -117,8 +117,10 @@ reduction step stays in the engine; the UI only displays wallet state and
 verdicts. Do not put a knowledge graph behind that shell.
 Do not start the shell before the two scenarios in §3 can be run from the CLI.
 
-DEC-002 stays open. The prototype's reduced CBOR must not become the shipping
-format by being the only thing the UI can load (APP-0001 open question 4).
+DEC-002 is accepted (`ADR-0004`, KSA-CBOR, 2026-10-25); DEC-004 (tag
+language) and DEC-005 (envelope) stay open. The prototype's choices for those
+must not become the shipping ones by being the only thing the UI can load
+(APP-0001 open question 4).
 
 ## 5. Minimal UI
 
@@ -215,7 +217,7 @@ An optional index may map a domain hash to a file. It is not a graph store.
 **Proposed, except where it restates a constraint this plan already has.**
 Keys are files. There is no keychain product and no cloud custody. Those
 two lines are not a new decision. The rest is a proposal for the CLI
-engine. It does not close DEC-002.
+engine. It closes no DEC-*.
 
 - Private keys are files under `wallet/keys`. The directory is mode `0700`.
   Each private key file is mode `0600`.
@@ -223,7 +225,7 @@ engine. It does not close DEC-002.
   passphrase-based secret-key encryption. The candidates — OpenPGP S2K
   with AEAD, or one modern KDF plus AEAD — are surveyed in R-0002
   (PR 59), the private-key section. This plan does not pick one. The
-  on-disk encoding is still DEC-002.
+  on-disk statement encoding is KSA-CBOR (`ADR-0004`).
 - The engine prompts for the passphrase. The passphrase is not a
   command-line argument and it is not logged. Later, not this
   milestone: an OS keychain may store the passphrase. It does not store

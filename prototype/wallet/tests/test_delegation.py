@@ -1,4 +1,4 @@
-"""Delegation evaluations E-1..E-7 and E-20..E-22 (SPEC-0004 §6.3, Appendix A; mofn#136;
+"""Delegation evaluations E-1..E-7, E-20..E-22 and E-23..E-25 (SPEC-0004 §6.3, Appendix A; mofn#136;
 ARCH-0001 §2.3) and the DV-2/TV-13 rendered sentence (ADR-0007; T-049).
 
 E-1..E-7 run through the engine (`engine/reduce.py`, T-065). Until wallet
@@ -74,9 +74,35 @@ def test_e2_path_names_each_hop():
     assert c.path[0].scope[0][3] == ["reproducible"]
 
 
-def test_evaluations_cover_depth_and_widening():
+def test_evaluations_cover_depth_widening_and_expiry():
+    """Delegation is a requirement (PLAN-0002 §4.1.1): every way a hop fails
+    has a published evaluation, and so does a chain followed to the end."""
     reasons = {e["reason"] for e in EVALS.values()}
-    assert {"depth", "widening"} <= reasons
+    assert {"depth", "widening", "not-valid-at-time"} <= reasons
+
+
+def test_e23_expired_hop_is_the_broken_link():
+    """§6.3 item 2: the hop has expired; the attestation has not."""
+    got = engine_eval(EVALS["E-23"])
+    assert not got.yes
+    first = got.stopped[0]
+    assert first.code == "not-valid-at-time"
+    assert by_digest(first.link) == "TV-45"
+
+
+def test_e24_two_hop_chain_names_each_hop():
+    """§6.3: depth 2 at the anchor, 1 after TV-47, 0 after TV-18; Dave is covered."""
+    got = engine_eval(EVALS["E-24"])
+    (c,) = got.covered
+    assert [by_digest(h.statement) for h in c.path] == ["TV-47", "TV-18"]
+    assert all(h.scope[0][3] == ["reproducible"] for h in c.path)
+
+
+def test_the_same_chain_without_onward_delegation_stops_at_depth():
+    """E-25 is E-24 with TV-16 (no may-delegate) for TV-47: the anchor's depth
+    alone does not let Bob pass anything on."""
+    got = engine_eval(EVALS["E-25"])
+    assert not got.yes and got.stopped[0].code == "depth"
 
 
 def test_tv13_renders_under_dv2():

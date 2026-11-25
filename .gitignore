@@ -15,3 +15,7 @@ prototype/wallet/dist/
 # prototype/wallet-app/mofn-wallet.spec: PyInstaller output (W-7, DL-0050)
 prototype/wallet-app/build/
 prototype/wallet-app/dist/
+
+# keys written by running the wallet in prototype/wallet/ itself (not fixtures)
+/prototype/wallet/*.pub.stmt
+/prototype/wallet/*.pub.stmt.yaml

@@ -1,12 +1,14 @@
 # m-of-n
 
-**Key-centric semantic assertions.** Authorization, local names, and artifact
+**Key-centric Semantic Attestations (KSA).** Authorization, local names, and artifact
 attestation with a model whose principals are keys, whose names are relative to
 a naming key, whose subjects may be *k*-of-*n*, and whose statements carry
 meaning a person can read.
 
 USF CS690 Master's Project, Fall 2026. Sponsor: Paul Lambert.
-Everything is open source. No proprietary data, no NDA.
+Code is licensed Apache-2.0 and documentation CC-BY-4.0 (see the
+[repository](https://github.com/m-of-n/mofn)); the reference library is a
+separate repository with its own terms.
 
 !!! warning "What this does not do"
     It proves **origin and integrity**, not truth. A perfectly valid attestation

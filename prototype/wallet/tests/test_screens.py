@@ -256,12 +256,12 @@ def test_open_a_file(here):
 
 def test_two_people_hand_over_a_key_and_a_signed_file(tmp_path, monkeypatch, spy):
     monkeypatch.delenv("MOFN_WALLET", raising=False)
-    david, chip = tmp_path / "david", tmp_path / "chip"
-    david.mkdir()
-    chip.mkdir()
+    alice, bob = tmp_path / "alice", tmp_path / "bob"
+    alice.mkdir()
+    bob.mkdir()
 
     async def sign(app, pilot):
-        await first_run(app, pilot, "david")
+        await first_run(app, pilot, "alice")
         await tab(app, pilot, "sign")
         s = app.query_one(forms.Sign)
         await set_(s, pilot, file="example/artifact.bin", claim="outcome", value="approve")
@@ -269,21 +269,21 @@ def test_two_people_hand_over_a_key_and_a_signed_file(tmp_path, monkeypatch, spy
         await pilot.pause()
         await passphrase(app, pilot)
 
-    monkeypatch.chdir(david)
+    monkeypatch.chdir(alice)
     drive(sign)
-    signed = david / "artifact.bin.stmt"
+    signed = alice / "artifact.bin.stmt"
     assert signed.is_file()
 
     async def check(app, pilot):
-        await first_run(app, pilot, "chip")
+        await first_run(app, pilot, "bob")
         await tab(app, pilot, "keys")
         k = app.query_one(forms.KeyImport)
-        await set_(k, pilot, file=str(david / "david.pub.stmt"), label="David")
+        await set_(k, pilot, file=str(alice / "alice.pub.stmt"), label="Alice")
         await pilot.click("#keyimport-go")
         await pilot.pause()
         await tab(app, pilot, "trust")
         t = app.query_one(forms.Trust)
-        await set_(t, pilot, whose="David", claim="outcome")
+        await set_(t, pilot, whose="Alice", claim="outcome")
         t.w("values").select("approve")
         await pilot.pause()
         await pilot.click("#trust-go")
@@ -300,7 +300,7 @@ def test_two_people_hand_over_a_key_and_a_signed_file(tmp_path, monkeypatch, spy
         assert verdict["answer"] == "yes", verdict["verdict"]
         assert "answer: yes" in str(c.query_one("#check-result", Static).content)
 
-    monkeypatch.chdir(chip)
+    monkeypatch.chdir(bob)
     drive(check)
 
     for argv, _ in spy:

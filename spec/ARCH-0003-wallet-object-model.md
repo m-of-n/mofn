@@ -25,7 +25,7 @@ companion:
   - research/0003-cipher-suite/report.md
 defers_to: ARCH-0001
 related_rfcs: [RFC2693, RFC8949, RFC9052, RFC9180, RFC9334, RFC9679]
-open_decisions: [DEC-002, DEC-004, DEC-008, DEC-009]
+open_decisions: [DEC-004, DEC-008, DEC-009]
 agent_checkpoint: true
 agent_notes: >
   Drafted from sponsor direction of 2026-10-14 (two rounds). Nothing here is

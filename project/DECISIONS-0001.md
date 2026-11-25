@@ -42,19 +42,17 @@ review_note: >
   await a decision — that is the document's whole content.
 canonical_path: project/DECISIONS-0001.md
 defers_to: ARCH-0001
-companion:
-  - project/meetings/2026-09-28.md
 agent_notes: >
   A register, not an authority. Accepting any DEC-* still requires an ADR plus
   a changelog line plus a status update in ARCH-0001 (§9.2). Nothing here
-  accepts anything — and in particular MD-3 NARROWED DEC-002 without accepting
-  it, so DEC-002 is still open and no code or vector may assume an encoding.
+  accepts anything — MD-3 NARROWED DEC-002 without accepting it; DEC-002 was
+  then accepted by ADR-0004 on 2026-10-25 (option 5, KSA-CBOR).
 ---
 
 # Open decision register
 
 **Checkpoint 2026-10-10.** Brought up to date with the weekly of **2026-09-28**
-(`project/meetings/2026-09-28.md`), which took seven decisions — **MD-1 … MD-7** —
+(minutes not published), which took seven decisions — **MD-1 … MD-7** —
 four of which answered items this register was still printing as open. The
 register had not moved since 2026-09-23; the gap is recorded in §*What changed*
 below rather than edited away.
@@ -90,7 +88,8 @@ it and `spec/vectors/ksa-core/` ships vectors for it.
 **D2 says in its own text that it does not accept DEC-002**, and that the
 DEC-002 ADR and its fixtures still decide it. Both halves of that should be read
 literally. The specifications now have an encoding and can be implemented
-against; DEC-002 remains open, item 4b is still the instrument, and the evidence
+against; DEC-002 remained open at that checkpoint (`ADR-0004` accepted it on
+2026-10-25), item 4b was the instrument, and the evidence
 below — including the post-narrowing findings that favour option 1 — is still
 what that ADR must answer. What has changed is the **cost of reopening**: there
 are now five SPEC documents and a vector set written against option 5's profile.
@@ -263,7 +262,7 @@ supply-chain profile first (T1-A), then accept P7 or correct it.
 
 | # | Item | State |
 |---|---|---|
-| 22 | **Faculty repo access.** Invite to `mlim3@usfca.edu` pending since 2026-09-16. `mlim-usfca` is an **organisation**, not a user account — the invite needs a personal GitHub login. **Name unresolved: this register and the USF address read "Mario Lim"; MD-6 and `BACKLOG-0001` T-006b read "Mario Lin".** One is wrong; confirm before re-sending. | blocked on him |
+| 22 | **Faculty repo access.** Invite to the instructor's USF address pending since 2026-09-16. `mlim-usfca` is an **organisation**, not a user account — the invite needs a personal GitHub login. The instructor is Mario **Lim**; the "Lin" spellings in `PLAN-0002`, `PLAN-0003` and `BACKLOG-0001` were corrected in the 2026-11-25 cleanup. | blocked on him |
 | 23 | **`enforce_admins`** is `false` on both repos. Set so a single member could bootstrap; three admins now exist, so the reason has expired. **Still off at 2026-10-05** (`BACKLOG-0001` T-006c). | ready to flip |
 | 24 | **Signed commits** — `CONTRIBUTING.md` asks for them; the requirement is off so students are not blocked on key setup. | deliberate |
 | 25 | **`~/cb/.claude/rules/usf-provenance.md`** written but uncommitted — `~/cb` has your in-flight manifest work. | yours to commit |

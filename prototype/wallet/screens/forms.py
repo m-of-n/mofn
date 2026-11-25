@@ -246,7 +246,7 @@ class KeyImport(Form):
     def fields(self) -> ComposeResult:
         yield from self.row("File", "file", FileField("keyimport-file", "someone.pub.stmt"))
         yield from self.row(
-            "Your name for it", "label", Input(placeholder="Chip", classes="field", compact=True)
+            "Your name for it", "label", Input(placeholder="Bob", classes="field", compact=True)
         )
 
     def argv(self):

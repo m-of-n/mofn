@@ -7,10 +7,10 @@ description: "How a relying party decides whether to believe a verified statemen
 type: specification
 category: security
 status: draft
-version: "0.6.2"
+version: "0.7.0"
 version_policy: "semver; MAJOR = any change to an evaluation result; MINOR = additive; PATCH = editorial"
 date: "2026-10-14"
-updated: "2026-11-14"
+updated: "2026-11-25"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -112,6 +112,11 @@ anchors under §6.4, over SPEC-0002 TV-9…11, TV-36 and TV-37. They are compute
 by the prototype wallet as well as declared (T-043, DL-0042). The appendix
 states the reading of §6.4 they rest on, and the two questions §6.4 leaves
 open; neither is decided here. No rule changes, so PATCH.
+**0.7.0 (2026-11-25):** delegation is a requirement (`PLAN-0002` §4.1.1).
+Appendix A gains E-23…E-25 over SPEC-0002 TV-45…47: an expired hop, a chain
+of two hops, and the same chain stopped by depth. §6.4 names the threshold
+`k`, as SPEC-0002 §8.6 and `ARCH-0001` §7 do. No rule or existing result
+changes; additive, so MINOR.
 
 ---
 
@@ -421,11 +426,11 @@ partial or repaired version of it is.
 ### 6.4 Thresholds
 
 A threshold anchor or threshold trust statement trusts a set `M` of keys with
-threshold `n` about a scope. A statement is **covered through the threshold**
-when `n` distinct members of `M`, each reached as the start of a sub-path with
+threshold `k` about a scope (SPEC-0002 §8.6). A statement is **covered through the threshold**
+when `k` distinct members of `M`, each reached as the start of a sub-path with
 that scope, have each made a statement that covers the ask (§10.3) with **the
 same target, type and value**. Delegation onward from a threshold set requires
-`n` distinct members each to have issued a trust statement to the same key with
+`k` distinct members each to have issued a trust statement to the same key with
 identical `about` and `may-delegate`; the resulting edge is followed as one.
 
 Distinctness is by kid. Keys that a rotation (§7.2) links count as one member.
@@ -759,6 +764,16 @@ TV-14…20; machine-readable as `evaluations` in `vectors.json`.
 
 E-4 is the reason R-M-10 (ARCH-0001) says a widening is reported, not
 intersected silently: clipping TV-20 to depth 0 would have answered **yes**.
+
+**Expiry and chains** (§6.3 items 2, 3 and 6). Context `releases`; anchor as
+shown; same ask and time. TV-46 is Carol trusting Alice as TV-5 does, but with
+`may-delegate depth 2`.
+
+| eval | anchor | statements | answer | reason | why |
+|---|---|---|---|---|---|
+| E-23 | TV-5 | TV-45, TV-17 | **no** | `not-valid-at-time` at TV-45 | TV-45 is TV-16 ending 2026-10-09: the hop has expired, though Bob's attestation has not (item 2) |
+| E-24 | TV-46 | TV-47, TV-18, TV-19 | **yes** | — | Alice→Bob passes `depth 1` (at most 2 − 1), Bob→Dave passes none: two hops, Dave may attest |
+| E-25 | TV-46 | TV-16, TV-18, TV-19 | **no** | `depth` at TV-18 | the anchor's depth 2 is Alice's to pass on; TV-16 passed Bob none (item 3) |
 
 **Name resolutions** (§5.3). DV-4 held. Each row resolves one name over the
 statements shown, at the time shown: 2026-10-10T12:00:00Z for R-1…R-7, and

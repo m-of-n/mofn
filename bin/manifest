@@ -83,7 +83,14 @@ def main():
         for p in sorted(found):
             rel = p.relative_to(d).as_posix()
             if p.read_text(errors="ignore").lstrip().startswith("<!-- GENERATED"):
-                continue          # never list a generated view as a document
+                # never list a generated view as a document; the publishing
+                # manifest itself is still a page, so it goes in the nav
+                # rather than being built as an orphan
+                if f"{tree}/{rel}" == "project/PUBLISHING.md":
+                    entries.append({"title": "Publishing manifest",
+                                    "path": f"{staged}/{rel}",
+                                    "type": "reference", "first": False})
+                continue
             fm = front(p)
             if fm.get("publish") == "false":
                 continue
@@ -95,7 +102,9 @@ def main():
                 "version": fm.get("version", ""),
                 "updated": fm.get("updated", ""),
                 "source": f"{tree}/{rel}",
-                "url": f"{SITE}/{staged}/{rel[:-3]}/",
+                # mkdocs builds a README.md as its directory's index page
+                "url": (f"{SITE}/{staged}/{rel[:-len('README.md')]}"
+                        if p.name == "README.md" else f"{SITE}/{staged}/{rel[:-3]}/"),
                 "reviewed": fm.get("reviewed", ""),
             })
             # A README carries no front matter; "README" is not a page title.

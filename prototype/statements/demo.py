@@ -10,7 +10,7 @@ from statement import (statement, ptype, keyid, sign, verify,
                        by_digest, by_locator, by_description)
 from labeltype import label_type, domain, domain_id, render, in_range
 
-PAUL, DAVID, TOOL = b"paul-pubkey", b"david-pubkey", b"buildtool-pubkey"
+ALICE, BOB, TOOL = b"alice-pubkey", b"bob-pubkey", b"buildtool-pubkey"
 SEC = b"not-a-real-key"
 NOW = 1758585600
 
@@ -37,7 +37,7 @@ review = label_type(
     values={"reviewed":   {"en": "reviewed by a second person"},
             "unreviewed": {"en": "not reviewed by anyone but its author"}})
 
-DOM = domain(keyid(PAUL), "m-of-n/supply-chain", [build_prov, review], "v1")
+DOM = domain(keyid(ALICE), "m-of-n/supply-chain", [build_prov, review], "v1")
 DID = domain_id(DOM)
 print(f"  domain           m-of-n/supply-chain v1")
 print(f"  hash-identified  {DID.hex()}")
@@ -51,7 +51,7 @@ print("  has exactly the meanings the author published, not an approximation.")
 rule("2. Attestation — A says B has C")
 
 artifact = hashlib.sha256(b"<the built binary>").digest()[:16]
-s1 = statement(TOOL, by_digest(artifact), ptype(PAUL, "build-provenance"),
+s1 = statement(TOOL, by_digest(artifact), ptype(ALICE, "build-provenance"),
                "reproducible", at=NOW)
 env1 = sign(s1, SEC)
 print(f"  {len(env1['payload'])} bytes signed")
@@ -63,7 +63,7 @@ print("  read the rendering out of the type. THAT is P3 earning its place.")
 # ── use case 2: naming ────────────────────────────────────────────────────
 rule("3. Naming — P6: a name is just a type of attested string")
 
-s2 = statement(PAUL, by_digest(keyid(DAVID)), ptype(PAUL, "name"), "david", at=NOW)
+s2 = statement(ALICE, by_digest(keyid(BOB)), ptype(ALICE, "name"), "bob", at=NOW)
 print(f"  {len(encode(s2))} bytes — the SAME form as the attestation above")
 print("  no NameCert type, no second encoder, no second signing path")
 print("\n  This is what resolves register item 6a: the five 'kinds' in")
@@ -73,9 +73,9 @@ print("  predicate type. The three PROCEDURES in §4.3 stay separate.")
 # ── use case 3: delegation ────────────────────────────────────────────────
 rule("4. Delegation — A says B can speak about (Domain, Topic)")
 
-s3 = statement(PAUL, by_digest(keyid(DAVID)), ptype(PAUL, "may-speak"),
+s3 = statement(ALICE, by_digest(keyid(BOB)), ptype(ALICE, "may-speak"),
                {"dom": DID, "topic": "build-provenance"}, at=NOW)
-print(f"  paul delegates to david, scoped to domain {DID.hex()[:12]}…")
+print(f"  alice delegates to bob, scoped to domain {DID.hex()[:12]}…")
 print(f"  topic: build-provenance")
 print("\n  Authority is scoped SEMANTICALLY. The domain of discourse is not")
 print("  only the unit of meaning (P4) — it is the unit of authority scope.")
@@ -85,7 +85,7 @@ print("  One construct, so a chain narrows reach and authority together.")
 rule("5. Arbitrary subjects — R-M-11 description mode")
 
 book = {"title": "SPKI Certificate Theory", "isbn": "", "year": 1999}
-s4 = statement(PAUL, by_description(book), ptype(PAUL, "human-review"),
+s4 = statement(ALICE, by_description(book), ptype(ALICE, "human-review"),
                "unreviewed", at=NOW)
 print(f"  subject is a described thing, id = digest of its canonical form")
 print(f"  id: {s4['b']['v'].hex()}")

@@ -1,5 +1,5 @@
 site_name: m-of-n
-site_description: Key-centric semantic assertions — authorization, local names, and artifact attestation
+site_description: Key-centric Semantic Attestations — authorization, local names, and artifact attestation
 theme:
   name: material
   # Template overrides (status banner) — outside docs/, so not staged.

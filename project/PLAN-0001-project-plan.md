@@ -50,10 +50,13 @@ Plan v2 conflicted with ARCH-0001 and is superseded. Three errors, corrected her
    statement is narrower: *we do not inherit SPKI's encoding or adopt RFC 2693 as
    our specification; the information model is SPKI-shaped by design.*
 2. **v2 marked the encoding "[decided]"** as YAML + deterministic CBOR + CDDL.
-   That invents an accepted decision. **DEC-002 is open** with four options.
-   Reframed below as input to DEC-002, with an acceptance test.
-3. **v2 invented names** ("KSA", org `legible-provenance`). **DEC-001 is open.**
-   This plan uses `PROJECT` as a placeholder throughout.
+   That invented an accepted decision. **DEC-002 was open** with four options
+   (since accepted: option 5, KSA-CBOR, `ADR-0004`, 2026-10-25). Reframed
+   below as input to DEC-002, with an acceptance test.
+3. **v2 invented names** ("KSA", org `legible-provenance`). **DEC-001 was
+   open** (since accepted: `m-of-n`, `ADR-0006`, 2026-11-06; "KSA" was later
+   adopted as the protocol's name, `ADR-0003`). This plan used `PROJECT` as a
+   placeholder.
 
 **v0.3.0 → v0.4.0.** Sponsor review of 2026-09-16 produced three further
 corrections, folded in below: CBOR and COSE extension points are centrally
@@ -95,7 +98,7 @@ exactly what ARCH-0001 leaves out:
 **Goal statement** (Paul, 2026-09-16), which ARCH-0001 serves:
 
 > Advances in trust, provenance, and attestation through **AI-assisted protocol
-> design**, enabling **key-centric semantic assertions**.
+> design**, enabling **key-centric semantic attestations**.
 
 Two of the three are already in ARCH-0001: key-centric principals (G1) and
 statements about artifacts (G5). The two this plan must instrument:

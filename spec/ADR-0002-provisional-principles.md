@@ -26,7 +26,6 @@ defers_to: ARCH-0001
 companion:
   - spec/ARCH-0002-key-relative-naming.md
   - spec/ARCH-0002-CHANGELOG.md
-  - project/meetings/2026-09-28.md
 supersedes: []
 agent_notes: >
   ACCEPTED 2026-11-06 by ndewedo-newbury: P2, P3, P5 AS AMENDED (P5.1, P5.2)
@@ -357,7 +356,7 @@ cell, and ARCH-0002 is the home the project chose for exactly this.
 
 ## 8. Evidence
 
-- `project/meetings/2026-09-28.md` — MD-2, verbatim in §1.
+- The 2026-09-28 sponsor meeting minutes (not published) — MD-2, verbatim in §1.
 - `spec/ARCH-0002-key-relative-naming.md` v0.5.0 — the six principles as drafted.
 - `design-log/0002-arch-0002-cycle/review.md` — P2 and P4 were both **model
   proposals the human overruled**; P2 as drafted is the human's correction, not

@@ -559,6 +559,35 @@ LIB2_EVALS = [
      "Dave, anchored directly, attests a description target under DV-5"),
 ]
 
+# ---------------------------------------------------------------- delegation: chains and expiry
+# Delegation is a requirement (PLAN-0002 §4.1.1). E-1…E-4 cover widening and
+# depth over one hop; these add the two cases they leave out: a hop that has
+# expired (SPEC-0004 §6.3 item 2) and a chain of two hops that is followed to
+# the end (§6.3, `deleg.depth` counting down). Added after TV-44, so no earlier
+# vector's bytes move.
+add("TV-45", "alice", statement("trust", "alice", [T_KEY, kid("bob")],
+    {1: [{1: tref("build-provenance"), 3: ["reproducible"]}]},
+    {1: t("2026-10-06T00:00:00Z"), 2: t("2026-10-09T00:00:00Z"), 3: t("2026-10-07T09:45:00Z")}),
+    "trust: Alice trusts Bob about build-provenance in {reproducible}, as TV-16, but valid only until 2026-10-09: expired at the ask (SPEC-0004 §6.3 item 2)")
+add("TV-46", "carol", statement("trust", "carol", [T_KEY, kid("alice")],
+    {1: [{1: tref("build-provenance"), 3: ["reproducible", "attested"]}],
+     2: {1: 2, 2: [{1: tref("build-provenance"), 3: ["reproducible"]}],
+         5: t("2026-12-01T00:00:00Z")}},
+    {1: t("2026-10-06T00:00:00Z"), 3: t("2026-10-06T11:30:00Z")}),
+    "trust: Carol trusts Alice about build-provenance in {reproducible, attested}; may delegate depth 2 within {reproducible}")
+add("TV-47", "alice", bp_trust("alice", "bob", ["reproducible"], "2026-10-07T12:30:00Z",
+                               deleg={1: 1}),
+    "trust: Alice trusts Bob about {reproducible} with may-delegate depth 1; under TV-46 (depth 2) at most 1 may pass on, so it is not widening")
+
+DELEG_EVALS = [
+    ("E-23", "TV-5", ["TV-45", "TV-17"], "reproducible", "no", "not-valid-at-time", "TV-45",
+     "TV-45 is TV-16 with an earlier not-on-or-after: an expired hop is not followed, though Bob's attestation is still valid"),
+    ("E-24", "TV-46", ["TV-47", "TV-18", "TV-19"], "reproducible", "yes", None, None,
+     "TV-46 → TV-47 → TV-18: two hops, depth 2 then 1 then 0; Dave may attest"),
+    ("E-25", "TV-46", ["TV-16", "TV-18", "TV-19"], "reproducible", "no", "depth", "TV-18",
+     "under TV-46, as E-3 under TV-5: TV-16 carries no may-delegate, so the second hop is not followed"),
+]
+
 # ---------------------------------------------------------------- negative vectors
 N = {}
 def bad(name, env, why, step):
@@ -659,7 +688,11 @@ out = {
                    | {e: {"anchor": "TV-40", "context": "library", "statements": s,
                           "ask": {"this": this, "record-review": val}, "at": LIB_AT,
                           "answer": ans, "reason": why, "at_statement": at_s, "note": note}
-                      for e, s, this, val, ans, why, at_s, note in LIB2_EVALS},
+                      for e, s, this, val, ans, why, at_s, note in LIB2_EVALS}
+                   | {e: {"anchor": anc, "context": "releases", "statements": s,
+                          "ask": {"this": "artifact", "build-provenance": val}, "at": ASK_AT,
+                          "answer": ans, "reason": why, "at_statement": at_s, "note": note}
+                      for e, anc, s, val, ans, why, at_s, note in DELEG_EVALS},
     "record_sha256": hx(RECORD),
     # Kept out of `evaluations`: those are walked by the test-only delegation walker,
     # these by the engine (T-040).
@@ -697,6 +730,10 @@ md += ["### Delegation evaluations (SPEC-0004 Appendix A)", "",
        f"Anchor TV-5 in context `releases`; ask: is the artifact's build-provenance the value shown, at {ASK_AT}.", "",
        "| eval | statements | value | answer | reason | at |", "|---|---|---|---|---|---|"]
 md += [f"| {e} | {', '.join(s)} | {val} | **{ans}** | {why or '—'} | {at_s or '—'} |" for e, s, val, ans, why, at_s, _ in EVALS]
+md += ["", "### Delegation evaluations — expiry and chains (SPEC-0004 §6.3)", "",
+       f"Anchor as shown, in context `releases`; ask: is the artifact's build-provenance the value shown, at {ASK_AT}.", "",
+       "| eval | anchor | statements | value | answer | reason | at |", "|---|---|---|---|---|---|---|"]
+md += [f"| {e} | {anc} | {', '.join(s)} | {val} | **{ans}** | {why or '—'} | {at_s or '—'} |" for e, anc, s, val, ans, why, at_s, _ in DELEG_EVALS]
 md += ["", "### Archives evaluations (ARCH-0001 §2.3.2; UC-3)", "",
        f"Anchor TV-22 in context `library`; ask: does the subject have `reviewed` = the value shown, at {LIB_AT}. "
        "`record` is the digest target `sha-256:` of the record; `work` is TV-26's description target.", "",

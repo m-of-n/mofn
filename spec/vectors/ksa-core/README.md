@@ -17,8 +17,7 @@ python3 -m venv .venv && .venv/bin/pip install cbor2 cryptography
 
 ## Threshold form and the acceptance test
 
-`k` is `threshold` and `n` is the length of `trusts` (`ARCH-0001` §7; §8.6 of
-SPEC-0002 calls the threshold `n`, and means `k`).
+`k` is `threshold` and `n` is the length of `trusts` (`ARCH-0001` §7; SPEC-0002 §8.6).
 
 | vector | case | expected |
 |---|---|---|
@@ -59,6 +58,17 @@ engine's delegation paths (`engine/reduce.py`, T-065) against them
 | E-2 | the same hop within `ranges` | yes |
 | E-3 | a second hop with no delegation left | no, `depth` |
 | E-4 | onward `depth` larger than what remains | no, `widening` (not clipped) |
+
+Delegation is a requirement (`PLAN-0002` §4.1.1). TV-45…47 and E-23…E-25 add
+the cases E-1…E-4 leave out. TV-45 is TV-16 with an earlier `not-on-or-after`;
+TV-46 is a second anchor, Carol trusting Alice with `depth: 2`; TV-47 is Alice
+passing `depth: 1` on to Bob. The same test checks them against the engine.
+
+| eval | anchor | case | expected |
+|---|---|---|---|
+| E-23 | TV-5 | the hop has expired; the attestation has not | no, `not-valid-at-time` at TV-45 |
+| E-24 | TV-46 | two hops: TV-47, then TV-18 | yes |
+| E-25 | TV-46 | the same, but TV-16 passes nothing on | no, `depth` at TV-18 |
 
 ## Archives target
 

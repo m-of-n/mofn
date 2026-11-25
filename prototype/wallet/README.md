@@ -383,7 +383,10 @@ on Windows.
 | `engine/verifier.py` | V1–V9 |
 | `engine/statement.py`, `signer.py` | build and sign statements |
 | `engine/definition.py` | DefinitionId, conformance, enum values, attribution, templates |
-| `engine/reduce.py` | coverage over one context's anchors |
+| `engine/reduce.py` | delegation paths (SPEC-0004 §6.2–§6.5: depth, no widening, validity ∩), *k*-of-*n* thresholds (§6.4) and coverage over one context's anchors |
+| `engine/names.py` | SDSI name resolution (SPEC-0004 §5.3, ADR-0008) |
+| `engine/ksatime.py` | KSA time (SPEC-0002 §4.4) |
+| `engine/errors.py` | why a statement or an input was refused (SPEC-0002 §9.1, §12.9) |
 | `engine/check.py`, `render.py` | the six-line verdict, text and JSON |
 | `engine/store.py`, `unlock.py` | the wallet directory, key store, anchors, passphrase |
 | `domains/archives/` | the second domain (mofn#66): the archives vocabulary, its author's statements, an example library record, goldens. No engine code knows it exists |
@@ -401,6 +404,6 @@ on Windows.
 | base kinds | enum only; others are refused, never treated as valid | DV-1 needs only enum |
 | definitions | one per `check` (`--def FILE`); `imports` are not obtained | The vectors' two vocabularies, DV-1 and DV-2, import nothing. SPEC-0003 §4.3 requires every import |
 | held statements | statements and definitions you are given are not kept (see above) | ARCH-0003 §3.8 keeps them, marked made, received or accepted |
-| delegation, revocation, rotation, thresholds, processes, contexts beyond one | not implemented; the answer says 0 revocations considered | out of scope for #65; #67 |
+| revocation and rotation on paths and thresholds, processes, contexts beyond one | not implemented; the answer says 0 revocations considered. **Short validity is the revocation mechanism** (SPEC-0004 §7.1, §11.3). Revocation and rotation are applied to name bindings only (`names.py`). Delegation paths and *k*-of-*n* thresholds **are** implemented (`reduce.py`) | #67; revocation is a requirement (PLAN-0004 §5.3) |
 | key wiping | the seed is zeroed after signing — best effort in Python | the library and interpreter may keep copies |
 | strict key rules | libsodium also rejects keys with a torsion component | C4 (DL-0020); stricter than SPEC-0002 0.2.0, matches §6.3 as proposed in 0.4.0 |
