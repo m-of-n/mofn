@@ -105,6 +105,12 @@ PATHS = {
     "verify": '<path d="M5 12l5 5L20 7"/>',
     "show": '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
     "learn": '<path d="M4 5h7v14H4zM13 5h7v14h-7z"/>',
+    # Two people: the sidebar avatar's family, for the page that lists them.
+    "personas": '<circle cx="9" cy="8" r="3.3"/><path d="M2.8 20c.9-4.3 10.6-4.3 12.4 0"/>'
+                '<path d="M16.2 5.4a3.3 3.3 0 0 1 0 6.3"/><path d="M17.8 14.5c2.2.5 3.3 1.7 3.7 3.8"/>',
+    # Three nodes joined: a derived network, which is what a community is here.
+    "communities": '<circle cx="12" cy="5" r="2.4"/><circle cx="5" cy="18" r="2.4"/>'
+                   '<circle cx="19" cy="18" r="2.4"/><path d="M10.5 7.1 6.6 15.6M13.5 7.1l3.9 8.5M7.4 18h9.2"/>',
     "person": '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 15-5 16 0"/>',
     "sidebar": '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/>',
     "sun": '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/>',

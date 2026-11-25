@@ -176,8 +176,40 @@ usage or wallet error, `3` a handed statement was invalid.
 | acceptance | any template the statement follows is filled in correctly | a statement that breaks its form's rules |
 | semantics | the vocabulary is the one named, well formed, and signed by its author | an unsigned or swapped vocabulary |
 
+**When the subject is a key** (`--subject-key`, below) there is no copy of
+yours to compare, so integrity reports verification alone and the comparison
+clause does not apply — SPEC-0004 §10.4 conditions it on a digest target.
+Whether any statement is about that key is then authorization's and
+acceptance's question, and they say *not evaluated* when none is.
+
 The last line of every result is the limit of what this proves: who said it
 and whether they were entitled to say it, not that it is true.
+
+### Tags a key received
+
+A statement's subject may be a key rather than a file: `this = [1, kid]`
+(SPEC-0002 §7.2, target type 1). That is how a tag *given to a persona* is
+written, and what the desktop app's Personas page lists (W-8, mofn#180). The
+form is not new — TV-13's own note in the published vectors reads
+*"attestation about a KEY"*.
+
+```sh
+# Carrying on from "Try it": Alice says Bob's key has the name "fred".
+BOB=39f713d0a644253f04529421b9f51b9b08979d08295959c4f3990ee617f5139f
+$M --wallet w/receiver root add "Alice (vocabulary author)" --as me \
+   --def $F/dv-2.def --type name
+$M --wallet w/receiver check $F/tv-13-name.stmt $F/tv-12-define-names.stmt \
+   --subject-key $BOB --def $F/dv-2.def
+```
+
+`--subject-key` takes your label for a key, a kid prefix, or a full 64-digit
+kid — the last so a tag given to a key this wallet has not met can still be
+checked. `make --subject-key` signs one.
+
+`check --as LABEL` and `root list --as LABEL` use **one owned persona's**
+anchors, because a context is a scope in which an owned persona acts and
+relies (SPEC-0001 §6.3). Without `--as`, every owned persona's anchors are
+used, as before.
 
 ### Who signed, topic, digest, standing
 
@@ -199,7 +231,8 @@ shows its digest beside yours, and standing *not evaluated*.
 ### The verdict as JSON
 
 `check --format json` prints one object: `answer`, `at`, `context`,
-`subject`, `because` (the §10.3 trace), `verdict` (the six lines),
+`subject`, `subject-target` (`"digest"` or `"key"`), `subject-key` (the kid,
+or `null`), `because` (the §10.3 trace), `verdict` (the six lines),
 `statements`, `sentences`, `sentences_about_your_file`, **`associations`** and
 `limit`. `associations` is the stable surface `mofn run` and W-7 (#179)
 render: one entry per attestation and attribute the answer describes, in
@@ -227,13 +260,16 @@ names: rename or remove one only with a CHANGELOG line, and tell W-7's owner.
 | `signed-by.principal` | `"<whose>'s <name>"` when a name anchor resolved to this key (SPEC-0004 §5.3), else `null` |
 | `topic.domain` | `"<name> <version>"` of the definition you hold, or `definition:<16 hex>` when it is not the one named |
 | `subject.matches` | `false` is the integrity failure: `digest` is what was signed, `yours` is your file |
+| `subject.target` | `"key"` when the ask was `--subject-key`; **absent for a digest ask**, so a reader written for W-5 does not move |
+| `subject.key` / `.kid` / `.label` | for a key ask, the subject key in the same words `signed-by` uses; `digest` is then `null` |
 | `standing.result` | `standing`, `no-standing` (with `reason`, a §10.3 code, and `detail`), or `not-evaluated` (no statement is about your file, or another statement covered the value) |
 | `standing.chain` | the root first, then each delegation hop; the last `key` is the signer. A threshold root adds `threshold: {k, n}`. On a no, the hops followed before the break |
 | `standing.broken` | on a no that a delegation caused: `trust` (its digest), `from`, `to` |
 | `standing.text` | the line `mofn run` prints, so every renderer says the same thing |
 
 Goldens: `fixtures/golden/associations-{green,unauthorized,tampered}.json`
-(`tests/test_associations.py`).
+(`tests/test_associations.py`), and `associations-key-subject.json` for a key
+ask (`tests/test_key_subject.py`).
 
 ### A second domain
 
@@ -244,7 +280,8 @@ say *summarized* but not *reviewed*. Its README has the run.
 ## Reading the files
 
 `mofn show FILE` decodes a file for reading; it does not verify (`check`
-does). `mofn root list [--context NAME]` prints your anchors in words.
+does). `mofn root list [--context NAME] [--as LABEL]` prints your anchors in
+words; `--as` narrows them to one owned persona's.
 
 **A statement and its envelope** (`mofn show prov.stmt`). The envelope is
 what travels: `[suite, says, tbs, sig, ? pub]` (SPEC-0002 §5). The statement

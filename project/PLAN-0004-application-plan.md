@@ -7,9 +7,9 @@ description: "Whether APP-0001 is complete, and the plan that fills the gaps. Dr
 type: plan
 category: product
 status: draft
-version: "0.6.0"
+version: "0.7.0"
 date: "2026-10-02"
-updated: "2026-11-17"
+updated: "2026-11-23"
 needs_review: true
 reviewed: false
 canonical_path: project/PLAN-0004-application-plan.md
@@ -160,6 +160,41 @@ options are recorded).
   a key with values, delegation depth, note), Sign (as the active identity;
   digest shown live; masked passphrase), Show (decode a statement or `.def`, or
   hash any file), Learn (the six `mofn run` pages).
+
+### 5.2 Several personas (W-8, built 2026-11-23)
+
+The sidebar switcher of §5.1 is the chooser; W-8 adds the two pages behind it
+(`DL-0054`, mofn#180). Nothing in `spec/` changed, and DEC-004 and DEC-005 are
+untouched.
+
+- **Personas** (in *Wallet*, after Overview). Owned and known personas in one
+  place, each with its identity key's fingerprint and the **controller kind it
+  claims** — shown as `person · self-claimed`, because SPEC-0001 §3.2 makes it
+  a claim and not evidence. The page carries SPEC-0001 §3.1's sentence, that
+  two personas are unlinkable only if they share no key and no statement links
+  them, which is why *+ New identity* makes a whole new identity key.
+- **Tags received**, per persona: the statements held here whose subject is
+  that persona's identity key. Each row expands into the same six-line verdict
+  Verify draws, from the same renderer. This needed a statement whose subject
+  is a **key** — `this = [1, kid]`, which SPEC-0002 §7.2 and `KIND_TARGETS[4]`
+  already allow and TV-13 already vectors; the engine gained `make/check
+  --subject-key` to reach it (wallet 0.11.0).
+- **Communities** (in *Wallet*, after Trust). §5.1 deferred contexts to their
+  own page "as communities", and this is it. **"Community" is this app's word
+  for a SPEC-0004 context and the page says so**, because the app must not
+  invent vocabulary the specification does not have. One card per context the
+  active persona relies in, with its anchors and its members — and the members
+  are **derived** from the anchors that persona accepted, since a context has
+  no roster. The page says that too.
+- **Verify is computed as the active persona.** `check --as` uses only that
+  persona's anchors, the context list is that persona's, and switching persona
+  clears a verdict computed as the other. A context is a scope in which **an
+  owned persona** acts and relies (SPEC-0001 §6.3), and every evaluation is
+  relative to exactly one (SPEC-0004 §4.1).
+- **Where a persona *acts*** cannot be shown. A persona publishes that it acts
+  in a context as a `self` or `speaks` statement (SPEC-0001 §6.3) and no `mofn`
+  command writes one, so the page shows *relies* and marks *acts* as not
+  recorded. Raised on #180 rather than dropped.
 
 ## 6. On disk
 

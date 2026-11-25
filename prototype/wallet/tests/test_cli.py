@@ -589,6 +589,54 @@ def test_root_list_prints_what_root_add_wrote(wallet):
     assert "no anchors in context other" in p.stdout
 
 
+def test_anchors_are_scoped_to_one_persona(wallet):
+    """`--as` is how a verdict is computed in ONE persona's context: a context
+    is a scope in which an owned persona acts and relies (SPEC-0001 §6.3), and
+    every evaluation is relative to exactly one (SPEC-0004 §4.1). Anchors have
+    always been stored per persona; without `--as` every owned persona's are
+    used, as before (W-8, mofn#180)."""
+    tmp, w = wallet
+    ok(run_mofn("--wallet", w, "key", "gen", "work", "--passphrase-stdin",
+                "-o", tmp / "work.pub", stdin=PASS + "\n"))
+    # Alice signed DV-1's define statement, so her key must be known for the
+    # semantics line; TV-3 carries no expiry, unlike TV-4.
+    ok(run_mofn("--wallet", w, "key", "import", FIXTURES / "tv-1-alice.pub.stmt",
+                "--label", "Alice"))
+    ok(run_mofn("--wallet", w, "make", "--as", "me", "--subject", tmp / "file",
+                "--def", FIXTURES / "dv-1.def", "--type", "build-provenance",
+                "--value", "reproducible", "--passphrase-stdin",
+                "-o", tmp / "prov.stmt", stdin=PASS + "\n"))
+    ok(run_mofn("--wallet", w, "root", "add", "me", "--as", "me",
+                "--def", FIXTURES / "dv-1.def", "--type", "build-provenance",
+                "--values", "reproducible"))
+
+    def check(*extra):
+        return run_mofn("--wallet", w, "check", tmp / "prov.stmt",
+                        FIXTURES / "tv-3-define.stmt", "--artifact", tmp / "file",
+                        "--def", FIXTURES / "dv-1.def", *extra)
+
+    assert check().returncode == 0                       # the union, unchanged
+    assert check("--as", "me").returncode == 0           # me accepted the anchor
+    out = check("--as", "work")
+    assert out.returncode == 1                           # work accepted nothing
+    assert "no anchor in context default trusts it" in out.stdout
+
+    p = ok(run_mofn("--wallet", w, "root", "list", "--as", "work"))
+    assert "no anchors in context default for work" in p.stdout
+    assert "(me)" in ok(run_mofn("--wallet", w, "root", "list", "--as", "me")).stdout
+    assert "(me)" in ok(run_mofn("--wallet", w, "root", "list")).stdout
+
+
+def test_as_must_name_a_persona_this_wallet_owns(wallet):
+    tmp, w = wallet
+    ok(run_mofn("--wallet", w, "key", "import", FIXTURES / "tv-1-alice.pub.stmt",
+                "--label", "Alice"))
+    p = run_mofn("--wallet", w, "check", FIXTURES / "tv-4-attestation.stmt",
+                 "--artifact", tmp / "file", "--def", FIXTURES / "dv-1.def",
+                 "--as", "Alice")
+    assert p.returncode == 2 and "is not a persona this wallet owns" in p.stderr
+
+
 @pytest.mark.parametrize("context", ["../../../escaped", "a/b", "Default", ""])
 def test_context_must_be_a_name(wallet, context):
     _, w = wallet

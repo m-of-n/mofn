@@ -1,0 +1,43 @@
+[
+  {
+    "statement": "95eda0cbbc8359b12f136b81f002806b04b8bdfbcd4a4484c635a9bb68e48ceb",
+    "signed-by": {
+      "key": "Alice",
+      "kid": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9",
+      "label": "Alice",
+      "principal": null
+    },
+    "topic": {
+      "domain": "names 1",
+      "definition": "de31bf2eb08018aa6a24175a240a6d1fc5d56561bef8b45201b6b075064cf741",
+      "type": "name",
+      "type-name": "name",
+      "value": "fred",
+      "value-name": "fred"
+    },
+    "subject": {
+      "target": "key",
+      "key": "key:39f713d0a644253f",
+      "kid": "39f713d0a644253f04529421b9f51b9b08979d08295959c4f3990ee617f5139f",
+      "label": null,
+      "digest": null,
+      "yours": "39f713d0a644253f04529421b9f51b9b08979d08295959c4f3990ee617f5139f",
+      "matches": true
+    },
+    "standing": {
+      "result": "standing",
+      "chain": [
+        {
+          "role": "root",
+          "anchor": "local",
+          "accepted-by": "me",
+          "key": "Alice",
+          "kid": "21fe31dfa154a261626bf854046fd2271b7bed4b6abe45aa58877ef47f9721b9"
+        }
+      ],
+      "text": "Alice (root, accepted by me)",
+      "reason": null,
+      "detail": null
+    }
+  }
+]

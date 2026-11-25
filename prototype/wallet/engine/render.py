@@ -21,6 +21,10 @@ from .definition import Definition
 # Printed before the sentences when none of them is about the relying
 # party's copy (SPEC-0004 §10.4, mofn#157 F-1).
 OTHER_FILE = "The statements handed over are about another file, not yours:"
+# The same, when the ask was about a key rather than a file (W-8, mofn#180).
+OTHER_SUBJECT = (
+    "The statements handed over are about another subject, not the key you named:"
+)
 LIMIT = (
     "This establishes who said it and whether they were entitled to say it; "
     "it does not establish that it is true."
@@ -132,7 +136,7 @@ def verdict_text(answer) -> str:
     if answer.sentences:
         out += [""]
         if not answer.sentences_about_your_file:
-            out += [OTHER_FILE]
+            out += [OTHER_FILE if answer.subject[0] == 2 else OTHER_SUBJECT]
         out += answer.sentences
     out += ["", LIMIT]
     return "\n".join(out) + "\n"

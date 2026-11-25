@@ -10,6 +10,13 @@ def digest_target(data: bytes) -> list:
     return [2, 1, hashlib.sha256(data).digest()]
 
 
+def key_target(kid: bytes) -> list:
+    """`this = [1, kid]` (SPEC-0002 §7.2, target type 1): the statement is
+    about a key, not a file. `key_publish` and `trust` already take this form,
+    and so does TV-13, the published vector for an attestation about a key."""
+    return [1, kid]
+
+
 def attestation(
     says: bytes,
     this: list,
