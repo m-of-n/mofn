@@ -1,4 +1,5 @@
 site_name: m-of-n
+site_url: https://m-of-n.github.io/mofn/
 site_description: Key-centric Semantic Attestations — authorization, local names, and artifact attestation
 theme:
   name: material
