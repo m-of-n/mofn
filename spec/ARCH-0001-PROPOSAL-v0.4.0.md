@@ -3,19 +3,19 @@ schema: "archdoc/v1"
 id: ARCH-0001-PROPOSAL-v0.4.0
 title: "Proposed ARCH-0001 v0.4.0: groups with a steward, enrollment by consent, group thresholds, and SPEC-0004 §6.4's open questions answered"
 short_title: "ARCH-0001 v0.4.0 proposal (groups)"
-description: "Proposal for the next MINOR version of ARCH-0001. It gives the Group principal (§4.1, §5.5) a form: a group is a key, a steward enrolls members, each member accepts, and a trust or anchor can trust m of a group's members. It answers the five SPEC-0004 §6.4 gaps that DL-0042 flagged. Open for review; nothing accepted."
+description: "Proposal for the next MINOR version of ARCH-0001. It gives the Group principal (§4.1, §5.5) a form: a group is a key, a steward enrolls members, each member accepts, and a trust or anchor can trust m of a group's members. It answers the five SPEC-0004 §6.4 gaps that DL-0042 flagged. proposed.2 records the first review round (2026-11-26): a group is a field of the threshold form, not a target type, and the group content key is deferred. Open for review; nothing accepted."
 type: proposal
 category: security
 status: proposed
-version: "0.4.0-proposed.1"
+version: "0.4.0-proposed.2"
 version_policy: "target is a MINOR bump of ARCH-0001 (additive requirements); this proposal's own revisions are tracked in §11."
 date: "2026-11-17"
-updated: "2026-11-17"
+updated: "2026-11-26"
 authors:
   - role: proposer
     id: conversation-claude-opus-5-5
 decision_makers: []
-reviewers: []
+reviewers: [ndewedo-newbury]
 needs_review: true
 reviewed: false
 iteration_of: ARCH-0001
@@ -32,36 +32,59 @@ proposes:
   new_decisions: []
   withdrawn_decisions: []
   amended_decisions: []
-  new_requirements: [R-M-13, R-M-14, R-M-15, R-M-16, R-O-07, R-O-08, R-O-09]
+  new_requirements: [R-M-13, R-M-14, R-M-15, R-M-16, R-O-07, R-O-08]
   model_changes:
     - "§4.1 Principal: Group gets a form (a group key; members derived at evaluation time)"
     - "§4.1 Threshold: members may be a Group, so n is the group's size at the evaluation time"
     - "§5.5: the Group row closes, owed by SPEC-0002, SPEC-0003, SPEC-0004"
   spec_changes_owed:
-    - "SPEC-0002: target type 8 group; trust threshold over a group; V8 rejects a repeated kid in trusts (N-14)"
+    - "SPEC-0002: §8.6 threshold form gains group (in place of trusts); V8 rejects a repeated kid in trusts (N-14) and a trust carrying both trusts and group (N-15)"
     - "SPEC-0003: base kind member (§6.5)"
     - "SPEC-0004: §5.4 group membership; §6.2 and §6.4 set state, threshold hop, co-issued edge; §6.4 gaps 1-5; reason code not-a-member"
-    - "SPEC-0001 / SPEC-0002 §6.1: key exchange for the group content key (Part B; not needed for Parts A or C)"
 agent_checkpoint: false
 agent_notes: >
-  PROPOSAL against ARCH-0001 v0.3.2, per its §9.4. Nothing accepted, no DEC-*
+  PROPOSAL against ARCH-0001 v0.3.4 (drafted against v0.3.2), per its §9.4. Nothing accepted, no DEC-*
   touched, no ADR written. Drafted for W-9 (mofn#181) under the human's
   choices of 2026-11-17 (DL-0053): the group key gives access, not authority
   (option A); one steward for now; stewardship never gives a vote. If
   adopted: a human instructs an ADR, the agent folds §4 to §6 into ARCH-0001
   v0.4.0 with a changelog line, the SPEC changes in §7 land with their
-  vectors, and this file is marked superseded.
+  vectors, and this file is marked superseded. proposed.2 applies the first
+  review round (2026-11-26, DL-0053 review.md): no target type 8, the group
+  is a field of the threshold form; Part B (the content key) deferred to its
+  own issue, with R-O-09.
 ---
 
 # Proposed ARCH-0001 v0.4.0: groups
 
-A proposal against `ARCH-0001` v0.3.2, offered under its §9.4: *"propose a diff
+A proposal against `ARCH-0001` v0.3.4 (first drafted against v0.3.2), offered under its §9.4: *"propose a diff
 against this file."* Every change is additive, so the target is **v0.4.0**
 under the stated policy (MINOR: additive requirements). No open decision is
 opened, closed or ranked.
 
 **Reviewers short on time:** read §2 (the model in one page), §6 (what is
 **not** proposed) and §8 (the acceptance tests).
+
+**Review status (proposed.2, 2026-11-26).** The reviewer (the owner of
+mofn#181) went through the eight choices the agent made itself (`DL-0053`
+`produced.md`). The outcome, with what was rejected, is in `DL-0053`
+`review.md`. In short:
+
+| # | Choice | Reviewer |
+|---|---|---|
+| 1 | acceptance is required for membership (R-M-14) | agreed |
+| 2 | membership is a value of base kind `member` (§4.2) | agreed; no order between enrollment and acceptance is enforced |
+| 3 | the acceptance is the member's own matching claim, not a statement about the enrollment | agreed |
+| 4 | a new target type 8 for a group | **rejected**: a group is a `group` field of the threshold form (§4.4) |
+| 5 | a trust to a group requires `threshold` | follows from 4: the count is part of the form |
+| 6 | §6.4 gap 1: zero hops | agreed |
+| 7 | §6.4 gap 2: collapse only | agreed |
+| 8 | a bound of 256 members; 30-day default membership validity | agreed |
+| — | Part B, the group content key | **deferred** to its own issue (§7) |
+
+The proposal as a whole is **not yet accepted**: `status: proposed`,
+`reviewed: false`. Part C gaps 3 to 5 and the set state (gap 4) have not had a
+second reader.
 
 ---
 
@@ -95,8 +118,8 @@ The human set three constraints, recorded in `DL-0053`:
 | Role | Who | Holds | Signs |
 |---|---|---|---|
 | **Group** | a key `G`, an owned persona of whoever founds the group (`ARCH-0003`, W-8) | `G`'s private key, never shared | the steward appointment |
-| **Steward** | a key `S` that `G` trusts about membership of `G` | the group content key `K` (Part B) | enrollments |
-| **Member** | a key `P` that is enrolled **and** has accepted | its own key, and `K` once wrapped to it | its acceptance; its own statements and delegations |
+| **Steward** | a key `S` that `G` trusts about membership of `G` | its own key (a group content key is Part B, deferred) | enrollments |
+| **Member** | a key `P` that is enrolled **and** has accepted | its own key | its acceptance; its own statements and delegations |
 | **Relying party** | anyone | an anchor that trusts *m* of `G`'s members | nothing |
 
 ```
@@ -107,6 +130,9 @@ R's anchor: trusts { group: G, threshold: m } about X
    P1, P2 … each attest the subject has X  →  covered when m distinct members did
    P1, P2 … each trust K′ identically      →  one edge to K′ ("the group delegates")
 ```
+
+Enrollment and acceptance may be signed in either order. Membership starts
+when both exist and are valid; no order is checked.
 
 **Membership is derived, not listed.** No statement lists the members. A key
 `P` is a member of `G` at time `t` when an enrollment by `G` or by a steward of
@@ -121,9 +147,9 @@ revoking its acceptance. A steward removes a member by revoking the
 enrollment. Either ends membership at the revocation's `not-before`
 (`SPEC-0004` §7.1). Short validity windows stay the backstop (R-O-02).
 
-**The group content key `K` is outside the trust model.** It lets members read
-what is shared with the group. It is never an input to a verdict (R-O-07,
-`ARCH-0003` W-19).
+**A group content key, if one is added, is outside the trust model.** Part B
+(§7, deferred) would let members read what is shared with the group. It would
+never be an input to a verdict (R-O-07, `ARCH-0003` W-19).
 
 ---
 
@@ -139,11 +165,15 @@ Each extends or conflicts with an existing requirement as stated.
 | R-M-16 | S | A trust statement or anchor SHALL be able to trust *m* of a group's members about a scope. Members SHALL be counted as `SPEC-0004` §6.4 counts threshold members: distinct by `kid`, rotation-linked keys once. | Extends R-M-06. Amends §4.1 `Threshold`: `n` is the group's size at the evaluation time, not a field |
 | R-O-07 | M | Possession of a group content key SHALL confer no authority and SHALL NOT be an input to any verdict. | Extends `ARCH-0003` W-19 and R-O-06 |
 | R-O-08 | S | Where a threshold is not met, the verdict SHALL name the members that counted, the members that did not, and, for a group, who enrolled each. | Extends R-O-06. `SPEC-0004` §10.4 authorization line |
-| R-O-09 | S | When a member leaves or is removed, the steward SHOULD issue a new group content key to the members who remain, so the departed key cannot read later content. | New. Part B only |
 
 **Acceptance test for R-M-13 to R-M-16 and R-O-08:** §8, vectors G-1 to G-9,
 each giving one `SPEC-0004` §10.4 verdict that two implementations (`mofn check`
-and the W-7 app) reproduce exactly. **For R-O-07 and R-O-09:** §8 K-1 and K-2.
+and the W-7 app) reproduce exactly. **For R-O-07:** G-1 to G-9 are evaluated
+with no content key present, and give the verdicts in §8; the Part B issue adds
+a test that holding a content key changes no verdict.
+
+R-O-09 of proposed.1 (re-keying on departure) moves with Part B to its own
+issue and is not proposed here.
 
 ---
 
@@ -153,7 +183,7 @@ and the W-7 app) reproduce exactly. **For R-O-07 and R-O-09:** §8 K-1 and K-2.
 
 | Type | Now | Proposed |
 |---|---|---|
-| `Principal` | `` `Key` \| `KeyId` \| `Name` \| `Threshold` \| `Group` `` — **`Group` has no KSA form yet** (§5.5) | unchanged list. KSA form of `Group`: target type 8 `[8, kid]`, *the members of the group whose key is `kid`* |
+| `Principal` | `` `Key` \| `KeyId` \| `Name` \| `Threshold` \| `Group` `` — **`Group` has no KSA form yet** (§5.5) | unchanged list. KSA form of `Group`: the `group` field of the threshold form of `trust` (`SPEC-0002` §8.6) and of a threshold anchor (`SPEC-0004` §4.2), holding the group key's `kid`. **No new target type** |
 | `Group` | (not a row) | `{ key: KeyId }`. Its members at time `t` are derived by `SPEC-0004` §5.4 (proposed). No statement lists them |
 | `Threshold` | `{ k, n, members: [Principal, ...] }`, `1 ≤ k ≤ n`, `n = len(members)` | `members` is a list of kids **or** one `Group`. For a group, `n` is the number of members at the evaluation time, and `k > n` is a failure at evaluation (`threshold-not-met`), not a decoding error |
 
@@ -179,7 +209,8 @@ an **attested value**, as a name is an attested string (`ARCH-0002` P6,
   delivery is the invitation. Its validity is the enrollment's expiry.
 - **Acceptance:** an `attestation` by `P` with `this = [1, P]` and the same
   value `G`. The member says of itself what the steward said of it. The two may
-  use different `member` types; only the value must match.
+  use different `member` types; only the value must match. Either may be
+  signed first; no order is checked.
 - **Leaving:** `P` revokes its acceptance (`revoke`, `SPEC-0002` §8.7).
   **Removal:** `S` revokes the enrollment. **Retiring a steward:** `G` revokes
   the appointment. Enrollments that steward made stop counting, because (a) no
@@ -212,10 +243,16 @@ new reason code `not-a-member` (§14.2) and a sentence that names it.
 
 - **Anchor** (`SPEC-0004` §4.2): `trusts` gains the form
   `{ group: kid, threshold: uint }`.
-- **Trust statement** (`SPEC-0002` §8.6): `this = [8, G]` with `threshold`
-  present and `trusts` absent. Without `threshold`, a trust to `[8, G]` MUST be
-  rejected at V8. A trust to each member singly is already written as a name
-  (§5.3.3), and a second spelling for it is not wanted.
+- **Trust statement** (`SPEC-0002` §8.6): the threshold form, with `this`
+  absent, **`group: G` in place of `trusts`**, and `threshold` present. A
+  trust MUST NOT carry both `trusts` and `group`, and a `group` without
+  `threshold` is not a form; either is rejected at V8 (N-15). This keeps the
+  statement and the anchor alike, and a 1-of-*n* trust to a group is written
+  `threshold: 1`, never by omission.
+- **Why not a target type** (proposed.1 had `[8, G]`): it would be a target
+  valid in one place only, the threshold form, while the anchor already names
+  the group in a field. A trust to each member singly is already written as a
+  name (§5.3.3), and a second spelling for it is not wanted.
 - Coverage and delegation from a group threshold follow §5 gap 4 exactly as for a
   listed threshold. The member set is `members(G, t)`.
 
@@ -279,7 +316,12 @@ Each omission is a decision.
   attribute ranges under `SPEC-0003` base kinds, not a tag language. DEC-005
   stays open: the group content key is wrapped for confidentiality, and that
   is not a signing envelope for an `ArtifactStatement`.
-- **No new statement kind.** Membership is an attestation of base kind `member`.
+- **No new statement kind and no new target type.** Membership is an
+  attestation of base kind `member`; a group is named by a `group` field
+  (§4.4). Target type 8 (proposed.1) is withdrawn.
+- **No order between enrollment and acceptance.** Membership needs both, valid
+  at the evaluation time; neither has to come first.
+- **No group content key** (Part B, §7). Deferred to its own issue.
 - **No shared signing key (option B, rejected).** If every member held `G`'s
   private key, any one member could sign as the group, which is 1-of-*n*; no
   signature could be attributed to a member; and every departure would force a
@@ -304,10 +346,15 @@ Each omission is a decision.
 
 ---
 
-## 7. Part B: the group content key `K`
+## 7. Part B: the group content key `K` — deferred
 
-Proposed for `SPEC-0001` §8.2 and `ARCH-0003`, not for this document's
-information model, because R-O-07 keeps `K` out of evaluation.
+**Deferred (proposed.2).** The reviewer moved Part B to its own issue. It needs
+a suite key exchange and a vetted HPKE library, neither of which exists, and no
+W-9 acceptance box depends on it. The text below is kept as the starting point
+for that issue; it is **not proposed here**, and R-O-09 goes with it.
+
+Originally proposed for `SPEC-0001` §8.2 and `ARCH-0003`, not for this
+document's information model, because R-O-07 keeps `K` out of evaluation.
 
 - `K` is a symmetric key generated by the steward's wallet with a vetted
   library's CSPRNG. It carries an **epoch**: a counter the steward increases
@@ -328,8 +375,8 @@ information model, because R-O-07 keeps `K` out of evaluation.
   Choosing between them, and choosing the vetted HPKE library, is a
   `SPEC-0002` change of its own.
 - **Part B is separable.** Parts A and C stand without it, and every §8 G-vector
-  is evaluated without `K`. If Part B is not ready by the W-9 deadline, the app
-  ships enrollment and group delegation, and `K` follows.
+  is evaluated without `K`. The app ships enrollment and group delegation, and
+  `K` follows under its own issue.
 
 ---
 
@@ -337,7 +384,7 @@ information model, because R-O-07 keeps `K` out of evaluation.
 
 Generated as `SPEC-0002` Appendix A vectors **after** acceptance, from the
 engine, never hand-written. Next free ids at the time of writing: TV-45, E-23,
-N-14. Fixture: `G` founds a group and appoints `S`; `S` enrolls P1, P2 and P3;
+N-14 (recheck against `main` when generating). Fixture: `G` founds a group and appoints `S`; `S` enrolls P1, P2 and P3;
 relying party R anchors `{ group: G, threshold: 2 }` about `build-provenance`
 (DV-1).
 
@@ -351,10 +398,11 @@ relying party R anchors `{ group: G, threshold: 2 }` about `build-provenance`
 | G-6 | a key T not appointed by `G` enrolls P4, who accepts; P1 and P4 attest | **no**: P4 `not-a-member` ("enrolled by a key G did not appoint") |
 | G-7 | the group delegates: P1 and P2 each trust K′ with identical `about` and `may-delegate`; K′ attests | **yes**, through one co-issued edge |
 | G-8 | as G-7, P2's `may-delegate` differs | **no**: the edge is not followed, `threshold-not-met`, the difference named |
-| G-9 | threshold hop: R anchors A with `depth 1`; A trusts `[8, G]`, threshold 2; P1 and P2 attest | **yes** |
+| G-9 | threshold hop: R anchors A with `depth 1`; A trusts `group: G`, threshold 2; P1 and P2 attest | **yes** |
 | N-14 | `trust` with `trusts: [A, A]`, `threshold: 2` | rejected at V8 |
-| K-1 | a member unwraps `K` at the current epoch; a non-member cannot | property test, no KSA vector (Part B format not fixed) |
-| K-2 | after P2 leaves, epoch *e + 1* is not openable with P2's key | property test |
+| N-15 | `trust` with both `trusts` and `group`; and one with `group` but no `threshold` | each rejected at V8 |
+
+K-1 and K-2 (proposed.1, the content key) move with Part B to its own issue.
 
 W-9's acceptance box "app and CLI give the same verdict" is met when G-1 to G-9
 produce byte-identical `mofn check --format json` output and the same app rows.
@@ -378,15 +426,15 @@ produce byte-identical `mofn check --format json` output and the same app rows.
 - **Freshness.** Leaving depends on the evaluator holding the revocation
   (`SPEC-0004` §7.1). Membership validity SHOULD be short: proposed 30 days as
   the app default, renewed by the steward.
-- **`K` gives no standing.** A member that leaks `K` leaks content, not
-  authority (R-O-07).
+- **A content key gives no standing.** If Part B adds one, a member that leaks
+  it leaks content, not authority (R-O-07).
 
 ---
 
 ## 10. Effect on `ARCH-0001` if adopted
 
 - §4.1: the `Principal`, `Threshold` and new `Group` rows as in §4.1 above.
-- §5.1: R-M-13 to R-M-16. §5.3: R-O-07 to R-O-09.
+- §5.1: R-M-13 to R-M-16. §5.3: R-O-07 and R-O-08.
 - §5.5: the `Group` row is **closed**, by `SPEC-0002`, `SPEC-0003` and
   `SPEC-0004` (§7 of the front matter's `spec_changes_owed`).
 - §7 DEC-002: "**Still owed:** `trusts: [A, A]` …" is closed by N-14.
@@ -394,9 +442,22 @@ produce byte-identical `mofn check --format json` output and the same app rows.
 - Route: a human accepts (or edits) this proposal; on that instruction, an ADR
   (next free: `ADR-0009`) records the group model, because it is a model change
   of the same weight as `ADR-0008`'s names.
+- **Dependency on mofn#195.** That open PR reopens `ADR-0002` and marks
+  `ARCH-0002` P3 and P6 not binding. §4.2 cites P6 and `ADR-0008` as the
+  precedent for membership as an attested value. The case for base kind
+  `member` does not rest on P6 (it is a value with a range, so a steward's
+  appointment can be scoped to one group), but the citation and the
+  `ADR-0009` route should be rechecked once #195 is decided. Folding this
+  proposal into `ARCH-0001` waits for #195, because both change `ARCH-0001`
+  and `propose-arch` allows one architecture change in flight.
 
 ---
 
 ## 11. Revisions
 
 - **proposed.1** (2026-11-17): first draft, W-9 (mofn#181), `DL-0053`.
+- **proposed.2** (2026-11-26): first review round (`DL-0053` `review.md`).
+  Target type 8 withdrawn; a group is a `group` field of the threshold form
+  (§4.4), N-15 added. No order between enrollment and acceptance (§4.2).
+  Part B deferred to its own issue with R-O-09, K-1 and K-2 (§7). Rebased
+  onto `ARCH-0001` v0.3.4; dependency on mofn#195 recorded (§10).
