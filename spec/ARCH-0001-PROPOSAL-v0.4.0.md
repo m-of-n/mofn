@@ -80,7 +80,7 @@ mofn#181) went through the eight choices the agent made itself (`DL-0053`
 | 6 | §6.4 gap 1: zero hops | agreed |
 | 7 | §6.4 gap 2: collapse only | agreed |
 | 8 | a bound of 256 members; 30-day default membership validity | agreed |
-| — | Part B, the group content key | **deferred** to its own issue (§7) |
+| — | Part B, the group content key | **deferred** to mofn#197 (§7) |
 
 The proposal as a whole is **not yet accepted**: `status: proposed`,
 `reviewed: false`. Part C gaps 3 to 5 and the set state (gap 4) have not had a
@@ -348,7 +348,8 @@ Each omission is a decision.
 
 ## 7. Part B: the group content key `K` — deferred
 
-**Deferred (proposed.2).** The reviewer moved Part B to its own issue. It needs
+**Deferred (proposed.2).** The reviewer moved Part B to its own issue,
+mofn#197. It needs
 a suite key exchange and a vetted HPKE library, neither of which exists, and no
 W-9 acceptance box depends on it. The text below is kept as the starting point
 for that issue; it is **not proposed here**, and R-O-09 goes with it.

@@ -120,7 +120,7 @@ had one. The human's answers:
 - If it is accepted: an ADR on instruction, the fold into ARCH-0001 v0.4.0, the
   SPEC-0002/0003/0004 changes, vectors G-1…G-9 and N-14, and BACKLOG rows for
   T-095.
-- A new issue for Part B (group content key, R-O-09, K-1, K-2, the suite key
-  exchange).
+- Part B is mofn#197 (group content key, R-O-09, K-1, K-2, the suite key
+  exchange), created 2026-11-26 with the human's approval of its text.
 - The #181 deadline (about Nov 26) has passed with the proposal unaccepted. The
   issue moves milestone, or the human decides otherwise.
