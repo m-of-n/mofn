@@ -5,9 +5,9 @@ title: "ARCH-0002 changelog"
 type: changelog
 parent: ARCH-0002
 status: active
-version: "0.10.0"
+version: "0.11.0"
 date: "2026-10-15"
-updated: "2026-11-06"
+updated: "2026-11-25"
 canonical_path: spec/ARCH-0002-CHANGELOG.md
 ---
 
@@ -24,7 +24,20 @@ Format: newest first. Versions match the principle document.
 > The 0.6.0 entry below is written **from its own merge commit and PR (#102)**,
 > not reconstructed from the diff, and says so for the same reason.
 
-## 0.10.0 — 2026-11-06
+## 0.11.0 — 2026-11-25
+
+- **P2, P3 and P6 reopened by the sponsor — `ADR-0002` §10.** Headings flipped
+  from `[accepted]` to `[reopened — not binding]`; status line, a note under each
+  heading and `agent_notes` updated. **No principle text changed.** MINOR, not
+  PATCH: the standing of three principles moved, though no wording did.
+- **P5 (with P5.1, P5.2) keeps `[accepted]`.** The sponsor did not object to it.
+  Its acceptance rested on `ADR-0002`, which is now `proposed`, so its standing
+  is held pending review; this version does not rule on it.
+- P4, P7 and P1.1 stay `[draft]`. P1 is unaffected (`ADR-0001`).
+- The 0.10.0 entry below is history. It is not edited.
+- Recorded in `design-log/0057-adr-0002-reopen/`.
+
+## 0.10.0 — 2026-11-06 *(P2, P3, P6 set aside in 0.11.0)*
 
 - **P2, P3, P5 (with P5.1 and P5.2) and P6 accepted — `ADR-0002`.** Headings
   flipped from `[draft]` to `[accepted]`; status line and `agent_notes`

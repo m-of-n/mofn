@@ -5,15 +5,27 @@ title: "ARCH-0001 changelog"
 type: changelog
 parent: ARCH-0001
 status: active
-version: "0.3.4"
+version: "0.3.5"
 date: "2026-09-15"
-updated: "2026-11-23"
+updated: "2026-11-25"
 canonical_path: spec/ARCH-0001-CHANGELOG.md
 ---
 
 # ARCH-0001 changelog
 
 Format: newest first. Versions match the architecture document.
+
+## 0.3.5 — 2026-11-25
+
+PATCH. Editorial; no requirement, DEC-\* or model text moves.
+
+- **`ADR-0002` reopened by the sponsor** (`ADR-0002` §10, `DL-0057`). §4.2 gains
+  a dated note saying its 0.2.0 rewrite, which cited that ADR, no longer rests
+  on an accepted one. R-M-08's note says the same of its P2 basis.
+- §4.2's table is unchanged. `R-M-04` is unchanged and is named in the note,
+  because ARCH-0002 P6's "no distinct naming object" and R-M-04's "distinct
+  object kinds" have to be read together (analysis in `DL-0057`).
+- The 0.1.8 and 0.2.0 entries below are history and are not edited.
 
 ## 0.3.4 — 2026-11-23
 

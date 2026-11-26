@@ -7,10 +7,10 @@ description: "Every open decision across both repos, ranked by what it blocks. T
 type: process
 category: process
 status: active
-version: "0.8.0"
+version: "0.9.0"
 version_policy: "semver; MINOR = decisions added or closed"
 date: "2026-09-22"
-updated: "2026-11-17"
+updated: "2026-11-25"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -75,7 +75,7 @@ Ordered by **what it unblocks**, not by importance.
 | ~~2~~ | **DECIDED 2026-10-25 — option 5, `ADR-0004`.** Was: **DEC-002 — the encoding. NARROWED 2026-09-28 by MD-3 to option 5** (CBOR data model, no IANA tags, COSE export only; YAML as the human form). **Still open: a narrowing is not an acceptance, and no ADR exists.** Option 2 is retained only as the comparison fixture. See the standing note below — the library's evidence now cuts against the narrowing. | ARCH-0001 §7, proposal §3.3, mofn#8 | Everything downstream. WP1 is encoding-neutral by design, but D5 needs a target by **Oct 28**. |
 | ~~3~~ | ~~**Who drives the agent lanes — students or sponsor?**~~ **ANSWERED 2026-09-28 by MD-4** — students drive, with named lanes: David #13 → option-5 encoder fixtures and #23 → D3 mechanism; Ndewedo #14 → D3 and the archives domain. The teaching reading was taken over the throughput one. | PROC-0002 §8.1 | closed |
 | ~~4~~ | **DONE 2026-11-07 — `ARCH-0001` v0.2.0** (mofn#134, `DL-0028`). The proposal is folded in and superseded: R-M-11, R-O-05 and R-O-06 adopted; DEC-006 withdrawn; DEC-007 filed and accepted (`ADR-0007`); RFC 9943 cited; §4.2 rewritten as one form. Was: **Accept the proposal as ARCH-0001 v0.2.0?** | proposal | — |
-| ~~4a~~ | **DONE 2026-11-06 — `ADR-0002` accepted, P5 as amended**, by `ndewedo-newbury` under the October 2026 delegation (mofn#6, `DL-0024`). P2, P3, P5 (with P5.1, P5.2) and P6 are normative; P4 and P7 stay draft. Residue accepted knowingly: the decision maker wrote P5.1/P5.2, so a second reader is still owed (`ADR-0002` §9). Was: **Accept `ADR-0002`?** MD-2 granted the four provisionally, final only through an ADR after review. | ADR-0002 | Unblocks item 4 (ARCH-0001 v0.2.0, §4.2 rewrite) and 5d. |
+| 4a | **REOPENED 2026-11-25 by the sponsor — `ADR-0002` is `proposed` again** (`ADR-0002` §10, `DL-0057`). P2, P3 and P6 are **not binding**; P5 (with P5.1, P5.2) was not objected to and is held pending review; `decision_makers` is empty. The sponsor's objections: P2 is too narrow (more statement forms, and the original vocabulary carried validity), P3 is disputed, P6 is rejected as formulated, and the ADRs are not consistent with each other or traceable to the original goals. **Open; owner: sponsor.** Was: **DONE 2026-11-06 — `ADR-0002` accepted, P5 as amended**, by `ndewedo-newbury` under the October 2026 delegation (mofn#6, `DL-0024`). P2, P3, P5 (with P5.1, P5.2) and P6 are normative; P4 and P7 stay draft. Residue accepted knowingly: the decision maker wrote P5.1/P5.2, so a second reader is still owed (`ADR-0002` §9). Was: **Accept `ADR-0002`?** MD-2 granted the four provisionally, final only through an ADR after review. | ADR-0002 | Unblocks item 4 (ARCH-0001 v0.2.0, §4.2 rewrite) and 5d. |
 | ~~4b~~ | **DONE 2026-10-25 — `ADR-0004` (DEC-002) and `ADR-0005` (DEC-003), both accepted, both `reviewed: false`.** Was: **The DEC-002 ADR.** Item 2's instrument. Scoring input is in `library/topics/canonical-encoding.yaml` (`status: answered`) and summarised on mofn#8. | mofn#8 | **Oct 28.** Nothing downstream of D5 can freeze until it is accepted. |
 
 ### Standing note on item 2 — `ADR-0003` D2, and what it did not do
@@ -238,7 +238,7 @@ supply-chain profile first (T1-A), then accept P7 or correct it.
 
 | # | Decision | Where |
 |---|---|---|
-| ~~6a~~ | ~~Five *kinds* or one *form*?~~ **ANSWERED 2026-09-22 by ARCH-0002 P6** — a name is an attested string, so the five are functions over one form. §4.3's three *procedures* stay separate; that was never about object kinds. `AclEntry` is the informative outlier: unsigned, so no speaker, so not a statement — it is the fixed floor DEC-008 needs. **`ARCH-0001` §4.2 still lists five kinds; carrying the answer into it is part of register item 4.** P6 accepted by `ADR-0002` on 2026-11-06; §4.2 carries a pointer note since `ARCH-0001` v0.1.8. | ~~ARCH-0001 §4.2~~ |
+| ~~6a~~ | ~~Five *kinds* or one *form*?~~ **ANSWERED 2026-09-22 by ARCH-0002 P6** — a name is an attested string, so the five are functions over one form. §4.3's three *procedures* stay separate; that was never about object kinds. `AclEntry` is the informative outlier: unsigned, so no speaker, so not a statement — it is the fixed floor DEC-008 needs. **`ARCH-0001` §4.2 still lists five kinds; carrying the answer into it is part of register item 4.** P6 accepted by `ADR-0002` on 2026-11-06 — **reopened 2026-11-25: P6 is not binding, so this answer is open again** (`ADR-0002` §10); §4.2 carries a pointer note since `ARCH-0001` v0.1.8. | ~~ARCH-0001 §4.2~~ |
 | ~~6b~~ | ~~"Topic" collides~~ · ~~6c~~ ~~"Tag" collides~~ — **WITHDRAWN 2026-09-22.** Neither survives the collision test now stated in `GLOSSARY-0001`: two senses collide only when both can be live in the same context. Both are homonyms across separated repos and documents. Raising them was over-correction after three genuine collisions. | GLOSSARY-0001 |
 
 ## Tier 3 — process, decide when convenient
@@ -269,6 +269,16 @@ supply-chain profile first (T1-A), then accept P7 or correct it.
 | ~~**28**~~ | **DECIDED 2026-11-09 — Python throughout; Tauri withdrawn.** Was: *Wallet GUI framework — Tauri, tentative (MD-7); PySide6 the fallback.* MD-7 was never confirmed, and W-6 shipped `mofn run` in Textual with PyInstaller builds (#127 §6). Decided by `ndewedo-newbury` (`DL-0038`): every UI is Python and calls the engine in process — no Rust, no TypeScript, no sidecar. **The Textual app is the Fall 2026 UI** (same day): `mofn run` is the GUI for D8, shipped as PyInstaller builds; there is no desktop window and no PySide6. W-5 (#69) is rescoped into `mofn run`. **Amended 2026-11-16** by `ndewedo-newbury` (W-7 #179, `DL-0050`): *Python throughout* stands, but the December audience needs a desktop window a non-engineer can use, and W-8/W-9 need one to land in. So a **PySide6 (Qt) + PyInstaller** macOS app is built at `prototype/wallet-app/`, importing `prototype/wallet/` in process (every action runs the `mofn` command it shows, as `mofn run` does); `mofn run` stays the CLI's UI. Same repo until the engine ships as a pip package; released on the same `wallet-v*` tag, not a tag of its own (2026-11-17). Rejected: Toga/BeeWare, SwiftUI, reviving Tauri, a separate repo now, closing #69 — reasons in `DL-0050`. | decided, amended |
 
 ---
+
+## What changed in v0.9.0 — 2026-11-25
+
+**One decision reopened.** Item **4a**: `ADR-0002` is `proposed` again, by the
+sponsor. P2, P3 and P6 are not binding, so item **6a**'s answer (P6) is open
+again. P5 was not objected to; it is held pending review. No DEC-\* is accepted
+or touched, and the other ADRs keep their status. Items 4 and 5d were closed on
+the strength of `ADR-0002`; they are **not** reopened here, but both rest on it
+and are listed in `ADR-0002` §10.3 for the reviewer. Recorded in `DL-0057`,
+which also holds the gap analysis and a proposed order of work.
 
 ## What changed in v0.8.0 — 2026-11-17
 

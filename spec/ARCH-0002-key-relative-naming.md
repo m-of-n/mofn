@@ -7,10 +7,10 @@ description: "Type names, constraints, types-as-schemas, hash-identified domains
 type: architecture
 category: security
 status: draft
-version: "0.10.0"
+version: "0.11.0"
 version_policy: "semver; PATCH = editorial; MINOR = additive principle; MAJOR = breaking"
 date: "2026-09-22"
-updated: "2026-11-06"
+updated: "2026-11-25"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -36,10 +36,13 @@ agent_notes: >
   ARCH-0001 remains the source of truth for the information model. This
   document holds the principles that constrain it. Where the two appear to
   conflict, ARCH-0001's §4 model governs and this document is wrong.
-  P1 is accepted (ADR-0001). P2, P3, P5 (with P5.1, P5.2) and P6 are
-  accepted (ADR-0002, 2026-11-06). P4 and P7 are drafted from sponsor
-  direction of 2026-09-22 and are not accepted. The CBOR note is an observation, not a
-  principle. DEC-008 and DEC-009 are open.
+  P1 is accepted (ADR-0001). REOPENED 2026-11-25 by the sponsor: P2, P3 and P6
+  are [reopened] and NOT binding (ADR-0002 section 10, DL-0057). P5 (with P5.1,
+  P5.2) keeps its marker; its acceptance rested on ADR-0002, which is reopened
+  as a whole, so its standing is held pending review and is not ruled on here.
+  P4 and P7 are drafted from sponsor direction of 2026-09-22 and are not
+  accepted. The CBOR note is an observation, not a principle. DEC-008 and
+  DEC-009 are open.
   P5 gained two clauses in v0.7.0 (P5.1, P5.2 - mofn#72), accepted with P5
   by ADR-0002. needs_review stays true: no reader who did not write P5.1/P5.2
   has read them (ADR-0002 §9). The clauses are an INPUT to DEC-002 and
@@ -51,11 +54,19 @@ agent_notes: >
 
 # ARCH-0002 — Key-relative naming and processing
 
-**Status: draft.** P1 is accepted via `ADR-0001`. **P2, P3, P5 (with P5.1 and
-P5.2) and P6 are accepted via `ADR-0002`** (2026-11-06). **P4 and P7 are
-drafted from sponsor direction of 2026-09-22 and are not accepted.** P1.1 is
-draft. The CBOR note is an
-observation recorded as context, not a principle.
+**Status: draft.** P1 is accepted via `ADR-0001`. **P2, P3 and P6 are
+reopened and not binding** (2026-11-25, by the sponsor; `ADR-0002` §10,
+`DL-0057`). Their text below is unchanged; only their standing changed. **P5**
+(with P5.1 and P5.2) keeps its marker, but it was accepted by the same ADR, so
+its standing is **held pending review** and this version does not rule on it.
+**P4 and P7 are drafted from sponsor direction of 2026-09-22 and are not
+accepted.** P1.1 is draft. The CBOR note is an observation recorded as context,
+not a principle.
+
+> **Reopened ≠ withdrawn.** The sponsor's objections are recorded in `ADR-0002`
+> §10.1. No principle text was changed and none was replaced. Nothing may cite
+> P2, P3 or P6 as accepted until a decision maker accepts them, or a successor,
+> in writing.
 
 ARCH-0001 defines *what the objects are*. This defines *whose meanings they
 carry*.
@@ -129,7 +140,9 @@ is rejected on import.
 
 ---
 
-## P2 — The statement form: *A says B has C* **[accepted]**
+## P2 — The statement form: *A says B has C* **[reopened — not binding]**
+
+> **Reopened 2026-11-25 (`ADR-0002` §10).** The sponsor objected to P2; the text below is the 2026-11-06 text, unchanged, and is **not binding**. See `ADR-0002` §10.1 for the objection and `design-log/0057-adr-0002-reopen/analysis.md` for what it touches.
 
 Statements have various structures and perform various functions. They share one
 shape:
@@ -196,7 +209,9 @@ author never agreed.
 
 ---
 
-## P3 — A type is a schema **[accepted]**
+## P3 — A type is a schema **[reopened — not binding]**
+
+> **Reopened 2026-11-25 (`ADR-0002` §10).** The sponsor objected to P3; the text below is the 2026-11-06 text, unchanged, and is **not binding**. See `ADR-0002` §10.1 for the objection and `design-log/0057-adr-0002-reopen/analysis.md` for what it touches.
 
 A type is not a bare label. It is a **schema** that carries, together:
 
@@ -300,7 +315,9 @@ prior art we take ideas from, and fidelity to its formalism is not a goal.
 
 ---
 
-## P6 — A name is an attested string **[accepted]**
+## P6 — A name is an attested string **[reopened — not binding]**
+
+> **Reopened 2026-11-25 (`ADR-0002` §10).** The sponsor objected to P6; the text below is the 2026-11-06 text, unchanged, and is **not binding**. See `ADR-0002` §10.1 for the objection and `design-log/0057-adr-0002-reopen/analysis.md` for what it touches.
 
 Sponsor direction, 2026-09-22: *"a 'name' is just a type of attested string."*
 
