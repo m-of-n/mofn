@@ -111,10 +111,24 @@ had one. The human's answers:
 - `ARCH-0001` moved to v0.3.4 since proposed.1. No requirement id clashes
   (R-M-13 and up, R-O-07 and up are free).
 
-## Owed
+## Acceptance (ndewedo-newbury, 2026-11-26)
 
-- Acceptance of the proposal as a whole (Round 2 settled the eight choices and
-  Part B, not the text).
+Asked whether to accept proposed.2 as a whole, the human chose **"Accept now"**
+over "accept after a second reader on gap 4" and "not yet". The second reader
+for the set state was therefore **declined**, not done: the risk is recorded,
+and the engine's G-7 to G-9 are the first independent check of it.
+
+Asked how the fold should relate to mofn#195, the human chose **"Wait for #195
+to merge"** over folding in parallel (the agent's recommendation) and asking
+the sponsor first. The agent's recommendation was rejected in favour of
+`propose-arch`'s one-change-in-flight rule. Consequence: `ADR-0009`, the
+`ARCH-0001` v0.4.0 fold and the SPEC changes start after #195 merges; the
+engine work (T-095, membership), which edits no `spec/` file, may start now.
+
+The human also said #181 "can be completed today" (2026-11-26), and so is
+not moved to the next milestone.
+
+
 - A second reader for Part C, gap 4 (the set state). It is the rule the engine
   most depends on.
 - If it is accepted: an ADR on instruction, the fold into ARCH-0001 v0.4.0, the
@@ -122,5 +136,5 @@ had one. The human's answers:
   T-095.
 - Part B is mofn#197 (group content key, R-O-09, K-1, K-2, the suite key
   exchange), created 2026-11-26 with the human's approval of its text.
-- The #181 deadline (about Nov 26) has passed with the proposal unaccepted. The
-  issue moves milestone, or the human decides otherwise.
+- After #195 merges: `ADR-0009` (on this instruction), the fold, the SPEC
+  changes and vectors. Recheck §4.2's P6 citation against #195's outcome.

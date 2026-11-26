@@ -14,7 +14,7 @@ updated: "2026-11-26"
 authors:
   - role: proposer
     id: conversation-claude-opus-5-5
-decision_makers: []
+decision_makers: [ndewedo-newbury]
 reviewers: [ndewedo-newbury]
 needs_review: true
 reviewed: false
@@ -82,9 +82,11 @@ mofn#181) went through the eight choices the agent made itself (`DL-0053`
 | 8 | a bound of 256 members; 30-day default membership validity | agreed |
 | — | Part B, the group content key | **deferred** to mofn#197 (§7) |
 
-The proposal as a whole is **not yet accepted**: `status: proposed`,
-`reviewed: false`. Part C gaps 3 to 5 and the set state (gap 4) have not had a
-second reader.
+**The decision maker accepted proposed.2 as a whole on 2026-11-26**
+(`DL-0053` `review.md`, "Acceptance"), including Part C gaps 3 to 5 and the
+set state, without a second reader. `status` stays `proposed` until `ADR-0009`
+records the acceptance and the text is folded into `ARCH-0001` (§10). The fold
+waits for mofn#195 to merge, by the decision maker's choice.
 
 ---
 
