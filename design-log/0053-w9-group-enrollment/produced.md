@@ -60,3 +60,23 @@ choices itself, and each is **flagged for review** in `review.md`:
 6. Gap 1 made normative as **zero hops** (the narrow reading).
 7. Gap 2 kept as **collapse only**.
 8. A group size bound of **256**, and a **30-day** default membership validity.
+
+## proposed.2 (2026-11-26)
+
+`spec/ARCH-0001-PROPOSAL-v0.4.0.md` revised under the human's review
+(`review.md`, Round 2). `status: proposed` and `reviewed: false` are kept;
+`reviewers` names the human.
+
+- **Review status table** added after the introduction: the eight choices
+  and what the reviewer said about each.
+- **§4.1, §4.4:** target type 8 withdrawn. A group is named by a `group` field
+  that takes the place of `trusts` in the threshold form of `trust`, as the
+  anchor already does. `trusts` with `group`, or `group` without `threshold`,
+  is rejected at V8 (new negative vector N-15).
+- **§2, §4.2, §6:** enrollment and acceptance may come in either order.
+- **§3, §7, §8, §9:** Part B (group content key) deferred to its own issue.
+  R-O-09, K-1 and K-2 go with it. R-O-07 stays, tested by G-1 to G-9
+  being evaluated with no content key.
+- **§10:** rebased onto `ARCH-0001` v0.3.4. Dependency on mofn#195 (which
+  reopens `ADR-0002` P3 and P6) recorded: the fold waits for it.
+- **§11:** revision line.

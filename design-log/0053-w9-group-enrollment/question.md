@@ -45,3 +45,12 @@ T-043, T-095, W-7; issues #180 (W-8) and #173 (W-3 TUI).
    is a member?"* The agent tabulated both and recommended that the spec allow
    either, that stewardship never give a vote, and that the app default make
    the creator the steward and a self-enrolled member. **Human: accepted.**
+
+## Review round (2026-11-23 to 2026-11-26)
+
+The human asked why mofn#181 was still open. The agent found the proposal
+unreviewed. The human then asked to review it, and the agent summarised it
+section by section and listed the eight choices from `produced.md`. The human
+answered each point, asking for an explanation of 2 to 7 and of Part B before
+deciding. Outcome in `review.md`, "Round 2"; the proposal became
+`proposed.2`.
