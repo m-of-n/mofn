@@ -7,9 +7,9 @@ description: "Task backlog. Each task becomes a GitHub issue; this file is the d
 type: backlog
 category: process
 status: draft
-version: "0.17.1"
+version: "0.17.2"
 date: "2026-09-16"
-updated: "2026-11-23"
+updated: "2026-11-25"
 needs_review: true
 reviewed: false
 canonical_path: project/BACKLOG-0001.md
@@ -146,7 +146,7 @@ summary bar). Accept or keep #32's rule — L-035.
 | T-029a | ~~Schema scenarios (3–5, incl. email delegation) and Product Spec personas, GAP-1 (MD-1)~~ — done: `UC-0001`, eight scenarios each with personas, statements, evaluation and failure cases, incl. email delegation (mofn#104, 2026-10-16) | D3 | S1+S2 | M | done |
 | T-029b | Product Spec, PLAN-0002 v0.2 — GAP-4 real sketches (Ndewedo, Oct 14), GAP-6 course dates (PL) | — | PL+S2 | M | doing |
 | T-029c | ~~Confirm Tauri for the wallet GUI (MD-7)~~ — **decided 2026-11-09: Python throughout, Tauri withdrawn** (`DECISIONS-0001` item 28, `DL-0038`). MD-7 was never confirmed, and W-6 had already shipped Textual + PyInstaller (#127 §6). `PLAN-0002` §5.1 and `PLAN-0004` §4 updated. **The Textual app is the UI** (`mofn run`); no windowed GUI, W-5 rescoped | D8 | S2 | S | done |
-| T-029d | ADR-0002: accept P2, P3, P5, P6 provisionally (MD-2) — **drafted** (#83, `proposed`); condition 6(b) **met** by ARCH-0002 v0.7.0, condition 6(a) **met** 2026-10-16 (v0.7.1 carries a reviewer, `reviewed: true`). **`SPEC-0003` §7.1 cites P5 by name inside the Definition Publisher conformance class** (ADR-0002 §6a), so a governing spec rests on a draft principle. What is left is the sponsor's call: accept P5 **as amended**, or accept P2/P3/P6 and P5 **as drafted**, holding P5.1/P5.2 for a reader who did not write them | — | ~~Claude~~→**PL** | M | **done** — accepted 2026-11-06 by `ndewedo-newbury`, P5 as amended (`ADR-0002` §9, `DL-0024`); second reader for P5.1/P5.2 still owed |
+| T-029d | ADR-0002: accept P2, P3, P5, P6 provisionally (MD-2) — **drafted** (#83, `proposed`); condition 6(b) **met** by ARCH-0002 v0.7.0, condition 6(a) **met** 2026-10-16 (v0.7.1 carries a reviewer, `reviewed: true`). **`SPEC-0003` §7.1 cites P5 by name inside the Definition Publisher conformance class** (ADR-0002 §6a), so a governing spec rests on a draft principle. What is left is the sponsor's call: accept P5 **as amended**, or accept P2/P3/P6 and P5 **as drafted**, holding P5.1/P5.2 for a reader who did not write them | — | ~~Claude~~→**PL** | M | **reopened 2026-11-25** — accepted 2026-11-06 by `ndewedo-newbury` (`ADR-0002` §9, `DL-0024`), then reopened by the sponsor: `ADR-0002` is `proposed`, P2/P3/P6 not binding, P5 held pending review (`ADR-0002` §10, `DL-0057`); owner now the sponsor |
 | T-029e | ~~Close T1-A in DECISIONS-0001 citing MD-1~~ — done 2026-10-10 in DECISIONS-0001 v0.2.0; PLAN-0002 §2 carries MD-1. The row, not the work, was stale | — | Claude | S | done |
 
 ## I2 — Schema + DEC-002 · Oct 15–28 · D4 D5

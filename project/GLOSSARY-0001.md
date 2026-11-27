@@ -7,10 +7,10 @@ description: "Precise senses for the project's overloaded vocabulary. Written be
 type: reference
 category: process
 status: draft
-version: "0.3.0"
+version: "0.3.1"
 version_policy: "semver; MINOR = terms added"
 date: "2026-09-22"
-updated: "2026-10-14"
+updated: "2026-11-25"
 needs_review: true
 reviewed: false
 canonical_path: project/GLOSSARY-0001.md
@@ -129,6 +129,16 @@ verdict — a homonym across two repositories, not a collision.
 ---
 
 ## Settled terms
+
+> **Reopened 2026-11-25.** `ADR-0002` is `proposed` again (`ADR-0002` §10,
+> `DL-0057`), so ARCH-0002 P2, P3 and P6 are not binding. These entries take
+> their sense from them and are **under review**: **Statement**, **Speaker**,
+> **Says**, **Attestation**, **Delegation**, **Constraint**, **Contract** and
+> **Type**. They are kept as written, as the vocabulary in use, not as settled
+> definitions. This glossary does not yet define **name**, **principal**,
+> **validity**, **threshold**, **claim** or **attribute**, and the analysis in
+> `DL-0057` records where the documents already use those words in different
+> senses.
 
 **KSA** — Key-centric Semantic Attestations: the protocol specified by SPEC-0001
 to SPEC-0005, with its design decisions in ADR-0003.

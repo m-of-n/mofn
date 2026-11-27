@@ -6,20 +6,24 @@ short_title: "ADR-0002 provisional principles"
 description: "Records MD-2's provisional grant over P2, P3, P5 and P6, and proposes the finalisation it deferred. P4 and P7 stay held."
 type: decision
 category: security
-status: accepted
-version: "1.0.0"
-version_policy: "semver; on acceptance this becomes 1.0.0 and thereafter changes only by superseding"
+status: proposed
+version: "1.1.0"
+version_policy: "semver; on acceptance this becomes 1.0.0 and thereafter changes only by superseding; a reopening returns the ADR to proposed and moves MINOR"
 date: "2026-10-10"
-updated: "2026-11-06"
-decision_makers:
-  - role: student
-    id: ndewedo-newbury
-    authority: >
-      Delegated by the sponsor (paul-lambert) on a Zoom call in October 2026;
-      ARCH-0001 v0.1.7 front matter. No written sponsor confirmation is
-      recorded (DL-0021).
+updated: "2026-11-25"
+reopened: "2026-11-25"
+reopened_by: sponsor
+previous_acceptance:
+  status: accepted
+  version: "1.0.0"
+  date: "2026-11-06"
+  decision_maker: ndewedo-newbury
+  note: >
+    Kept as history, not as a current decision. The acceptance is set aside by
+    the reopening in section 10; it is not erased (DL-0057).
+decision_makers: []
 reviewers: []
-needs_review: false
+needs_review: true
 reviewed: false
 canonical_path: spec/ADR-0002-provisional-principles.md
 defers_to: ARCH-0001
@@ -28,6 +32,12 @@ companion:
   - spec/ARCH-0002-CHANGELOG.md
 supersedes: []
 agent_notes: >
+  REOPENED 2026-11-25 by the sponsor (section 10, DL-0057). Status is proposed
+  again and decision_makers is empty. P2, P3 and P6 are NOT binding. P5 (with
+  P5.1, P5.2): not objected to, text unchanged, standing held pending review.
+  P4, P7, P1.1 unchanged. Nothing may cite P2, P3 or P6 as accepted until a
+  decision maker accepts a successor or this ADR again. The text below this
+  note is the record of the 2026-11-06 acceptance, kept as history:
   ACCEPTED 2026-11-06 by ndewedo-newbury: P2, P3, P5 AS AMENDED (P5.1, P5.2)
   and P6 are normative; P4 and P7 stay draft. No DEC-* accepted. §9 records
   the decision and the self-review residue, accepted knowingly. The note below
@@ -45,11 +55,15 @@ agent_notes: >
 
 # ADR-0002 — P2, P3, P5 and P6
 
-**Status: accepted** — 2026-11-06, by `ndewedo-newbury` under the sponsor's
-October 2026 delegation (`ARCH-0001` v0.1.7). P2, P3, P5 **as amended** (P5.1,
-P5.2) and P6 are normative; P4 and P7 stay draft. **No DEC-\* is accepted.**
-The decision and its one residue are in §9. §1–§8 are the proposal as it stood,
-kept unchanged; where they say "proposed" or "the sponsor's act", §9 governs.
+**Status: proposed — reopened 2026-11-25 by the sponsor** (section 10; `DL-0057`).
+The sponsor set aside the 2026-11-06 acceptance. **P2, P3 and P6 are not
+binding.** P5 (with P5.1 and P5.2) was not objected to; its text and its
+`ARCH-0002` marker are unchanged, and its standing is held pending review.
+`decision_makers` is empty again. **No DEC-\* is accepted or touched.**
+
+The rest of this file, sections 1–9, is the record as it stood on 2026-11-06.
+It is kept unchanged as history. Where it says "accepted" or "normative", read
+section 10: that wording describes the set-aside decision, not a current one.
 
 This file exists because there is currently **no normative home for the four
 principles the project is already building on.** `prototype/statements/`,
@@ -376,7 +390,11 @@ cell, and ARCH-0002 is the home the project chose for exactly this.
 
 ---
 
-## 9. Decision — 2026-11-06
+## 9. Decision — 2026-11-06 *(set aside 2026-11-25 — see §10)*
+
+> **Reopened.** Everything in this section is the record of a decision the
+> sponsor has since set aside. The table below is not the current standing;
+> §10.2 is.
 
 **Accepted, P5 as amended.** Decided by `ndewedo-newbury` in the mofn#6 thread
 (T-012), under the sponsor's October 2026 delegation recorded in `ARCH-0001`
@@ -418,3 +436,78 @@ DEC-007, DEC-008 and DEC-009 are untouched; DEC-007's re-statement in P3's
 terms (register 5d) is owed, not done.
 
 Recorded in `design-log/0024-adr-0002-accept/`.
+
+
+---
+
+## 10. Reopened — 2026-11-25, by the sponsor
+
+### 10.1 What the sponsor said
+
+On 2026-11-25 the sponsor reviewed this ADR and reopened it. The objections,
+restated in neutral form and not as quotations (the sponsor's words are in
+`design-log/0057-adr-0002-reopen/question.md`):
+
+| item | objection |
+|---|---|
+| **P2** — *A says B has C* | **Too narrow.** There are more statement forms than this one. The project had a richer vocabulary, including limits on time (validity), and P2 does not carry it. |
+| **P3** — a type is a schema | **Disputed.** Whether a type is a schema is questioned; the sponsor did not accept it as stated. |
+| **P6** — a name is an attested string | **Rejected** as formulated. The sponsor rejected the claim that a name is a signed string. |
+| **Process** | The ADRs are **not consistent** with each other and do not **trace to the original goals**. The project needs one consistent base architecture and one set of definitions, not a sequence of separate questions each settled by its own ADR. |
+
+This ADR therefore goes back to `proposed`. It is **not** superseded and it is
+**not** withdrawn: nothing here replaces P2, P3 or P6, and nothing decides what
+should. That is the work §10.4 points to.
+
+### 10.2 Standing now
+
+| principle | standing before (§9) | standing now |
+|---|---|---|
+| P2 — *A says B has C* | accepted | **reopened — not binding** |
+| P3 — a type is a schema | accepted | **reopened — not binding** |
+| P6 — a name is an attested string | accepted | **reopened — not binding** |
+| P5 — validity checked, never assumed, with P5.1 and P5.2 | accepted, as amended | **unchanged, held pending review.** The sponsor did not object to P5 and this change does not rule on it. Because the ADR is reopened as a whole, P5 is re-examined with the rest and is not re-decided here. `SPEC-0002` §4.3 and §4.1 state P5.1's rule on their own and cite no principle; they are untouched |
+| P4, P7, P1.1 | draft | draft — unchanged |
+| P1 | accepted by `ADR-0001` | accepted — a different ADR, not reopened |
+
+What does **not** change: the bytes. No statement, vector, `DefinitionId` or
+engine result moves, because the specifications and the wallet do not depend on
+the words "a type is a schema" or "a name is an attested string" for any
+behaviour. The reopening changes what the principles claim, not what the
+software does.
+
+### 10.3 What cites this ADR, and what was done about it
+
+None of the accepted ADRs below is edited or changed in status by this
+reopening. An accepted ADR changes only by superseding. They are listed so a
+reviewer can see which decisions lean on what is now open.
+
+| document | how it leans on ADR-0002 | status of that document |
+|---|---|---|
+| `ADR-0004` (DEC-002) | cites P5.1 as the basis for reject-not-repair (decision item 2 and its consequences) | accepted — unchanged; P5 is held pending review, not objected to, and `SPEC-0002` §4.3 states the rule itself |
+| `ADR-0005` (DEC-003) | cites P5.2 for the DSSE `KEYID` row, and P1.1 (draft) | accepted — unchanged; same position as `ADR-0004` |
+| `ADR-0006` (DEC-001) | rejected-alternative row for `kofn-certs` cites P6 | accepted — unchanged; the decision (slug `m-of-n`) does not depend on P6 |
+| `ADR-0007` (DEC-007) | cites P3 as accepted as one of its grounds | accepted — **unchanged, flagged**: re-read it once P3 is settled |
+| `ADR-0008` (SDSI names) | context says P6 makes a name an attested string | accepted — **unchanged, flagged**: its context says *P6 makes a name an attested string*; the decisions themselves specify SDSI names (a name target, base kind 12), which the reviewer should read against whatever replaces P6 |
+| `ARCH-0001` §4.2 and R-M-08 | rewritten in 0.2.0 under this ADR | draft — annotated in 0.3.5 |
+| `ARCH-0002` P2, P3, P6 | headings marked `[accepted]` | draft — markers changed to `[reopened]` in 0.11.0 |
+| `SPEC-0003` status and §6.4 | "realises ARCH-0002 … P3", cites P6 | draft — annotated in 0.3.1 |
+| `GLOSSARY-0001` | defines Statement, Attestation, Delegation, Constraint, Type from P2 and P3 | draft — annotated in 0.3.1 |
+| `DECISIONS-0001` item 4a, 6a; `BACKLOG-0001` T-029d | record the acceptance | register and backlog — updated |
+
+### 10.4 What closing this takes
+
+Acceptance is by the sponsor or the decision maker, in writing, with a name in
+`decision_makers` only when that person has acted (§7). Before that:
+
+1. The gap analysis in `design-log/0057-adr-0002-reopen/analysis.md` traces the
+   original goals and vocabulary against `ARCH-0001`, `ARCH-0002`, ADR-0002,
+   ADR-0004 to ADR-0008 and `SPEC-0001` to `SPEC-0005`, and against what the
+   wallet engine does. It records where they narrow or contradict each other.
+2. It proposes an ordered plan: one canonical definitions document that every
+   ADR must cite, then the principles restated against it, then the ADRs
+   re-read. The plan is a proposal. The sponsor decides whether to take it.
+3. Until a successor or this ADR is accepted, **no document may cite P2, P3 or
+   P6 as accepted.**
+
+Recorded in `design-log/0057-adr-0002-reopen/`.

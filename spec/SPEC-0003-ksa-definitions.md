@@ -7,10 +7,10 @@ description: "How a key publishes what statements mean: hash-identified definiti
 type: specification
 category: security
 status: draft
-version: "0.3.0"
+version: "0.3.1"
 version_policy: "semver; MAJOR = any change to hashed bytes or evaluation results; MINOR = additive registry entries; PATCH = editorial"
 date: "2026-10-14"
-updated: "2026-11-24"
+updated: "2026-11-25"
 decision_makers:
   - role: sponsor
     id: paul-lambert
@@ -64,8 +64,8 @@ rendered as a sentence. Process definitions are specified in SPEC-0005.
 
 ## Status of this document
 
-Draft for review in the m-of-n project. Realises ARCH-0002 P1 (accepted), P3 and
-P4, and ARCH-0003 §3.5–§3.6, under ADR-0003 D1 and D2.
+Draft for review in the m-of-n project. Realises ARCH-0002 P1 (accepted), P3 (reopened,
+not binding) and P4, and ARCH-0003 §3.5–§3.6, under ADR-0003 D1 and D2.
 **0.1.1 (2026-11-01):** Appendix A quotes one `ask` value, as SPEC-0002 §11.3 now
 requires (DL-0020). DV-1's bytes and DefinitionId do not change.
 **0.1.2 (2026-11-03):** process. `ndewedo-newbury` is added to
@@ -90,6 +90,12 @@ evaluation results, which is MAJOR under this document's policy. It is
 numbered MINOR because no published definition or vector uses kind 4, 5 or
 11, so no published result changes. The reviewer decides whether 1.0.0 is
 owed instead (DL-0056). DV-1's bytes and DefinitionId are unchanged.
+**0.3.1 (2026-11-25):** editorial. `ADR-0002` is reopened by the sponsor, so
+ARCH-0002 P3 and P6, which this document realises and cites, are not binding
+(`ADR-0002` §10). Nothing normative here changes: §5.4's `type-def` and §6.4's
+name binding are specified in their own words and behave as before. They are
+now to be read against whatever replaces P3 and P6, not against the 2026-11-06
+text (`DL-0057`). No hashed bytes or evaluation results change.
 
 ---
 
@@ -390,7 +396,7 @@ owner trusted about `*@foo.com` may delegate `*@eng.foo.com`, and not
 
 A type of base kind **name** is a **naming type**. An attribute of a naming
 type, in an `attestation`, is a **name binding**: *the speaker's `value` is the
-target* (ARCH-0002 P6). SPEC-0004 §5.3 is normative for how bindings resolve a
+target* (ARCH-0002 P6, reopened and not binding; `ADR-0002` §10). SPEC-0004 §5.3 is normative for how bindings resolve a
 name (SPEC-0002 §7.2 type 7); this section fixes only the value.
 
 The value is a single label, not a chain. A compound name is written as a

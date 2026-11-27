@@ -8,10 +8,10 @@ description: "Canonical working architecture for a native model that is not X.50
 type: architecture
 category: security
 status: draft
-version: "0.3.4"
+version: "0.3.5"
 version_policy: "semver; PATCH = editorial; MINOR = additive requirements; MAJOR = breaking model change"
 date: "2026-09-15"
-updated: "2026-11-23"
+updated: "2026-11-25"
 authors:
   - role: architect
     id: conversation-brainpool256
@@ -91,7 +91,7 @@ scope:
 agent_checkpoint: true
 agent_notes: >
   Other agents: treat this file as the source of truth for architecture
-  state as of v0.3.4. v0.3.4 adds §6 row notes and §6.1 (mofn#110; no requirement or DEC-* moves). v0.3.3 adds inputs to DEC-005 (no option selected). v0.3.2 moves §2.3.2 to DV-5 `library-review` v2. v0.3.1 closes the SDSI-names gap in §5.5. v0.3.0 adds §2.3, the two target applications. v0.2.0 folded ARCH-0001-PROPOSAL-v0.2.0 in (now
+  state as of v0.3.5. v0.3.5 is editorial: ADR-0002 is reopened by the sponsor (2026-11-25, DL-0057), so §4.2's rewrite and R-M-08's generalisation no longer rest on an accepted ADR; no requirement or text moves. v0.3.4 adds §6 row notes and §6.1 (mofn#110; no requirement or DEC-* moves). v0.3.3 adds inputs to DEC-005 (no option selected). v0.3.2 moves §2.3.2 to DV-5 `library-review` v2. v0.3.1 closes the SDSI-names gap in §5.5. v0.3.0 adds §2.3, the two target applications. v0.2.0 folded ARCH-0001-PROPOSAL-v0.2.0 in (now
   superseded) and carried ADR-0002, ADR-0003, ADR-0007 and the T-012c
   delegation decision into §4-§7. Where SPEC-0001..0005 and this file differ,
   §5.5 lists every known gap and which side owes the change. Do not invent accepted decisions. Open items are
@@ -101,7 +101,7 @@ agent_notes: >
 
 # ARCH-0001 — Authorization, local names, and artifact attestation
 
-**Status:** draft · **Version:** 0.3.4 · **Date:** 2026-09-15 · **Updated:** 2026-11-23  
+**Status:** draft · **Version:** 0.3.5 · **Date:** 2026-09-15 · **Updated:** 2026-11-25  
 **Canonical file:** `spec/ARCH-0001-authorization-attestation.md`  
 **Changelog:** `spec/ARCH-0001-CHANGELOG.md`
 
@@ -352,7 +352,16 @@ Logical types. Encoding is DEC-002, accepted as KSA-CBOR (`ADR-0004`). The right
 
 ### 4.2 One statement form, several functions
 
-**Rewritten in 0.2.0** under `ADR-0002`, which accepted `ARCH-0002` P2 (*A says
+> **Reopened 2026-11-25 (0.3.5).** `ADR-0002` is `proposed` again: the sponsor
+> reopened it, and `ARCH-0002` P2, P3 and P6 are not binding (`ADR-0002` §10).
+> This section's text is unchanged and is **not withdrawn**, but it no longer
+> rests on an accepted ADR. The sponsor's objection to P2 — there are more
+> statement forms, and the original vocabulary carried validity — bears on
+> this section directly. `R-M-04` (name bindings and authorization bindings are
+> distinct object kinds) is untouched and is what this section's table has to be
+> read against. See `design-log/0057-adr-0002-reopen/analysis.md`.
+
+**Rewritten in 0.2.0** under `ADR-0002` (accepted 2026-11-06, since reopened), which accepted `ARCH-0002` P2 (*A says
 B has C*) and P6 (*a name is an attested string*). v0.1 listed five object
 *kinds*. They are **functions over one signed statement form**, distinguished by
 what the statement asserts. KSA spells the form as `SPEC-0002` §7: `kind`,
@@ -438,7 +447,7 @@ Priority: **M**ust / **S**hould / **C**ould. Open decisions do not silently sati
 | R-M-05 | M | Authorization composition SHALL be deterministic given an ordered cert set and ACL. |
 | R-M-06 | M | Threshold principals SHALL be representable without encoding them as a CA hierarchy. |
 | R-M-07 | M | Artifact statements SHALL bind at least one content digest. *0.2.0: kept as MUST by decision (`DL-0028`); a description digest (R-M-11) satisfies it, a locator alone does not. `SPEC-0002` 0.6.0 §7.2 meets it: every target type binds a digest, and the locator target is withdrawn (mofn#144, `DL-0030`).* |
-| R-M-08 | M | Intersection (*within*) semantics SHALL be defined for every tag profile the implementation claims, and for every constrained type it accepts. *0.2.0: generalised from tags to every constrained object (`ADR-0002` §5, P2); `SPEC-0003` §6 base kinds meet it for the types they cover.* |
+| R-M-08 | M | Intersection (*within*) semantics SHALL be defined for every tag profile the implementation claims, and for every constrained type it accepts. *0.3.5: the basis, `ADR-0002` P2, is reopened; the requirement stands as written.* *0.2.0: generalised from tags to every constrained object (`ADR-0002` §5, P2); `SPEC-0003` §6 base kinds meet it for the types they cover.* |
 | R-M-09 | S | Validity intersection SHALL be defined (time window ∩ optional online checks). |
 | R-M-10 | S | Delegation SHALL be explicit and bounded on the delegation statement: absent means one hop with no onward delegation; present, it SHALL state an integer `depth` and MAY state an onward scope allow-list (`ranges`), key allow/exclude lists, and a validity cap. Each hop's scope SHALL be within the previous hop's, and a widening SHALL be reported as such, not intersected silently to empty. *0.2.0: was "an explicit boolean (or equivalent)". Rewritten to match `SPEC-0002` §8.6 and `SPEC-0004` §6.3 by decision on mofn#136 (`DL-0025`). **Stated limit:** RFC 2693 §4.1.3–§4.1.4 rejected integer depth because the right depth cannot be predicted ("one can always need to go one more level down, by creating a temporary signing key") and because depth does not bound the width of the delegation tree. Both points stand. Depth is therefore **not a security bound**: it limits what a relying party will follow, not what a key holder can do. Width is limited by `ranges` and the key lists, which SPKI did not have. OpenPGP trust-signature levels (RFC 9580 §5.2.3.21) are the deployed precedent.* |
 | R-M-11 | M | An `ArtifactId` SHALL support identification by content digest, by external locator, or by the canonical digest of a structured description. At least one content digest SHALL be bound in all cases, per R-M-07. A locator SHALL be treated as non-authoritative evidence about a subject, not as its definition. *Added 0.2.0 from the proposal. `SPEC-0002` §7.2 implements the modes as target 2 (digest), target 6 (description) and, for the locator, an attribute on either (0.6.0, mofn#144).* |
